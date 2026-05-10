@@ -50,7 +50,7 @@ const ModelDetailModal: React.FC<{ model: AIModel; onClose: () => void }> = ({ m
       />
       <motion.div 
         initial={{ scale: 0.97, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.97, opacity: 0, y: 10 }}
-        className="relative w-full max-w-4xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
+        className="relative w-full max-w-4xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-lg overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
       >
         {/* Header */}
         <div className="px-6 py-5 border-b border-black/[0.04] dark:border-white/[0.08] flex items-center justify-between shrink-0">
@@ -254,7 +254,7 @@ const ModelsPage: React.FC = () => {
               {SERVER_LIST.map(srv => (
                 <button 
                   key={srv} onClick={() => setActiveServer(srv)}
-                  className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all whitespace-nowrap ${activeServer === srv ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20' : 'text-slate-400 dark:text-gray-500 hover:text-slate-600 dark:hover:text-gray-300'}`}
+                  className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all whitespace-nowrap ${activeServer === srv ? 'bg-brand-blue/10 text-brand-blue dark:text-brand-blue border border-brand-blue/20' : 'text-slate-400 dark:text-gray-500 hover:text-slate-600 dark:hover:text-gray-300'}`}
                 >
                   {srv}
                 </button>
@@ -267,7 +267,7 @@ const ModelsPage: React.FC = () => {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1,2,3,4,5,6].map(i => (
-              <div key={i} className="h-[280px] bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] rounded-2xl animate-pulse" />
+              <div key={i} className="h-[280px] bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.08] rounded-lg animate-pulse" />
             ))}
           </div>
         ) : (
@@ -280,7 +280,7 @@ const ModelsPage: React.FC = () => {
                 <motion.div 
                   key={model.id_base}
                   whileHover={{ y: -4 }}
-                  className="group relative bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.04] dark:border-white/[0.08] rounded-2xl p-5 space-y-4 cursor-pointer hover:border-black/[0.08] dark:hover:border-white/[0.08] hover:shadow-lg transition-all flex flex-col"
+                  className="group relative bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.04] dark:border-white/[0.08] rounded-lg p-5 space-y-4 cursor-pointer hover:border-black/[0.08] dark:hover:border-white/[0.08] hover:shadow-lg transition-all flex flex-col"
                   onClick={() => setSelectedModel(model)}
                 >
                   {/* NEW Badge */}
@@ -316,7 +316,7 @@ const ModelsPage: React.FC = () => {
                       <span className="px-2 py-1 bg-brand-blue/[0.06] text-brand-blue rounded-md text-[10px] font-medium border border-brand-blue/10">Img2Video</span>
                     )}
                     {model.startText && (
-                      <span className="px-2 py-1 bg-purple-500/[0.06] text-purple-600 dark:text-purple-400 rounded-md text-[10px] font-medium border border-purple-500/10">Text2Video</span>
+                      <span className="px-2 py-1 bg-amber-500/[0.06] text-amber-600 dark:text-amber-400 rounded-md text-[10px] font-medium border border-amber-500/10">Text2Video</span>
                     )}
                     <span className="px-2 py-1 bg-emerald-500/[0.06] text-emerald-600 dark:text-emerald-400 rounded-md text-[10px] font-medium border border-emerald-500/10">1080p</span>
                   </div>

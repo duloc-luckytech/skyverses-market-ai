@@ -150,9 +150,9 @@ const CreditsPage = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="inline-flex items-center gap-4 px-6 py-4 bg-white dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl shadow-sm backdrop-blur-sm"
+              className="inline-flex items-center gap-4 px-6 py-4 bg-white dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-lg shadow-sm backdrop-blur-sm"
             >
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-blue/20 to-violet-500/20 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-blue/20 to-amber-500/20 flex items-center justify-center">
                 <Sparkles size={18} className="text-brand-blue" fill="currentColor" />
               </div>
               <div className="text-left">
@@ -194,7 +194,7 @@ const CreditsPage = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className="relative flex items-start gap-4 p-6 rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] hover:border-black/[0.08] dark:hover:border-white/[0.08] transition-all group"
+              className="relative flex items-start gap-4 p-6 rounded-lg bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] hover:border-black/[0.08] dark:hover:border-white/[0.08] transition-all group"
             >
               <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110" style={{ backgroundColor: `${step.color}12`, color: step.color }}>
                 {step.icon}
@@ -449,7 +449,7 @@ const CreditsPage = () => {
         <section className="mb-24">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">
-              Dùng cho <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-violet-500">mọi công cụ AI</span>
+              Dùng cho <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-amber-500">mọi công cụ AI</span>
             </h2>
             <p className="text-sm text-slate-400 dark:text-gray-500 max-w-lg mx-auto">Một loại credit — hơn 30 sản phẩm AI</p>
           </motion.div>
@@ -470,7 +470,7 @@ const CreditsPage = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.05 }}
-                className="group p-5 rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] hover:border-black/[0.1] dark:hover:border-white/[0.1] transition-all text-center"
+                className="group p-5 rounded-lg bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] hover:border-black/[0.1] dark:hover:border-white/[0.1] transition-all text-center"
               >
                 <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform" style={{ backgroundColor: `${tool.color}12`, color: tool.color }}>
                   {tool.icon}
@@ -491,7 +491,7 @@ const CreditsPage = () => {
             <p className="text-center text-xs font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-5">
               Ước tính số lần tạo theo gói <span className="text-slate-300 dark:text-gray-600">(dựa trên mức giá trung bình)</span>
             </p>
-            <div className="overflow-x-auto rounded-2xl border border-black/[0.05] dark:border-white/[0.05] bg-white dark:bg-white/[0.02]">
+            <div className="overflow-x-auto rounded-lg border border-black/[0.05] dark:border-white/[0.05] bg-white dark:bg-white/[0.02]">
               <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b border-black/[0.05] dark:border-white/[0.05]">
@@ -502,7 +502,7 @@ const CreditsPage = () => {
                     </th>
                     <th className="px-4 py-4 font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px] text-center">
                       <span className="text-slate-800 dark:text-white">Creator</span><br />
-                      <span className="font-bold text-violet-500 normal-case tracking-normal">~258,750 cr</span>
+                      <span className="font-bold text-brand-blue normal-case tracking-normal">~258,750 cr</span>
                     </th>
                     <th className="px-4 py-4 font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider text-[9px] text-center">
                       <span className="text-slate-800 dark:text-white">Pro</span><br />
@@ -657,9 +657,9 @@ const CreditsPage = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center py-16 px-6 rounded-3xl bg-gradient-to-br from-slate-50 to-white dark:from-white/[0.02] dark:to-white/[0.01] border border-black/[0.04] dark:border-white/[0.04] mb-10"
+          className="text-center py-16 px-6 rounded-xl bg-gradient-to-br from-slate-50 to-white dark:from-white/[0.02] dark:to-white/[0.01] border border-black/[0.04] dark:border-white/[0.04] mb-10"
         >
-          <div className="w-14 h-14 rounded-2xl bg-brand-blue/10 flex items-center justify-center mx-auto mb-6">
+          <div className="w-14 h-14 rounded-lg bg-brand-blue/10 flex items-center justify-center mx-auto mb-6">
             <Flame size={24} className="text-brand-blue" />
           </div>
           <h3 className="text-xl md:text-2xl font-bold tracking-tight mb-3">Sẵn sàng bắt đầu?</h3>

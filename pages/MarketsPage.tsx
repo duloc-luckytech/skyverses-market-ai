@@ -62,10 +62,10 @@ const SORT_OPTIONS = [
 // Quick path use-case driven cho user mới — click → set category + scroll xuống grid
 const QUICK_PATHS: { key: string; category: string; label: string; desc: string; icon: typeof Video; iconColor: string; gradient: string }[] = [
   { key: 'video',      category: 'Video',      label: 'Tạo video TikTok',     desc: 'Veo 3, Kling, Sora',     icon: Video,     iconColor: 'text-pink-500',    gradient: 'from-pink-500/[0.07] to-rose-500/[0.05]' },
-  { key: 'image',      category: 'Image',      label: 'Vẽ ảnh AI',            desc: 'Midjourney, Flux, Imagen', icon: ImageIcon, iconColor: 'text-violet-500',  gradient: 'from-violet-500/[0.07] to-purple-500/[0.05]' },
+  { key: 'image',      category: 'Image',      label: 'Vẽ ảnh AI',            desc: 'Midjourney, Flux, Imagen', icon: ImageIcon, iconColor: 'text-brand-blue',  gradient: 'from-brand-blue/[0.07] to-amber-500/[0.05]' },
   { key: 'music',      category: 'Music',      label: 'Tạo nhạc AI',          desc: 'Suno, Udio, MusicGen',   icon: Music,     iconColor: 'text-amber-500',   gradient: 'from-amber-500/[0.07] to-orange-500/[0.05]' },
   { key: 'audio',      category: 'Audio',      label: 'Lồng tiếng & TTS',     desc: 'ElevenLabs, voice AI',   icon: Mic,       iconColor: 'text-emerald-500', gradient: 'from-emerald-500/[0.07] to-teal-500/[0.05]' },
-  { key: 'script',     category: 'Script',     label: 'Viết blog & nội dung', desc: 'Kịch bản, bài viết AI',  icon: Film,      iconColor: 'text-blue-500',    gradient: 'from-blue-500/[0.07] to-cyan-500/[0.05]' },
+  { key: 'script',     category: 'Script',     label: 'Viết blog & nội dung', desc: 'Kịch bản, bài viết AI',  icon: Film,      iconColor: 'text-amber-500',    gradient: 'from-amber-500/[0.07] to-brand-blue/[0.05]' },
   { key: 'automation', category: 'Automation', label: 'Tự động hoá quy trình', desc: 'Workflow, n8n, agents',  icon: Zap,       iconColor: 'text-yellow-500',  gradient: 'from-yellow-500/[0.07] to-amber-500/[0.05]' },
 ];
 // Phân nhóm Categories theo persona user mới VN:
@@ -458,7 +458,7 @@ const QuickPreviewModal: React.FC<{ sol: Solution; lang: Language; onClose: () =
     <>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/40 z-[600]" onClick={onClose} />
       <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[601] w-[90vw] max-w-[560px] bg-neutral-900 rounded-2xl border border-neutral-700/40 shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[601] w-[90vw] max-w-[560px] bg-neutral-900 rounded-lg border border-neutral-700/40 shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
         <div className="relative h-[200px] overflow-hidden shrink-0">
           <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
@@ -1133,7 +1133,7 @@ const MarketsPage: React.FC = () => {
                     {/* Complexity */}
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <Layers size={12} className="text-purple-500" />
+                        <Layers size={12} className="text-brand-blue" />
                         <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">Cấp độ</span>
                       </div>
                       <div className="grid grid-cols-3 gap-1.5">
@@ -1155,7 +1155,7 @@ const MarketsPage: React.FC = () => {
                     {/* Platform */}
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <Globe size={12} className="text-cyan-500" />
+                        <Globe size={12} className="text-amber-500" />
                         <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">Nền tảng</span>
                       </div>
                       <div className="space-y-0.5">

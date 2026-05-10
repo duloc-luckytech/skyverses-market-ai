@@ -93,7 +93,7 @@ export const LogsTab: React.FC<LogsTabProps> = ({ remoteSolutions }) => {
            {/* Cloud Stats - Using remoteSolutions prop */}
            <div className="hidden lg:flex items-center gap-6 text-[10px] font-black uppercase tracking-widest text-gray-400">
               <div className="flex items-center gap-2">
-                 <div className="w-1.5 h-1.5 rounded-full bg-brand-blue shadow-[0_0_8px_#0090ff]"></div>
+                 <div className="w-1.5 h-1.5 rounded-full bg-brand-blue shadow-[0_0_8px_#C9A84C]"></div>
                  <span>Cloud Nodes: {remoteSolutions.length}</span>
               </div>
            </div>

@@ -30,8 +30,8 @@ const USE_CASE_CATEGORIES = [
     title: 'Content Creation',
     subtitle: 'Social media, YouTube, TikTok',
     icon: <Film size={24} />,
-    color: 'violet',
-    gradient: 'from-violet-500 to-purple-600',
+    color: 'amber',
+    gradient: 'from-brand-blue to-amber-600',
     cases: [
       'Generate viral short-form videos from a single text prompt',
       'Create eye-catching thumbnails and cover art with AI Image',
@@ -45,8 +45,8 @@ const USE_CASE_CATEGORIES = [
     title: 'E-Commerce',
     subtitle: 'Product photos, marketing assets',
     icon: <ShoppingBag size={24} />,
-    color: 'blue',
-    gradient: 'from-blue-500 to-cyan-500',
+    color: 'amber',
+    gradient: 'from-amber-500 to-yellow-500',
     cases: [
       'Transform flat product photos into professional studio shots',
       'Generate lifestyle mockups with AI background & lighting',
@@ -60,8 +60,8 @@ const USE_CASE_CATEGORIES = [
     title: 'Marketing & Ads',
     subtitle: 'Campaigns, branding, ads',
     icon: <Megaphone size={24} />,
-    color: 'pink',
-    gradient: 'from-pink-500 to-rose-500',
+    color: 'amber',
+    gradient: 'from-yellow-600 to-amber-500',
     cases: [
       'Generate ad creatives in seconds — test 100 variations instantly',
       'Create branded video ads for any platform with text prompt',
@@ -75,8 +75,8 @@ const USE_CASE_CATEGORIES = [
     title: 'Fashion & Lifestyle',
     subtitle: 'Virtual try-on, styling, catalogs',
     icon: <Camera size={24} />,
-    color: 'emerald',
-    gradient: 'from-emerald-500 to-teal-500',
+    color: 'amber',
+    gradient: 'from-amber-400 to-yellow-600',
     cases: [
       'Virtual try-on: see any outfit on your model instantly',
       'AI-powered fashion catalog generation — no photoshoot needed',
@@ -91,7 +91,7 @@ const USE_CASE_CATEGORIES = [
     subtitle: 'Interior, architecture, staging',
     icon: <Building2 size={24} />,
     color: 'amber',
-    gradient: 'from-amber-500 to-orange-500',
+    gradient: 'from-brand-blue to-yellow-700',
     cases: [
       'Virtual staging: transform empty rooms into furnished spaces',
       'Generate architectural renderings from floor plans',
@@ -105,8 +105,8 @@ const USE_CASE_CATEGORIES = [
     title: 'Education & Training',
     subtitle: 'Courses, tutorials, presentations',
     icon: <GraduationCap size={24} />,
-    color: 'indigo',
-    gradient: 'from-indigo-500 to-blue-600',
+    color: 'amber',
+    gradient: 'from-yellow-500 to-brand-blue',
     cases: [
       'Generate explainer videos with AI avatar presenters',
       'Create course thumbnails and visual materials at scale',
@@ -146,8 +146,8 @@ const UseCasesPage = () => {
       {/* ── HERO ── */}
       <section ref={heroRef} className="relative py-32 px-6 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/3 left-1/3 w-[500px] h-[500px] bg-violet-600/8 rounded-full blur-[120px]" />
-          <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-blue-600/8 rounded-full blur-[120px]" />
+          <div className="absolute top-1/3 left-1/3 w-[500px] h-[500px] bg-brand-blue/[0.08] rounded-full blur-[120px]" />
+          <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-brand-blue/[0.08] rounded-full blur-[120px]" />
         </div>
 
         <motion.div
@@ -180,7 +180,7 @@ const UseCasesPage = () => {
         >
           {STATS.map((s, i) => (
             <motion.div key={i} variants={fadeUp} custom={i}
-              className="rounded-2xl border border-white/5 bg-white/[0.02] p-5 text-center"
+              className="rounded-lg border border-white/5 bg-white/[0.02] p-5 text-center"
             >
               <div className="text-3xl font-bold bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent mb-1">{s.value}</div>
               <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">{s.label}</div>
@@ -202,7 +202,7 @@ const UseCasesPage = () => {
                 initial={{ opacity: 0, y: 40 }}
                 animate={cardInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="group relative rounded-3xl border border-white/5 bg-white/[0.02] overflow-hidden hover:border-white/10 transition-all duration-500"
+                className="group relative rounded-xl border border-white/5 bg-white/[0.02] overflow-hidden hover:border-white/10 transition-all duration-500"
               >
                 {/* Top gradient line */}
                 <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${cat.gradient} opacity-0 group-hover:opacity-60 transition-opacity`} />
@@ -256,8 +256,8 @@ const UseCasesPage = () => {
       {/* ── BOTTOM CTA ── */}
       <section className="py-32 px-6">
         <div className="max-w-4xl mx-auto relative">
-          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-violet-950/80 via-slate-900/80 to-blue-950/80 backdrop-blur-xl p-12 md:p-20 text-center">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-gradient-to-b from-violet-500/20 to-transparent blur-3xl pointer-events-none" />
+          <div className="relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-amber-950/80 via-slate-900/80 to-yellow-950/80 backdrop-blur-xl p-12 md:p-20 text-center">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-gradient-to-b from-brand-blue/20 to-transparent blur-3xl pointer-events-none" />
 
             <div className="relative z-10">
               <h2 className="text-3xl md:text-5xl font-bold mb-6">
@@ -268,12 +268,12 @@ const UseCasesPage = () => {
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link to="/apps"
-                  className="bg-white text-black px-10 py-4 rounded-2xl font-bold text-sm flex items-center gap-3 hover:scale-105 transition-all shadow-xl"
+                  className="bg-white text-black px-10 py-4 rounded-lg font-bold text-sm flex items-center gap-3 hover:scale-105 transition-all shadow-xl"
                 >
                   Explore All Tools <ArrowRight size={18} />
                 </Link>
                 <Link to="/booking"
-                  className="px-10 py-4 rounded-2xl font-bold text-sm border border-white/20 hover:bg-white/10 transition-all"
+                  className="px-10 py-4 rounded-lg font-bold text-sm border border-white/20 hover:bg-white/10 transition-all"
                 >
                   Contact Us
                 </Link>

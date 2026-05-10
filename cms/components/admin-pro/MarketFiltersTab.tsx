@@ -207,7 +207,7 @@ export const MarketFiltersTab: React.FC = () => {
 
   const getCategoryColor = (code: string) => {
     const colors: Record<string, string> = {
-      'ALL': '#0090ff',
+      'ALL': '#C9A84C',
       'GAMES': '#10b981',
       'ART_DESIGN': '#D4B85A',
       'AI_TOOLS': '#E5C767',

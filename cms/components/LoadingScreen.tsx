@@ -38,7 +38,7 @@ const LoadingScreen: React.FC<{ onFinished: () => void }> = ({ onFinished }) => 
               style={{
                 width: 500,
                 height: 500,
-                background: 'radial-gradient(circle, rgba(0,120,255,0.08) 0%, transparent 70%)',
+                background: 'radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%)',
                 animation: 'loadingBreath 3s ease-in-out infinite',
               }}
             />
@@ -70,8 +70,8 @@ const LoadingScreen: React.FC<{ onFinished: () => void }> = ({ onFinished }) => 
                     top: -2,
                     left: '50%',
                     marginLeft: -2,
-                    background: 'rgba(0,144,255,0.5)',
-                    boxShadow: '0 0 12px rgba(0,144,255,0.4)',
+                    background: 'rgba(201,168,76,0.5)',
+                    boxShadow: '0 0 12px rgba(201,168,76,0.4)',
                   }}
                 />
               </div>
@@ -82,7 +82,7 @@ const LoadingScreen: React.FC<{ onFinished: () => void }> = ({ onFinished }) => 
               <div
                 className="absolute inset-0 scale-[2] rounded-full"
                 style={{
-                  background: 'radial-gradient(circle, rgba(0,120,255,0.12) 0%, transparent 60%)',
+                  background: 'radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 60%)',
                   animation: 'loadingBreath 2.5s ease-in-out infinite',
                 }}
               />
@@ -91,7 +91,7 @@ const LoadingScreen: React.FC<{ onFinished: () => void }> = ({ onFinished }) => 
                 alt="Skyverses"
                 className="w-24 lg:w-28 relative z-10"
                 style={{
-                  filter: 'drop-shadow(0 0 20px rgba(0,120,255,0.15))',
+                  filter: 'drop-shadow(0 0 20px rgba(201,168,76,0.15))',
                 }}
               />
             </div>
@@ -127,7 +127,7 @@ const LoadingScreen: React.FC<{ onFinished: () => void }> = ({ onFinished }) => 
                 className="h-full rounded-full"
                 style={{
                   width: '40%',
-                  background: 'linear-gradient(90deg, transparent, rgba(0,144,255,0.5), transparent)',
+                  background: 'linear-gradient(90deg, transparent, rgba(201,168,76,0.5), transparent)',
                   animation: 'loadingShimmer 1.2s ease-in-out infinite',
                 }}
               />

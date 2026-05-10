@@ -18,7 +18,7 @@ const ActionFooter: React.FC<ActionFooterProps> = ({ mediaUrl, type, onUpscale, 
       {is3D ? (
         <button 
           onClick={onOpenStudio}
-          className="w-full bg-brand-blue text-white py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] shadow-[0_15px_40px_rgba(0,144,255,0.2)] hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-4 italic group"
+          className="w-full bg-brand-blue text-white py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] shadow-[0_15px_40px_rgba(201,168,76,0.2)] hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-4 italic group"
         >
           <Box size={16} strokeWidth={3} className="group-hover:scale-110 transition-transform duration-300" /> MỞ TRONG 3D STUDIO
         </button>

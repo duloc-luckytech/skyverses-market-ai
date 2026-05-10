@@ -8,9 +8,9 @@
 > 3. Khi grep/glob source code, exclude pattern: `docs/`, `dist/`, `node_modules/`, `*/dist/*`, `skyverses-backend/uploads/`, `skyverses-backend/tmp-videos/`.
 > 4. Trước khi đọc file >20KB, ưu tiên `Read` với `offset/limit` thay vì full file.
 
-**Stack:** React 19 + TS + Vite 5 · Tailwind 3 + **Atlas design system** (`atlas.purple`=#7036F0; `brand-blue` legacy alias → trỏ cùng màu) · Manrope (sans) + Fragment Mono (mono) · react-router-dom 7 (lazy) · framer-motion · lucide-react · three 0.173 · @xyflow/react · @google/genai
+**Stack:** React 19 + TS + Vite 5 · Tailwind 3 + **Atlas design system** (gold `#C9A84C`; `brand-blue` legacy alias → trỏ cùng màu) · Manrope (sans) + Fragment Mono (mono) · react-router-dom 7 (lazy) · framer-motion · lucide-react · three 0.173 · @xyflow/react · @google/genai
 
-**Layout:** `App.tsx` (routes) · `pages/` (62) · `components/` (330, 26 sub-folder bao gồm `atlas/`) · `context/` (5: Auth/Theme/Lang/Search/Toast) · `apis/` (19) · `hooks/` (30) · `constants/` · `utils/` · `services/` · `src/constants/` (CDN lists) · `cms/` `blog/` `skyverses-backend/` (sub-projects)
+**Layout:** `App.tsx` (routes) · `pages/` (69) · `components/` (~340, 28 sub-folder bao gồm `atlas/`) · `context/` (5: Auth/Theme/Lang/Search/Toast) · `apis/` (23) · `hooks/` (31) · `constants/` · `utils/` · `services/` · `src/constants/` (CDN lists) · `cms/` `blog/` `skyverses-backend/` (sub-projects)
 
 **Core conventions:**
 - TypeScript only, no `any`. Tailwind only, no inline styles.
@@ -21,7 +21,7 @@
 - Job lifecycle: `<api>.create()` → `useJobPoller(jobId)` → `refreshCredits()`.
 - Backend folder typo: `src/constanst/` (intentional, đừng rename).
 
-**Skills (`.agents/skills/`):** `skyverses_ui_pages`, `skyverses_architecture`, `skyverses_business_flows`, `skyverses_cms`.
+**Skills (`.agents/skills/`):** `skyverses_ui_pages`, `skyverses_ui_style`, `skyverses_architecture`, `skyverses_business_flows`, `skyverses_cms`.
 
 ---
 

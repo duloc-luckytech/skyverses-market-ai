@@ -210,16 +210,16 @@ const ExplorerPage = () => {
         {/* ═══════ LUXURY HERO HEADER ═══════ */}
         <header className="mb-10 md:mb-14">
           {isLoading && page === 1 ? (
-            <div className="animate-pulse rounded-3xl bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.06] p-8 md:p-14">
+            <div className="animate-pulse rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.06] p-8 md:p-14">
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
                 <div className="lg:col-span-3 space-y-5">
                   <div className="h-4 bg-slate-100 dark:bg-white/[0.04] rounded-full w-24" />
-                  <div className="h-12 bg-slate-100 dark:bg-white/[0.04] rounded-2xl w-3/5" />
+                  <div className="h-12 bg-slate-100 dark:bg-white/[0.04] rounded-lg w-3/5" />
                   <div className="h-5 bg-slate-100 dark:bg-white/[0.04] rounded-lg w-4/5" />
                   <div className="flex gap-2 pt-2">{[1,2,3,4].map(i => <div key={i} className="h-10 w-24 bg-slate-100 dark:bg-white/[0.04] rounded-xl" />)}</div>
                 </div>
                 <div className="lg:col-span-2 hidden lg:flex gap-3">
-                  {[1,2,3].map(i => <div key={i} className="flex-1 aspect-[3/4] bg-slate-100 dark:bg-white/[0.04] rounded-2xl" />)}
+                  {[1,2,3].map(i => <div key={i} className="flex-1 aspect-[3/4] bg-slate-100 dark:bg-white/[0.04] rounded-lg" />)}
                 </div>
               </div>
             </div>
@@ -228,14 +228,14 @@ const ExplorerPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="relative rounded-3xl overflow-hidden border border-black/[0.06] dark:border-white/[0.06]"
+              className="relative rounded-xl overflow-hidden border border-black/[0.06] dark:border-white/[0.06]"
             >
               {/* Luxury gradient background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-violet-50/30 dark:from-[#12141a] dark:via-[#0c0c0f] dark:to-[#0d0a1a]" />
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-amber-50/30 dark:from-[#12141a] dark:via-[#0c0c0f] dark:to-[#141008]" />
 
               {/* Ambient glow orbs */}
               <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] bg-atlas-purple/[0.06] dark:bg-atlas-purple/[0.10] rounded-full blur-[150px] pointer-events-none" />
-              <div className="absolute bottom-[-30%] left-[10%] w-[400px] h-[400px] bg-violet-400/[0.04] dark:bg-violet-500/[0.06] rounded-full blur-[100px] pointer-events-none" />
+              <div className="absolute bottom-[-30%] left-[10%] w-[400px] h-[400px] bg-brand-blue/[0.04] dark:bg-brand-blue/[0.06] rounded-full blur-[100px] pointer-events-none" />
               <div className="absolute top-[20%] left-[-5%] w-[250px] h-[250px] bg-amber-300/[0.04] dark:bg-amber-400/[0.03] rounded-full blur-[80px] pointer-events-none" />
 
               {/* Subtle grid pattern overlay */}
@@ -252,14 +252,14 @@ const ExplorerPage = () => {
                       className="space-y-4"
                     >
                       {/* Premium badge */}
-                      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-gradient-to-r from-atlas-purple/[0.10] to-violet-500/[0.06] border border-atlas-purple/15 rounded-full">
+                      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-gradient-to-r from-atlas-purple/[0.10] to-amber-500/[0.06] border border-atlas-purple/15 rounded-full">
                         <Sparkles size={12} className="text-atlas-purple" />
                         <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-atlas-purple">Explorer</span>
                       </div>
 
                       <h1 className="text-[2.25rem] md:text-[3rem] lg:text-[3.5rem] font-bold tracking-[-0.03em] leading-[1.05]">
                         Khám phá{' '}
-                        <span className="bg-gradient-to-r from-atlas-purple via-violet-500 to-purple-400 bg-clip-text text-transparent">
+                        <span className="bg-gradient-to-r from-atlas-purple via-amber-500 to-yellow-500 bg-clip-text text-transparent">
                           thế giới AI
                         </span>
                       </h1>
@@ -297,7 +297,7 @@ const ExplorerPage = () => {
                         initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
                         className="flex items-center gap-2"
                       >
-                        <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-atlas-purple/[0.08] to-violet-500/[0.04] border border-atlas-purple/15 backdrop-blur-sm">
+                        <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-atlas-purple/[0.08] to-amber-500/[0.04] border border-atlas-purple/15 backdrop-blur-sm">
                           <Sparkles size={13} className="text-atlas-purple/60" />
                           <span className="text-[12px] text-[var(--atlas-text-secondary)]">Collection:</span>
                           <span className="text-[13px] font-bold text-atlas-purple">{searchQuery}</span>
@@ -326,7 +326,7 @@ const ExplorerPage = () => {
                             animate={{ opacity: 1, y: cfg.y, rotate: cfg.rotate }}
                             transition={{ delay: cfg.delay, duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
                             whileHover={{ rotate: 0, scale: 1.06, y: cfg.y - 8 }}
-                            className="absolute top-0 w-[45%] h-full rounded-2xl overflow-hidden shadow-2xl border-2 border-white/80 dark:border-white/[0.08] cursor-pointer"
+                            className="absolute top-0 w-[45%] h-full rounded-lg overflow-hidden shadow-2xl border-2 border-white/80 dark:border-white/[0.08] cursor-pointer"
                             style={{ left: `${i * 25}%`, zIndex: cfg.z, transform: `translateX(${cfg.x}px)` }}
                             onClick={() => setSelectedItem(item)}
                           >
@@ -362,7 +362,7 @@ const ExplorerPage = () => {
           {isLoading && page === 1 ? (
             <div className="explorer-grid">
               {[...Array(15)].map((_, i) => (
-                <div key={i} className={`rounded-2xl bg-slate-100 dark:bg-white/[0.03] animate-pulse ${ASPECT_CLASSES[i % ASPECT_CLASSES.length]}`}>
+                <div key={i} className={`rounded-lg bg-slate-100 dark:bg-white/[0.03] animate-pulse ${ASPECT_CLASSES[i % ASPECT_CLASSES.length]}`}>
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-200/50 dark:from-white/[0.02] to-transparent" />
                 </div>
               ))}
@@ -398,7 +398,7 @@ const ExplorerPage = () => {
                         animate="visible"
                         exit="exit"
                         whileHover={{ y: -4, transition: { duration: 0.3, ease: 'easeOut' } }}
-                        className={`relative overflow-hidden group cursor-pointer rounded-2xl transition-shadow duration-500 bg-white dark:bg-[var(--atlas-bg-panel)] ${aspectClass} ${isSelected ? 'ring-2 ring-atlas-purple shadow-lg shadow-atlas-purple/15 scale-[0.98]' : 'ring-1 ring-black/[0.06] dark:ring-white/[0.06] hover:ring-atlas-purple/30 hover:shadow-xl hover:shadow-black/[0.08] dark:hover:shadow-atlas-purple/[0.06]'}`}
+                        className={`relative overflow-hidden group cursor-pointer rounded-lg transition-shadow duration-500 bg-white dark:bg-[var(--atlas-bg-panel)] ${aspectClass} ${isSelected ? 'ring-2 ring-atlas-purple shadow-lg shadow-atlas-purple/15 scale-[0.98]' : 'ring-1 ring-black/[0.06] dark:ring-white/[0.06] hover:ring-atlas-purple/30 hover:shadow-xl hover:shadow-black/[0.08] dark:hover:shadow-atlas-purple/[0.06]'}`}
                         onClick={() => setSelectedItem(item)}
                       >
                         {/* Select checkbox */}
@@ -451,7 +451,7 @@ const ExplorerPage = () => {
               {/* Luxury load more indicator */}
               {isFetchingMore && (
                 <div className="flex justify-center py-12">
-                  <div className="flex items-center gap-3 px-6 py-3 bg-white/80 dark:bg-white/[0.04] backdrop-blur-xl rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-lg">
+                  <div className="flex items-center gap-3 px-6 py-3 bg-white/80 dark:bg-white/[0.04] backdrop-blur-xl rounded-lg border border-black/[0.06] dark:border-white/[0.06] shadow-lg">
                     <Loader2 size={16} className="animate-spin text-atlas-purple" />
                     <p className="text-[13px] font-medium text-[var(--atlas-text-secondary)]">Đang tải thêm...</p>
                   </div>
@@ -473,7 +473,7 @@ const ExplorerPage = () => {
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
               className="flex flex-col items-center justify-center py-28 gap-5 text-center"
             >
-              <div className="p-6 rounded-3xl bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04]">
+              <div className="p-6 rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04]">
                 <SearchX size={44} strokeWidth={1.2} className="text-slate-300 dark:text-gray-600" />
               </div>
               <div className="space-y-2">
@@ -497,7 +497,7 @@ const ExplorerPage = () => {
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[500] w-full max-w-xl px-4"
           >
-            <div className="bg-white/90 dark:bg-[#1a1a22]/90 backdrop-blur-2xl border border-black/[0.08] dark:border-white/[0.08] px-5 py-3.5 rounded-2xl shadow-2xl shadow-black/[0.12] dark:shadow-atlas-purple/[0.08] flex items-center justify-between gap-4">
+            <div className="bg-white/90 dark:bg-[#1a1a22]/90 backdrop-blur-2xl border border-black/[0.08] dark:border-white/[0.08] px-5 py-3.5 rounded-lg shadow-2xl shadow-black/[0.12] dark:shadow-atlas-purple/[0.08] flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-xl bg-atlas-purple/10 flex items-center justify-center">
                   <span className="text-sm font-bold text-atlas-purple">{selectedIds.length}</span>
@@ -508,7 +508,7 @@ const ExplorerPage = () => {
                 <button disabled={!canGenerate} className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-[13px] font-semibold transition-all ${canGenerate ? 'bg-atlas-purple text-white hover:brightness-110 shadow-sm shadow-atlas-purple/20' : 'bg-slate-100 dark:bg-white/5 text-slate-300 cursor-not-allowed'}`}>
                   <ImageIcon size={14} /> Tạo ảnh
                 </button>
-                <button disabled={!canGenerate} className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-[13px] font-semibold transition-all ${canGenerate ? 'bg-gradient-to-r from-violet-600 to-purple-500 text-white hover:brightness-110 shadow-sm shadow-purple-500/20' : 'bg-slate-100 dark:bg-white/5 text-slate-300 cursor-not-allowed'}`}>
+                <button disabled={!canGenerate} className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-[13px] font-semibold transition-all ${canGenerate ? 'bg-gradient-to-r from-brand-blue to-amber-600 text-white hover:brightness-110 shadow-sm shadow-brand-blue/20' : 'bg-slate-100 dark:bg-white/5 text-slate-300 cursor-not-allowed'}`}>
                   <Video size={14} /> Tạo video
                 </button>
                 <button onClick={() => setSelectedIds([])} className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all ml-1">

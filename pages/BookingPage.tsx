@@ -73,7 +73,7 @@ Submitted via Skyverses Booking Portal.
 
   const services = [
     { icon: <Code2 size={20} />, title: t('booking.service.1.title'), desc: t('booking.service.1.desc'), color: 'text-brand-blue', bg: 'bg-brand-blue/8' },
-    { icon: <Palette size={20} />, title: t('booking.service.2.title'), desc: t('booking.service.2.desc'), color: 'text-purple-500', bg: 'bg-purple-500/8' },
+    { icon: <Palette size={20} />, title: t('booking.service.2.title'), desc: t('booking.service.2.desc'), color: 'text-amber-500', bg: 'bg-amber-500/8' },
     { icon: <Bot size={20} />, title: t('booking.service.3.title'), desc: t('booking.service.3.desc'), color: 'text-emerald-500', bg: 'bg-emerald-500/8' },
   ];
 
@@ -196,7 +196,7 @@ Submitted via Skyverses Booking Portal.
             initial={{ opacity: 0, y: 15 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: 0.3 }}
-            className="lg:col-span-3 bg-white dark:bg-[var(--atlas-bg-page)] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden shadow-xl"
+            className="lg:col-span-3 bg-white dark:bg-[var(--atlas-bg-page)] rounded-lg border border-black/[0.06] dark:border-white/[0.06] overflow-hidden shadow-xl"
           >
             {/* Form Header */}
             <div className="px-6 md:px-8 py-6 border-b border-black/[0.04] dark:border-white/[0.04]">

@@ -38,12 +38,12 @@ const STATS = [
 ];
 
 const PRODUCTS = [
-  { name: 'Video AI', desc: 'Text, image → cinematic video. VEO3, WAN, Gommo engines.', icon: <Video size={22} />, color: 'from-violet-500 to-purple-600', route: '/product/ai-video-generator' },
-  { name: 'Image AI', desc: 'Generate, edit, upscale — any style, any resolution.', icon: <ImageIcon size={22} />, color: 'from-blue-500 to-cyan-500', route: '/product/ai-image-generator' },
-  { name: 'Music AI', desc: 'From text to full instrumentals. Custom voices & sounds.', icon: <Music size={22} />, color: 'from-pink-500 to-rose-500', route: '/product/ai-music-generator' },
-  { name: 'Voice AI', desc: 'Text-to-speech, voice cloning, audio design studio.', icon: <Mic size={22} />, color: 'from-amber-500 to-orange-500', route: '/product/voice-design-ai' },
-  { name: 'Fashion AI', desc: 'Virtual try-on, AI stylist, product photography.', icon: <Camera size={22} />, color: 'from-emerald-500 to-teal-500', route: '/product/ai-stylist' },
-  { name: 'Design AI', desc: 'Poster, marketing, comic engine & 3D spatial.', icon: <Palette size={22} />, color: 'from-indigo-500 to-blue-600', route: '/product/poster-marketing-ai' },
+  { name: 'Video AI', desc: 'Text, image → cinematic video. VEO3, WAN, Gommo engines.', icon: <Video size={22} />, color: 'from-brand-blue to-amber-600', route: '/product/ai-video-generator' },
+  { name: 'Image AI', desc: 'Generate, edit, upscale — any style, any resolution.', icon: <ImageIcon size={22} />, color: 'from-amber-500 to-brand-blue', route: '/product/ai-image-generator' },
+  { name: 'Music AI', desc: 'From text to full instrumentals. Custom voices & sounds.', icon: <Music size={22} />, color: 'from-brand-blue to-yellow-600', route: '/product/ai-music-generator' },
+  { name: 'Voice AI', desc: 'Text-to-speech, voice cloning, audio design studio.', icon: <Mic size={22} />, color: 'from-yellow-500 to-brand-blue', route: '/product/voice-design-ai' },
+  { name: 'Fashion AI', desc: 'Virtual try-on, AI stylist, product photography.', icon: <Camera size={22} />, color: 'from-brand-blue to-amber-500', route: '/product/ai-stylist' },
+  { name: 'Design AI', desc: 'Poster, marketing, comic engine & 3D spatial.', icon: <Palette size={22} />, color: 'from-amber-600 to-brand-blue', route: '/product/poster-marketing-ai' },
 ];
 
 const VALUES = [
@@ -70,8 +70,8 @@ const HeroSection = () => {
     <section ref={ref} className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
       {/* Background effects */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-violet-600/8 rounded-full blur-[120px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-blue-600/8 rounded-full blur-[120px]" />
+        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-brand-blue/[0.08] rounded-full blur-[120px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-amber-600/[0.08] rounded-full blur-[120px]" />
         <div className="absolute inset-0 opacity-[0.03]" style={{
           backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)',
           backgroundSize: '32px 32px'
@@ -135,9 +135,9 @@ const StatsSection = () => {
       >
         {STATS.map((s, i) => (
           <motion.div key={i} variants={fadeUp} custom={i}
-            className="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] p-6 text-center hover:border-violet-500/30 hover:bg-violet-500/5 transition-all duration-500"
+            className="group relative overflow-hidden rounded-lg border border-white/5 bg-white/[0.02] p-6 text-center hover:border-brand-blue/30 hover:bg-brand-blue/5 transition-all duration-500"
           >
-            <div className="text-violet-400 flex justify-center mb-3 opacity-60 group-hover:opacity-100 transition-opacity">{s.icon}</div>
+            <div className="text-brand-blue flex justify-center mb-3 opacity-60 group-hover:opacity-100 transition-opacity">{s.icon}</div>
             <div className="text-3xl md:text-4xl font-bold bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent mb-1">{s.value}</div>
             <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-widest">{s.label}</div>
           </motion.div>
@@ -159,7 +159,7 @@ const ProductsSection = () => {
       <motion.div initial="hidden" animate={isInView ? "visible" : "hidden"} variants={staggerContainer}>
         <motion.div variants={fadeUp} custom={0} className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            One Platform, <span className="text-violet-400">Every Medium</span>
+            One Platform, <span className="text-brand-blue">Every Medium</span>
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
             From text to cinematic video, photorealistic images, original music, and natural voices —
@@ -171,7 +171,7 @@ const ProductsSection = () => {
           {PRODUCTS.map((p, i) => (
             <motion.div key={i} variants={fadeUp} custom={i + 1}>
               <Link to={p.route}
-                className="group block relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] p-8 hover:border-white/20 transition-all duration-500 h-full"
+                className="group block relative overflow-hidden rounded-lg border border-white/5 bg-white/[0.02] p-8 hover:border-white/20 transition-all duration-500 h-full"
               >
                 {/* Gradient glow on hover */}
                 <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${p.color} opacity-0 group-hover:opacity-10 rounded-full blur-3xl transition-opacity duration-700`} />
@@ -181,7 +181,7 @@ const ProductsSection = () => {
                 </div>
                 <h3 className="text-xl font-bold mb-2 group-hover:text-white transition-colors">{p.name}</h3>
                 <p className="text-sm text-gray-500 leading-relaxed mb-4">{p.desc}</p>
-                <span className="text-violet-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="text-brand-blue text-xs font-bold uppercase tracking-widest flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   Try Now <ChevronRight size={14} />
                 </span>
               </Link>
@@ -206,7 +206,7 @@ const ValuesSection = () => {
         <motion.div initial="hidden" animate={isInView ? "visible" : "hidden"} variants={staggerContainer}>
           <motion.div variants={fadeUp} custom={0} className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
-              What Drives <span className="text-blue-400">Us</span>
+              What Drives <span className="text-brand-blue">Us</span>
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto">Our core principles shape every feature, every pixel, every model we deploy.</p>
           </motion.div>
@@ -214,11 +214,11 @@ const ValuesSection = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {VALUES.map((v, i) => (
               <motion.div key={i} variants={fadeUp} custom={i + 1}
-                className="group relative rounded-2xl border border-white/5 bg-white/[0.02] p-8 hover:border-violet-500/20 transition-all duration-500 overflow-hidden"
+                className="group relative rounded-lg border border-white/5 bg-white/[0.02] p-8 hover:border-brand-blue/20 transition-all duration-500 overflow-hidden"
               >
-                <div className="absolute top-0 right-0 w-40 h-40 bg-violet-600/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute top-0 right-0 w-40 h-40 bg-brand-blue/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative z-10">
-                  <div className="w-12 h-12 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400 mb-5">
+                  <div className="w-12 h-12 rounded-xl bg-brand-blue/10 border border-brand-blue/20 flex items-center justify-center text-brand-blue mb-5">
                     {v.icon}
                   </div>
                   <h3 className="text-lg font-bold mb-2">{v.title}</h3>
@@ -246,7 +246,7 @@ const TechSection = () => {
         <motion.div initial="hidden" animate={isInView ? "visible" : "hidden"} variants={staggerContainer}>
           <motion.div variants={fadeUp} custom={0} className="text-center mb-12">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
-              Built With <span className="text-cyan-400">Modern Tech</span>
+              Built With <span className="text-brand-blue">Modern Tech</span>
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto">Enterprise-grade infrastructure powering creative AI at scale.</p>
           </motion.div>
@@ -257,7 +257,7 @@ const TechSection = () => {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
                 transition={{ delay: 0.05 * i, duration: 0.4 }}
-                className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-white/[0.03] border border-white/5 text-gray-400 hover:border-cyan-500/30 hover:text-cyan-400 hover:bg-cyan-500/5 transition-all cursor-default"
+                className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-white/[0.03] border border-white/5 text-gray-400 hover:border-brand-blue/30 hover:text-brand-blue hover:bg-brand-blue/5 transition-all cursor-default"
               >
                 {tech}
               </motion.span>
@@ -282,26 +282,26 @@ const CTASection = () => {
         initial="hidden" animate={isInView ? "visible" : "hidden"} variants={staggerContainer}
         className="max-w-5xl mx-auto relative"
       >
-        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-violet-950/80 via-slate-900/80 to-blue-950/80 backdrop-blur-xl p-12 md:p-20 text-center">
+        <div className="relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-amber-950/80 via-slate-900/80 to-yellow-950/80 backdrop-blur-xl p-12 md:p-20 text-center">
           {/* Decorative */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-gradient-to-b from-violet-500/20 to-transparent blur-3xl pointer-events-none" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-gradient-to-b from-brand-blue/20 to-transparent blur-3xl pointer-events-none" />
 
           <motion.div variants={fadeUp} custom={0} className="relative z-10">
             <h2 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               Ready to
-              <span className="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent"> Create?</span>
+              <span className="atlas-text-gradient"> Create?</span>
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto mb-10 text-lg">
               Join thousands of creators already using Skyverses to produce professional content at the speed of thought.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/apps"
-                className="group bg-white text-black px-10 py-4 rounded-2xl font-bold text-sm flex items-center gap-3 hover:scale-105 transition-all shadow-xl shadow-white/10"
+                className="group bg-white text-black px-10 py-4 rounded-lg font-bold text-sm flex items-center gap-3 hover:scale-105 transition-all shadow-xl shadow-white/10"
               >
                 Start Creating <Rocket size={18} className="group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link to="/credits"
-                className="px-10 py-4 rounded-2xl font-bold text-sm border border-white/20 hover:bg-white/10 transition-all flex items-center gap-3"
+                className="px-10 py-4 rounded-lg font-bold text-sm border border-white/20 hover:bg-white/10 transition-all flex items-center gap-3"
               >
                 View Pricing <ArrowRight size={16} />
               </Link>

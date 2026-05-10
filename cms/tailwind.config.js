@@ -17,7 +17,7 @@ export default {
     extend: {
       colors: {
         brand: {
-          blue: '#0090ff',
+          blue: '#C9A84C',
         },
       },
       fontFamily: {

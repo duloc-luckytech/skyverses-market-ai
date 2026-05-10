@@ -160,7 +160,7 @@ export const ExplorerTab: React.FC = () => {
                           ) : (
                             <button 
                               onClick={() => handleSyncLocal(item)}
-                              className="bg-brand-blue text-white px-10 py-4 rounded-xl text-xs font-black uppercase tracking-widest shadow-[0_15px_40px_rgba(0,144,255,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center gap-3"
+                              className="bg-brand-blue text-white px-10 py-4 rounded-xl text-xs font-black uppercase tracking-widest shadow-[0_15px_40px_rgba(201,168,76,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center gap-3"
                             >
                                <CloudUpload size={18} /> Sync to Cloud
                             </button>

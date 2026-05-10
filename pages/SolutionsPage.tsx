@@ -41,7 +41,7 @@ const SOLUTIONS: Solution[] = [
     desc: 'Text or image → cinematic video. Multiple engines: VEO3, WAN, Gommo.',
     icon: <Video size={22} />,
     category: 'video',
-    gradient: 'from-violet-500 to-purple-600',
+    gradient: 'from-brand-blue to-amber-600',
     route: '/product/ai-video-generator',
     features: ['Text-to-Video', 'Image-to-Video', 'Multi-engine'],
     badge: '🔥 Hot',
@@ -51,7 +51,7 @@ const SOLUTIONS: Solution[] = [
     desc: 'Bring static images to life with natural motion and physics.',
     icon: <MonitorPlay size={22} />,
     category: 'video',
-    gradient: 'from-blue-500 to-indigo-600',
+    gradient: 'from-amber-500 to-brand-blue',
     route: '/product/video-animate-ai',
     features: ['Image animation', 'Motion transfer', 'Character sync'],
   },
@@ -79,7 +79,7 @@ const SOLUTIONS: Solution[] = [
     desc: 'Create any image from text. Multiple styles, resolutions, and models.',
     icon: <ImageIcon size={22} />,
     category: 'image',
-    gradient: 'from-cyan-500 to-blue-500',
+    gradient: 'from-brand-blue to-amber-500',
     route: '/product/ai-image-generator',
     features: ['Text-to-Image', 'Multi-model', 'Style control'],
     badge: '⭐ Core',
@@ -107,7 +107,7 @@ const SOLUTIONS: Solution[] = [
     desc: 'Enhance and upscale images to 4K-8K with AI super-resolution.',
     icon: <TrendingUp size={22} />,
     category: 'image',
-    gradient: 'from-indigo-500 to-violet-500',
+    gradient: 'from-brand-blue to-yellow-600',
     route: '/product/image-upscale-ai',
     features: ['Super resolution', '4K-8K export', 'Detail restoration'],
   },
@@ -135,7 +135,7 @@ const SOLUTIONS: Solution[] = [
     desc: 'Create original music from text. Any genre, any mood.',
     icon: <Music size={22} />,
     category: 'audio',
-    gradient: 'from-fuchsia-500 to-purple-600',
+    gradient: 'from-brand-blue to-amber-700',
     route: '/product/ai-music-generator',
     features: ['Text-to-Music', 'Multi-genre', 'Custom length'],
     badge: '🎵 Popular',
@@ -154,7 +154,7 @@ const SOLUTIONS: Solution[] = [
     desc: 'Natural-sounding speech from text. Multiple voices and languages.',
     icon: <Volume2 size={22} />,
     category: 'audio',
-    gradient: 'from-teal-500 to-cyan-600',
+    gradient: 'from-yellow-600 to-brand-blue',
     route: '/product/text-to-speech',
     features: ['Natural voice', '100+ languages', 'SSML support'],
   },
@@ -173,7 +173,7 @@ const SOLUTIONS: Solution[] = [
     desc: 'Generate manga/comic pages with consistent characters.',
     icon: <Gamepad2 size={22} />,
     category: 'creative',
-    gradient: 'from-violet-500 to-indigo-600',
+    gradient: 'from-amber-600 to-brand-blue',
     route: '/product/banana-pro-comic-engine',
     features: ['Panel layout', 'Character lock', 'Style transfer'],
   },
@@ -221,7 +221,7 @@ const SolutionsPage = () => {
       {/* ── HERO ── */}
       <section ref={heroRef} className="relative py-28 px-6 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-blue-600/8 rounded-full blur-[120px]" />
+          <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-brand-blue/[0.08] rounded-full blur-[120px]" />
         </div>
 
         <motion.div
@@ -278,7 +278,7 @@ const SolutionsPage = () => {
                 transition={{ duration: 0.35 }}
               >
                 <Link to={sol.route}
-                  className="group block relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] p-7 hover:border-white/15 transition-all duration-500 h-full"
+                  className="group block relative overflow-hidden rounded-lg border border-white/5 bg-white/[0.02] p-7 hover:border-white/15 transition-all duration-500 h-full"
                 >
                   {/* Glow */}
                   <div className={`absolute top-0 right-0 w-40 h-40 bg-gradient-to-br ${sol.gradient} opacity-0 group-hover:opacity-10 rounded-full blur-3xl transition-opacity duration-700`} />
@@ -306,7 +306,7 @@ const SolutionsPage = () => {
                     ))}
                   </div>
 
-                  <span className="text-violet-400 text-xs font-bold uppercase tracking-widest flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-brand-blue text-xs font-bold uppercase tracking-widest flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                     Launch <ChevronRight size={13} />
                   </span>
                 </Link>
@@ -319,17 +319,17 @@ const SolutionsPage = () => {
       {/* ── BOTTOM CTA ── */}
       <section className="py-24 px-6">
         <div className="max-w-4xl mx-auto">
-          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-blue-950/80 via-slate-900/80 to-violet-950/80 backdrop-blur-xl p-12 md:p-16 text-center">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[150px] bg-gradient-to-b from-blue-500/20 to-transparent blur-3xl pointer-events-none" />
+          <div className="relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-amber-950/80 via-slate-900/80 to-yellow-950/80 backdrop-blur-xl p-12 md:p-16 text-center">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[150px] bg-gradient-to-b from-brand-blue/20 to-transparent blur-3xl pointer-events-none" />
             <div className="relative z-10">
               <h2 className="text-3xl md:text-5xl font-bold mb-5">
-                Start with <span className="text-violet-400">Free Credits</span>
+                Start with <span className="text-brand-blue">Free Credits</span>
               </h2>
               <p className="text-gray-400 max-w-lg mx-auto mb-8">
                 No subscription needed. Buy credits and use any tool — pay only for what you create.
               </p>
               <Link to="/credits"
-                className="inline-flex items-center gap-3 bg-white text-black px-10 py-4 rounded-2xl font-bold text-sm hover:scale-105 transition-all shadow-xl"
+                className="inline-flex items-center gap-3 bg-white text-black px-10 py-4 rounded-lg font-bold text-sm hover:scale-105 transition-all shadow-xl"
               >
                 Get Credits <Zap size={18} />
               </Link>

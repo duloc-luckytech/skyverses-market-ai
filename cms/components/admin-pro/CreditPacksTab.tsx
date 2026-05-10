@@ -162,9 +162,9 @@ export const CreditPacksTab: React.FC = () => {
             const total = p.totalCredits || (p.credits + Math.floor(p.credits * (p.bonusPercent || 0) / 100) + (p.bonusCredits || 0));
             return (
               <div key={p._id} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all ${p.active ? 'bg-white dark:bg-white/[0.03] border-black/[0.04] dark:border-white/[0.06]' : 'bg-slate-50 dark:bg-white/[0.01] border-dashed border-slate-200 dark:border-white/5 opacity-50'}`}>
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: p.theme?.accentColor || '#0090ff' }} />
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: p.theme?.accentColor || '#C9A84C' }} />
                 <span className="text-[10px] font-bold text-slate-700 dark:text-gray-300">{p.name}</span>
-                <span className="text-[10px] font-black" style={{ color: p.theme?.accentColor || '#0090ff' }}>${p.price}</span>
+                <span className="text-[10px] font-black" style={{ color: p.theme?.accentColor || '#C9A84C' }}>${p.price}</span>
                 <span className="text-[9px] text-slate-400">/ {total.toLocaleString()} cr</span>
               </div>
             );
@@ -184,7 +184,7 @@ export const CreditPacksTab: React.FC = () => {
             {packs.map(pack => {
               const total = pack.totalCredits || (pack.credits + Math.floor(pack.credits * (pack.bonusPercent || 0) / 100) + (pack.bonusCredits || 0));
               const bonusFromPercent = Math.floor(pack.credits * (pack.bonusPercent || 0) / 100);
-              const accentColor = pack.theme?.accentColor || '#0090ff';
+              const accentColor = pack.theme?.accentColor || '#C9A84C';
 
               return (
                 <div

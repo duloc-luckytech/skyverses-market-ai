@@ -28,7 +28,7 @@ const ROLE_CONFIG: Record<string, { label: string; color: string; bg: string }> 
 
 const PLAN_CONFIG: Record<string, { color: string; bg: string }> = {
   enterprise: { color: '#a855f7', bg: '#a855f715' },
-  studio: { color: '#0090ff', bg: '#0090ff15' },
+  studio: { color: '#C9A84C', bg: '#C9A84C15' },
   creator: { color: '#10b981', bg: '#10b98115' },
   starter: { color: '#E5C767', bg: '#E5C76715' },
   basic: { color: '#64748b', bg: '#64748b15' },
@@ -45,7 +45,7 @@ const TX_TYPE_CONFIG: Record<string, { label: string; color: string; bg: string 
   REFUND: { label: 'Hoàn', color: '#E5C767', bg: '#E5C76712' },
   ADMIN_ADJUST: { label: 'Admin', color: '#D4B85A', bg: '#D4B85A12' },
   BONUS: { label: 'Bonus', color: '#D4B85A', bg: '#D4B85A12' },
-  WELCOME: { label: 'Welcome', color: '#0090ff', bg: '#0090ff12' },
+  WELCOME: { label: 'Welcome', color: '#C9A84C', bg: '#C9A84C12' },
   DAILY: { label: 'Daily', color: '#06b6d4', bg: '#06b6d412' },
   REFERRAL: { label: 'Ref', color: '#ec4899', bg: '#ec489912' },
 };

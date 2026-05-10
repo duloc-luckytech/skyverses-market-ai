@@ -71,7 +71,7 @@ const SectionHeader: React.FC<{ icon: React.ReactNode; title: string; subtitle?:
 );
 
 // ─── PIE CHART COLORS ───
-const PIE_COLORS = ['#0090ff', '#E5C767', '#a855f7', '#10b981', '#f43f5e', '#06b6d4', '#eab308'];
+const PIE_COLORS = ['#C9A84C', '#E5C767', '#a855f7', '#10b981', '#f43f5e', '#06b6d4', '#eab308'];
 
 // ─── MOCK REVENUE DATA (7 ngày gần nhất) ───
 const generateRevenueData = () => {
@@ -250,8 +250,8 @@ export const DashboardTab: React.FC = () => {
               <AreaChart data={revenueData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
                 <defs>
                   <linearGradient id="gRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#0090ff" stopOpacity={0.25} />
-                    <stop offset="95%" stopColor="#0090ff" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#C9A84C" stopOpacity={0.25} />
+                    <stop offset="95%" stopColor="#C9A84C" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="gCredits" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#a855f7" stopOpacity={0.2} />
@@ -261,11 +261,11 @@ export const DashboardTab: React.FC = () => {
                 <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} dy={8} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} tickFormatter={(v) => `$${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`} />
                 <Tooltip
-                  cursor={{ stroke: 'rgba(0,144,255,0.15)', strokeWidth: 1 }}
+                  cursor={{ stroke: 'rgba(201,168,76,0.15)', strokeWidth: 1 }}
                   contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold' }}
                   formatter={(value: any, name: any) => [name === 'revenue' ? `$${value.toLocaleString()}` : `${value.toLocaleString()} CR`, name === 'revenue' ? 'Doanh thu' : 'Credits']}
                 />
-                <Area type="monotone" dataKey="revenue" stroke="#0090ff" strokeWidth={2.5} fillOpacity={1} fill="url(#gRevenue)" />
+                <Area type="monotone" dataKey="revenue" stroke="#C9A84C" strokeWidth={2.5} fillOpacity={1} fill="url(#gRevenue)" />
                 <Area type="monotone" dataKey="credits" stroke="#a855f7" strokeWidth={1.5} fillOpacity={1} fill="url(#gCredits)" />
               </AreaChart>
             </ResponsiveContainer>
@@ -484,7 +484,7 @@ export const DashboardTab: React.FC = () => {
         </div>
 
         {/* SYSTEM STATUS */}
-        <div className="bg-[#050505] dark:bg-[#0a0a0c] rounded-2xl border border-black/[0.04] dark:border-white/[0.04] shadow-[0_0_30px_rgba(0,144,255,0.02)] relative overflow-hidden">
+        <div className="bg-[#050505] dark:bg-[#0a0a0c] rounded-2xl border border-black/[0.04] dark:border-white/[0.04] shadow-[0_0_30px_rgba(201,168,76,0.02)] relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-brand-blue/10 via-transparent to-transparent opacity-40" />
           <div className="p-5 border-b border-white/5 relative z-10">
             <SectionHeader icon={<Cpu size={15} className="text-brand-blue" />} title="System Status" subtitle="Backend API Health" />

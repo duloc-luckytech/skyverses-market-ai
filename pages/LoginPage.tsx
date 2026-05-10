@@ -39,12 +39,12 @@ const ONBOARDING_STEPS = {
     desc: 'Chúng tôi sẽ cá nhân hóa trải nghiệm dành riêng cho bạn.',
     field: 'role',
     options: [
-      { id: 'creative_director', label: 'Creative Director', sublabel: 'Thương hiệu & Hình ảnh', icon: <Palette />, color: 'from-violet-500/20 to-purple-500/10', border: 'violet' },
+      { id: 'creative_director', label: 'Creative Director', sublabel: 'Thương hiệu & Hình ảnh', icon: <Palette />, color: 'from-brand-blue/20 to-amber-500/10', border: 'amber' },
       { id: 'growth_marketer', label: 'Growth Marketer', sublabel: 'Quảng cáo & Nội dung', icon: <TrendingUp />, color: 'from-emerald-500/20 to-green-500/10', border: 'emerald' },
-      { id: 'ai_architect', label: 'AI Architect', sublabel: 'Prompt & Pipelines', icon: <Cpu />, color: 'from-cyan-500/20 to-blue-500/10', border: 'cyan' },
+      { id: 'ai_architect', label: 'AI Architect', sublabel: 'Prompt & Pipelines', icon: <Cpu />, color: 'from-amber-500/20 to-brand-blue/10', border: 'amber' },
       { id: 'studio_founder', label: 'Studio Founder', sublabel: 'Game, Design & Media', icon: <Building />, color: 'from-amber-500/20 to-orange-500/10', border: 'amber' },
       { id: 'freelancer', label: 'Freelancer / Cá nhân', sublabel: 'Sáng tạo tự do', icon: <User />, color: 'from-pink-500/20 to-rose-500/10', border: 'pink' },
-      { id: 'student', label: 'Sinh viên / Học viên', sublabel: 'Nghiên cứu & Thực hành', icon: <Rocket />, color: 'from-sky-500/20 to-indigo-500/10', border: 'sky' },
+      { id: 'student', label: 'Sinh viên / Học viên', sublabel: 'Nghiên cứu & Thực hành', icon: <Rocket />, color: 'from-yellow-500/20 to-brand-blue/10', border: 'amber' },
     ]
   },
   2: {
@@ -52,12 +52,12 @@ const ONBOARDING_STEPS = {
     desc: 'Chọn tối đa 2 mục tiêu chính để Skyverses tối ưu cho bạn.',
     field: 'goals',
     options: [
-      { id: 'ai_image', label: 'Hình ảnh AI', sublabel: 'Key visual, concept art', icon: <ImageIcon />, color: 'from-blue-500/20 to-indigo-500/10', border: 'blue' },
-      { id: 'ai_video', label: 'Video & Motion', sublabel: 'Shorts, cinematic, ads', icon: <Clapperboard />, color: 'from-purple-500/20 to-violet-500/10', border: 'purple' },
+      { id: 'ai_image', label: 'Hình ảnh AI', sublabel: 'Key visual, concept art', icon: <ImageIcon />, color: 'from-brand-blue/20 to-yellow-500/10', border: 'amber' },
+      { id: 'ai_video', label: 'Video & Motion', sublabel: 'Shorts, cinematic, ads', icon: <Clapperboard />, color: 'from-amber-600/20 to-brand-blue/10', border: 'amber' },
       { id: 'game_assets', label: 'Game & 3D', sublabel: 'Characters, UI, VFX', icon: <Gamepad />, color: 'from-emerald-500/20 to-teal-500/10', border: 'emerald' },
       { id: 'voice_music', label: 'Voice & Music', sublabel: 'TTS, nhạc, lồng tiếng', icon: <Mic />, color: 'from-amber-500/20 to-yellow-500/10', border: 'amber' },
       { id: 'product_photo', label: 'Ảnh sản phẩm', sublabel: 'E-commerce, poster', icon: <Camera />, color: 'from-rose-500/20 to-pink-500/10', border: 'rose' },
-      { id: 'full_pipeline', label: 'Full Production', sublabel: 'Ý tưởng → sản phẩm', icon: <Hammer />, color: 'from-cyan-500/20 to-sky-500/10', border: 'cyan' },
+      { id: 'full_pipeline', label: 'Full Production', sublabel: 'Ý tưởng → sản phẩm', icon: <Hammer />, color: 'from-amber-500/20 to-brand-blue/10', border: 'amber' },
     ]
   },
   3: {
@@ -66,8 +66,8 @@ const ONBOARDING_STEPS = {
     field: 'experience',
     options: [
       { id: 'beginner', label: 'Mới bắt đầu', sublabel: 'Muốn trải nghiệm AI lần đầu', icon: <Leaf />, color: 'from-emerald-500/20 to-green-500/10', border: 'emerald' },
-      { id: 'intermediate', label: 'Đã có kinh nghiệm', sublabel: 'Từng dùng Midjourney, DALL·E...', icon: <Brain />, color: 'from-blue-500/20 to-indigo-500/10', border: 'blue' },
-      { id: 'advanced', label: 'Chuyên nghiệp', sublabel: 'Workflow, batch, API', icon: <Dna />, color: 'from-violet-500/20 to-purple-500/10', border: 'violet' },
+      { id: 'intermediate', label: 'Đã có kinh nghiệm', sublabel: 'Từng dùng Midjourney, DALL·E...', icon: <Brain />, color: 'from-brand-blue/20 to-yellow-500/10', border: 'amber' },
+      { id: 'advanced', label: 'Chuyên nghiệp', sublabel: 'Workflow, batch, API', icon: <Dna />, color: 'from-brand-blue/20 to-amber-500/10', border: 'amber' },
       { id: 'expert', label: 'Chuyên gia / Studio', sublabel: 'Sản xuất công nghiệp', icon: <Star />, color: 'from-amber-500/20 to-orange-500/10', border: 'amber' },
     ]
   }
@@ -181,7 +181,7 @@ const LoginPage = () => {
         whileHover={{ scale: 1.02, y: -2 }}
         whileTap={{ scale: 0.98 }}
         onClick={() => field === 'goals' ? toggleGoal(id) : setSurveyData({...surveyData, [field]: id})}
-        className={`relative p-4 rounded-2xl text-left flex items-center gap-4 transition-all duration-300 group overflow-hidden ${
+        className={`relative p-4 rounded-lg text-left flex items-center gap-4 transition-all duration-300 group overflow-hidden ${
           isSelected
             ? 'ring-2 ring-brand-blue shadow-lg shadow-brand-blue/10'
             : 'ring-1 ring-white/[0.06] hover:ring-white/[0.12]'
@@ -398,7 +398,7 @@ const LoginPage = () => {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.3 }}
-                    className="relative overflow-hidden rounded-2xl p-4"
+                    className="relative overflow-hidden rounded-lg p-4"
                     style={{
                       background: 'linear-gradient(135deg, rgba(251,191,36,0.06), rgba(212,160,23,0.04))',
                       border: '1px solid rgba(251,191,36,0.15)',
@@ -438,7 +438,7 @@ const LoginPage = () => {
                     <button
                       onClick={handleGoogleLogin}
                       disabled={isGoogleLoading}
-                      className="group w-full flex items-center justify-center gap-3 py-4 px-4 rounded-2xl transition-all duration-300 disabled:opacity-70"
+                      className="group w-full flex items-center justify-center gap-3 py-4 px-4 rounded-lg transition-all duration-300 disabled:opacity-70"
                       style={{
                         background: 'linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))',
                         border: '1px solid rgba(255,255,255,0.1)',
@@ -567,7 +567,7 @@ const LoginPage = () => {
                     whileTap={{ scale: 0.99 }}
                     disabled={isSubmitting || isNextDisabled()}
                     onClick={handleOnboardingNext}
-                    className="w-full py-3.5 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-20"
+                    className="w-full py-3.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-20"
                     style={{
                       background: isNextDisabled()
                         ? 'rgba(255,255,255,0.05)'
@@ -748,7 +748,7 @@ const LoginPage = () => {
               <div className="relative">
                 <img src={logoUrl} alt="Skyverses" className="w-14 h-14 object-contain relative z-10" />
                 <motion.div
-                  className="absolute -inset-4 rounded-2xl"
+                  className="absolute -inset-4 rounded-lg"
                   style={{
                     border: '2px solid rgba(212,160,23,0.15)',
                     animation: 'pulseRing 2s ease-in-out infinite',
