@@ -207,7 +207,7 @@ const PromptDetailPage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="relative w-full rounded-2xl overflow-hidden aspect-video bg-[#0a0a14]"
+              className="relative w-full rounded-lg overflow-hidden aspect-video bg-[#0a0a14]"
             >
               {promptSet.coverImage ? (
                 <img
@@ -488,7 +488,7 @@ const PromptDetailPage: React.FC = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className="rounded-2xl border border-white/[0.06] bg-[#0a0a14]/80 backdrop-blur-sm overflow-hidden"
+                className="rounded-lg border border-white/[0.06] bg-[#0a0a14]/80 backdrop-blur-sm overflow-hidden"
               >
                 {/* Header */}
                 <div className="p-5 border-b border-white/[0.04]">
@@ -567,7 +567,7 @@ const PromptDetailPage: React.FC = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.18 }}
-                className="rounded-2xl border border-white/[0.06] bg-[#0a0a14]/80 backdrop-blur-sm p-5 space-y-4"
+                className="rounded-lg border border-white/[0.06] bg-[#0a0a14]/80 backdrop-blur-sm p-5 space-y-4"
               >
                 <h4 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/25">
                   Creator
@@ -608,7 +608,7 @@ const PromptDetailPage: React.FC = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.26 }}
-                className="rounded-2xl border border-white/[0.06] bg-[#0a0a14]/80 backdrop-blur-sm p-5"
+                className="rounded-lg border border-white/[0.06] bg-[#0a0a14]/80 backdrop-blur-sm p-5"
               >
                 <h4 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/25 mb-2">
                   Details
@@ -655,7 +655,7 @@ const PromptDetailPage: React.FC = () => {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: 0.32 }}
-                  className="rounded-2xl border border-white/[0.06] bg-[#0a0a14]/80 backdrop-blur-sm p-5"
+                  className="rounded-lg border border-white/[0.06] bg-[#0a0a14]/80 backdrop-blur-sm p-5"
                 >
                   <h4 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/25 mb-3">
                     {t('prompt_market.compatible_models') || 'Compatible Models'}

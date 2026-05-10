@@ -74,7 +74,7 @@ export const PromptPurchaseModal: React.FC<Props> = ({
 
         {/* Modal card */}
         <motion.div
-          className="relative w-full max-w-md bg-[#0a0a0f] border border-white/10 rounded-2xl p-6 shadow-2xl"
+          className="relative w-full max-w-md bg-[#0a0a0f] border border-white/10 rounded-lg p-6 shadow-2xl"
           initial={{ opacity: 0, scale: 0.95, y: 16 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 16 }}
@@ -218,7 +218,7 @@ export const PromptPurchaseModal: React.FC<Props> = ({
             <button
               onClick={handleConfirm}
               disabled={!canAfford || loading}
-              className="flex-1 py-2.5 rounded-xl bg-[#7036F0] hover:bg-[#7036F0]/80 text-white text-sm font-semibold font-sans transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 py-2.5 rounded-xl bg-[#C9A84C] hover:bg-[#C9A84C]/80 text-white text-sm font-semibold font-sans transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>
