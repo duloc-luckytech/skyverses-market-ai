@@ -162,7 +162,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(userData);
       setCredits(res.user.creditBalance || 0);
       setFreeImageRemaining(res.user.freeImageRemaining || 0);
-      setSkyTokenBalance((res.user as Record<string, unknown>).skyTokenBalance as number || 0);
+      setSkyTokenBalance(res.user.skyTokenBalance || 0);
       localStorage.setItem('skyverses_auth', JSON.stringify(userData));
     } else if (res.message === 'Unauthorized' || !res.success) {
       logout();

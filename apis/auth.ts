@@ -9,6 +9,7 @@ export interface AuthUser {
   inviteCode: string;
   inviteFrom?: string;
   creditBalance: number;
+  skyTokenBalance?: number;
   claimWelcomeCredit: boolean;
   freeImageRemaining?: number;
   canDailyClaim?: boolean; // New field for daily rewards
