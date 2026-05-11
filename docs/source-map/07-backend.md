@@ -62,7 +62,7 @@ skyverses-backend/
 
 ## Models — `src/models/` (41 Mongoose schemas)
 
-`AIModel`, `AffiliateTransaction`, `AudioGeneration`, `AudioVoice`, `BankTransaction`, `BlogPost`, `Category`, `CreditPackage`, `CreditTransaction`, `DeployLog`, `EditImageJob`, `ExplorerMedia`, `FxflowOwner`, `GoogleToken`, `ImageBase64`, `ImageJob`, `ImageOwner`, `MarketItem`, `MetaPromptTemplate`, `ModelPricingMatrix`, `Plan`, `PlanPurchase`, `ProductSubmission`, `PromoBanner`, `PromptGenerationJob`, `PromptPurchase`, `PromptReview`, `PromptSet`, `PromptWishlist`, `ProviderToken`, `RunningHubTemplate`, `SellerFollower`, `ServerStatus`, `SkyTokenPackage`, `SkyTokenTransaction`, `SkyTokenWithdrawal`, `SystemSetting`, `User`, `VideoConcatJob`, `VideoJob`, `VideoJobV2`.
+`AIModel`, `AffiliateTransaction`, `AudioGeneration`, `AudioVoice`, `BankTransaction`, `BlogPost`, `Category`, `CreditPackage`, `CreditTransaction`, `DeployLog`, `EditImageJob`, `ExplorerMedia`, `FxflowOwner`, `GoogleToken`, `ImageBase64`, `ImageJob`, `ImageOwner`, `MarketItem`, `MetaPromptTemplate`, `ModelPricingMatrix`, `Plan`, `PlanPurchase`, `ProductSubmission`, `PromoBanner`, `PromptGenerationJob`, `PromptPurchase`, `PromptReview`, `PromptSet` (examples include promptTitle/style/input/output/media), `PromptWishlist`, `ProviderToken`, `RunningHubTemplate`, `SellerFollower`, `ServerStatus`, `SkyTokenPackage`, `SkyTokenTransaction`, `SkyTokenWithdrawal`, `SystemSetting`, `User`, `VideoConcatJob`, `VideoJob`, `VideoJobV2`.
 
 Each is `<Name>.model.ts` (or `<Name>.ts` for older).
 
@@ -101,7 +101,7 @@ Worker pool cho image / video / music. Mỗi domain có:
 
 ## Scripts — `src/scripts/`
 
-`asynsDataMongo.ts`, `seed-ai-models.ts`, `seed-prompt-market.ts`, `seed-prompt-market-v2.ts`, `seed-prompt-market-v3.ts`, `seed-prompt-market-v4.ts` (40 showcase prompt sets with images+videos, exports clear/seed helpers), `seedAdmin.ts`, `seedCategories.ts`, `updatePricingX2.ts`.
+`asynsDataMongo.ts`, `seed-ai-models.ts`, `prompt-market-blueprint.ts` (blueprint builder for reusable complex prompt packs), `generate-prompt-market-assets.ts` (external asset generation + Cloudflare upload runner), `seed-prompt-market-v4.ts` (blueprint-driven showcase prompt sets with images+videos, exports clear/seed helpers), `seedAdmin.ts`, `seedCategories.ts`, `updatePricingX2.ts`.
 
 ## Common patterns
 

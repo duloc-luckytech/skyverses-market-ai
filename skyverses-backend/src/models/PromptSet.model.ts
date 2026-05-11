@@ -62,7 +62,9 @@ const PromptSetSchema = new Schema(
     examples: {
       type: [
         {
+          promptTitle: { type: String, default: "" },
           input: { type: String, default: "" },
+          style: { type: String, default: "" },
           output: { type: String, default: "" },
           image: { type: String, default: null },
           video: { type: String, default: null },
