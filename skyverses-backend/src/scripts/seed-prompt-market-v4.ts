@@ -348,6 +348,239 @@ export async function clearPromptMarketSeedData(
   return result;
 }
 
+const createSeedUserPayload = (u: (typeof SEED_USERS)[number]) => ({
+  email: u.email,
+  name: u.name,
+  firstName: u.name.split(" ")[0],
+  lastName: u.name.split(" ").slice(1).join(" "),
+  avatar: u.avatar,
+  specialty: u.specialty,
+  bio: u.bio,
+  verified: u.verified,
+  socialLinks: u.socialLinks || {},
+  type: "seed" as const,
+  role: "user" as const,
+  inviteCode: `SEED-${code()}`,
+  skyTokenBalance: rand(500, 5000),
+  creditBalance: rand(100, 1000),
+  experienceYears: rand(2, 10),
+});
+
+const createPromptSetPayload = (
+  p: (typeof PROMPTS)[number],
+  sellerId: mongoose.Types.ObjectId
+) => ({
+  sellerId,
+  slug: `${slugify(p.title.en)}-${code()}`,
+  title: { en: p.title.en, vi: p.title.vi, ko: "", ja: "" },
+  description: { en: p.description.en, vi: p.description.vi, ko: "", ja: "" },
+  category: p.category,
+  tags: p.tags,
+  coverImage: p.coverImage,
+  priceSKT: p.isFree ? 0 : p.priceSKT,
+  isFree: p.isFree || false,
+  featured: p.featured || false,
+  previewText: p.previewText,
+  prompts: p.prompts.map((pr) => ({
+    title: pr.title,
+    content: pr.content,
+    description: pr.description,
+    variables: pr.variables || [],
+  })),
+  status: "active",
+  isActive: true,
+  purchaseCount: rand(15, 800),
+  promptCount: p.prompts.length,
+  totalEarned: 0,
+  sortOrder: 0,
+  averageRating: 0,
+  reviewCount: 0,
+  viewCount: rand(200, 15000),
+  wishlistCount: rand(8, 200),
+  models: p.models,
+  examples: p.examples.map((ex, idx) => ({
+    promptTitle: ex.promptTitle || p.prompts[idx]?.title || p.title.en,
+    input: ex.input,
+    style: ex.style || [...p.models.slice(0, 3), ...p.tags.slice(0, 3)].join(" · "),
+    output: ex.output,
+    image: ex.image,
+    video: ex.video,
+  })),
+});
+
+const createPromptSetEngagement = async (
+  createdPromptSets: Array<{ _id: mongoose.Types.ObjectId; sellerId: mongoose.Types.ObjectId; isFree?: boolean; priceSKT: number; purchaseCount: number }>,
+  seedUsers: Array<{ _id: mongoose.Types.ObjectId }>
+) => {
+  let reviewCount = 0;
+  let wishlistCount = 0;
+
+  for (const ps of createdPromptSets) {
+    if (Math.random() <= 0.8) {
+      const numReviews = rand(4, 10);
+      const reviewers = seedUsers
+        .filter((u) => String(u._id) !== String(ps.sellerId))
+        .sort(() => Math.random() - 0.5)
+        .slice(0, numReviews);
+
+      const reviews = reviewers.map((reviewer) => {
+        const template = pick(REVIEW_TEMPLATES);
+        return {
+          buyerId: reviewer._id,
+          promptSetId: ps._id,
+          rating: template.rating,
+          comment: template.comment,
+        };
+      });
+
+      if (reviews.length) {
+        await PromptReview.insertMany(reviews);
+        reviewCount += reviews.length;
+
+        const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+        await PromptSet.updateOne(
+          { _id: ps._id },
+          { averageRating: Math.round(avg * 10) / 10, reviewCount: reviews.length }
+        );
+      }
+    }
+
+    const numWishlisters = rand(0, 6);
+    const wishlisters = seedUsers
+      .filter((u) => String(u._id) !== String(ps.sellerId))
+      .sort(() => Math.random() - 0.5)
+      .slice(0, numWishlisters);
+
+    if (wishlisters.length) {
+      await PromptWishlist.insertMany(
+        wishlisters.map((w) => ({ userId: w._id, promptSetId: ps._id }))
+      );
+      wishlistCount += wishlisters.length;
+    }
+
+    const doc = await PromptSet.findById(ps._id);
+    if (doc && !doc.isFree) {
+      doc.totalEarned = doc.purchaseCount * doc.priceSKT * 0.9;
+      await doc.save();
+    }
+  }
+
+  return { reviews: reviewCount, wishlists: wishlistCount };
+};
+
+export interface AppendPromptMarketSeedOptions {
+  dryRun?: boolean;
+  updateExisting?: boolean;
+}
+
+export async function appendPromptMarketSeedPrompts(
+  options: AppendPromptMarketSeedOptions = {}
+): Promise<{
+  dryRun: boolean;
+  usersCreated: number;
+  usersReused: number;
+  promptSetsCreated: number;
+  promptSetsSkipped: number;
+  promptSetsUpdated: number;
+  reviews: number;
+  wishlists: number;
+  covers: number;
+  examples: number;
+  videos: number;
+}> {
+  const dryRun = options.dryRun === true;
+  const updateExisting = options.updateExisting === true;
+  const promptTitles = PROMPTS.map((p) => p.title.en);
+  const existingPromptSets = await PromptSet.find({ "title.en": { $in: promptTitles } })
+    .select("_id title")
+    .lean();
+  const existingTitleSet = new Set(existingPromptSets.map((ps) => ps.title?.en).filter(Boolean));
+  const missingPrompts = PROMPTS.filter((p) => !existingTitleSet.has(p.title.en));
+
+  if (dryRun) {
+    return {
+      dryRun,
+      usersCreated: 0,
+      usersReused: await User.countDocuments({ email: { $in: SEED_USERS.map((u) => u.email) } }),
+      promptSetsCreated: missingPrompts.length,
+      promptSetsSkipped: PROMPTS.length - missingPrompts.length,
+      promptSetsUpdated: updateExisting ? PROMPTS.length - missingPrompts.length : 0,
+      reviews: 0,
+      wishlists: 0,
+      covers: new Set(missingPrompts.map((p) => p.coverImage).filter(Boolean)).size,
+      examples: missingPrompts.reduce((sum, p) => sum + p.examples.filter((ex) => ex.image).length, 0),
+      videos: missingPrompts.reduce((sum, p) => sum + p.examples.filter((ex) => ex.video).length, 0),
+    };
+  }
+
+  let usersCreated = 0;
+  let usersReused = 0;
+  const seedUsers = [];
+
+  for (const u of SEED_USERS) {
+    const existing = await User.findOne({ email: u.email });
+    if (existing) {
+      usersReused += 1;
+      seedUsers.push(existing);
+      continue;
+    }
+
+    const created = await User.create(createSeedUserPayload(u));
+    usersCreated += 1;
+    seedUsers.push(created);
+  }
+
+  let promptSetsUpdated = 0;
+  if (updateExisting) {
+    for (const p of PROMPTS.filter((prompt) => existingTitleSet.has(prompt.title.en))) {
+      const seller = seedUsers[p.sellerIdx];
+      const payload = createPromptSetPayload(p, seller._id);
+      await PromptSet.updateOne(
+        { "title.en": p.title.en },
+        {
+          $set: {
+            title: payload.title,
+            description: payload.description,
+            category: payload.category,
+            tags: payload.tags,
+            coverImage: payload.coverImage,
+            priceSKT: payload.priceSKT,
+            isFree: payload.isFree,
+            featured: payload.featured,
+            previewText: payload.previewText,
+            prompts: payload.prompts,
+            promptCount: payload.promptCount,
+            models: payload.models,
+            examples: payload.examples,
+          },
+        }
+      );
+      promptSetsUpdated += 1;
+    }
+  }
+
+  const promptSets = missingPrompts.map((p) => {
+    const seller = seedUsers[p.sellerIdx];
+    return createPromptSetPayload(p, seller._id);
+  });
+  const createdPromptSets = promptSets.length ? await PromptSet.insertMany(promptSets) : [];
+  const engagement = await createPromptSetEngagement(createdPromptSets, seedUsers);
+
+  return {
+    dryRun,
+    usersCreated,
+    usersReused,
+    promptSetsCreated: createdPromptSets.length,
+    promptSetsSkipped: PROMPTS.length - missingPrompts.length,
+    promptSetsUpdated,
+    reviews: engagement.reviews,
+    wishlists: engagement.wishlists,
+    covers: new Set(missingPrompts.map((p) => p.coverImage).filter(Boolean)).size,
+    examples: missingPrompts.reduce((sum, p) => sum + p.examples.filter((ex) => ex.image).length, 0),
+    videos: missingPrompts.reduce((sum, p) => sum + p.examples.filter((ex) => ex.video).length, 0),
+  };
+}
+
 /* ═══════════════════════════════════════════════════
  * MAIN SEED FUNCTION
  * ═══════════════════════════════════════════════════ */
@@ -366,123 +599,25 @@ export async function seedPromptMarket(): Promise<{
   console.log("Cleaned previous seed data (v3/v4 + any prior seed users)", cleared);
 
   // ── Create seed users ──
-  const createdUsers = await User.insertMany(
-    SEED_USERS.map((u) => ({
-      email: u.email,
-      name: u.name,
-      firstName: u.name.split(" ")[0],
-      lastName: u.name.split(" ").slice(1).join(" "),
-      avatar: u.avatar,
-      specialty: u.specialty,
-      bio: u.bio,
-      verified: u.verified,
-      socialLinks: u.socialLinks || {},
-      type: "seed" as const,
-      role: "user" as const,
-      inviteCode: `SEED-${code()}`,
-      skyTokenBalance: rand(500, 5000),
-      creditBalance: rand(100, 1000),
-      experienceYears: rand(2, 10),
-    }))
-  );
+  const createdUsers = await User.insertMany(SEED_USERS.map(createSeedUserPayload));
   console.log(`Created ${createdUsers.length} seed users`);
 
   // ── Create prompt sets ──
-  const promptSets = [];
-  for (const p of PROMPTS) {
+  const promptSets = PROMPTS.map((p) => {
     const seller = createdUsers[p.sellerIdx];
-    const s = slugify(p.title.en) + "-" + code();
-    promptSets.push({
-      sellerId: seller._id,
-      slug: s,
-      title: { en: p.title.en, vi: p.title.vi, ko: "", ja: "" },
-      description: { en: p.description.en, vi: p.description.vi, ko: "", ja: "" },
-      category: p.category,
-      tags: p.tags,
-      coverImage: p.coverImage,
-      priceSKT: p.isFree ? 0 : p.priceSKT,
-      isFree: p.isFree || false,
-      featured: p.featured || false,
-      previewText: p.previewText,
-      prompts: p.prompts.map((pr) => ({
-        title: pr.title,
-        content: pr.content,
-        description: pr.description,
-        variables: pr.variables || [],
-      })),
-      status: "active",
-      isActive: true,
-      purchaseCount: rand(15, 800),
-      promptCount: p.prompts.length,
-      totalEarned: 0,
-      sortOrder: 0,
-      averageRating: 0,
-      reviewCount: 0,
-      viewCount: rand(200, 15000),
-      wishlistCount: rand(8, 200),
-      models: p.models,
-      examples: p.examples.map((ex, idx) => ({
-        promptTitle: ex.promptTitle || p.prompts[idx]?.title || p.title.en,
-        input: ex.input,
-        style: ex.style || [...p.models.slice(0, 3), ...p.tags.slice(0, 3)].join(" · "),
-        output: ex.output,
-        image: ex.image,
-        video: ex.video,
-      })),
-    });
-  }
+    return createPromptSetPayload(p, seller._id);
+  });
 
   const createdPromptSets = await PromptSet.insertMany(promptSets);
   console.log(`Created ${createdPromptSets.length} prompt sets`);
 
   // ── Create reviews ──
-  let reviewCount = 0;
-  for (const ps of createdPromptSets) {
-    if (Math.random() > 0.8) continue; // 80% chance of having reviews
-
-    const numReviews = rand(4, 10);
-    const reviewers = createdUsers
-      .filter((u) => String(u._id) !== String(ps.sellerId))
-      .sort(() => Math.random() - 0.5)
-      .slice(0, numReviews);
-
-    const reviews = reviewers.map((reviewer) => {
-      const template = pick(REVIEW_TEMPLATES);
-      return {
-        buyerId: reviewer._id,
-        promptSetId: ps._id,
-        rating: template.rating,
-        comment: template.comment,
-      };
-    });
-
-    await PromptReview.insertMany(reviews);
-    reviewCount += reviews.length;
-
-    const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
-    await PromptSet.updateOne(
-      { _id: ps._id },
-      { averageRating: Math.round(avg * 10) / 10, reviewCount: reviews.length }
-    );
-  }
+  const engagement = await createPromptSetEngagement(createdPromptSets, createdUsers);
+  const reviewCount = engagement.reviews;
   console.log(`Created ${reviewCount} reviews`);
 
   // ── Create wishlists ──
-  let wishlistCount = 0;
-  for (const ps of createdPromptSets) {
-    const numWishlisters = rand(0, 6);
-    const wishlisters = createdUsers
-      .filter((u) => String(u._id) !== String(ps.sellerId))
-      .sort(() => Math.random() - 0.5)
-      .slice(0, numWishlisters);
-
-    if (wishlisters.length) {
-      await PromptWishlist.insertMany(
-        wishlisters.map((w) => ({ userId: w._id, promptSetId: ps._id }))
-      );
-      wishlistCount += wishlisters.length;
-    }
-  }
+  const wishlistCount = engagement.wishlists;
   console.log(`Created ${wishlistCount} wishlist entries`);
 
   // ── Create seller followers ──
@@ -502,15 +637,6 @@ export async function seedPromptMarket(): Promise<{
     }
   }
   console.log(`Created ${followerCount} follower relationships`);
-
-  // ── Update totalEarned ──
-  for (const ps of createdPromptSets) {
-    const doc = await PromptSet.findById(ps._id);
-    if (doc && !doc.isFree) {
-      doc.totalEarned = doc.purchaseCount * doc.priceSKT * 0.9;
-      await doc.save();
-    }
-  }
 
   // ── Summary ──
   const usedCoverCount = new Set(PROMPTS.map((p) => p.coverImage).filter(Boolean)).size;

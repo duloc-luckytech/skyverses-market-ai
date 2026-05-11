@@ -8,6 +8,7 @@ import SkyTokenTransaction from "../models/SkyTokenTransaction.model";
 import User from "../models/UserModel";
 import { authenticate } from "./auth";
 import {
+  appendPromptMarketSeedPrompts,
   clearPromptMarketSeedData,
   seedPromptMarket,
 } from "../scripts/seed-prompt-market-v4";
@@ -962,6 +963,32 @@ router.post("/admin/seed", authenticate, async (req: any, res) => {
   } catch (err: any) {
     console.error("Seed failed:", err);
     res.status(500).json({ message: "Seed failed", error: err.message });
+  }
+});
+
+/* =====================================================
+   ADMIN: APPEND PROMPT MARKET SEED DATA
+   POST /prompt-market/admin/append-seed
+   - Does not clear/delete existing prompt market data
+   - Skips prompt sets that already exist by title.en
+   Body:
+   - dryRun?: boolean
+   - updateExisting?: boolean (default false)
+===================================================== */
+router.post("/admin/append-seed", authenticate, async (req: any, res) => {
+  if (req.user.role !== "admin") return res.status(403).json({ message: "FORBIDDEN" });
+  try {
+    const result = await appendPromptMarketSeedPrompts({
+      dryRun: req.body?.dryRun === true,
+      updateExisting: req.body?.updateExisting === true,
+    });
+    res.json({
+      message: result.dryRun ? "Append seed dry run complete" : "Append seed complete",
+      ...result,
+    });
+  } catch (err: any) {
+    console.error("Append seed failed:", err);
+    res.status(500).json({ message: "Append seed failed", error: err.message });
   }
 });
 
