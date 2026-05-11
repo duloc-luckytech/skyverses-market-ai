@@ -73,7 +73,8 @@ const PromptShowcaseStage: React.FC<{
   description: string;
   activeIndex: number;
   onSelect: (index: number) => void;
-}> = ({ promptSet, title, description, activeIndex, onSelect }) => {
+  canViewFullPrompt: boolean;
+}> = ({ promptSet, title, description, activeIndex, onSelect, canViewFullPrompt }) => {
   const examples = promptSet.examples ?? [];
   const seenMedia = new Set<string>();
   const rawMediaItems: Array<ShowcaseMediaItem | null> = [
@@ -157,8 +158,8 @@ const PromptShowcaseStage: React.FC<{
       transition={{ duration: 0.5 }}
       className="rounded-[28px] border border-[#d8c9a4] bg-[#f3ead8] text-[#2a241d] overflow-hidden shadow-[0_24px_80px_rgba(0,0,0,0.22)]"
     >
-      <div className="grid grid-cols-1 xl:grid-cols-[220px_minmax(0,1fr)_340px]">
-        <aside className="order-2 xl:order-1 border-t xl:border-t-0 xl:border-r border-[#d8c9a4] bg-[#f7f0e1] p-4">
+      <div className="grid grid-cols-1 xl:grid-cols-[220px_minmax(0,1fr)_340px] xl:h-[720px]">
+        <aside className="order-2 xl:order-1 border-t xl:border-t-0 xl:border-r border-[#d8c9a4] bg-[#f7f0e1] p-4 xl:h-full xl:overflow-y-auto">
           <div className="mb-4 hidden xl:flex items-center justify-between border-b border-dashed border-[#d8c9a4] pb-3">
             <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Outputs</p>
             <div className="flex items-center gap-2 text-[11px] text-[#806b4a]">
@@ -203,7 +204,9 @@ const PromptShowcaseStage: React.FC<{
                     <p className="mt-1.5 font-serif text-sm leading-snug text-[#2a241d] line-clamp-2">
                       {item.title || title}
                     </p>
-                    <p className="mt-1 text-[11px] text-[#7a6a55] line-clamp-1">{item.input}</p>
+                    <p className="mt-1 text-[11px] text-[#7a6a55] line-clamp-1">
+                      {canViewFullPrompt ? item.input : 'Input details locked'}
+                    </p>
                   </div>
                 </button>
               );
@@ -211,10 +214,10 @@ const PromptShowcaseStage: React.FC<{
           </div>
         </aside>
 
-        <div className="order-1 xl:order-2 min-h-[420px] xl:min-h-[620px] bg-[#f4ead4] relative overflow-hidden">
+        <div className="order-1 xl:order-2 min-h-[420px] xl:min-h-0 xl:h-full bg-[#f4ead4] relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_45%_20%,rgba(255,255,255,0.75),transparent_32%),linear-gradient(135deg,rgba(244,234,212,0.92),rgba(224,211,181,0.86))]" />
           <div className="relative z-10 h-full flex flex-col">
-            <div className="flex items-start justify-between gap-4 p-6 lg:p-8">
+            <div className="flex items-start justify-between gap-4 p-6 lg:p-7">
               <div>
                 <p className="font-serif italic text-sm uppercase tracking-[0.24em] text-[#806b4a]">Prompt Showcase</p>
                 <h2 className="mt-2 text-3xl lg:text-5xl font-serif text-black leading-none max-w-3xl">
@@ -234,7 +237,7 @@ const PromptShowcaseStage: React.FC<{
               )}
             </div>
 
-            <div className="flex-1 px-5 lg:px-8 pb-6 lg:pb-8 flex items-center justify-center">
+            <div className="flex-1 px-5 lg:px-7 pb-6 lg:pb-7 flex items-center justify-center">
               <div className="relative w-full max-w-4xl">
                 <div className="rounded-[22px] border border-[#d1bea0] bg-[#fff7e8] shadow-[0_28px_70px_rgba(70,48,20,0.20)] overflow-hidden">
                   {activeMedia.type === 'video' ? (
@@ -267,13 +270,22 @@ const PromptShowcaseStage: React.FC<{
           </div>
         </div>
 
-        <aside className="order-3 border-t xl:border-t-0 xl:border-l border-[#d8c9a4] bg-[#f7f0e1] p-5 lg:p-6 space-y-5">
-          <div className="rounded-[20px] border border-[#d8c9a4] bg-[#fff9ec] p-5 shadow-sm">
-            <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Input Brief</p>
-            <p className="mt-3 text-sm text-[#4b4035] leading-relaxed">
-              {activeMedia.input || promptSet.previewText || title}
-            </p>
-          </div>
+        <aside className="order-3 border-t xl:border-t-0 xl:border-l border-[#d8c9a4] bg-[#f7f0e1] p-5 lg:p-6 space-y-5 xl:h-full xl:overflow-y-auto">
+          {canViewFullPrompt ? (
+            <div className="rounded-[20px] border border-[#d8c9a4] bg-[#fff9ec] p-5 shadow-sm">
+              <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Input Brief</p>
+              <p className="mt-3 text-sm text-[#4b4035] leading-relaxed">
+                {activeMedia.input || promptSet.previewText || title}
+              </p>
+            </div>
+          ) : (
+            <div className="rounded-[20px] border border-[#d8c9a4] bg-[#fff9ec] p-5 shadow-sm">
+              <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Input Locked</p>
+              <p className="mt-3 text-sm text-[#4b4035] leading-relaxed">
+                Purchase this prompt pack to view the input brief, variables, and full prompt structure.
+              </p>
+            </div>
+          )}
 
           {styleChips.length > 0 && (
             <div className="rounded-[20px] border border-[#d8c9a4] bg-[#fff9ec] p-5 shadow-sm">
@@ -288,7 +300,7 @@ const PromptShowcaseStage: React.FC<{
             </div>
           )}
 
-          {variables.length > 0 && (
+          {canViewFullPrompt && variables.length > 0 && (
             <div className="rounded-[20px] border border-[#d8c9a4] bg-[#fff9ec] p-5 shadow-sm">
               <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Prompt Inputs</p>
               <div className="mt-3 space-y-2.5">
@@ -467,6 +479,7 @@ const PromptDetailPage: React.FC = () => {
               description={description}
               activeIndex={activeExampleIndex}
               onSelect={setActiveExampleIndex}
+              canViewFullPrompt={canViewFullPrompt}
             />
             {isAuthenticated && (
               <button
