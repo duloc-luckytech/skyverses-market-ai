@@ -174,7 +174,9 @@ export type AIModel =
   | 'other';
 
 export interface PromptExample {
+  promptTitle?: string;
   input: string;
+  style?: string;
   output: string;
   image?: string;
   video?: string;

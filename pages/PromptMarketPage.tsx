@@ -10,13 +10,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
-  Code2,
-  PenTool,
-  Megaphone,
-  Palette,
-  Briefcase,
-  GraduationCap,
-  Layers,
   TrendingUp,
   Flame,
   X,
@@ -35,6 +28,9 @@ import {
   Coins,
   Cpu,
   Eye,
+  ImageIcon,
+  PlayCircle,
+  Video,
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -45,17 +41,6 @@ import type { PromptSet, LocalizedString } from '../types';
 // ─── Constants ──────────────────────────────────────────────────────────────
 
 type SortOption = 'newest' | 'popular' | 'price_low' | 'price_high';
-
-const CATEGORIES = [
-  { key: 'all', label: { en: 'All', vi: 'Tất cả', ko: '전체', ja: '全て' }, icon: Layers },
-  { key: 'coding', label: { en: 'Coding', vi: 'Lập trình', ko: '코딩', ja: 'コーディング' }, icon: Code2 },
-  { key: 'writing', label: { en: 'Writing', vi: 'Viết', ko: '글쓰기', ja: 'ライティング' }, icon: PenTool },
-  { key: 'marketing', label: { en: 'Marketing', vi: 'Marketing', ko: '마케팅', ja: 'マーケティング' }, icon: Megaphone },
-  { key: 'design', label: { en: 'Design', vi: 'Thiết kế', ko: '디자인', ja: 'デザイン' }, icon: Palette },
-  { key: 'business', label: { en: 'Business', vi: 'Kinh doanh', ko: '비즈니스', ja: 'ビジネス' }, icon: Briefcase },
-  { key: 'education', label: { en: 'Education', vi: 'Giáo dục', ko: '교육', ja: '教育' }, icon: GraduationCap },
-  { key: 'other', label: { en: 'Other', vi: 'Khác', ko: '기타', ja: 'その他' }, icon: Sparkles },
-] as const;
 
 const SORT_LABELS: Record<SortOption, Record<string, string>> = {
   newest: { en: 'Newest', vi: 'Mới nhất', ko: '최신', ja: '最新' },
@@ -107,16 +92,16 @@ function FilterSection({
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <div className="border-b border-neutral-700/40 last:border-b-0">
+    <div className="border-b border-white/[0.08] last:border-b-0">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between py-3.5 text-[13px] font-semibold text-neutral-400 hover:text-neutral-200 transition-colors"
+        className="w-full flex items-center justify-between py-3.5 text-[13px] font-semibold text-white/60 hover:text-white/80 transition-colors"
       >
         {title}
         {open ? (
-          <ChevronUp className="w-3.5 h-3.5 text-neutral-600" />
+          <ChevronUp className="w-3.5 h-3.5 text-white/40" />
         ) : (
-          <ChevronDown className="w-3.5 h-3.5 text-neutral-600" />
+          <ChevronDown className="w-3.5 h-3.5 text-white/40" />
         )}
       </button>
       <AnimatePresence>
@@ -145,6 +130,15 @@ const MODEL_LABELS: Partial<Record<string, string>> = {
   'midjourney': 'Midjourney', 'dall-e-3': 'DALL·E 3',
   'stable-diffusion': 'Stable Diffusion', 'flux': 'Flux',
   'llama': 'Llama', 'mistral': 'Mistral',
+};
+
+type FeaturedMediaItem = {
+  key: string;
+  type: 'image' | 'video';
+  url: string;
+  poster?: string;
+  label: string;
+  caption: string;
 };
 
 // ─── Featured Banner Component ─────────────────────────────────────────────
@@ -189,7 +183,7 @@ function FeaturedBanner({
 
   if (loading) {
     return (
-      <div className="min-h-[420px] md:min-h-[480px] bg-neutral-900/50 flex items-center justify-center">
+      <div className="min-h-[420px] md:min-h-[480px] bg-[var(--atlas-bg-panel)]/50 flex items-center justify-center">
         <Loader2 className="w-6 h-6 text-brand-blue animate-spin" />
       </div>
     );
@@ -206,7 +200,52 @@ function FeaturedBanner({
       : t('prompt_market.anonymous');
   const promptCount = current.promptCount ?? current.prompts?.length ?? 0;
   const visibleModels = (current.models ?? []).slice(0, 6);
-  const examples = (current.examples ?? []).filter(ex => ex.image).slice(0, 4);
+  const seenMedia = new Set<string>();
+  const rawMediaItems: Array<FeaturedMediaItem | null> = [
+    current.coverImage
+      ? {
+          key: `${current._id}-cover`,
+          type: 'image' as const,
+          url: current.coverImage,
+          label: 'Cover',
+          caption: title,
+        }
+      : null,
+    ...(current.examples ?? []).flatMap((ex, index) => {
+      const label = ex.promptTitle || `Prompt ${index + 1}`;
+      return [
+        ex.image
+          ? {
+              key: `${current._id}-image-${index}`,
+              type: 'image' as const,
+              url: ex.image,
+              label,
+              caption: ex.input || ex.output || label,
+            }
+          : null,
+        ex.video
+          ? {
+              key: `${current._id}-video-${index}`,
+              type: 'video' as const,
+              url: ex.video,
+              poster: ex.image || current.coverImage,
+              label: 'Video demo',
+              caption: ex.output || ex.input || label,
+            }
+          : null,
+      ];
+    }),
+  ];
+  const mediaItems = rawMediaItems.filter((item): item is FeaturedMediaItem => {
+    if (!item) return false;
+    const mediaKey = `${item.type}:${item.url}`;
+    if (seenMedia.has(mediaKey)) return false;
+    seenMedia.add(mediaKey);
+    return true;
+  });
+  const heroMedia = mediaItems.find(item => item.type === 'video') ?? mediaItems[0];
+  const imageCount = mediaItems.filter(item => item.type === 'image').length;
+  const videoCount = mediaItems.filter(item => item.type === 'video').length;
 
   // Prev/next for peek panels
   const prevIndex = (activeIndex - 1 + sets.length) % sets.length;
@@ -254,7 +293,7 @@ function FeaturedBanner({
                 {sets[prevIndex].coverImage ? (
                   <img src={sets[prevIndex].coverImage} alt="" className="w-full h-full object-cover" loading="lazy" />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-brand-blue/20 to-neutral-950" />
+                  <div className="w-full h-full bg-gradient-to-br from-brand-blue/20 to-black" />
                 )}
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(20,20,24,0.9), transparent)' }} />
               </motion.div>
@@ -282,7 +321,7 @@ function FeaturedBanner({
                   loading="lazy"
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-brand-blue/15 via-neutral-900 to-neutral-950" />
+                <div className="w-full h-full bg-gradient-to-br from-brand-blue/15 via-[var(--atlas-bg-panel)] to-black" />
               )}
 
               {/* Gradient overlay */}
@@ -320,7 +359,7 @@ function FeaturedBanner({
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="text-sm md:text-base max-w-lg mb-4 leading-relaxed text-neutral-300/80 line-clamp-2"
+                  className="text-sm md:text-base max-w-lg mb-4 leading-relaxed text-white/70 line-clamp-2"
                 >
                   {desc}
                 </motion.p>
@@ -330,12 +369,12 @@ function FeaturedBanner({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.45 }}
-                  className="flex items-center gap-3 flex-wrap mb-5 text-[12px] text-neutral-400"
+                  className="flex items-center gap-3 flex-wrap mb-5 text-[12px] text-white/60"
                 >
                   <span className="flex items-center gap-1">
                     <User className="w-3 h-3" />{sellerName}
                   </span>
-                  <span className="text-neutral-700">·</span>
+                  <span className="text-white/30">·</span>
                   <span className="flex items-center gap-1">
                     <FileText className="w-3 h-3" />{promptCount} prompts
                   </span>
@@ -369,7 +408,7 @@ function FeaturedBanner({
                 >
                   <Link
                     to={`/prompt-market/${current.slug}`}
-                    className="inline-flex items-center gap-2 px-6 py-2.5 bg-brand-blue hover:bg-brand-blue/90 text-white text-[13px] font-bold transition-all duration-200 shadow-[0_4px_20px_rgba(112,54,240,0.25)] hover:shadow-[0_6px_28px_rgba(112,54,240,0.4)] hover:scale-105 active:scale-[0.97] group/cta"
+                    className="inline-flex items-center gap-2 px-6 py-2.5 bg-brand-blue hover:bg-brand-blue/90 text-white text-[13px] font-bold transition-all duration-200 shadow-[0_4px_20px_rgba(201,168,76,0.25)] hover:shadow-[0_6px_28px_rgba(201,168,76,0.4)] hover:scale-105 active:scale-[0.97] group/cta"
                   >
                     {t('prompt_market.view_details')}
                     <ArrowRight size={14} className="group-hover/cta:translate-x-0.5 transition-transform" />
@@ -383,7 +422,7 @@ function FeaturedBanner({
         {/* RIGHT PANEL — examples, models, info (hidden on mobile) */}
         <div
           className="hidden md:flex flex-col flex-shrink-0 p-5 lg:p-6"
-          style={{ width: 340, background: 'rgba(20,20,24,0.95)', borderLeft: '1px solid rgba(112,54,240,0.12)' }}
+          style={{ width: 340, background: 'rgba(20,20,24,0.95)', borderLeft: '1px solid rgba(201,168,76,0.12)' }}
         >
           <AnimatePresence mode="wait">
             <motion.div
@@ -394,34 +433,99 @@ function FeaturedBanner({
               transition={{ duration: 0.4 }}
               className="flex flex-col h-full"
             >
-              {/* Examples / Reference images */}
-              {examples.length > 0 && (
+              {/* Media set */}
+              {mediaItems.length > 0 && (
                 <>
-                  <h4 className="text-[11px] font-bold uppercase tracking-[0.15em] mb-3 text-brand-blue">
-                    {t('prompt_market.examples') || 'Examples'}
-                  </h4>
-                  <div className="grid grid-cols-2 gap-2.5 mb-5">
-                    {examples.map((ex, i) => (
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <h4 className="text-[11px] font-bold uppercase tracking-[0.15em] text-brand-blue">
+                      Media Set
+                    </h4>
+                    <div className="flex items-center gap-2 text-[10px] text-white/45">
+                      <span className="inline-flex items-center gap-1">
+                        <ImageIcon className="h-3 w-3" />
+                        {imageCount}
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <Video className="h-3 w-3" />
+                        {videoCount}
+                      </span>
+                    </div>
+                  </div>
+
+                  {heroMedia && (
+                    <motion.div
+                      key={`${heroMedia.key}-hero`}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.08 }}
+                      className="group/hero mb-3 overflow-hidden border border-brand-blue/20 bg-white/[0.03]"
+                    >
+                      <div className="relative aspect-video overflow-hidden">
+                        {heroMedia.type === 'video' ? (
+                          <video
+                            src={heroMedia.url}
+                            poster={heroMedia.poster}
+                            className="h-full w-full object-cover"
+                            controls
+                            muted
+                            playsInline
+                            preload="metadata"
+                          />
+                        ) : (
+                          <img
+                            src={heroMedia.url}
+                            alt={heroMedia.caption}
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover/hero:scale-105"
+                            loading="lazy"
+                          />
+                        )}
+                        <div className="absolute left-2 top-2 inline-flex items-center gap-1.5 bg-black/65 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white/80 backdrop-blur-sm">
+                          {heroMedia.type === 'video' ? <PlayCircle className="h-3 w-3 text-brand-blue" /> : <ImageIcon className="h-3 w-3 text-brand-blue" />}
+                          {heroMedia.label}
+                        </div>
+                      </div>
+                      <div className="p-2.5">
+                        <p className="line-clamp-2 text-[11px] leading-relaxed text-white/65">{heroMedia.caption}</p>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  <div className="grid grid-cols-3 gap-2 mb-5">
+                    {mediaItems.slice(0, 6).map((item, i) => (
                       <motion.div
-                        key={i}
+                        key={item.key}
                         initial={{ opacity: 0, y: 15 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 + i * 0.08 }}
-                        className="group/ex overflow-hidden border border-brand-blue/10 hover:border-brand-blue/30 transition-colors"
+                        className="group/ex overflow-hidden border border-brand-blue/10 bg-white/[0.02] transition-colors hover:border-brand-blue/30"
                       >
-                        <div className="aspect-[4/3] overflow-hidden">
-                          <img
-                            src={ex.image}
-                            alt={ex.input || ''}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover/ex:scale-110"
-                            loading="lazy"
-                          />
+                        <div className="relative aspect-[4/3] overflow-hidden">
+                          {item.type === 'video' ? (
+                            <>
+                              <video
+                                src={item.url}
+                                poster={item.poster}
+                                className="h-full w-full object-cover"
+                                muted
+                                playsInline
+                                preload="metadata"
+                              />
+                              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                                <PlayCircle className="h-5 w-5 text-white drop-shadow" />
+                              </div>
+                            </>
+                          ) : (
+                            <img
+                              src={item.url}
+                              alt={item.caption}
+                              className="h-full w-full object-cover transition-transform duration-500 group-hover/ex:scale-110"
+                              loading="lazy"
+                            />
+                          )}
                         </div>
-                        {ex.input && (
-                          <div className="p-2" style={{ background: 'rgba(20,20,24,0.9)' }}>
-                            <p className="text-[10px] text-neutral-400 truncate">{ex.input}</p>
-                          </div>
-                        )}
+                        <div className="p-1.5">
+                          <p className="truncate text-[9px] font-semibold text-white/60">{item.label}</p>
+                        </div>
                       </motion.div>
                     ))}
                   </div>
@@ -438,14 +542,14 @@ function FeaturedBanner({
                     {visibleModels.map((m) => (
                       <span
                         key={m}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-neutral-800/80 border border-neutral-700/40 text-[11px] text-neutral-300 font-medium hover:border-brand-blue/30 transition-colors"
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.04] border border-white/[0.08] text-[11px] text-white/70 font-medium hover:border-brand-blue/30 transition-colors"
                       >
                         <Cpu className="w-3 h-3 text-brand-blue/60" />
                         {MODEL_LABELS[m] ?? m}
                       </span>
                     ))}
                     {(current.models ?? []).length > 6 && (
-                      <span className="px-2 py-1 text-[11px] text-neutral-600">
+                      <span className="px-2 py-1 text-[11px] text-white/40">
                         +{(current.models ?? []).length - 6}
                       </span>
                     )}
@@ -463,7 +567,7 @@ function FeaturedBanner({
                     {current.tags.slice(0, 8).map((tag) => (
                       <span
                         key={tag}
-                        className="px-2 py-0.5 bg-neutral-800/60 border border-neutral-700/30 text-[10px] text-neutral-400 font-medium"
+                        className="px-2 py-0.5 bg-white/[0.04] border border-white/[0.06] text-[10px] text-white/60 font-medium"
                       >
                         #{tag}
                       </span>
@@ -478,26 +582,26 @@ function FeaturedBanner({
                   <div className="grid grid-cols-2 gap-3">
                     <div className="text-center">
                       <p className="text-[16px] font-bold text-brand-blue">{stats.totalPrompts.toLocaleString()}+</p>
-                      <p className="text-[10px] text-neutral-500 uppercase tracking-wider">{t('prompt_market.stats_prompts')}</p>
+                      <p className="text-[10px] text-white/50 uppercase tracking-wider">{t('prompt_market.stats_prompts')}</p>
                     </div>
                     <div className="text-center">
                       <p className="text-[16px] font-bold text-violet-400">{stats.totalSellers.toLocaleString()}</p>
-                      <p className="text-[10px] text-neutral-500 uppercase tracking-wider">{t('prompt_market.stats_sellers')}</p>
+                      <p className="text-[10px] text-white/50 uppercase tracking-wider">{t('prompt_market.stats_sellers')}</p>
                     </div>
                     <div className="text-center">
                       <p className="text-[16px] font-bold text-emerald-400">{stats.totalPurchases.toLocaleString()}</p>
-                      <p className="text-[10px] text-neutral-500 uppercase tracking-wider">{t('prompt_market.stats_purchases')}</p>
+                      <p className="text-[10px] text-white/50 uppercase tracking-wider">{t('prompt_market.stats_purchases')}</p>
                     </div>
                     <div className="text-center">
                       <p className="text-[16px] font-bold text-amber-400">{stats.totalSKTVolume.toLocaleString()}</p>
-                      <p className="text-[10px] text-neutral-500 uppercase tracking-wider">SKT Volume</p>
+                      <p className="text-[10px] text-white/50 uppercase tracking-wider">SKT Volume</p>
                     </div>
                   </div>
                 </div>
               )}
 
               {/* Fallback: if no examples and no models, show prompt preview cards */}
-              {examples.length === 0 && visibleModels.length === 0 && (
+              {mediaItems.length === 0 && visibleModels.length === 0 && (
                 <>
                   <h4 className="text-[11px] font-bold uppercase tracking-[0.15em] mb-3 text-brand-blue">
                     Featured Prompts
@@ -518,13 +622,13 @@ function FeaturedBanner({
                             {ps.coverImage ? (
                               <img src={ps.coverImage} alt={cardTitle} className="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-110" loading="lazy" />
                             ) : (
-                              <div className="w-full h-full bg-gradient-to-br from-brand-blue/10 to-neutral-900 flex items-center justify-center">
+                              <div className="w-full h-full bg-gradient-to-br from-brand-blue/10 to-[var(--atlas-bg-panel)] flex items-center justify-center">
                                 <Sparkles className="w-5 h-5 text-brand-blue/30" />
                               </div>
                             )}
                           </div>
                           <div className="p-2" style={{ background: 'rgba(20,20,24,0.9)' }}>
-                            <p className="text-[11px] font-semibold text-neutral-200 truncate">{cardTitle}</p>
+                            <p className="text-[11px] font-semibold text-white/80 truncate">{cardTitle}</p>
                             <p className="text-[10px] font-bold mt-0.5 text-brand-blue">
                               {ps.isFree ? t('prompt_market.free_label') : `${ps.priceSKT} SKT`}
                             </p>
@@ -558,7 +662,7 @@ function FeaturedBanner({
                 {sets[nextIndex].coverImage ? (
                   <img src={sets[nextIndex].coverImage} alt="" className="w-full h-full object-cover" loading="lazy" />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-brand-blue/20 to-neutral-950" />
+                  <div className="w-full h-full bg-gradient-to-br from-brand-blue/20 to-black" />
                 )}
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(to left, rgba(20,20,24,0.9), transparent)' }} />
               </motion.div>
@@ -577,8 +681,8 @@ function FeaturedBanner({
               className="transition-all"
               style={
                 i === activeIndex
-                  ? { width: 24, height: 5, background: '#7036F0' }
-                  : { width: 5, height: 5, background: 'rgba(112,54,240,0.3)', borderRadius: '50%' }
+                  ? { width: 24, height: 5, background: '#C9A84C' }
+                  : { width: 5, height: 5, background: 'rgba(201,168,76,0.3)', borderRadius: '50%' }
               }
             />
           ))}
@@ -648,14 +752,14 @@ function TrendingPromptPill({ promptSet, index }: { promptSet: PromptSet; index:
     >
       <Link
         to={`/prompt-market/${promptSet.slug}`}
-        className="flex items-center gap-3 bg-neutral-900 border border-neutral-700/40 hover:border-brand-blue/30 px-4 py-3 min-w-[240px] sm:min-w-[280px] flex-shrink-0 transition-all duration-200 group hover:shadow-[0_4px_20px_rgba(112,54,240,0.08)]"
+        className="flex items-center gap-3 bg-[var(--atlas-bg-panel)] border border-white/[0.08] hover:border-brand-blue/30 px-4 py-3 min-w-[240px] sm:min-w-[280px] flex-shrink-0 transition-all duration-200 group hover:shadow-[0_4px_20px_rgba(201,168,76,0.08)]"
       >
         {/* Avatar */}
-        <div className="w-10 h-10 overflow-hidden flex-shrink-0 border border-neutral-700/40">
+        <div className="w-10 h-10 overflow-hidden flex-shrink-0 border border-white/[0.08]">
           {promptSet.coverImage ? (
             <img src={promptSet.coverImage} alt="" className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-brand-blue/15 to-neutral-900 flex items-center justify-center">
+            <div className="w-full h-full bg-gradient-to-br from-brand-blue/15 to-[var(--atlas-bg-panel)] flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-brand-blue/40" />
             </div>
           )}
@@ -663,10 +767,10 @@ function TrendingPromptPill({ promptSet, index }: { promptSet: PromptSet; index:
 
         {/* Text */}
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-neutral-200 truncate group-hover:text-brand-blue transition-colors">
+          <p className="text-sm font-semibold text-white/80 truncate group-hover:text-brand-blue transition-colors">
             {title}
           </p>
-          <p className="text-xs text-neutral-500 truncate">{sellerName}</p>
+          <p className="text-xs text-white/50 truncate">{sellerName}</p>
         </div>
 
         {/* Price badge */}
@@ -689,7 +793,6 @@ const PromptMarketPage: React.FC = () => {
 
   // Derive state from URL params
   const urlQ = searchParams.get('q') ?? '';
-  const urlCategory = searchParams.get('category') ?? 'all';
   const urlSort = (searchParams.get('sort') ?? 'newest') as SortOption;
   const urlPage = parseInt(searchParams.get('page') ?? '1', 10);
   const urlPriceFilter = searchParams.get('price') ?? 'all';
@@ -738,7 +841,6 @@ const PromptMarketPage: React.FC = () => {
     setLoading(true);
     const res = await promptMarketApi.list({
       q: urlQ || undefined,
-      category: urlCategory !== 'all' ? urlCategory : undefined,
       sort: urlSort,
       page: urlPage,
       limit: PAGE_LIMIT,
@@ -746,7 +848,7 @@ const PromptMarketPage: React.FC = () => {
     setPromptSets(res.data ?? []);
     setPagination(res.pagination ?? { page: 1, limit: PAGE_LIMIT, total: 0, totalPages: 0 });
     setLoading(false);
-  }, [urlQ, urlCategory, urlSort, urlPage]);
+  }, [urlQ, urlSort, urlPage]);
 
   useEffect(() => {
     fetchData();
@@ -793,10 +895,6 @@ const PromptMarketPage: React.FC = () => {
     }, 300);
   };
 
-  const handleCategoryChange = (key: string) => {
-    updateParams({ category: key === 'all' ? null : key });
-  };
-
   const handleSortChange = (sort: SortOption) => {
     updateParams({ sort });
     setSortOpen(false);
@@ -838,13 +936,10 @@ const PromptMarketPage: React.FC = () => {
 
   // ── Derived ──────────────────────────────────────────────────────────────
 
-  const getCategoryLabel = (cat: (typeof CATEGORIES)[number]) =>
-    cat.label[lang] ?? cat.label.en;
-
   const currentSortLabel =
     SORT_LABELS[urlSort]?.[lang] ?? SORT_LABELS[urlSort]?.en ?? 'Newest';
 
-  const hasActiveFilters = urlQ || urlCategory !== 'all' || urlPriceFilter !== 'all' || urlRatingFilter !== 'any';
+  const hasActiveFilters = urlQ || urlPriceFilter !== 'all' || urlRatingFilter !== 'any';
   const showFeatured = !hasActiveFilters && urlPage === 1;
 
   const bannerSets = featuredSets.slice(0, 5);
@@ -891,10 +986,10 @@ const PromptMarketPage: React.FC = () => {
                   <Flame className="w-3.5 h-3.5 text-brand-blue" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-bold text-neutral-200">
+                  <h2 className="text-sm font-bold text-white/80">
                     {t('prompt_market.trending_tokens')}
                   </h2>
-                  <p className="text-[11px] text-neutral-500">
+                  <p className="text-[11px] text-white/50">
                     {t('prompt_market.trending_tokens_desc')}
                   </p>
                 </div>
@@ -902,13 +997,13 @@ const PromptMarketPage: React.FC = () => {
               <div className="hidden sm:flex items-center gap-1.5">
                 <button
                   onClick={() => scrollTrending('left')}
-                  className="w-7 h-7 border border-neutral-700/40 bg-neutral-900 flex items-center justify-center text-neutral-500 hover:border-brand-blue/30 hover:text-brand-blue transition"
+                  className="w-7 h-7 border border-white/[0.08] bg-[var(--atlas-bg-panel)] flex items-center justify-center text-white/50 hover:border-brand-blue/30 hover:text-brand-blue transition"
                 >
                   <ChevronLeft className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() => scrollTrending('right')}
-                  className="w-7 h-7 border border-neutral-700/40 bg-neutral-900 flex items-center justify-center text-neutral-500 hover:border-brand-blue/30 hover:text-brand-blue transition"
+                  className="w-7 h-7 border border-white/[0.08] bg-[var(--atlas-bg-panel)] flex items-center justify-center text-white/50 hover:border-brand-blue/30 hover:text-brand-blue transition"
                 >
                   <ChevronRight className="w-3.5 h-3.5" />
                 </button>
@@ -930,7 +1025,7 @@ const PromptMarketPage: React.FC = () => {
 
       {/* Divider */}
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-neutral-700/40 to-transparent" />
+        <div className="h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
       </div>
 
       {/* ═══════════════════════════════════════════
@@ -957,7 +1052,7 @@ const PromptMarketPage: React.FC = () => {
               fixed lg:static inset-y-0 left-0 z-50 lg:z-auto
               w-[280px] lg:w-[240px] xl:w-[260px] flex-shrink-0
               bg-[#141418]/95 lg:bg-transparent backdrop-blur-xl lg:backdrop-blur-none
-              border-r border-neutral-700/40 lg:border-r-0
+              border-r border-white/[0.08] lg:border-r-0
               transform transition-transform duration-300 lg:transform-none
               ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
               overflow-y-auto
@@ -972,7 +1067,7 @@ const PromptMarketPage: React.FC = () => {
                 </h3>
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="w-8 h-8 bg-neutral-800 flex items-center justify-center text-neutral-400 hover:text-white transition"
+                  className="w-8 h-8 bg-white/[0.04] flex items-center justify-center text-white/60 hover:text-white transition"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -980,7 +1075,7 @@ const PromptMarketPage: React.FC = () => {
 
               {/* Desktop header */}
               <div className="hidden lg:flex items-center justify-between mb-3">
-                <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
+                <h3 className="text-xs font-bold text-white/50 uppercase tracking-wider flex items-center gap-1.5">
                   <SlidersHorizontal className="w-3.5 h-3.5" />
                   {t('prompt_market.filters')}
                 </h3>
@@ -995,34 +1090,7 @@ const PromptMarketPage: React.FC = () => {
               </div>
 
               {/* Filter container */}
-              <div className="lg:bg-neutral-900 lg:border lg:border-neutral-700/40 lg:p-4">
-                {/* ─ Categories ─ */}
-                <FilterSection title={t('prompt_market.categories')} defaultOpen={true}>
-                  <div className="space-y-0.5">
-                    {CATEGORIES.map(cat => {
-                      const active = urlCategory === cat.key || (cat.key === 'all' && !searchParams.get('category'));
-                      const Icon = cat.icon;
-                      return (
-                        <button
-                          key={cat.key}
-                          onClick={() => {
-                            handleCategoryChange(cat.key);
-                            setSidebarOpen(false);
-                          }}
-                          className={`w-full flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium transition-all duration-150 ${
-                            active
-                              ? 'bg-brand-blue/[0.12] text-brand-blue border border-brand-blue/[0.2]'
-                              : 'text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800 border border-transparent'
-                          }`}
-                        >
-                          <Icon className="w-3.5 h-3.5 flex-shrink-0" />
-                          {getCategoryLabel(cat)}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </FilterSection>
-
+              <div className="lg:bg-[var(--atlas-bg-panel)] lg:border lg:border-white/[0.08] lg:p-4">
                 {/* ─ Price filter ─ */}
                 <FilterSection title={t('prompt_market.price_range')} defaultOpen={true}>
                   <div className="space-y-0.5">
@@ -1037,7 +1105,7 @@ const PromptMarketPage: React.FC = () => {
                         className={`w-full flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium transition-all duration-150 ${
                           urlPriceFilter === opt.key
                             ? 'bg-brand-blue/[0.1] text-brand-blue border border-brand-blue/[0.15]'
-                            : 'text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800 border border-transparent'
+                            : 'text-white/50 hover:text-white/70 hover:bg-white/[0.04] border border-transparent'
                         }`}
                       >
                         {opt.label}
@@ -1061,7 +1129,7 @@ const PromptMarketPage: React.FC = () => {
                         className={`w-full flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium transition-all duration-150 ${
                           urlRatingFilter === opt.key
                             ? 'bg-brand-blue/[0.1] text-brand-blue border border-brand-blue/[0.15]'
-                            : 'text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800 border border-transparent'
+                            : 'text-white/50 hover:text-white/70 hover:bg-white/[0.04] border border-transparent'
                         }`}
                       >
                         {opt.label}
@@ -1080,7 +1148,7 @@ const PromptMarketPage: React.FC = () => {
                         className={`w-full flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium transition-all duration-150 ${
                           urlSort === opt
                             ? 'bg-brand-blue/[0.1] text-brand-blue border border-brand-blue/[0.15]'
-                            : 'text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800 border border-transparent'
+                            : 'text-white/50 hover:text-white/70 hover:bg-white/[0.04] border border-transparent'
                         }`}
                       >
                         {SORT_LABELS[opt][lang] ?? SORT_LABELS[opt].en}
@@ -1097,7 +1165,7 @@ const PromptMarketPage: React.FC = () => {
                     resetAllFilters();
                     setSidebarOpen(false);
                   }}
-                  className="w-full mt-4 px-4 py-2.5 border border-brand-blue/15 text-brand-blue text-xs font-medium hover:bg-brand-blue/[0.06] transition lg:hidden"
+                  className="w-full mt-4 px-4 py-2.5 border border-brand-blue/[0.15] text-brand-blue text-xs font-medium hover:bg-brand-blue/[0.06] transition lg:hidden"
                 >
                   {t('prompt_market.reset_filters')}
                 </button>
@@ -1117,27 +1185,27 @@ const PromptMarketPage: React.FC = () => {
               {/* Mobile filter toggle */}
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="lg:hidden w-10 h-10 bg-neutral-900 border border-neutral-700/40 flex items-center justify-center text-neutral-500 hover:text-brand-blue hover:border-brand-blue/30 transition-all flex-shrink-0"
+                className="lg:hidden w-10 h-10 bg-[var(--atlas-bg-panel)] border border-white/[0.08] flex items-center justify-center text-white/50 hover:text-brand-blue hover:border-brand-blue/30 transition-all flex-shrink-0"
               >
                 <Filter className="w-4 h-4" />
               </button>
 
               {/* Search */}
               <div className="relative flex-1 group">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-600 group-focus-within:text-brand-blue transition-colors pointer-events-none" />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 group-focus-within:text-brand-blue transition-colors pointer-events-none" />
                 <input
                   type="text"
                   value={searchInput}
                   onChange={e => handleSearchChange(e.target.value)}
                   placeholder={t('prompt_market.search_placeholder')}
-                  className="w-full bg-neutral-900 border border-neutral-700/40 pl-10 pr-10 py-2.5 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-brand-blue/40 focus:ring-1 focus:ring-brand-blue/15 transition-all duration-200"
+                  className="w-full bg-[var(--atlas-bg-panel)] border border-white/[0.08] pl-10 pr-10 py-2.5 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-brand-blue/40 focus:ring-1 focus:ring-brand-blue/15 transition-all duration-200"
                 />
                 {searchInput && (
                   <button
                     onClick={clearSearch}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 bg-neutral-800 hover:bg-neutral-700 flex items-center justify-center transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 bg-white/[0.04] hover:bg-white/[0.06] flex items-center justify-center transition-colors"
                   >
-                    <X className="w-3 h-3 text-neutral-500" />
+                    <X className="w-3 h-3 text-white/50" />
                   </button>
                 )}
               </div>
@@ -1145,7 +1213,7 @@ const PromptMarketPage: React.FC = () => {
               {/* Sell CTA */}
               <Link
                 to="/prompt-market/sell"
-                className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-brand-blue hover:bg-brand-blue/90 text-white text-sm font-bold transition-all duration-200 shadow-[0_2px_16px_rgba(112,54,240,0.2)] hover:shadow-[0_4px_24px_rgba(112,54,240,0.35)] active:scale-[0.97] flex-shrink-0"
+                className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-brand-blue hover:bg-brand-blue/90 text-white text-sm font-bold transition-all duration-200 shadow-[0_2px_16px_rgba(201,168,76,0.2)] hover:shadow-[0_4px_24px_rgba(201,168,76,0.35)] active:scale-[0.97] flex-shrink-0"
               >
                 <Crown className="w-4 h-4" />
                 {t('prompt_market.cta_button')}
@@ -1162,7 +1230,7 @@ const PromptMarketPage: React.FC = () => {
               {/* Left — results + active filter chips */}
               <div className="flex items-center gap-2 flex-wrap">
                 {!loading && (
-                  <span className="text-xs text-neutral-500 font-medium">
+                  <span className="text-xs text-white/50 font-medium">
                     {pagination.total > 0
                       ? `${pagination.total} ${t('prompt_market.results')}`
                       : ''}
@@ -1177,19 +1245,8 @@ const PromptMarketPage: React.FC = () => {
                     </button>
                   </span>
                 )}
-                {urlCategory !== 'all' && searchParams.get('category') && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-neutral-800 border border-neutral-700/40 text-xs text-neutral-400">
-                    {urlCategory}
-                    <button
-                      onClick={() => handleCategoryChange('all')}
-                      className="hover:text-white transition"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                )}
                 {urlPriceFilter !== 'all' && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-neutral-800 border border-neutral-700/40 text-xs text-neutral-400">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.04] border border-white/[0.08] text-xs text-white/60">
                     {urlPriceFilter === 'free' ? t('prompt_market.free_only') : t('prompt_market.paid_only')}
                     <button
                       onClick={() => handlePriceFilter('all')}
@@ -1204,13 +1261,13 @@ const PromptMarketPage: React.FC = () => {
               {/* Right — sort dropdown + view toggle */}
               <div className="flex items-center gap-2">
                 {/* View toggle */}
-                <div className="flex items-center border border-neutral-700/40 overflow-hidden bg-neutral-900">
+                <div className="flex items-center border border-white/[0.08] overflow-hidden bg-[var(--atlas-bg-panel)]">
                   <button
                     onClick={() => setViewMode('grid')}
                     className={`p-2 transition-colors ${
                       viewMode === 'grid'
                         ? 'bg-brand-blue/[0.15] text-brand-blue'
-                        : 'text-neutral-500 hover:text-neutral-300'
+                        : 'text-white/50 hover:text-white/70'
                     }`}
                   >
                     <LayoutGrid className="w-3.5 h-3.5" />
@@ -1220,7 +1277,7 @@ const PromptMarketPage: React.FC = () => {
                     className={`p-2 transition-colors ${
                       viewMode === 'list'
                         ? 'bg-brand-blue/[0.15] text-brand-blue'
-                        : 'text-neutral-500 hover:text-neutral-300'
+                        : 'text-white/50 hover:text-white/70'
                     }`}
                   >
                     <List className="w-3.5 h-3.5" />
@@ -1231,11 +1288,11 @@ const PromptMarketPage: React.FC = () => {
                 <div className="relative flex-shrink-0 hidden lg:block" ref={sortRef}>
                   <button
                     onClick={() => setSortOpen(v => !v)}
-                    className="flex items-center gap-2 bg-neutral-900 border border-neutral-700/40 px-4 py-2 text-sm text-neutral-400 hover:border-brand-blue/20 hover:text-neutral-200 transition whitespace-nowrap"
+                    className="flex items-center gap-2 bg-[var(--atlas-bg-panel)] border border-white/[0.08] px-4 py-2 text-sm text-white/60 hover:border-brand-blue/20 hover:text-white/80 transition whitespace-nowrap"
                   >
-                    <SlidersHorizontal className="w-3.5 h-3.5 text-neutral-600" />
+                    <SlidersHorizontal className="w-3.5 h-3.5 text-white/40" />
                     {currentSortLabel}
-                    <ChevronDown className={`w-3.5 h-3.5 text-neutral-600 transition-transform ${sortOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-3.5 h-3.5 text-white/40 transition-transform ${sortOpen ? 'rotate-180' : ''}`} />
                   </button>
                   <AnimatePresence>
                     {sortOpen && (
@@ -1244,14 +1301,14 @@ const PromptMarketPage: React.FC = () => {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -6, scale: 0.97 }}
                         transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                        className="absolute right-0 top-full mt-1 z-50 bg-neutral-900 border border-neutral-700/40 overflow-hidden shadow-2xl w-52"
+                        className="absolute right-0 top-full mt-1 z-50 bg-[var(--atlas-bg-panel)] border border-white/[0.08] overflow-hidden shadow-atlas-lg w-52"
                       >
                         {(Object.keys(SORT_LABELS) as SortOption[]).map(opt => (
                           <button
                             key={opt}
                             onClick={() => handleSortChange(opt)}
-                            className={`w-full text-left px-4 py-2.5 text-sm transition hover:bg-neutral-800 ${
-                              urlSort === opt ? 'text-brand-blue font-medium bg-brand-blue/[0.06]' : 'text-neutral-400'
+                            className={`w-full text-left px-4 py-2.5 text-sm transition hover:bg-white/[0.04] ${
+                              urlSort === opt ? 'text-brand-blue font-medium bg-brand-blue/[0.06]' : 'text-white/60'
                             }`}
                           >
                             {SORT_LABELS[opt][lang] ?? SORT_LABELS[opt].en}
@@ -1275,7 +1332,7 @@ const PromptMarketPage: React.FC = () => {
                   className="flex flex-col items-center justify-center py-32 gap-4"
                 >
                   <Loader2 className="w-7 h-7 text-brand-blue/60 animate-spin" />
-                  <p className="text-neutral-500 text-sm">{t('prompt_market.loading')}</p>
+                  <p className="text-white/50 text-sm">{t('prompt_market.loading')}</p>
                 </motion.div>
               ) : filteredSets.length === 0 ? (
                 <motion.div
@@ -1285,19 +1342,19 @@ const PromptMarketPage: React.FC = () => {
                   exit={{ opacity: 0 }}
                   className="flex flex-col items-center justify-center py-32 gap-4"
                 >
-                  <div className="w-16 h-16 bg-neutral-900 border border-neutral-700/40 flex items-center justify-center">
-                    <Package className="w-8 h-8 text-neutral-700" />
+                  <div className="w-16 h-16 bg-[var(--atlas-bg-panel)] border border-white/[0.08] flex items-center justify-center">
+                    <Package className="w-8 h-8 text-white/30" />
                   </div>
-                  <p className="text-neutral-300 text-base font-medium">
+                  <p className="text-white/70 text-base font-medium">
                     {t('prompt_market.empty_title')}
                   </p>
-                  <p className="text-neutral-500 text-sm text-center max-w-xs">
+                  <p className="text-white/50 text-sm text-center max-w-xs">
                     {t('prompt_market.empty_desc')}
                   </p>
                   {hasActiveFilters && (
                     <button
                       onClick={resetAllFilters}
-                      className="mt-2 px-4 py-2 border border-brand-blue/15 text-brand-blue/70 text-sm font-medium hover:bg-brand-blue/[0.06] transition"
+                      className="mt-2 px-4 py-2 border border-brand-blue/[0.15] text-brand-blue/70 text-sm font-medium hover:bg-brand-blue/[0.06] transition"
                     >
                       {t('prompt_market.clear_filters')}
                     </button>
@@ -1345,28 +1402,28 @@ const PromptMarketPage: React.FC = () => {
                       <motion.div key={ps._id ?? i} variants={itemVariants}>
                         <Link
                           to={`/prompt-market/${ps.slug}`}
-                          className="flex items-center gap-4 bg-neutral-900 border border-neutral-700/40 hover:border-brand-blue/30 p-3 sm:p-4 transition-all duration-200 hover:shadow-[0_4px_20px_rgba(112,54,240,0.06)] group"
+                          className="flex items-center gap-4 bg-[var(--atlas-bg-panel)] border border-white/[0.08] hover:border-brand-blue/30 p-3 sm:p-4 transition-all duration-200 hover:shadow-[0_4px_20px_rgba(201,168,76,0.06)] group"
                         >
                           {/* Cover */}
-                          <div className="w-14 h-14 sm:w-16 sm:h-16 overflow-hidden flex-shrink-0 border border-neutral-700/40">
+                          <div className="w-14 h-14 sm:w-16 sm:h-16 overflow-hidden flex-shrink-0 border border-white/[0.08]">
                             {ps.coverImage ? (
                               <img src={ps.coverImage} alt="" className="w-full h-full object-cover" />
                             ) : (
-                              <div className="w-full h-full bg-gradient-to-br from-brand-blue/10 to-neutral-900 flex items-center justify-center">
-                                <FileText className="w-5 h-5 text-neutral-700" />
+                              <div className="w-full h-full bg-gradient-to-br from-brand-blue/10 to-[var(--atlas-bg-panel)] flex items-center justify-center">
+                                <FileText className="w-5 h-5 text-white/30" />
                               </div>
                             )}
                           </div>
 
                           {/* Info */}
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-sm font-semibold text-neutral-200 truncate group-hover:text-brand-blue transition-colors">
+                            <h3 className="text-sm font-semibold text-white/80 truncate group-hover:text-brand-blue transition-colors">
                               {pTitle}
                             </h3>
                             {desc && (
-                              <p className="text-xs text-neutral-500 truncate mt-0.5">{desc}</p>
+                              <p className="text-xs text-white/50 truncate mt-0.5">{desc}</p>
                             )}
-                            <div className="flex items-center gap-3 mt-2 text-[11px] text-neutral-500">
+                            <div className="flex items-center gap-3 mt-2 text-[11px] text-white/50">
                               <span className="flex items-center gap-1">
                                 <FileText className="w-3 h-3" />
                                 {promptCount}
@@ -1387,13 +1444,13 @@ const PromptMarketPage: React.FC = () => {
                           {/* Seller */}
                           <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
                             {sAvatar ? (
-                              <img src={sAvatar} alt="" className="w-6 h-6 rounded-full ring-1 ring-neutral-700" />
+                              <img src={sAvatar} alt="" className="w-6 h-6 rounded-full ring-1 ring-white/[0.08]" />
                             ) : (
-                              <div className="w-6 h-6 rounded-full bg-neutral-800 flex items-center justify-center">
-                                <User className="w-3 h-3 text-neutral-500" />
+                              <div className="w-6 h-6 rounded-full bg-white/[0.04] flex items-center justify-center">
+                                <User className="w-3 h-3 text-white/50" />
                               </div>
                             )}
-                            <span className="text-xs text-neutral-500 max-w-[80px] truncate">{sName}</span>
+                            <span className="text-xs text-white/50 max-w-[80px] truncate">{sName}</span>
                           </div>
 
                           {/* Price */}
@@ -1421,7 +1478,7 @@ const PromptMarketPage: React.FC = () => {
                 <button
                   disabled={urlPage <= 1}
                   onClick={() => handlePageChange(urlPage - 1)}
-                  className="px-3 py-2 border border-neutral-700/40 text-sm text-neutral-500 hover:border-brand-blue/25 hover:text-brand-blue disabled:opacity-20 disabled:cursor-not-allowed transition"
+                  className="px-3 py-2 border border-white/[0.08] text-sm text-white/50 hover:border-brand-blue/25 hover:text-brand-blue disabled:opacity-20 disabled:cursor-not-allowed transition"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
@@ -1436,7 +1493,7 @@ const PromptMarketPage: React.FC = () => {
                     }, [])
                     .map((item, idx) =>
                       item === '...' ? (
-                        <span key={`ellipsis-${idx}`} className="px-2 text-neutral-600 text-sm select-none">
+                        <span key={`ellipsis-${idx}`} className="px-2 text-white/40 text-sm select-none">
                           ...
                         </span>
                       ) : (
@@ -1445,8 +1502,8 @@ const PromptMarketPage: React.FC = () => {
                           onClick={() => handlePageChange(item as number)}
                           className={`w-9 h-9 text-sm font-medium transition-all duration-200 ${
                             urlPage === item
-                              ? 'bg-brand-blue text-white shadow-[0_0_12px_rgba(112,54,240,0.25)]'
-                              : 'border border-neutral-700/40 text-neutral-500 hover:border-brand-blue/20 hover:text-brand-blue'
+                              ? 'bg-brand-blue text-white shadow-[0_0_12px_rgba(201,168,76,0.25)]'
+                              : 'border border-white/[0.08] text-white/50 hover:border-brand-blue/20 hover:text-brand-blue'
                           }`}
                         >
                           {item}
@@ -1458,7 +1515,7 @@ const PromptMarketPage: React.FC = () => {
                 <button
                   disabled={urlPage >= pagination.totalPages}
                   onClick={() => handlePageChange(urlPage + 1)}
-                  className="px-3 py-2 border border-neutral-700/40 text-sm text-neutral-500 hover:border-brand-blue/25 hover:text-brand-blue disabled:opacity-20 disabled:cursor-not-allowed transition"
+                  className="px-3 py-2 border border-white/[0.08] text-sm text-white/50 hover:border-brand-blue/25 hover:text-brand-blue disabled:opacity-20 disabled:cursor-not-allowed transition"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -1486,14 +1543,14 @@ const PromptMarketPage: React.FC = () => {
                     <p className="text-white font-bold text-sm">
                       {t('prompt_market.cta_title')}
                     </p>
-                    <p className="text-neutral-500 text-xs mt-0.5">
+                    <p className="text-white/50 text-xs mt-0.5">
                       {t('prompt_market.cta_desc')}
                     </p>
                   </div>
                 </div>
                 <Link
                   to="/prompt-market/sell"
-                  className="shrink-0 px-6 py-2.5 bg-brand-blue hover:bg-brand-blue/90 text-white text-sm font-bold transition-all duration-200 shadow-[0_2px_20px_rgba(112,54,240,0.2)] hover:shadow-[0_4px_28px_rgba(112,54,240,0.35)] active:scale-[0.97]"
+                  className="shrink-0 px-6 py-2.5 bg-brand-blue hover:bg-brand-blue/90 text-white text-sm font-bold transition-all duration-200 shadow-[0_2px_20px_rgba(201,168,76,0.2)] hover:shadow-[0_4px_28px_rgba(201,168,76,0.35)] active:scale-[0.97]"
                 >
                   {t('prompt_market.cta_button')}
                 </Link>
