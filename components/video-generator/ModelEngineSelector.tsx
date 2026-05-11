@@ -75,7 +75,7 @@ export const ModelEngineSelector: React.FC<ModelEngineSelectorProps> = ({
         {/* Tỉ lệ */}
         <div className="space-y-1.5 text-center">
           <p className="text-[8px] font-bold uppercase text-slate-400 dark:text-gray-600">Tỉ lệ</p>
-          <button onClick={cycleRatio} className="w-full py-2 border rounded-sm text-[8px] font-bold uppercase transition-all bg-white dark:bg-[var(--atlas-bg-panel)] border-slate-200 dark:border-white/5 text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-blue">{ratio}</button>
+          <button onClick={cycleRatio} className="w-full py-2 border rounded-sm text-[8px] font-bold uppercase transition-all bg-white dark:bg-[var(--atlas-bg-panel)] border-slate-200 dark:border-white/[0.06] text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-blue">{ratio}</button>
         </div>
 
         {/* Component Lượng động */}
@@ -84,13 +84,13 @@ export const ModelEngineSelector: React.FC<ModelEngineSelectorProps> = ({
         {/* Âm thanh */}
         <div className="space-y-1.5 text-center">
           <p className="text-[8px] font-bold uppercase text-slate-400 dark:text-gray-600">Âm thanh</p>
-          <button onClick={cycleSound} className={`w-full py-2 border rounded-sm text-[8px] font-bold uppercase transition-all ${soundEnabled ? 'bg-purple-500 text-white border-purple-400 shadow-lg shadow-purple-500/20' : 'bg-white dark:bg-[var(--atlas-bg-panel)] border-slate-200 dark:border-white/5 text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-blue'}`}>{soundEnabled ? 'Bật' : 'Tắt'}</button>
+          <button onClick={cycleSound} className={`w-full py-2 border rounded-sm text-[8px] font-bold uppercase transition-all ${soundEnabled ? 'bg-purple-500 text-white border-purple-400 shadow-lg shadow-purple-500/20' : 'bg-white dark:bg-[var(--atlas-bg-panel)] border-slate-200 dark:border-white/[0.06] text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-blue'}`}>{soundEnabled ? 'Bật' : 'Tắt'}</button>
         </div>
 
         {/* Độ phân giải */}
         <div className="space-y-1.5 text-center">
           <p className="text-[8px] font-bold uppercase text-slate-400 dark:text-gray-600">P.Giải</p>
-          <button onClick={cycleResolution} className="w-full py-2 border rounded-sm text-[8px] font-bold uppercase transition-all bg-white dark:bg-[var(--atlas-bg-panel)] border-slate-200 dark:border-white/5 text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-blue">{resolution}</button>
+          <button onClick={cycleResolution} className="w-full py-2 border rounded-sm text-[8px] font-bold uppercase transition-all bg-white dark:bg-[var(--atlas-bg-panel)] border-slate-200 dark:border-white/[0.06] text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-blue">{resolution}</button>
         </div>
       </div>
     </div>

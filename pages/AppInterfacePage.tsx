@@ -17,12 +17,12 @@ const AppInterfacePage = () => {
   const [url, setUrl] = useState('');
 
   return (
-    <div className="min-h-screen bg-[#0d1117] text-white pt-24 pb-40 relative transition-colors duration-500">
+    <div className="min-h-screen bg-[var(--atlas-bg-page)] text-white pt-24 pb-40 relative transition-colors duration-500">
       
       {/* Back Button */}
       <button 
         onClick={() => navigate('/apps')}
-        className="fixed top-28 left-8 p-3 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-all z-50 text-gray-400 hover:text-white"
+        className="fixed top-28 left-8 p-3 bg-white/[0.06] hover:bg-white/10 rounded-xl border border-white/[0.06] transition-all z-50 text-white/60 hover:text-white"
       >
         <ArrowLeft size={20} />
       </button>
@@ -32,7 +32,7 @@ const AppInterfacePage = () => {
         {/* User Stats Card */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
-          className="bg-[#161b22] border border-white/5 rounded-xl p-8 flex flex-col md:flex-row items-center justify-between gap-8 shadow-3xl"
+          className="bg-[var(--atlas-bg-panel)] border border-white/[0.06] rounded-xl p-8 flex flex-col md:flex-row items-center justify-between gap-8 shadow-atlas-xl"
         >
           <div className="flex items-center gap-6">
              <div className="w-16 h-16 rounded-full bg-brand-blue/20 border-2 border-brand-blue/30 flex items-center justify-center text-brand-blue shadow-lg">
@@ -40,7 +40,7 @@ const AppInterfacePage = () => {
              </div>
              <div>
                 <h3 className="text-xl font-bold uppercase italic tracking-tighter">{user?.name || 'Xvirion'}</h3>
-                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">@{user?.email?.split('@')[0] || 'xvirion25749'}</p>
+                <p className="text-[10px] text-white/50 font-bold uppercase tracking-widest">@{user?.email?.split('@')[0] || 'xvirion25749'}</p>
              </div>
           </div>
 
@@ -50,21 +50,21 @@ const AppInterfacePage = () => {
                    <Zap size={18} fill="currentColor" />
                    <span className="text-2xl font-bold italic tracking-tighter">{credits.toLocaleString()}</span>
                 </div>
-                <p className="text-[9px] font-bold uppercase text-gray-500 tracking-widest">AI Credits</p>
+                <p className="text-[9px] font-bold uppercase text-white/50 tracking-widest">AI Credits</p>
              </div>
              
-             <div className="h-12 w-px bg-white/5"></div>
+             <div className="h-12 w-px bg-white/[0.06]"></div>
 
              <div className="text-center space-y-1">
                 <div className="flex items-center gap-3 text-purple-500">
                    <Download size={18} />
                    <span className="text-2xl font-bold italic tracking-tighter">0 / 5</span>
                 </div>
-                <p className="text-[9px] font-bold uppercase text-gray-500 tracking-widest">Limit Download Sora</p>
+                <p className="text-[9px] font-bold uppercase text-white/50 tracking-widest">Limit Download Sora</p>
              </div>
           </div>
 
-          <button className="p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-colors text-gray-400">
+          <button className="p-4 bg-white/[0.06] hover:bg-white/10 rounded-lg transition-colors text-white/60">
              <LogOut size={20} />
           </button>
         </motion.div>
@@ -72,16 +72,16 @@ const AppInterfacePage = () => {
         {/* Input Bar */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }}
-          className="bg-[#161b22] border border-white/5 p-4 rounded-xl flex flex-col md:flex-row gap-4 shadow-2xl"
+          className="bg-[var(--atlas-bg-panel)] border border-white/[0.06] p-4 rounded-xl flex flex-col md:flex-row gap-4 shadow-atlas-lg"
         >
            <input 
              type="text" 
              value={url}
              onChange={e => setUrl(e.target.value)}
              placeholder="https://sora.chatgpt.com/p/s_..."
-             className="flex-grow bg-[#0d1117] border border-white/5 rounded-2xl px-8 py-5 text-sm font-medium focus:ring-1 focus:ring-brand-blue outline-none transition-all placeholder:text-gray-700"
+             className="flex-grow bg-[var(--atlas-bg-page)] border border-white/[0.06] rounded-lg px-8 py-5 text-sm font-medium focus:ring-1 focus:ring-brand-blue outline-none transition-all placeholder:text-white/30"
            />
-           <button className="bg-brand-blue text-white px-12 py-5 rounded-2xl text-sm font-bold uppercase tracking-widest shadow-xl hover:brightness-110 active:scale-95 transition-all">
+           <button className="bg-brand-blue text-white px-12 py-5 rounded-lg text-sm font-bold uppercase tracking-widest shadow-atlas-lg hover:brightness-110 active:scale-95 transition-all">
               Lấy Link Download
            </button>
         </motion.div>
@@ -117,10 +117,10 @@ const AppInterfacePage = () => {
 };
 
 const InfoCard = ({ title, features, isEn = false }: any) => (
-  <div className="bg-[#161b22] border border-white/5 p-10 rounded-xl space-y-8 shadow-xl">
+  <div className="bg-[var(--atlas-bg-panel)] border border-white/[0.06] p-10 rounded-xl space-y-8 shadow-atlas-lg">
      <div className="space-y-4">
         <h2 className="text-2xl font-bold italic tracking-tighter text-white">🌟 {title}</h2>
-        <p className="text-gray-400 text-sm font-medium leading-relaxed italic">
+        <p className="text-white/60 text-sm font-medium leading-relaxed italic">
            {isEn 
              ? '♦ Experience the smoothest and fastest way to download Sora videos. Get original quality, logo-free videos ready for any use, all with a single click.'
              : '♦ Trải nghiệm tải video Sora mượt mà và nhanh chóng nhất. Video chất lượng gốc, không logo, sẵn sàng cho mọi mục đích sử dụng của bạn chỉ trong một cú nhấp.'
@@ -133,7 +133,7 @@ const InfoCard = ({ title, features, isEn = false }: any) => (
           <div key={i} className="flex gap-4 items-start">
              <CheckCircle2 size={18} className="text-green-500 shrink-0 mt-0.5" />
              <p className="text-sm font-medium leading-relaxed">
-                <strong className="text-white uppercase tracking-tight italic">{f.l}:</strong> <span className="text-gray-400">{f.d}</span>
+                <strong className="text-white uppercase tracking-tight italic">{f.l}:</strong> <span className="text-white/60">{f.d}</span>
              </p>
           </div>
         ))}

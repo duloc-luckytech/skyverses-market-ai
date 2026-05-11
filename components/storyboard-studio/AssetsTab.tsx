@@ -119,7 +119,7 @@ const AssetCard: React.FC<AssetCardProps> = ({ asset, onEdit, onView, onDelete, 
       transition={{ duration: 0.2 }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className={`relative rounded-2xl border overflow-hidden cursor-pointer group ${typeColor[asset.type]}`}
+      className={`relative rounded-lg border overflow-hidden cursor-pointer group ${typeColor[asset.type]}`}
       onClick={onEdit}
     >
       {/* Thumbnail */}
@@ -161,21 +161,21 @@ const AssetCard: React.FC<AssetCardProps> = ({ asset, onEdit, onView, onDelete, 
               <button
                 onClick={onEdit}
                 title="Chỉnh sửa"
-                className="w-8 h-8 rounded-xl bg-white/15 hover:bg-brand-blue hover:text-white flex items-center justify-center text-white transition-all"
+                className="w-8 h-8 rounded-xl bg-white/[0.15] hover:bg-brand-blue hover:text-white flex items-center justify-center text-white transition-all"
               >
                 <Edit3 size={12} />
               </button>
               <button
                 onClick={onRegen}
                 title="Tái tạo ảnh"
-                className="w-8 h-8 rounded-xl bg-white/15 hover:bg-sky-500 hover:text-white flex items-center justify-center text-white transition-all"
+                className="w-8 h-8 rounded-xl bg-white/[0.15] hover:bg-sky-500 hover:text-white flex items-center justify-center text-white transition-all"
               >
                 <RefreshCw size={12} />
               </button>
               <button
                 onClick={e => { e.stopPropagation(); onDelete(); }}
                 title="Xóa"
-                className="w-8 h-8 rounded-xl bg-white/15 hover:bg-rose-500 hover:text-white flex items-center justify-center text-white transition-all"
+                className="w-8 h-8 rounded-xl bg-white/[0.15] hover:bg-rose-500 hover:text-white flex items-center justify-center text-white transition-all"
               >
                 <Trash2 size={12} />
               </button>
@@ -212,9 +212,9 @@ const AddCard: React.FC<{ onAdd: () => void; label: string }> = ({ onAdd, label 
     onClick={onAdd}
     whileHover={{ scale: 1.02 }}
     whileTap={{ scale: 0.97 }}
-    className="aspect-square rounded-2xl border-2 border-dashed border-slate-200 dark:border-white/8 hover:border-brand-blue/40 hover:bg-brand-blue/[0.03] flex flex-col items-center justify-center gap-2 transition-all group"
+    className="aspect-square rounded-lg border-2 border-dashed border-slate-200 dark:border-white/8 hover:border-brand-blue/40 hover:bg-brand-blue/[0.03] flex flex-col items-center justify-center gap-2 transition-all group"
   >
-    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 group-hover:bg-brand-blue/10 flex items-center justify-center transition-all">
+    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/[0.06] group-hover:bg-brand-blue/10 flex items-center justify-center transition-all">
       <Plus size={18} className="text-slate-300 dark:text-white/45 group-hover:text-brand-blue transition-colors" />
     </div>
     <span className="text-[9px] font-bold uppercase tracking-widest text-slate-300 dark:text-white/45 group-hover:text-brand-blue transition-colors">
@@ -264,7 +264,7 @@ const UrlUploadPanel: React.FC<UrlUploadProps> = ({ panelId, onAddUrl }) => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.97 }}
             transition={{ duration: 0.15 }}
-            className="absolute left-0 top-full mt-2 z-20 w-80 p-4 rounded-2xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 shadow-xl shadow-black/20"
+            className="absolute left-0 top-full mt-2 z-20 w-80 p-4 rounded-lg bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 shadow-atlas-lg shadow-black/20"
           >
             <div className="space-y-3">
               <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400">
@@ -341,7 +341,7 @@ const DragDropZone: React.FC<DragDropZoneProps> = ({ onDrop, assetType }) => {
       onDrop={handleDrop}
       onClick={() => fileRef.current?.click()}
       className={`
-        rounded-2xl border-2 border-dashed p-6 flex flex-col items-center justify-center gap-3
+        rounded-lg border-2 border-dashed p-6 flex flex-col items-center justify-center gap-3
         cursor-pointer transition-all text-center
         ${isDragging
           ? 'border-brand-blue/60 bg-brand-blue/5 scale-[1.01]'
@@ -357,7 +357,7 @@ const DragDropZone: React.FC<DragDropZoneProps> = ({ onDrop, assetType }) => {
         className="hidden"
         onChange={handleFileInput}
       />
-      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${isDragging ? 'bg-brand-blue/20 text-brand-blue' : 'bg-slate-100 dark:bg-white/5 text-slate-300 dark:text-white/45'}`}>
+      <div className={`w-12 h-12 rounded-lg flex items-center justify-center transition-all ${isDragging ? 'bg-brand-blue/20 text-brand-blue' : 'bg-slate-100 dark:bg-white/[0.06] text-slate-300 dark:text-white/45'}`}>
         <Upload size={20} />
       </div>
       <div>
@@ -501,7 +501,7 @@ const AssetPanel: React.FC<AssetPanelProps> = ({
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3 rounded-2xl bg-rose-500 text-white text-[11px] font-bold shadow-xl"
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3 rounded-lg bg-rose-500 text-white text-[11px] font-bold shadow-atlas-lg"
           >
             <AlertCircle size={14} />
             Click lại để xác nhận xóa
@@ -590,7 +590,7 @@ const SfxPanel: React.FC = () => {
             layout
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="group flex items-center gap-3 p-3 rounded-xl border border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02] hover:border-brand-blue/20 hover:bg-brand-blue/[0.02] transition-all"
+            className="group flex items-center gap-3 p-3 rounded-xl border border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02] hover:border-brand-blue/20 hover:bg-brand-blue/[0.02] transition-all"
           >
             {/* Play button */}
             <button
@@ -598,7 +598,7 @@ const SfxPanel: React.FC = () => {
               className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all ${
                 playing === sfx.id
                   ? 'bg-brand-blue text-white shadow-md shadow-brand-blue/20'
-                  : 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-gray-400 group-hover:bg-brand-blue/10 group-hover:text-brand-blue'
+                  : 'bg-slate-100 dark:bg-white/[0.06] text-slate-400 dark:text-gray-400 group-hover:bg-brand-blue/10 group-hover:text-brand-blue'
               }`}
             >
               {playing === sfx.id
@@ -649,7 +649,7 @@ const SfxPanel: React.FC = () => {
       )}
 
       {/* Upload custom SFX */}
-      <div className="rounded-2xl border border-slate-200 dark:border-white/8 p-4 space-y-3">
+      <div className="rounded-lg border border-slate-200 dark:border-white/8 p-4 space-y-3">
         <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 flex items-center gap-1.5">
           <Upload size={10} /> Upload SFX tùy chỉnh
         </p>

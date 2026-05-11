@@ -159,7 +159,7 @@ const CategoryPage = () => {
            
            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
               <div className="flex items-center gap-5 md:gap-6">
-                 <div className={`p-4 rounded-2xl bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 shadow-xl transition-all hover:scale-105 ${uiInfo.color}`}>
+                 <div className={`p-4 rounded-lg bg-white dark:bg-white/[0.06] border border-black/5 dark:border-white/10 shadow-atlas-lg transition-all hover:scale-105 ${uiInfo.color}`}>
                     <Icon size={32} strokeWidth={2.5} />
                  </div>
                  <div className="space-y-0.5">
@@ -221,7 +221,7 @@ const CategoryPage = () => {
         </div>
         
         {/* FOOTER STATS */}
-        <div className="mt-40 pt-10 border-t border-black/5 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 opacity-40">
+        <div className="mt-40 pt-10 border-t border-black/5 dark:border-white/[0.06] flex flex-col md:flex-row justify-between items-center gap-8 opacity-40">
            <div className="flex items-center gap-8 text-[9px] font-bold uppercase tracking-widest italic">
               <span className="flex items-center gap-2"><ShieldCheck size={14}/> Security: Encrypted</span>
               <span className="flex items-center gap-2"><Zap size={14}/> Latency: 24ms</span>

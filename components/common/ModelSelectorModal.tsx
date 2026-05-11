@@ -171,7 +171,7 @@ export const ModelSelectorModal: React.FC<ModelSelectorModalProps> = ({
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.96, opacity: 0, y: 20 }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="relative w-full max-w-4xl max-h-[82vh] bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row"
+        className="relative w-full max-w-4xl max-h-[82vh] bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-lg overflow-hidden shadow-atlas-lg flex flex-col md:flex-row"
       >
         {/* ======= LEFT: ENGINE TABS ======= */}
         <aside className="w-full md:w-48 shrink-0 border-b md:border-b-0 md:border-r border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-black/30 flex md:flex-col">
@@ -190,7 +190,7 @@ export const ModelSelectorModal: React.FC<ModelSelectorModalProps> = ({
                   onClick={() => { setActiveEngine(engKey); setSearchQuery(''); }}
                   className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl transition-all shrink-0 ${isActive
                     ? 'bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 shadow-md text-slate-900 dark:text-white'
-                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-white/50 dark:hover:bg-white/5 border border-transparent'
+                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-white/50 dark:hover:bg-white/[0.06] border border-transparent'
                     }`}
                 >
                   <span className="text-[11px] font-bold">{meta.label}</span>
@@ -211,7 +211,7 @@ export const ModelSelectorModal: React.FC<ModelSelectorModalProps> = ({
               <input
                 type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Tìm model, key..."
-                className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg pl-9 pr-4 py-2 text-xs outline-none focus:border-violet-500 text-slate-800 dark:text-white transition-all"
+                className="w-full bg-slate-50 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 rounded-lg pl-9 pr-4 py-2 text-xs outline-none focus:border-violet-500 text-slate-800 dark:text-white transition-all"
                 autoFocus
               />
             </div>
@@ -257,7 +257,7 @@ export const ModelSelectorModal: React.FC<ModelSelectorModalProps> = ({
                               <span key={m} className="px-1.5 py-0.5 rounded text-[7px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">{m}</span>
                             ))}
                             {allResolutions.slice(0, 3).map(r => (
-                              <span key={r} className="px-1.5 py-0.5 rounded text-[7px] font-bold bg-slate-100 dark:bg-white/5 text-slate-500 border border-slate-200 dark:border-white/10">{r}</span>
+                              <span key={r} className="px-1.5 py-0.5 rounded text-[7px] font-bold bg-slate-100 dark:bg-white/[0.06] text-slate-500 border border-slate-200 dark:border-white/10">{r}</span>
                             ))}
                             {familyPriceRange && (
                               <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[7px] font-bold bg-orange-500/10 text-orange-500 border border-orange-500/20">
@@ -318,18 +318,18 @@ export const ModelSelectorModal: React.FC<ModelSelectorModalProps> = ({
                                       <span key={m} className="px-1.5 py-0.5 rounded text-[7px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">{m}</span>
                                     ))}
                                     {model.modes && model.modes.length > 3 && (
-                                      <span className="px-1.5 py-0.5 rounded text-[7px] font-bold bg-slate-100 dark:bg-white/5 text-slate-400 border border-slate-200 dark:border-white/10">+{model.modes.length - 3}</span>
+                                      <span className="px-1.5 py-0.5 rounded text-[7px] font-bold bg-slate-100 dark:bg-white/[0.06] text-slate-400 border border-slate-200 dark:border-white/10">+{model.modes.length - 3}</span>
                                     )}
                                     {/* Resolutions */}
                                     {resolutions.map(r => (
-                                      <span key={r} className="px-1.5 py-0.5 rounded text-[7px] font-bold bg-slate-100 dark:bg-white/5 text-slate-500 border border-slate-200 dark:border-white/10">{r}</span>
+                                      <span key={r} className="px-1.5 py-0.5 rounded text-[7px] font-bold bg-slate-100 dark:bg-white/[0.06] text-slate-500 border border-slate-200 dark:border-white/10">{r}</span>
                                     ))}
                                     {/* Aspect Ratios */}
                                     {model.aspectRatios && model.aspectRatios.length > 0 && model.aspectRatios.slice(0, 3).map(ar => (
                                       <span key={ar} className="px-1.5 py-0.5 rounded text-[7px] font-bold bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">{ar}</span>
                                     ))}
                                     {model.aspectRatios && model.aspectRatios.length > 3 && (
-                                      <span className="px-1.5 py-0.5 rounded text-[7px] font-bold bg-slate-100 dark:bg-white/5 text-slate-400 border border-slate-200 dark:border-white/10">+{model.aspectRatios.length - 3}</span>
+                                      <span className="px-1.5 py-0.5 rounded text-[7px] font-bold bg-slate-100 dark:bg-white/[0.06] text-slate-400 border border-slate-200 dark:border-white/10">+{model.aspectRatios.length - 3}</span>
                                     )}
                                   </div>
                                 </div>

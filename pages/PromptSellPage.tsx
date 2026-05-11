@@ -51,7 +51,7 @@ const STATUS_STYLES: Record<PromptSet['status'], string> = {
   draft: 'bg-yellow-500/15 text-yellow-400 border border-yellow-500/30',
   pending: 'bg-blue-500/15 text-blue-400 border border-blue-500/30',
   rejected: 'bg-red-500/15 text-red-400 border border-red-500/30',
-  archived: 'bg-neutral-500/15 text-neutral-400 border border-neutral-500/30',
+  archived: 'bg-white/[0.04] text-white/60 border border-white/10',
 };
 
 const STATUS_LABELS: Record<PromptSet['status'], string> = {
@@ -107,7 +107,7 @@ function FilterDropdown({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="appearance-none bg-white/5 border border-white/10 rounded-lg pl-3 pr-8 py-2 text-sm text-white/70 focus:outline-none focus:border-[#7036F0]/50 capitalize cursor-pointer"
+        className="appearance-none bg-white/[0.06] border border-white/10 rounded-lg pl-3 pr-8 py-2 text-sm text-white/70 focus:outline-none focus:border-[#C9A84C]/50 capitalize cursor-pointer"
       >
         {options.map((opt) => (
           <option key={opt} value={opt} className="bg-[#0c0c14] capitalize">
@@ -200,10 +200,10 @@ export default function PromptSellPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-md w-full rounded-2xl border border-white/10 bg-white/5 p-10 text-center flex flex-col items-center gap-5"
+          className="max-w-md w-full rounded-lg border border-white/10 bg-white/[0.06] p-10 text-center flex flex-col items-center gap-5"
         >
-          <div className="w-14 h-14 rounded-full bg-[#7036F0]/20 flex items-center justify-center">
-            <LogIn size={24} className="text-[#7036F0]" />
+          <div className="w-14 h-14 rounded-full bg-[#C9A84C]/20 flex items-center justify-center">
+            <LogIn size={24} className="text-[#C9A84C]" />
           </div>
           <div>
             <h2 className="text-xl font-semibold text-white mb-1">Sign in required</h2>
@@ -213,7 +213,7 @@ export default function PromptSellPage() {
           </div>
           <button
             onClick={login}
-            className="w-full py-3 rounded-xl bg-[#7036F0] hover:bg-[#5a2bc7] text-white font-medium transition-colors"
+            className="w-full py-3 rounded-xl bg-[#C9A84C] hover:bg-[#B8963F] text-white font-medium transition-colors"
           >
             Sign In
           </button>
@@ -258,7 +258,7 @@ export default function PromptSellPage() {
           </div>
           <Link
             to="/prompt-market/sell/new"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#7036F0] hover:bg-[#5a2bc7] text-white text-sm font-medium transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#C9A84C] hover:bg-[#B8963F] text-white text-sm font-medium transition-colors"
           >
             <Plus size={16} />
             Create New
@@ -268,7 +268,7 @@ export default function PromptSellPage() {
         {/* Earnings summary cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           {/* Total Sales */}
-          <div className="bg-white/5 border border-white/8 rounded-xl p-4">
+          <div className="bg-white/[0.06] border border-white/8 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
               <TrendingUp size={15} className="text-white/40" />
               <span className="text-xs text-white/40 uppercase tracking-wider font-mono">Total Sales</span>
@@ -279,7 +279,7 @@ export default function PromptSellPage() {
           </div>
 
           {/* Total Earned */}
-          <div className="bg-white/5 border border-white/8 rounded-xl p-4">
+          <div className="bg-white/[0.06] border border-white/8 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
               <Coins size={15} className="text-yellow-400" />
               <span className="text-xs text-white/40 uppercase tracking-wider font-mono">Total Earned</span>
@@ -290,9 +290,9 @@ export default function PromptSellPage() {
           </div>
 
           {/* SKT Balance + Withdraw */}
-          <div className="bg-white/5 border border-white/8 rounded-xl p-4">
+          <div className="bg-white/[0.06] border border-white/8 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
-              <Wallet size={15} className="text-[#7036F0]" />
+              <Wallet size={15} className="text-[#C9A84C]" />
               <span className="text-xs text-white/40 uppercase tracking-wider font-mono">SKT Balance</span>
             </div>
             <div className="flex items-center justify-between">
@@ -301,7 +301,7 @@ export default function PromptSellPage() {
               </p>
               <Link
                 to="/skytoken"
-                className="text-xs text-[#7036F0] hover:text-[#5a2bc7] font-medium transition-colors"
+                className="text-xs text-[#C9A84C] hover:text-[#B8963F] font-medium transition-colors"
               >
                 Withdraw →
               </Link>
@@ -335,7 +335,7 @@ export default function PromptSellPage() {
               onClick={() => setActiveTab(key)}
               className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors ${
                 activeTab === key
-                  ? 'border-[#7036F0] text-white'
+                  ? 'border-[#C9A84C] text-white'
                   : 'border-transparent text-white/40 hover:text-white/70'
               }`}
             >
@@ -366,7 +366,7 @@ export default function PromptSellPage() {
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Search listings..."
-                      className="w-full pl-9 pr-8 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#7036F0]/50"
+                      className="w-full pl-9 pr-8 py-2 bg-white/[0.06] border border-white/10 rounded-lg text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-[#C9A84C]/50"
                     />
                     {searchQuery && (
                       <button
@@ -398,7 +398,7 @@ export default function PromptSellPage() {
                   {hasActiveFilters && (
                     <button
                       onClick={() => { setSearchQuery(''); setFilterCategory('all'); setFilterStatus('all'); }}
-                      className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs text-white/40 hover:text-white/70 bg-white/5 hover:bg-white/10 transition-colors whitespace-nowrap"
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs text-white/40 hover:text-white/70 bg-white/[0.06] hover:bg-white/10 transition-colors whitespace-nowrap"
                     >
                       <X size={12} />
                       Clear
@@ -426,7 +426,7 @@ export default function PromptSellPage() {
 
                   <div className="rounded-xl border border-white/10 overflow-hidden">
                     {/* Table header */}
-                    <div className="hidden md:grid grid-cols-[1fr_120px_90px_80px_70px_110px] gap-4 px-5 py-3 bg-white/5 text-white/40 text-xs font-medium uppercase tracking-wide border-b border-white/10">
+                    <div className="hidden md:grid grid-cols-[1fr_120px_90px_80px_70px_110px] gap-4 px-5 py-3 bg-white/[0.06] text-white/40 text-xs font-medium uppercase tracking-wide border-b border-white/10">
                       <span>Title</span>
                       <span>Category</span>
                       <span>Price</span>
@@ -436,7 +436,7 @@ export default function PromptSellPage() {
                     </div>
 
                     {/* Table rows */}
-                    <div className="divide-y divide-white/5">
+                    <div className="divide-y divide-white/[0.06]">
                       {filteredListings.map((listing) => {
                         const title =
                           listing.title[lang as keyof typeof listing.title] ??
@@ -458,7 +458,7 @@ export default function PromptSellPage() {
                                   className="w-10 h-7 rounded object-cover flex-shrink-0 border border-white/10"
                                 />
                               ) : (
-                                <div className="w-10 h-7 rounded bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
+                                <div className="w-10 h-7 rounded bg-white/[0.06] border border-white/10 flex items-center justify-center flex-shrink-0">
                                   <Package size={12} className="text-white/20" />
                                 </div>
                               )}
@@ -494,14 +494,14 @@ export default function PromptSellPage() {
                             <div className="flex items-center gap-2 md:justify-end">
                               <Link
                                 to={`/prompt-market/${listing.slug}`}
-                                className="inline-flex items-center gap-1 p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 hover:text-white text-xs transition-colors"
+                                className="inline-flex items-center gap-1 p-1.5 rounded-lg bg-white/[0.06] hover:bg-white/10 text-white/40 hover:text-white text-xs transition-colors"
                                 title="View"
                               >
                                 <Eye size={12} />
                               </Link>
                               <Link
                                 to={`/prompt-market/sell/edit/${listing._id}`}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white text-xs transition-colors"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/10 text-white/60 hover:text-white text-xs transition-colors"
                               >
                                 <Pencil size={12} />
                                 Edit
@@ -546,7 +546,7 @@ export default function PromptSellPage() {
               ) : (
                 <div className="rounded-xl border border-white/10 overflow-hidden">
                   {/* Table header */}
-                  <div className="hidden md:grid grid-cols-[1fr_1fr_100px_100px_110px] gap-4 px-5 py-3 bg-white/5 text-white/40 text-xs font-medium uppercase tracking-wide border-b border-white/10">
+                  <div className="hidden md:grid grid-cols-[1fr_1fr_100px_100px_110px] gap-4 px-5 py-3 bg-white/[0.06] text-white/40 text-xs font-medium uppercase tracking-wide border-b border-white/10">
                     <span>Buyer</span>
                     <span>Prompt Set</span>
                     <span>Paid</span>
@@ -554,7 +554,7 @@ export default function PromptSellPage() {
                     <span className="text-right">Date</span>
                   </div>
 
-                  <div className="divide-y divide-white/5">
+                  <div className="divide-y divide-white/[0.06]">
                     {earnings.recentSales.map((sale) => (
                       <div
                         key={sale._id}
@@ -590,7 +590,7 @@ export default function PromptSellPage() {
                         </span>
 
                         {/* Seller received */}
-                        <span className="text-[#7036F0] text-sm font-mono font-medium">
+                        <span className="text-[#C9A84C] text-sm font-mono font-medium">
                           +{sale.sellerReceived} SKT
                         </span>
 

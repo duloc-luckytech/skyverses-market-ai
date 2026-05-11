@@ -168,8 +168,8 @@ const UniversalProducerInterface = () => {
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[var(--atlas-bg-page)] overflow-hidden text-black dark:text-white font-mono">
 
-      <div className="w-full lg:w-[320px] shrink-0 flex flex-col bg-[#f8f8f8] dark:bg-[var(--atlas-bg-page)] border-r border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar">
-         <div className="p-8 border-b border-black/10 dark:border-white/5 space-y-2">
+      <div className="w-full lg:w-[320px] shrink-0 flex flex-col bg-[#f8f8f8] dark:bg-[var(--atlas-bg-page)] border-r border-black/10 dark:border-white/[0.06] overflow-y-auto no-scrollbar">
+         <div className="p-8 border-b border-black/10 dark:border-white/[0.06] space-y-2">
             <h3 className="text-[10px] font-bold uppercase text-brand-blue tracking-[0.4em] flex items-center gap-3">
                <Globe className="w-4 h-4" /> Global_Uplink
             </h3>
@@ -189,7 +189,7 @@ const UniversalProducerInterface = () => {
                     <button
                       key={d.id}
                       onClick={() => setActiveDomain(d.id as Domain)}
-                      className={`flex items-center gap-3 p-3 border transition-all rounded-sm ${activeDomain === d.id ? 'bg-brand-blue border-brand-blue text-white shadow-lg' : 'bg-white dark:bg-white/[0.02] border-black/5 dark:border-white/5 text-gray-400'}`}
+                      className={`flex items-center gap-3 p-3 border transition-all rounded-sm ${activeDomain === d.id ? 'bg-brand-blue border-brand-blue text-white shadow-lg' : 'bg-white dark:bg-white/[0.02] border-black/5 dark:border-white/[0.06] text-gray-400'}`}
                     >
                       {d.icon}
                       <span className="text-[8px] font-bold">{d.id.split('_')[0]}</span>
@@ -211,7 +211,7 @@ const UniversalProducerInterface = () => {
                  <button
                    key={s.id}
                    onClick={() => setActiveStage(s.id as PipelineStage)}
-                   className={`w-full flex items-center justify-between p-4 border transition-all rounded-sm group ${activeStage === s.id ? 'bg-black dark:bg-white text-white dark:text-black' : 'bg-transparent border-black/5 dark:border-white/5 text-gray-400'}`}
+                   className={`w-full flex items-center justify-between p-4 border transition-all rounded-sm group ${activeStage === s.id ? 'bg-black dark:bg-white text-white dark:text-black' : 'bg-transparent border-black/5 dark:border-white/[0.06] text-gray-400'}`}
                  >
                    <div className="flex flex-col items-start">
                       <span className="text-[7px] opacity-40 font-bold">PHASE_{s.step}</span>
@@ -223,7 +223,7 @@ const UniversalProducerInterface = () => {
             </div>
          </div>
 
-         <div className="mt-auto p-6 border-t border-black/10 dark:border-white/5">
+         <div className="mt-auto p-6 border-t border-black/10 dark:border-white/[0.06]">
             <div className="p-4 bg-emerald-500/5 border border-emerald-500/20 space-y-2">
                <div className="flex items-center gap-2 text-emerald-500">
                   <ShieldCheck size={12} />
@@ -239,7 +239,7 @@ const UniversalProducerInterface = () => {
 
         <div className="flex-grow overflow-y-auto p-8 lg:p-12 relative z-10 no-scrollbar pb-40">
            <div className="max-w-5xl mx-auto space-y-12">
-              <div className="flex justify-between items-center border-b border-black/10 dark:border-white/5 pb-8">
+              <div className="flex justify-between items-center border-b border-black/10 dark:border-white/[0.06] pb-8">
                  <div className="flex items-center gap-4">
                     <BrainCircuit className="w-8 h-8 text-brand-blue" />
                     <div className="space-y-0.5">
@@ -258,7 +258,7 @@ const UniversalProducerInterface = () => {
               <div className="min-h-[500px] flex items-center justify-center w-full">
                  {activeStage === 'IDENTITY' && (
                     <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-12 animate-in fade-in zoom-in-95 duration-500">
-                       <div className="aspect-[3/4] bg-black border border-white/10 relative group overflow-hidden shadow-2xl">
+                       <div className="aspect-[3/4] bg-black border border-white/10 relative group overflow-hidden shadow-atlas-lg">
                           {characterDna.img ? (
                              <img src={characterDna.img} className="w-full h-full object-cover" />
                           ) : (
@@ -290,7 +290,7 @@ const UniversalProducerInterface = () => {
 
                  {activeStage === 'DOMAIN_RENDER' && (
                     <div className="w-full space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
-                       <div className="aspect-video bg-black border-4 border-brand-blue/20 shadow-2xl relative overflow-hidden group">
+                       <div className="aspect-video bg-black border-4 border-brand-blue/20 shadow-atlas-lg relative overflow-hidden group">
                           {activeRender ? (
                              <video key={activeRender} src={activeRender} autoPlay loop muted className="w-full h-full object-cover" />
                           ) : (
@@ -299,7 +299,7 @@ const UniversalProducerInterface = () => {
                                 <p className="text-[14px] font-bold uppercase tracking-[0.8em]">Viewport_Standby</p>
                              </div>
                           )}
-                          <div className="absolute top-6 left-6 px-4 py-2 bg-brand-blue text-white text-[9px] font-bold uppercase tracking-widest shadow-xl border border-white/20 backdrop-blur-md">
+                          <div className="absolute top-6 left-6 px-4 py-2 bg-brand-blue text-white text-[9px] font-bold uppercase tracking-widest shadow-atlas-lg border border-white/20 backdrop-blur-md">
                              ADAPTER_{activeDomain}_ACTIVE
                           </div>
                        </div>
@@ -328,7 +328,7 @@ const UniversalProducerInterface = () => {
            </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-[var(--atlas-bg-panel-hover)] dark:bg-black border-t border-black/10 dark:border-white/5 p-6 lg:p-10 flex items-center justify-between z-30 shadow-[0_-20px_40px_rgba(0,0,0,0.1)]">
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-[var(--atlas-bg-panel-hover)] dark:bg-black border-t border-black/10 dark:border-white/[0.06] p-6 lg:p-10 flex items-center justify-between z-30 shadow-[0_-20px_40px_rgba(0,0,0,0.1)]">
            <div className="hidden lg:flex items-center gap-12">
               <div className="flex items-center gap-6">
                  {['IDENTITY', 'ASSETS', 'MOTION', 'DOMAIN', 'MASTER'].map((step, i) => (
@@ -338,7 +338,7 @@ const UniversalProducerInterface = () => {
                     </div>
                  ))}
               </div>
-              <div className="h-10 w-px bg-black/5 dark:bg-white/5 mx-4"></div>
+              <div className="h-10 w-px bg-black/[0.06] dark:bg-white/[0.06] mx-4"></div>
               <div className="space-y-1">
                  <p className="text-[7px] font-bold text-gray-400 uppercase tracking-widest">System_Security</p>
                  <div className="flex items-center gap-2 text-green-500">
@@ -356,7 +356,7 @@ const UniversalProducerInterface = () => {
                 <Trash2 size={20} />
               </button>
               <button
-                className="flex-grow lg:flex-none bg-brand-blue text-white px-16 py-6 text-[11px] font-bold uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-black transition-all shadow-2xl active:scale-[0.98] rounded-sm"
+                className="flex-grow lg:flex-none bg-brand-blue text-white px-16 py-6 text-[11px] font-bold uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-black transition-all shadow-atlas-lg active:scale-[0.98] rounded-sm"
               >
                 EXPORT_UNIVERSAL_MANIFEST <Download size={16} />
               </button>
@@ -364,8 +364,8 @@ const UniversalProducerInterface = () => {
         </div>
       </div>
 
-      <div className="hidden xl:flex w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[var(--atlas-bg-page)] border-l border-black/10 dark:border-white/5 overflow-hidden">
-         <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
+      <div className="hidden xl:flex w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[var(--atlas-bg-page)] border-l border-black/10 dark:border-white/[0.06] overflow-hidden">
+         <div className="h-16 border-b border-black/10 dark:border-white/[0.06] flex items-center px-8 shrink-0">
             <h3 className="text-[10px] font-bold uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
                <Activity className="w-4 h-4 text-brand-blue" /> Orchestration_Log
             </h3>
@@ -380,7 +380,7 @@ const UniversalProducerInterface = () => {
                logs.map((log, i) => (
                   <div key={i} className="space-y-2 animate-in fade-in slide-in-from-right-4 duration-500">
                      <div className="flex justify-between items-center text-[7px] font-bold uppercase text-gray-400">
-                        <span className={`px-2 py-0.5 rounded-sm bg-black/5 dark:bg-white/5 ${log.agent === 'DIRECTOR' ? 'text-brand-blue' : 'text-gray-500'}`}>{log.agent}</span>
+                        <span className={`px-2 py-0.5 rounded-sm bg-black/[0.06] dark:bg-white/[0.06] ${log.agent === 'DIRECTOR' ? 'text-brand-blue' : 'text-gray-500'}`}>{log.agent}</span>
                         <span>{log.t}</span>
                      </div>
                      <p className="text-[10px] leading-relaxed text-black dark:text-white/80 font-bold uppercase tracking-tight">

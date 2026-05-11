@@ -72,12 +72,12 @@ const GlobalSettingsModal: React.FC<GlobalSettingsModalProps> = ({ isOpen, onClo
           initial={{ scale: 0.95, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.95, opacity: 0, y: 20 }}
-          className="relative w-full max-w-lg bg-white dark:bg-[var(--atlas-bg-panel)] rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-3xl flex flex-col border border-black/5 dark:border-white/10 max-h-[90vh] md:max-h-[85vh]"
+          className="relative w-full max-w-lg bg-white dark:bg-[var(--atlas-bg-panel)] rounded-xl md:rounded-xl overflow-hidden shadow-atlas-xl flex flex-col border border-black/5 dark:border-white/10 max-h-[90vh] md:max-h-[85vh]"
         >
           {/* Header - Compact for Mobile */}
-          <div className="p-5 md:p-8 flex items-center justify-between border-b border-black/5 dark:border-white/5 bg-slate-50/50 dark:bg-black/20 shrink-0">
+          <div className="p-5 md:p-8 flex items-center justify-between border-b border-black/5 dark:border-white/[0.06] bg-slate-50/50 dark:bg-black/20 shrink-0">
             <h2 className="text-lg md:text-xl font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white leading-none">Setting</h2>
-            <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 transition-colors bg-black/5 dark:bg-white/5 rounded-full">
+            <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 transition-colors bg-black/[0.06] dark:bg-white/[0.06] rounded-full">
               <X size={20} />
             </button>
           </div>
@@ -93,7 +93,7 @@ const GlobalSettingsModal: React.FC<GlobalSettingsModalProps> = ({ isOpen, onClo
                   <button 
                     key={m.id}
                     onClick={() => setSelectedModel(m.id)}
-                    className={`min-w-[140px] md:min-w-[160px] p-4 md:p-5 rounded-2xl border-2 text-left transition-all relative overflow-hidden group ${selectedModel === m.id ? 'border-purple-500 bg-purple-500/5 shadow-lg' : 'border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-black hover:border-slate-200'}`}
+                    className={`min-w-[140px] md:min-w-[160px] p-4 md:p-5 rounded-lg border-2 text-left transition-all relative overflow-hidden group ${selectedModel === m.id ? 'border-purple-500 bg-purple-500/5 shadow-lg' : 'border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-black hover:border-slate-200'}`}
                   >
                     <div className="relative z-10 space-y-1">
                       <h4 className={`text-xs md:text-sm font-bold uppercase italic ${selectedModel === m.id ? 'text-white' : 'text-slate-800 dark:text-gray-300'}`}>{m.name}</h4>
@@ -115,13 +115,13 @@ const GlobalSettingsModal: React.FC<GlobalSettingsModalProps> = ({ isOpen, onClo
               <div className="grid grid-cols-2 gap-2 md:gap-3">
                 <button 
                   onClick={() => setResolution('1080P')}
-                  className={`py-3 md:py-4 rounded-xl border-2 font-bold text-[10px] md:text-[11px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${resolution === '1080P' ? 'border-purple-500 bg-purple-500/5 text-white' : 'border-slate-100 dark:border-white/5 text-gray-400'}`}
+                  className={`py-3 md:py-4 rounded-xl border-2 font-bold text-[10px] md:text-[11px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${resolution === '1080P' ? 'border-purple-500 bg-purple-500/5 text-white' : 'border-slate-100 dark:border-white/[0.06] text-gray-400'}`}
                 >
                   1080P <span className="bg-purple-600 text-white text-[7px] px-1.5 py-0.5 rounded-sm">VIP</span>
                 </button>
                 <button 
                   onClick={() => setResolution('720P')}
-                  className={`py-3 md:py-4 rounded-xl border-2 font-bold text-[10px] md:text-[11px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${resolution === '720P' ? 'border-purple-500 bg-purple-500/5 text-white' : 'border-slate-100 dark:border-white/5 text-gray-400'}`}
+                  className={`py-3 md:py-4 rounded-xl border-2 font-bold text-[10px] md:text-[11px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${resolution === '720P' ? 'border-purple-500 bg-purple-500/5 text-white' : 'border-slate-100 dark:border-white/[0.06] text-gray-400'}`}
                 >
                   720P
                 </button>
@@ -136,7 +136,7 @@ const GlobalSettingsModal: React.FC<GlobalSettingsModalProps> = ({ isOpen, onClo
                   <button 
                     key={r.id}
                     onClick={() => setAspectRatio(r.id)}
-                    className={`flex flex-col items-center justify-center gap-2 md:gap-3 aspect-square border-2 rounded-xl transition-all ${aspectRatio === r.id ? 'border-purple-500 bg-purple-500/5 text-white' : 'border-slate-100 dark:border-white/5 text-gray-400 hover:border-slate-200'}`}
+                    className={`flex flex-col items-center justify-center gap-2 md:gap-3 aspect-square border-2 rounded-xl transition-all ${aspectRatio === r.id ? 'border-purple-500 bg-purple-500/5 text-white' : 'border-slate-100 dark:border-white/[0.06] text-gray-400 hover:border-slate-200'}`}
                   >
                     <div className={aspectRatio === r.id ? 'text-white' : 'text-gray-500'}>{r.icon}</div>
                     <span className="text-[8px] md:text-[9px] font-bold">{r.id}</span>
@@ -153,7 +153,7 @@ const GlobalSettingsModal: React.FC<GlobalSettingsModalProps> = ({ isOpen, onClo
                   <button 
                     key={d.id}
                     onClick={() => setDuration(d.id)}
-                    className={`py-3 md:py-4 rounded-xl border-2 font-bold text-[10px] md:text-[11px] uppercase tracking-widest flex items-center justify-center gap-1 md:gap-2 transition-all ${duration === d.id ? 'border-purple-500 bg-purple-500/5 text-white' : 'border-slate-100 dark:border-white/5 text-gray-400'}`}
+                    className={`py-3 md:py-4 rounded-xl border-2 font-bold text-[10px] md:text-[11px] uppercase tracking-widest flex items-center justify-center gap-1 md:gap-2 transition-all ${duration === d.id ? 'border-purple-500 bg-purple-500/5 text-white' : 'border-slate-100 dark:border-white/[0.06] text-gray-400'}`}
                   >
                     {d.id} {d.vip && <span className="bg-purple-600 text-white text-[7px] px-1 py-0.5 rounded-sm leading-none">VIP</span>}
                   </button>
@@ -184,7 +184,7 @@ const GlobalSettingsModal: React.FC<GlobalSettingsModalProps> = ({ isOpen, onClo
           </div>
 
           {/* Footer Info */}
-          <div className="p-4 md:p-6 bg-slate-50 dark:bg-black/40 border-t border-black/5 dark:border-white/5 flex items-center justify-center gap-3 md:gap-4 text-slate-400 italic shrink-0">
+          <div className="p-4 md:p-6 bg-slate-50 dark:bg-black/40 border-t border-black/5 dark:border-white/[0.06] flex items-center justify-center gap-3 md:gap-4 text-slate-400 italic shrink-0">
              <ShieldCheck size={14} className="text-brand-blue" />
              <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-widest leading-none">Security Node: V4.2 Protocol Active</span>
           </div>

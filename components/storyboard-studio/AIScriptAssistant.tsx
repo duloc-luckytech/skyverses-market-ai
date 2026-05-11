@@ -309,7 +309,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
   const canInteract = !!script.trim() && !isProcessing;
 
   return (
-    <div className="rounded-2xl border border-slate-200 dark:border-white/8 bg-white dark:bg-[var(--atlas-bg-page)] overflow-hidden shadow-sm">
+    <div className="rounded-lg border border-slate-200 dark:border-white/8 bg-white dark:bg-[var(--atlas-bg-page)] overflow-hidden shadow-sm">
 
       {/* ── Header toggle ──────────────────────────────────────── */}
       <button
@@ -350,7 +350,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
             className="overflow-hidden"
           >
             {/* Tab bar */}
-            <div className="flex border-t border-slate-100 dark:border-white/5 overflow-x-auto">
+            <div className="flex border-t border-slate-100 dark:border-white/[0.06] overflow-x-auto">
               {TABS.map(tab => (
                 <button
                   key={tab.id}
@@ -422,7 +422,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                           <div className={`max-w-[82%] px-3 py-2 rounded-xl text-[11px] leading-relaxed ${
                             msg.role === 'user'
                               ? 'bg-brand-blue text-white rounded-tr-sm'
-                              : 'bg-slate-50 dark:bg-white/[0.04] border border-slate-100 dark:border-white/5 text-slate-700 dark:text-white/80 rounded-tl-sm'
+                              : 'bg-slate-50 dark:bg-white/[0.04] border border-slate-100 dark:border-white/[0.06] text-slate-700 dark:text-white/80 rounded-tl-sm'
                           }`}>
                             {msg.content}
                           </div>
@@ -439,7 +439,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                           <div className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center mt-0.5 bg-purple-500/15 text-purple-400">
                             <Bot size={11} />
                           </div>
-                          <div className="max-w-[82%] px-3 py-2 rounded-xl rounded-tl-sm text-[11px] leading-relaxed bg-slate-50 dark:bg-white/[0.04] border border-slate-100 dark:border-white/5 text-slate-700 dark:text-white/80">
+                          <div className="max-w-[82%] px-3 py-2 rounded-xl rounded-tl-sm text-[11px] leading-relaxed bg-slate-50 dark:bg-white/[0.04] border border-slate-100 dark:border-white/[0.06] text-slate-700 dark:text-white/80">
                             {streamingText || (
                               <span className="flex gap-0.5 items-center">
                                 <span className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-white/20 animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -533,7 +533,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                                 initial={{ opacity: 0, x: -8 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: i * 0.08 }}
-                                className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/5 hover:border-brand-blue/20 transition-all group"
+                                className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.06] hover:border-brand-blue/20 transition-all group"
                               >
                                 {/* Scene number */}
                                 <div className="w-6 h-6 rounded-full bg-brand-blue/10 text-brand-blue flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5">
@@ -580,7 +580,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                               className={`text-left p-2.5 rounded-xl border transition-all ${
                                 selectedDirector === d.id
                                   ? 'bg-brand-blue/10 border-brand-blue/40 text-brand-blue'
-                                  : 'border-slate-100 dark:border-white/5 text-slate-500 dark:text-white/40 hover:border-brand-blue/20 hover:text-slate-700 dark:hover:text-white/60'
+                                  : 'border-slate-100 dark:border-white/[0.06] text-slate-500 dark:text-white/40 hover:border-brand-blue/20 hover:text-slate-700 dark:hover:text-white/60'
                               }`}
                             >
                               <p className="text-[10px] font-bold leading-none mb-0.5">{d.label}</p>
@@ -679,7 +679,7 @@ Keep the rewrite to the same approximate length. Return ONLY the rewritten scrip
                                   initial={{ opacity: 0, y: 4 }}
                                   animate={{ opacity: 1, y: 0 }}
                                   transition={{ delay: i * 0.06 }}
-                                  className="rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-slate-100 dark:border-white/5 px-3 py-2.5"
+                                  className="rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-slate-100 dark:border-white/[0.06] px-3 py-2.5"
                                 >
                                   <p className={`text-sm font-bold tabular-nums leading-none ${stat.accent}`}>{stat.value}</p>
                                   <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 mt-1">{stat.label}</p>

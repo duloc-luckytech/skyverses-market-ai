@@ -92,7 +92,7 @@ export const EditorSidebar: React.FC<EditorSidebarProps> = (props) => {
           </div>
           <span className="text-[11px] font-bold text-slate-900 dark:text-white">Bảng điều khiển</span>
         </div>
-        <div className={`p-1 rounded-full bg-slate-100 dark:bg-white/5 transition-transform duration-500 ${props.isMobileExpanded ? 'rotate-180' : ''}`}>
+        <div className={`p-1 rounded-full bg-slate-100 dark:bg-white/[0.06] transition-transform duration-500 ${props.isMobileExpanded ? 'rotate-180' : ''}`}>
           <ChevronDown size={14} className="text-slate-400" />
         </div>
       </div>

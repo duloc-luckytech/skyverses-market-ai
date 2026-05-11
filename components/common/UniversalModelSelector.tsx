@@ -44,7 +44,7 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
               disabled={disabled}
               value={selectedEngine}
               onChange={(e) => onEngineChange(e.target.value)}
-              className="appearance-none bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 pl-2.5 pr-7 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-tight outline-none focus:border-brand-blue transition-all cursor-pointer text-slate-700 dark:text-white"
+              className="appearance-none bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 pl-2.5 pr-7 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-tight outline-none focus:border-brand-blue transition-all cursor-pointer text-slate-700 dark:text-white"
             >
               <option value="fxlab">FxLab</option>
               <option value="gommo">Gommo</option>
@@ -57,7 +57,7 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
           <button
             disabled={disabled}
             onClick={() => setIsModalOpen(true)}
-            className="bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-tight transition-all hover:border-brand-blue text-slate-700 dark:text-white flex items-center gap-2"
+            className="bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-tight transition-all hover:border-brand-blue text-slate-700 dark:text-white flex items-center gap-2"
           >
             {selectedModel?.name || 'Chọn Model'}
             <ChevronDown size={10} className="text-slate-400" />
@@ -93,7 +93,7 @@ export const UniversalModelSelector: React.FC<UniversalModelSelectorProps> = ({
           </div>
 
           {showCost && (
-            <div className="p-4 bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 rounded-2xl flex items-center justify-between">
+            <div className="p-4 bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.06] rounded-lg flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]"></div>
                 <span className="text-[9px] font-bold uppercase text-gray-500 tracking-widest">Node Status: Optimal</span>

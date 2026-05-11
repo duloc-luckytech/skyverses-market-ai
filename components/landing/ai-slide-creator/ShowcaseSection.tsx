@@ -164,7 +164,7 @@ export const ShowcaseSection: React.FC = () => (
           Tạo deck tương tự chỉ trong{' '}
           <strong className="text-slate-700 dark:text-white/80">2 phút</strong>
         </p>
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-blue/[0.08] border border-brand-blue/15 text-brand-blue text-[11px] font-semibold">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-blue/[0.08] border border-brand-blue/[0.15] text-brand-blue text-[11px] font-semibold">
           <Sparkles size={11} />
           100% AI Generated — Hoàn toàn miễn phí
         </div>

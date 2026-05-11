@@ -128,7 +128,7 @@ const ShowcaseCard: React.FC<{ item: (typeof SHOWCASE)[0]; index: number }> = ({
       style={{ rotateX: springX, rotateY: springY, transformStyle: 'preserve-3d' }}
       className="group cursor-pointer"
     >
-      <div className="relative bg-[#0a0a0a] border border-[#1a1a1a] rounded-2xl overflow-hidden
+      <div className="relative bg-[var(--atlas-bg-page)] border border-[#1a1a1a] rounded-lg overflow-hidden
         shadow-[0_20px_60px_rgba(0,0,0,0.6)]
         hover:shadow-[0_30px_80px_rgba(201, 168, 76,0.12)]
         hover:border-purple-500/20 transition-all duration-700">
@@ -197,7 +197,7 @@ const FibusVideoStudio: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#050505] min-h-screen text-white font-sans selection:bg-purple-500/30 overflow-x-hidden">
+    <div className="bg-[var(--atlas-bg-page)] min-h-screen text-white font-sans selection:bg-purple-500/30 overflow-x-hidden">
 
       {/* ═══ HERO ═══ */}
       <motion.section
@@ -318,7 +318,7 @@ const FibusVideoStudio: React.FC = () => {
               <motion.div key={i}
                 initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="flex flex-col items-center gap-3 py-6 px-4 bg-[#0a0a0a] border border-[#1a1a1a] rounded-2xl hover:border-[#2a2a2a] transition-all"
+                className="flex flex-col items-center gap-3 py-6 px-4 bg-[var(--atlas-bg-page)] border border-[#1a1a1a] rounded-lg hover:border-[#2a2a2a] transition-all"
               >
                 <span className="text-2xl">{t.icon}</span>
                 <span className="text-[12px] font-semibold text-[#94a3b8]">{t.name}</span>
@@ -353,7 +353,7 @@ const FibusVideoStudio: React.FC = () => {
               <motion.div key={i}
                 initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
                 transition={{ delay: i * 0.09, ease: [0.22, 1, 0.36, 1] as const }}
-                className={`group p-8 bg-[#0a0a0a] border rounded-2xl transition-all duration-500 relative overflow-hidden ${FEATURE_COLORS[f.color]}`}
+                className={`group p-8 bg-[var(--atlas-bg-page)] border rounded-lg transition-all duration-500 relative overflow-hidden ${FEATURE_COLORS[f.color]}`}
               >
                 <div className="absolute top-4 right-4 px-2 py-0.5 bg-white/[0.04] border border-white/[0.06] rounded text-[7px] font-semibold text-white/30 uppercase">
                   {f.badge}
@@ -428,11 +428,11 @@ const FibusVideoStudio: React.FC = () => {
                   <div className="shrink-0 w-14 h-14 rounded-xl bg-indigo-500/[0.06] border border-indigo-500/10 flex items-center justify-center text-indigo-400/50 group-hover:text-indigo-400 group-hover:border-indigo-500/30 group-hover:bg-indigo-500/10 transition-all relative z-10">
                     {s.icon}
                   </div>
-                  <div className="flex-grow p-6 bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl group-hover:border-[#2a2a2a] transition-all">
+                  <div className="flex-grow p-6 bg-[var(--atlas-bg-page)] border border-[#1a1a1a] rounded-xl group-hover:border-[#2a2a2a] transition-all">
                     <div className="flex items-center gap-3 mb-2">
                       <span className="text-[9px] font-mono text-indigo-400/50 uppercase">STEP_{s.step}</span>
                       <span className="px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/15 rounded text-[7px] font-semibold text-indigo-300/60">{s.badge}</span>
-                      <div className="h-px flex-grow bg-[#1a1a1a]" />
+                      <div className="h-px flex-grow bg-[var(--atlas-bg-panel-hover)]" />
                     </div>
                     <h4 className="text-base font-bold text-white/90 mb-1">{s.title}</h4>
                     <p className="text-sm text-[#94a3b8]">{s.desc}</p>
@@ -468,10 +468,10 @@ const FibusVideoStudio: React.FC = () => {
               <motion.div key={i}
                 initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
                 transition={{ delay: i * 0.15, ease: [0.22, 1, 0.36, 1] as const }}
-                className={`relative rounded-2xl p-8 border transition-all duration-500 ${
+                className={`relative rounded-lg p-8 border transition-all duration-500 ${
                   plan.highlight
                     ? 'bg-gradient-to-b from-indigo-500/[0.07] to-[#0a0a0a] border-indigo-500/25 shadow-[0_0_60px_rgba(99,102,241,0.07)]'
-                    : 'bg-[#0a0a0a] border-[#1a1a1a] hover:border-[#2a2a2a]'
+                    : 'bg-[var(--atlas-bg-page)] border-[#1a1a1a] hover:border-[#2a2a2a]'
                 }`}
               >
                 {plan.badge && (
@@ -517,7 +517,7 @@ const FibusVideoStudio: React.FC = () => {
         <div className="max-w-3xl mx-auto space-y-10 relative z-10 px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="space-y-6">
-            <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto text-indigo-400"
+            <div className="w-20 h-20 rounded-lg flex items-center justify-center mx-auto text-indigo-400"
               style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(168,85,247,0.1))', border: '1px solid rgba(99,102,241,0.2)' }}>
               <Video size={32} />
             </div>
@@ -558,7 +558,7 @@ const FibusVideoStudio: React.FC = () => {
               { label: 'Windows', sub: '10 / 11' },
             ].map((p, i) => (
               <div key={i} onClick={handleOpen}
-                className="cursor-pointer px-4 py-2 bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg hover:border-indigo-500/25 hover:bg-indigo-500/[0.04] transition-all text-left">
+                className="cursor-pointer px-4 py-2 bg-[var(--atlas-bg-page)] border border-[#1a1a1a] rounded-lg hover:border-indigo-500/25 hover:bg-indigo-500/[0.04] transition-all text-left">
                 <div className="text-xs font-bold text-white/70">{p.label}</div>
                 <div className="text-[9px] font-mono text-[#94a3b8]">{p.sub}</div>
               </div>

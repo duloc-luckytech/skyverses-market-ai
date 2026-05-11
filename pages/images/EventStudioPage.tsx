@@ -206,7 +206,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
             <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.32 }} className="flex flex-col sm:flex-row gap-4 pt-2">
               <button 
                 onClick={() => setIsStudioOpen(true)}
-                className={`bg-${ac}-500 hover:bg-${ac}-600 text-white px-10 py-5 rounded-2xl text-sm font-bold tracking-wide shadow-xl shadow-${ac}-500/20 hover:shadow-${ac}-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group`}
+                className={`bg-${ac}-500 hover:bg-${ac}-600 text-white px-10 py-5 rounded-lg text-sm font-bold tracking-wide shadow-atlas-lg shadow-${ac}-500/20 hover:shadow-${ac}-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group`}
               >
                 {l.ctaText} <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
@@ -225,7 +225,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
               ) : images.length > 0 ? (
                 <div className="grid grid-cols-2 gap-4 animate-marquee-vertical">
                   {[...images, ...images].map((img, idx) => (
-                    <div key={`${img._id}-${idx}`} className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 dark:bg-[var(--atlas-bg-page)] border border-black/[0.04] dark:border-white/[0.04] group shadow-lg">
+                    <div key={`${img._id}-${idx}`} className="relative aspect-[3/4] rounded-lg overflow-hidden bg-slate-100 dark:bg-[var(--atlas-bg-page)] border border-black/[0.04] dark:border-white/[0.04] group shadow-lg">
                       <img src={img.thumbnailUrl} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" alt={img.title} loading="lazy" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
                       <div className="absolute bottom-4 left-4 right-4">
@@ -264,7 +264,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {l.howItWorks.map((step, i) => (
               <motion.div key={i} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.12 }} className="relative group">
-                <div className={`p-8 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl hover:border-${ac}-500/20 transition-all h-full`}>
+                <div className={`p-8 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-lg hover:border-${ac}-500/20 transition-all h-full`}>
                   <div className={`w-12 h-12 rounded-xl bg-${ac}-500/10 border border-${ac}-500/15 flex items-center justify-center text-${ac}-500 text-lg font-bold mb-6`}>
                     {step.step}
                   </div>
@@ -303,7 +303,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
                 key={t.id} 
                 {...fadeUp} 
                 transition={{ ...fadeUp.transition, delay: i * 0.08 }}
-                className={`bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl p-6 hover:border-${ac}-500/20 hover:shadow-lg transition-all group cursor-pointer`}
+                className={`bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-lg p-6 hover:border-${ac}-500/20 hover:shadow-lg transition-all group cursor-pointer`}
                 onClick={() => setIsStudioOpen(true)}
               >
                 <div className="flex items-start justify-between mb-4">
@@ -341,7 +341,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
                 key={style.id}
                 {...fadeUp}
                 transition={{ ...fadeUp.transition, delay: i * 0.06 }}
-                className={`flex flex-col items-center gap-3 p-5 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl hover:border-${ac}-500/20 transition-all cursor-pointer group`}
+                className={`flex flex-col items-center gap-3 p-5 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-lg hover:border-${ac}-500/20 transition-all cursor-pointer group`}
                 onClick={() => setIsStudioOpen(true)}
               >
                 <span className="text-3xl group-hover:scale-110 transition-transform">{style.emoji}</span>
@@ -368,7 +368,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {config.benefits.map((item, i) => (
-              <motion.div key={i} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.1 }} className={`p-8 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl group hover:border-${ac}-500/20 transition-all`}>
+              <motion.div key={i} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.1 }} className={`p-8 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-lg group hover:border-${ac}-500/20 transition-all`}>
                 <div className="flex items-start gap-5">
                   <div className={`w-12 h-12 shrink-0 rounded-xl bg-${ac}-500/10 border border-${ac}-500/15 flex items-center justify-center text-${ac}-500 text-xl font-bold`}>
                     0{i + 1}
@@ -404,7 +404,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
               { icon: '✨', title: 'Gợi ý prompt AI', desc: 'AI tự động gợi ý kịch bản phù hợp dựa trên chủ đề đã chọn.' },
               { icon: '📤', title: 'Chia sẻ 1 chạm', desc: 'Share trực tiếp lên mạng xã hội hoặc copy link ảnh tức thì.' },
             ].map((feat, i) => (
-              <motion.div key={i} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.06 }} className="p-6 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl transition-all">
+              <motion.div key={i} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.06 }} className="p-6 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-lg transition-all">
                 <span className="text-2xl block mb-3">{feat.icon}</span>
                 <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-1.5">{feat.title}</h4>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">{feat.desc}</p>
@@ -429,7 +429,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {images.slice(0, 8).map((img, i) => (
-                <motion.div key={img._id} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.05 }} className="aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 dark:bg-[var(--atlas-bg-page)] border border-black/[0.04] dark:border-white/[0.04] group relative shadow-sm hover:shadow-xl transition-all">
+                <motion.div key={img._id} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.05 }} className="aspect-[3/4] rounded-lg overflow-hidden bg-slate-100 dark:bg-[var(--atlas-bg-page)] border border-black/[0.04] dark:border-white/[0.04] group relative shadow-sm hover:shadow-xl transition-all">
                   <img src={img.thumbnailUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt={img.title} loading="lazy" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                   <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
@@ -462,7 +462,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
             return (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Traditional */}
-                <motion.div {...fadeUp} className="p-8 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl space-y-5 relative overflow-hidden">
+                <motion.div {...fadeUp} className="p-8 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] rounded-lg space-y-5 relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-slate-200/30 dark:bg-white/[0.02] rounded-bl-[60px]"></div>
                   <h3 className="text-base font-bold text-slate-900 dark:text-white">{pricing.traditional.label}</h3>
                   <div className="space-y-3">
@@ -480,7 +480,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
                 </motion.div>
 
                 {/* AI */}
-                <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.1 }} className={`p-8 bg-${ac}-500/5 border-2 border-${ac}-500/20 rounded-2xl space-y-5 relative overflow-hidden`}>
+                <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.1 }} className={`p-8 bg-${ac}-500/5 border-2 border-${ac}-500/20 rounded-lg space-y-5 relative overflow-hidden`}>
                   <div className={`absolute top-4 right-4 px-2.5 py-1 bg-${ac}-500 text-white text-[8px] font-bold uppercase tracking-wider rounded-full`}>Tiết kiệm</div>
                   <h3 className={`text-base font-bold text-${ac}-600 dark:text-${ac}-400`}>{pricing.ai.label}</h3>
                   <div className="space-y-3">
@@ -541,7 +541,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
               <motion.div key={studio.id} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.08 }}>
                 <Link
                   to={studio.slug}
-                  className={`block p-6 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl hover:border-${studio.color}-500/20 hover:shadow-lg transition-all group`}
+                  className={`block p-6 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-lg hover:border-${studio.color}-500/20 hover:shadow-lg transition-all group`}
                 >
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-3xl">{studio.emoji}</span>
@@ -561,7 +561,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
       ═══════════════════════════════════════════════════ */}
       <section className={`py-28 lg:py-36 bg-gradient-to-br from-${ac}-500/5 via-transparent to-brand-blue/5 border-t border-black/[0.04] dark:border-white/[0.04] transition-colors`}>
         <motion.div {...fadeUp} className="max-w-3xl mx-auto px-6 text-center space-y-8">
-          <div className={`w-16 h-16 mx-auto rounded-2xl bg-${ac}-500/10 border border-${ac}-500/15 flex items-center justify-center text-${ac}-500`}>
+          <div className={`w-16 h-16 mx-auto rounded-lg bg-${ac}-500/10 border border-${ac}-500/15 flex items-center justify-center text-${ac}-500`}>
             <EvIcon size={28} />
           </div>
           <h2 className="text-3xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
@@ -574,7 +574,7 @@ const EventStudioPage: React.FC<EventStudioPageProps> = ({ type }) => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <button 
               onClick={() => setIsStudioOpen(true)}
-              className={`bg-${ac}-500 hover:bg-${ac}-600 text-white px-12 py-5 rounded-2xl text-sm font-bold tracking-wide shadow-xl shadow-${ac}-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group`}
+              className={`bg-${ac}-500 hover:bg-${ac}-600 text-white px-12 py-5 rounded-lg text-sm font-bold tracking-wide shadow-atlas-lg shadow-${ac}-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group`}
             >
               <Zap size={18} fill="currentColor" /> {l.ctaText} <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>

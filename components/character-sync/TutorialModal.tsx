@@ -98,7 +98,7 @@ export const TutorialModal: React.FC<TutorialModalProps> = ({ isOpen, onClose })
       <motion.div
         initial={{ scale: 0.95, y: 16, opacity: 0 }}
         animate={{ scale: 1, y: 0, opacity: 1 }}
-        className="relative w-full max-w-md bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl"
+        className="relative w-full max-w-md bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.06] rounded-lg overflow-hidden shadow-atlas-lg"
       >
         {/* Header */}
         <div className="px-5 pt-5 pb-3 flex items-center justify-between">
@@ -111,7 +111,7 @@ export const TutorialModal: React.FC<TutorialModalProps> = ({ isOpen, onClose })
               <p className="text-[9px] text-slate-400">Bước {currentStep + 1} / {STEPS.length}</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded-lg hover:bg-black/5 dark:hover:bg-white/5">
+          <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded-lg hover:bg-black/[0.06] dark:hover:bg-white/[0.06]">
             <X size={16} />
           </button>
         </div>
@@ -167,7 +167,7 @@ export const TutorialModal: React.FC<TutorialModalProps> = ({ isOpen, onClose })
           <button
             onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
             disabled={currentStep === 0}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] font-bold text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-all disabled:opacity-20 disabled:hover:bg-transparent"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] font-bold text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-all disabled:opacity-20 disabled:hover:bg-transparent"
           >
             <ChevronLeft size={14} /> Trước
           </button>

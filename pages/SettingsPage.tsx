@@ -39,7 +39,7 @@ const SettingsPage = () => {
   ];
 
   return (
-    <div className="pt-20 md:pt-24 min-h-screen bg-[#FAFAF8] dark:bg-[#0A0A0A] text-black dark:text-white transition-colors duration-500">
+    <div className="pt-20 md:pt-24 min-h-screen bg-[#FAFAF8] dark:bg-[var(--atlas-bg-page)] text-black dark:text-white transition-colors duration-500">
 
       {/* ═══ PROFILE HEADER ═══ */}
       <section className="px-6 lg:px-16 py-10 border-b border-black/10 dark:border-white/[0.04] bg-white dark:bg-transparent">
@@ -92,7 +92,7 @@ const SettingsPage = () => {
       </section>
 
       {/* ═══ TAB NAVIGATION ═══ */}
-      <section className="px-6 lg:px-16 border-b border-black/10 dark:border-white/[0.04] sticky top-16 md:top-20 z-20 bg-white/90 dark:bg-[#0A0A0A]/80 backdrop-blur-xl">
+      <section className="px-6 lg:px-16 border-b border-black/10 dark:border-white/[0.04] sticky top-16 md:top-20 z-20 bg-white/90 dark:bg-[var(--atlas-bg-page)]/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center gap-0 overflow-x-auto no-scrollbar -mb-px">
             {navItems.map((item) => {

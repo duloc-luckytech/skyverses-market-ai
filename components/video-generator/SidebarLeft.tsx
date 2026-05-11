@@ -77,7 +77,7 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
       {/* Mobile FAB */}
       <button
         onClick={() => props.setIsMobileExpanded(true)}
-        className="lg:hidden fixed bottom-6 left-4 z-[130] w-12 h-12 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full shadow-2xl flex items-center justify-center text-white active:scale-95 transition-transform"
+        className="lg:hidden fixed bottom-6 left-4 z-[130] w-12 h-12 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full shadow-atlas-lg flex items-center justify-center text-white active:scale-95 transition-transform"
       >
         <Menu size={20} />
       </button>

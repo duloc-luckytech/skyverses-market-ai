@@ -221,7 +221,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
           {activePreviewUrl ? (
             <button
               onClick={() => setActivePreviewUrl(null)}
-              className="flex items-center gap-2 px-4 py-1.5 bg-black/5 dark:bg-white/5 border border-black/[0.06] dark:border-white/10 rounded-full text-[10px] font-semibold uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all shadow-sm"
+              className="flex items-center gap-2 px-4 py-1.5 bg-black/[0.06] dark:bg-white/[0.06] border border-black/[0.06] dark:border-white/10 rounded-full text-[10px] font-semibold uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all shadow-sm"
             >
               <ArrowLeft size={14} />
               <span className="hidden sm:inline">Trở lại lưới</span>
@@ -278,17 +278,17 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
               className="flex items-center justify-center w-full h-full min-h-[60vh]"
             >
               <div className="relative group max-w-full max-h-full rounded-sm overflow-hidden flex items-center justify-center" style={{ transform: `scale(${zoomLevel / 5})`, transition: 'transform 0.2s ease-out' }}>
-                <img src={activePreviewUrl} className="max-w-full max-h-full object-contain shadow-3xl" alt="Preview" />
+                <img src={activePreviewUrl} className="max-w-full max-h-full object-contain shadow-atlas-xl" alt="Preview" />
                 <div className="absolute top-6 right-6 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
                   <button
                     onClick={() => onEdit(activePreviewUrl)}
-                    className="p-4 bg-rose-500 text-white rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all"
+                    className="p-4 bg-rose-500 text-white rounded-full shadow-atlas-lg hover:scale-110 active:scale-95 transition-all"
                   >
                     <Edit3 size={18} />
                   </button>
                   <button
                     onClick={() => onDownload(activePreviewUrl, `skyverses_${Date.now()}.png`)}
-                    className="p-4 bg-white text-black rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all"
+                    className="p-4 bg-white text-black rounded-full shadow-atlas-lg hover:scale-110 active:scale-95 transition-all"
                   >
                     <Download size={18} />
                   </button>
@@ -450,7 +450,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                             key={item._id || item.id}
                             ref={isLast ? lastItemRef : null}
                             onClick={() => onApplyExample(item)}
-                            className="break-inside-avoid relative overflow-hidden bg-white dark:bg-[var(--atlas-bg-panel)] group cursor-pointer border border-black/[0.06] dark:border-white/[0.08] transition-all duration-500 rounded-2xl hover:border-rose-500/20 shadow-sm dark:shadow-none"
+                            className="break-inside-avoid relative overflow-hidden bg-white dark:bg-[var(--atlas-bg-panel)] group cursor-pointer border border-black/[0.06] dark:border-white/[0.08] transition-all duration-500 rounded-lg hover:border-rose-500/20 shadow-sm dark:shadow-none"
                           >
                             <img
                               src={item.thumbnailUrl}
@@ -470,7 +470,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                                 <div className="flex gap-2 pt-2">
                                   <button
                                     onClick={(e) => { e.stopPropagation(); onApplyExample(item); }}
-                                    className="flex-grow bg-rose-500 text-white px-4 py-2.5 rounded-full text-[10px] font-semibold uppercase tracking-widest shadow-2xl flex items-center justify-center gap-2 scale-95 hover:scale-100 transition-transform"
+                                    className="flex-grow bg-rose-500 text-white px-4 py-2.5 rounded-full text-[10px] font-semibold uppercase tracking-widest shadow-atlas-lg flex items-center justify-center gap-2 scale-95 hover:scale-100 transition-transform"
                                   >
                                     <Zap size={12} fill="currentColor" /> Sử dụng kịch bản
                                   </button>

@@ -46,7 +46,7 @@ const BeforeAfterSlider: React.FC<{ before: string; after: string }> = ({ before
   return (
     <div 
       ref={containerRef}
-      className="relative w-full h-full overflow-hidden cursor-col-resize select-none rounded-2xl"
+      className="relative w-full h-full overflow-hidden cursor-col-resize select-none rounded-lg"
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
@@ -66,7 +66,7 @@ const BeforeAfterSlider: React.FC<{ before: string; after: string }> = ({ before
       {/* Divider */}
       <div className="absolute inset-y-0" style={{ left: `${position}%` }}>
         <div className="absolute inset-y-0 -translate-x-1/2 w-0.5 bg-white shadow-lg"></div>
-        <div className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-full shadow-xl flex items-center justify-center">
+        <div className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-full shadow-atlas-lg flex items-center justify-center">
           <SplitSquareHorizontal size={16} className="text-slate-700" />
         </div>
       </div>
@@ -107,7 +107,7 @@ export const EventViewport: React.FC<EventViewportProps> = ({
               initial={{ opacity: 0, scale: 0.97, y: 8 }} 
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="relative group max-w-3xl w-full aspect-[3/4] bg-white dark:bg-[var(--atlas-bg-page)] rounded-2xl overflow-hidden shadow-2xl border border-black/[0.06] dark:border-white/[0.06]"
+              className="relative group max-w-3xl w-full aspect-[3/4] bg-white dark:bg-[var(--atlas-bg-page)] rounded-lg overflow-hidden shadow-atlas-lg border border-black/[0.06] dark:border-white/[0.06]"
             >
               {activeResult.status === 'processing' ? (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 dark:bg-black/60 backdrop-blur-sm z-20 gap-6">

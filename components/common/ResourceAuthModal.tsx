@@ -35,7 +35,7 @@ const ResourceAuthModal: React.FC<ResourceAuthModalProps> = ({
             initial={{ scale: 0.9, y: 20 }} 
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.9, y: 20 }}
-            className="max-w-xl w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-10 border border-slate-200 dark:border-white/10 rounded-[2rem] space-y-8 shadow-3xl transition-colors"
+            className="max-w-xl w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-10 border border-slate-200 dark:border-white/10 rounded-xl space-y-8 shadow-atlas-xl transition-colors"
           >
             <div className="text-center space-y-4">
               <div className="w-16 h-16 bg-brand-blue/10 rounded-full flex items-center justify-center mx-auto text-brand-blue shadow-[0_0_30px_rgba(201, 168, 76,0.2)]">
@@ -51,7 +51,7 @@ const ResourceAuthModal: React.FC<ResourceAuthModalProps> = ({
               {/* Option 1: Credits */}
               <button 
                 onClick={() => onConfirm('credits')}
-                className="flex flex-col items-center justify-center gap-4 p-8 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl hover:border-brand-blue/40 hover:bg-brand-blue/[0.02] transition-all group"
+                className="flex flex-col items-center justify-center gap-4 p-8 bg-slate-50 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 rounded-lg hover:border-brand-blue/40 hover:bg-brand-blue/[0.02] transition-all group"
               >
                 <div className="w-12 h-12 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform">
                   <Coins size={24} fill="currentColor" />
@@ -66,7 +66,7 @@ const ResourceAuthModal: React.FC<ResourceAuthModalProps> = ({
               <button 
                 onClick={() => hasPersonalKey && onConfirm('key')}
                 disabled={!hasPersonalKey}
-                className={`flex flex-col items-center justify-center gap-4 p-8 border rounded-2xl transition-all group ${hasPersonalKey ? 'bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 hover:border-purple-500/40 hover:bg-purple-500/[0.02] cursor-pointer' : 'bg-black/5 dark:bg-white/[0.02] border-slate-200 dark:border-white/10 opacity-40 cursor-not-allowed'}`}
+                className={`flex flex-col items-center justify-center gap-4 p-8 border rounded-lg transition-all group ${hasPersonalKey ? 'bg-slate-50 dark:bg-white/[0.06] border-slate-200 dark:border-white/10 hover:border-purple-500/40 hover:bg-purple-500/[0.02] cursor-pointer' : 'bg-black/[0.06] dark:bg-white/[0.02] border-slate-200 dark:border-white/10 opacity-40 cursor-not-allowed'}`}
               >
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-transform ${hasPersonalKey ? 'bg-purple-500/10 text-purple-600 group-hover:scale-110' : 'bg-slate-200 dark:bg-white/10 text-slate-400'}`}>
                   <Key size={24} />
@@ -80,7 +80,7 @@ const ResourceAuthModal: React.FC<ResourceAuthModalProps> = ({
               </button>
             </div>
 
-            <div className="pt-4 border-t border-slate-100 dark:border-white/5 flex flex-col items-center gap-4">
+            <div className="pt-4 border-t border-slate-100 dark:border-white/[0.06] flex flex-col items-center gap-4">
               <div className="flex items-center justify-center gap-6 text-[8px] font-bold text-slate-300 dark:text-gray-700 uppercase tracking-widest">
                 <span className="flex items-center gap-2"><Lock size={10}/> Zero Knowledge</span>
                 <span className="flex items-center gap-2"><Key size={10}/> BYOK Ready</span>

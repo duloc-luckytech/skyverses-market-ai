@@ -29,7 +29,7 @@ const ProductUniversalProducer = () => {
       {/* 1. STUDIO MODAL (OVERLAY) */}
       {isStudioOpen && (
         <div className="fixed inset-0 z-[250] bg-white dark:bg-black flex flex-col animate-in fade-in duration-500">
-          <div className="h-16 border-b border-black/5 dark:border-white/5 bg-white/80 dark:bg-black/80 backdrop-blur-xl flex items-center justify-between px-8 shrink-0">
+          <div className="h-16 border-b border-black/5 dark:border-white/[0.06] bg-white/80 dark:bg-black/80 backdrop-blur-xl flex items-center justify-between px-8 shrink-0">
              <div className="flex items-center gap-4">
                 <div className="w-2 h-2 rounded-full bg-brand-blue animate-pulse"></div>
                 <span className="text-[11px] font-bold uppercase tracking-[0.4em] text-black/70 dark:text-white/70 italic">AUP-X1_Infrastructure // Virtual_Production_Node_042</span>
@@ -85,7 +85,7 @@ const ProductUniversalProducer = () => {
 
         {/* HERO WORKFLOW PREVIEW */}
         <section className="mb-32 relative group">
-           <div className="aspect-[21/9] w-full bg-gray-100 dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/5 overflow-hidden relative shadow-2xl rounded-sm">
+           <div className="aspect-[21/9] w-full bg-gray-100 dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/[0.06] overflow-hidden relative shadow-atlas-lg rounded-sm">
               <img src={solution.imageUrl} className="w-full h-full object-cover grayscale opacity-30 group-hover:opacity-50 transition-all duration-1000 group-hover:scale-105" alt="AUP-X1 Mainframe" />
               <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-black via-transparent to-transparent opacity-90"></div>
               
@@ -123,7 +123,7 @@ const ProductUniversalProducer = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              <div className="p-10 border border-black/5 dark:border-white/5 bg-gray-50 dark:bg-white/[0.01] space-y-6 rounded-sm">
+              <div className="p-10 border border-black/5 dark:border-white/[0.06] bg-gray-50 dark:bg-white/[0.01] space-y-6 rounded-sm">
                  <Target size={32} className="text-brand-blue" />
                  <h3 className="text-2xl font-bold uppercase tracking-tighter">Core_Capabilities</h3>
                  <ul className="space-y-4">
@@ -140,7 +140,7 @@ const ProductUniversalProducer = () => {
                    ))}
                  </ul>
               </div>
-              <div className="p-10 border border-black/5 dark:border-white/5 bg-gray-50 dark:bg-white/[0.01] space-y-6 flex flex-col justify-center rounded-sm">
+              <div className="p-10 border border-black/5 dark:border-white/[0.06] bg-gray-50 dark:bg-white/[0.01] space-y-6 flex flex-col justify-center rounded-sm">
                  <MonitorPlay size={32} className="text-brand-blue" />
                  <h3 className="text-2xl font-bold uppercase tracking-tighter">Studio_Scale</h3>
                  <p className="text-sm text-gray-500 dark:text-gray-600 leading-relaxed font-medium uppercase tracking-[0.3em]">
@@ -163,7 +163,7 @@ const ProductUniversalProducer = () => {
                 { title: "Temporal Adapters", desc: "Adapts motion speed and logic for different targets." },
                 { title: "Security Kernel", desc: "VPC isolation for proprietary art-style guides." }
               ].map(f => (
-                <div key={f.title} className="p-6 border border-black/10 dark:border-white/10 hover:border-brand-blue/30 transition-all group rounded-sm bg-black/[0.02] dark:bg-white/5">
+                <div key={f.title} className="p-6 border border-black/10 dark:border-white/10 hover:border-brand-blue/30 transition-all group rounded-sm bg-black/[0.02] dark:bg-white/[0.06]">
                    <h4 className="text-[14px] font-bold uppercase text-black dark:text-white mb-2 group-hover:text-brand-blue transition-colors">{f.title}</h4>
                    <p className="text-[11px] text-gray-500 dark:text-gray-600 font-medium leading-relaxed italic">"{f.desc}"</p>
                 </div>
@@ -173,7 +173,7 @@ const ProductUniversalProducer = () => {
         </section>
 
         {/* AGENT ORCHESTRATION BREAKDOWN */}
-        <section className="mb-40 py-24 border-y border-black/10 dark:border-white/5 relative">
+        <section className="mb-40 py-24 border-y border-black/10 dark:border-white/[0.06] relative">
           <div className="absolute inset-0 bg-brand-blue/[0.02] pointer-events-none"></div>
           <div className="flex flex-col lg:flex-row justify-between items-center gap-16 relative z-10">
             <div className="max-w-2xl space-y-8 text-center lg:text-left">
@@ -187,7 +187,7 @@ const ProductUniversalProducer = () => {
                  { name: "Scene Planner", icon: <LayoutGrid /> },
                  { name: "Quality Auditor", icon: <ClipboardCheck /> }
                ].map(agent => (
-                 <div key={agent.name} className="p-8 bg-white dark:bg-white/[0.02] border border-black/5 dark:border-white/5 flex flex-col items-center text-center gap-4 group hover:bg-brand-blue/[0.03] transition-all">
+                 <div key={agent.name} className="p-8 bg-white dark:bg-white/[0.02] border border-black/5 dark:border-white/[0.06] flex flex-col items-center text-center gap-4 group hover:bg-brand-blue/[0.03] transition-all">
                     <div className="text-gray-400 group-hover:text-brand-blue transition-colors">{agent.icon}</div>
                     <span className="text-[10px] font-bold uppercase tracking-widest">{agent.name}</span>
                  </div>
@@ -200,17 +200,17 @@ const ProductUniversalProducer = () => {
         <section className="mb-40">
            <div className="flex items-center gap-8 mb-16">
               <h2 className="text-3xl font-bold uppercase tracking-tighter">Engine_Orchestration</h2>
-              <div className="flex-grow h-px bg-black/5 dark:bg-white/5"></div>
+              <div className="flex-grow h-px bg-black/[0.06] dark:bg-white/[0.06]"></div>
            </div>
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {solution.neuralStack?.map(m => (
-                 <div key={m.name} className="p-10 bg-gray-50 dark:bg-white/[0.02] border border-black/5 dark:border-white/5 flex flex-col justify-between group hover:border-brand-blue/30 transition-all rounded-sm">
+                 <div key={m.name} className="p-10 bg-gray-50 dark:bg-white/[0.02] border border-black/5 dark:border-white/[0.06] flex flex-col justify-between group hover:border-brand-blue/30 transition-all rounded-sm">
                     <div className="space-y-6">
                        <Layers size={24} className="text-gray-400 group-hover:text-brand-blue" />
                        <h4 className="text-2xl font-bold uppercase text-black dark:text-white">{m.name}</h4>
                        <p className="text-[10px] text-gray-500 dark:text-gray-600 uppercase font-bold tracking-widest leading-relaxed">Capability: {m.capability[lang]}</p>
                     </div>
-                    <div className="mt-8 pt-6 border-t border-black/5 dark:border-white/5 flex items-center justify-between">
+                    <div className="mt-8 pt-6 border-t border-black/5 dark:border-white/[0.06] flex items-center justify-between">
                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Build_v{m.version}</span>
                        <Zap className="w-4 h-4 text-brand-blue" />
                     </div>
@@ -221,7 +221,7 @@ const ProductUniversalProducer = () => {
 
         {/* ENTERPRISE CONVERSION */}
         <section className="pb-60">
-           <div className="bg-gradient-to-br from-brand-blue/20 to-transparent border border-brand-blue/30 p-16 lg:p-32 relative overflow-hidden group rounded-sm shadow-2xl">
+           <div className="bg-gradient-to-br from-brand-blue/20 to-transparent border border-brand-blue/30 p-16 lg:p-32 relative overflow-hidden group rounded-sm shadow-atlas-lg">
               <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-brand-blue/10 rounded-full blur-[150px] pointer-events-none group-hover:bg-brand-blue/20 transition-all duration-1000"></div>
               <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-24">
                  <div className="space-y-10 max-w-3xl text-center lg:text-left">
@@ -231,8 +231,8 @@ const ProductUniversalProducer = () => {
                     </p>
                  </div>
                  <div className="flex flex-col gap-6 w-full lg:w-auto">
-                    <Link to="/booking" className="btn-sky-primary px-20 py-8 text-sm font-bold uppercase tracking-[0.5em] text-center shadow-2xl transition-all hover:scale-105 active:scale-95">REQUEST_AUDIT</Link>
-                    <Link to="/booking" className="py-8 px-20 border border-black/10 dark:border-white/20 hover:border-brand-blue/50 text-black dark:text-white text-sm font-bold uppercase tracking-[0.5em] text-center transition-all bg-black/5 dark:bg-white/5">TALK_TO_ARCHITECT</Link>
+                    <Link to="/booking" className="btn-sky-primary px-20 py-8 text-sm font-bold uppercase tracking-[0.5em] text-center shadow-atlas-lg transition-all hover:scale-105 active:scale-95">REQUEST_AUDIT</Link>
+                    <Link to="/booking" className="py-8 px-20 border border-black/10 dark:border-white/20 hover:border-brand-blue/50 text-black dark:text-white text-sm font-bold uppercase tracking-[0.5em] text-center transition-all bg-black/[0.06] dark:bg-white/[0.06]">TALK_TO_ARCHITECT</Link>
                  </div>
               </div>
            </div>

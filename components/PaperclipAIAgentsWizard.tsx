@@ -80,7 +80,7 @@ interface OnboardingWizardProps {
 function StepWelcome() {
   return (
     <div className="space-y-5">
-      <div className="w-14 h-14 rounded-2xl bg-brand-blue/10 flex items-center justify-center">
+      <div className="w-14 h-14 rounded-lg bg-brand-blue/10 flex items-center justify-center">
         <Network size={28} className="text-brand-blue" />
       </div>
       <p className="text-[13px] text-slate-600 dark:text-white/60 leading-relaxed">
@@ -117,7 +117,7 @@ function StepDept({ selectedDept, onSelect }: { selectedDept: string; onSelect: 
             <button
               key={d.id}
               onClick={() => onSelect(d.id)}
-              className="p-4 rounded-2xl border-2 text-left transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="p-4 rounded-lg border-2 text-left transition-all hover:scale-[1.02] active:scale-[0.98]"
               style={isSelected ? {
                 borderColor: d.color,
                 backgroundColor: `${d.color}10`,
@@ -222,7 +222,7 @@ function StepReady({ selectedDept, budget }: { selectedDept: string; budget: num
   return (
     <div className="space-y-4">
       <div
-        className="rounded-2xl border p-5 space-y-4"
+        className="rounded-lg border p-5 space-y-4"
         style={{ borderColor: `${dept.color}40`, backgroundColor: `${dept.color}08` }}
       >
         <div className="flex items-center gap-3">
@@ -283,7 +283,7 @@ export default function OnboardingWizard({ onComplete, onSkip }: OnboardingWizar
       transition={{ duration: 0.2 }}
     >
       <motion.div
-        className="w-full max-w-[580px] bg-white dark:bg-[var(--atlas-bg-panel)] rounded-3xl shadow-2xl flex flex-col overflow-hidden"
+        className="w-full max-w-[580px] bg-white dark:bg-[var(--atlas-bg-panel)] rounded-xl shadow-atlas-lg flex flex-col overflow-hidden"
         initial={{ scale: 0.92, opacity: 0, y: 24 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.92, opacity: 0, y: 24 }}

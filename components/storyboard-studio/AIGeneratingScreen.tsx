@@ -226,7 +226,7 @@ export const AIGeneratingScreen: React.FC<AIGeneratingScreenProps> = ({
                   {s.label}
                 </motion.div>
                 {i < STAGES.length - 1 && (
-                  <div className={`h-px w-5 rounded-full transition-all duration-500 ${currentStage > i ? 'bg-emerald-500/40' : 'bg-white/8'}`} />
+                  <div className={`h-px w-5 rounded-full transition-all duration-500 ${currentStage > i ? 'bg-emerald-500/40' : 'bg-white/[0.08]'}`} />
                 )}
               </React.Fragment>
             ))}

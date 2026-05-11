@@ -152,7 +152,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => 
           </button>
           {props.generateTooltip && (
             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover/btn:opacity-100 pointer-events-none transition-all z-50">
-              <div className="bg-slate-900 dark:bg-white text-white dark:text-black px-3 py-1.5 rounded-lg text-[9px] font-semibold whitespace-nowrap shadow-xl">
+              <div className="bg-slate-900 dark:bg-white text-white dark:text-black px-3 py-1.5 rounded-lg text-[9px] font-semibold whitespace-nowrap shadow-atlas-lg">
                 {props.generateTooltip}
               </div>
             </div>

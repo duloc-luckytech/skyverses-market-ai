@@ -254,7 +254,7 @@ const SolutionsPage = () => {
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all border ${
                   activeFilter === f.key
                     ? 'bg-atlas-cta text-white border-atlas-purple shadow-atlas-glow'
-                    : 'bg-white/8 text-white/70 border-white/15 hover:bg-white/15 hover:border-white/30 hover:text-white'
+                    : 'bg-white/[0.08] text-white/70 border-white/[0.15] hover:bg-white/[0.15] hover:border-white/30 hover:text-white'
                 }`}
               >
                 {f.icon} {f.label}
@@ -278,14 +278,14 @@ const SolutionsPage = () => {
                 transition={{ duration: 0.35 }}
               >
                 <Link to={sol.route}
-                  className="group block relative overflow-hidden rounded-lg border border-white/5 bg-white/[0.02] p-7 hover:border-white/15 transition-all duration-500 h-full"
+                  className="group block relative overflow-hidden rounded-lg border border-white/[0.06] bg-white/[0.02] p-7 hover:border-white/[0.15] transition-all duration-500 h-full"
                 >
                   {/* Glow */}
                   <div className={`absolute top-0 right-0 w-40 h-40 bg-gradient-to-br ${sol.gradient} opacity-0 group-hover:opacity-10 rounded-full blur-3xl transition-opacity duration-700`} />
 
                   {/* Badge */}
                   {sol.badge && (
-                    <div className="absolute top-4 right-4 text-[10px] font-bold px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-gray-400">
+                    <div className="absolute top-4 right-4 text-[10px] font-bold px-2.5 py-1 rounded-full bg-white/[0.06] border border-white/10 text-white/60">
                       {sol.badge}
                     </div>
                   )}
@@ -295,12 +295,12 @@ const SolutionsPage = () => {
                   </div>
 
                   <h3 className="text-lg font-bold mb-1.5 group-hover:text-white transition-colors">{sol.name}</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed mb-4">{sol.desc}</p>
+                  <p className="text-sm text-white/50 leading-relaxed mb-4">{sol.desc}</p>
 
                   {/* Features */}
                   <div className="flex flex-wrap gap-1.5 mb-4">
                     {sol.features.map((f, i) => (
-                      <span key={i} className="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-white/5 text-gray-500 border border-white/5">
+                      <span key={i} className="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-white/[0.06] text-white/50 border border-white/[0.06]">
                         {f}
                       </span>
                     ))}
@@ -325,11 +325,11 @@ const SolutionsPage = () => {
               <h2 className="text-3xl md:text-5xl font-bold mb-5">
                 Start with <span className="text-brand-blue">Free Credits</span>
               </h2>
-              <p className="text-gray-400 max-w-lg mx-auto mb-8">
+              <p className="text-white/60 max-w-lg mx-auto mb-8">
                 No subscription needed. Buy credits and use any tool — pay only for what you create.
               </p>
               <Link to="/credits"
-                className="inline-flex items-center gap-3 bg-white text-black px-10 py-4 rounded-lg font-bold text-sm hover:scale-105 transition-all shadow-xl"
+                className="inline-flex items-center gap-3 bg-white text-black px-10 py-4 rounded-lg font-bold text-sm hover:scale-105 transition-all shadow-atlas-lg"
               >
                 Get Credits <Zap size={18} />
               </Link>

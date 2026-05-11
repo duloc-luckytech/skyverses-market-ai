@@ -61,7 +61,7 @@ const SettingsCard: React.FC<{
 }> = ({ icon, accentClass, title, subtitle, defaultOpen = true, badge, children }) => {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="rounded-2xl border border-black/[0.06] dark:border-white/[0.05] bg-white dark:bg-white/[0.02] overflow-hidden transition-colors">
+    <div className="rounded-lg border border-black/[0.06] dark:border-white/[0.05] bg-white dark:bg-white/[0.02] overflow-hidden transition-colors">
       <button
         onClick={() => setOpen(v => !v)}
         className="w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-colors"
@@ -365,7 +365,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
           <button
             onClick={handleSave}
             disabled={isProcessing || isSaving}
-            className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-brand-blue text-white text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-brand-blue/25 hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 relative overflow-hidden group"
+            className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-lg bg-brand-blue text-white text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-brand-blue/25 hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 relative overflow-hidden group"
           >
             <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
             {isSaving  ? <><Loader2 size={13} className="animate-spin" /> Đang lưu...</>

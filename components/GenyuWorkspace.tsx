@@ -138,8 +138,8 @@ const GenyuWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[var(--atlas-bg-page)] text-black dark:text-white font-sans overflow-hidden relative selection:bg-brand-blue/30">
       
       {/* 1. LEFT PANEL */}
-      <aside className="w-full lg:w-[400px] shrink-0 flex flex-col border-r border-black/10 dark:border-white/5 bg-[#f9f9fb] dark:bg-[var(--atlas-bg-page)] z-[100] shadow-2xl transition-colors duration-500 overflow-hidden">
-        <div className="p-6 lg:p-8 border-b border-black/10 dark:border-white/5 bg-brand-blue/5 flex items-center justify-between">
+      <aside className="w-full lg:w-[400px] shrink-0 flex flex-col border-r border-black/10 dark:border-white/[0.06] bg-[#f9f9fb] dark:bg-[var(--atlas-bg-page)] z-[100] shadow-atlas-lg transition-colors duration-500 overflow-hidden">
+        <div className="p-6 lg:p-8 border-b border-black/10 dark:border-white/[0.06] bg-brand-blue/5 flex items-center justify-between">
            <div className="flex items-center gap-3">
               <Clapperboard size={20} className="text-brand-blue" />
               <h2 className="text-[10px] font-bold uppercase tracking-[0.4em] text-brand-blue">ARCHITECT TERMINAL</h2>
@@ -147,7 +147,7 @@ const GenyuWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         </div>
 
         <div className="flex-grow overflow-y-auto no-scrollbar p-6 lg:p-8 space-y-8">
-           <div className="flex bg-black/5 dark:bg-white/5 p-1 rounded-sm">
+           <div className="flex bg-black/[0.06] dark:bg-white/[0.06] p-1 rounded-sm">
              {['STORY', 'DIRECT', 'HISTORY'].map(tab => (
                <button 
                  key={tab} 
@@ -172,7 +172,7 @@ const GenyuWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                        className="w-full h-32 p-4 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-sm text-[12px] font-bold uppercase tracking-tight focus:border-brand-blue outline-none transition-all resize-none italic"
                        placeholder="Enter technical scene description..."
                      />
-                     <button onClick={handleAddScene} className="w-full py-4 bg-brand-blue text-white font-bold text-[10px] uppercase tracking-[0.4em] shadow-xl hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-3">
+                     <button onClick={handleAddScene} className="w-full py-4 bg-brand-blue text-white font-bold text-[10px] uppercase tracking-[0.4em] shadow-atlas-lg hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-3">
                         <Plus size={16} /> Append to Pipeline
                      </button>
                   </div>
@@ -187,18 +187,18 @@ const GenyuWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
          <div className="flex-grow flex items-center justify-center p-4 lg:p-16 relative">
             <AnimatePresence mode="wait">
                {activeScene ? (
-                  <motion.div key={activeScene.id} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="relative group w-full max-w-6xl aspect-video bg-black rounded-sm overflow-hidden shadow-[0_30px_100px_rgba(0,0,0,0.5)] border border-white/5">
+                  <motion.div key={activeScene.id} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="relative group w-full max-w-6xl aspect-video bg-black rounded-sm overflow-hidden shadow-[0_30px_100px_rgba(0,0,0,0.5)] border border-white/[0.06]">
                      {activeScene.url ? (
                         <video key={activeScene.url} src={activeScene.url} autoPlay loop muted className="w-full h-full object-contain" />
                      ) : (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#050505] z-10 p-6 text-center">
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[var(--atlas-bg-page)] z-10 p-6 text-center">
                            {activeScene.status === 'rendering' ? (
                               <div className="flex flex-col items-center gap-6">
                                  <Loader2 size={48} className="text-brand-blue animate-spin" />
                                  <p className="text-[12px] font-bold uppercase tracking-[0.4em] text-white animate-pulse">Computing Cinematic Lattice</p>
                               </div>
                            ) : (
-                              <button onClick={() => synthesizeScene(activeScene.id)} className="bg-brand-blue text-white px-8 lg:px-12 py-4 lg:py-5 text-[10px] lg:text-[11px] font-bold uppercase tracking-[0.4em] shadow-2xl hover:brightness-110 active:scale-[0.98] flex items-center gap-4">
+                              <button onClick={() => synthesizeScene(activeScene.id)} className="bg-brand-blue text-white px-8 lg:px-12 py-4 lg:py-5 text-[10px] lg:text-[11px] font-bold uppercase tracking-[0.4em] shadow-atlas-lg hover:brightness-110 active:scale-[0.98] flex items-center gap-4">
                                  <Zap size={18} fill="currentColor" /> Initialize Render
                               </button>
                            )}
@@ -215,7 +215,7 @@ const GenyuWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
          </div>
 
          {/* TIMELINE HUB */}
-         <div className="h-32 lg:h-40 border-t border-black/10 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-page)] p-6 lg:p-8 flex items-center justify-between z-[90] shrink-0 transition-colors duration-500 shadow-2xl">
+         <div className="h-32 lg:h-40 border-t border-black/10 dark:border-white/[0.06] bg-white dark:bg-[var(--atlas-bg-page)] p-6 lg:p-8 flex items-center justify-between z-[90] shrink-0 transition-colors duration-500 shadow-atlas-lg">
             <div className="flex items-center gap-6 lg:gap-12 overflow-x-auto no-scrollbar flex-grow">
                <div className="space-y-3 lg:space-y-4 shrink-0">
                   <div className="flex items-center gap-3">

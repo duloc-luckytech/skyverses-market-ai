@@ -10,7 +10,7 @@ export const FinalCTA: React.FC<FinalCTAProps> = ({ onStartStudio }) => (
     <GradientMesh intensity="medium" />
     <div className="max-w-3xl mx-auto text-center relative z-10">
       <FadeInUp>
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-blue/[0.08] border border-brand-blue/15 rounded-full text-brand-blue text-[10px] font-semibold uppercase tracking-wider mb-6">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-blue/[0.08] border border-brand-blue/[0.15] rounded-full text-brand-blue text-[10px] font-semibold uppercase tracking-wider mb-6">
           <Sparkles size={12} /> AI Image Studio
         </div>
         <h2 className="text-3xl lg:text-5xl font-bold mb-4 leading-tight">

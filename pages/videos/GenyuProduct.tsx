@@ -113,7 +113,7 @@ const GenyuProduct = () => {
             </div>
 
             <div className="lg:col-span-5 w-full">
-               <div className="aspect-[4/5] bg-gray-100 dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/5 relative overflow-hidden shadow-2xl rounded-sm group">
+               <div className="aspect-[4/5] bg-gray-100 dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/[0.06] relative overflow-hidden shadow-atlas-lg rounded-sm group">
                   <img src={solution.imageUrl} className="w-full h-full object-cover grayscale opacity-40 group-hover:opacity-60 transition-all duration-1000 group-hover:scale-105" alt="Architect Hub" />
                   <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-black via-transparent to-transparent"></div>
                   <div className="absolute bottom-10 left-10 space-y-2">
@@ -126,7 +126,7 @@ const GenyuProduct = () => {
         </section>
 
         {/* --- WORKFLOW SECTION --- */}
-        <section className="py-32 border-t border-black/5 dark:border-white/5">
+        <section className="py-32 border-t border-black/5 dark:border-white/[0.06]">
            <div className="max-w-4xl mb-24">
               <span className="text-brand-blue font-bold uppercase tracking-[0.4em] text-[10px] block mb-4">{getTranslation(content.workflow_title)}</span>
               <h2 className="text-5xl lg:text-7xl font-bold uppercase tracking-tighter italic">From Intent to <br /><span className="text-brand-blue">Industrial Master.</span></h2>
@@ -139,7 +139,7 @@ const GenyuProduct = () => {
                 { step: '03', title: 'Synthesize', icon: <Cpu />, desc: 'Parallel H100 GPU nodes render high-bitrate cinematic takes.' },
                 { step: '04', title: 'Master', icon: <Crown />, desc: 'Upscale, assemble, and export studio-ready 4K sequences.' }
               ].map((item) => (
-                 <div key={item.step} className="p-10 bg-black/[0.02] dark:bg-white/[0.01] border border-black/5 dark:border-white/5 rounded-sm space-y-6 group hover:border-brand-blue/30 transition-all">
+                 <div key={item.step} className="p-10 bg-black/[0.02] dark:bg-white/[0.01] border border-black/5 dark:border-white/[0.06] rounded-sm space-y-6 group hover:border-brand-blue/30 transition-all">
                     <div className="flex justify-between items-start">
                        <span className="text-3xl font-bold text-brand-blue italic">{item.step}</span>
                        <div className="text-gray-300 dark:text-gray-700 group-hover:text-brand-blue transition-colors">
@@ -157,13 +157,13 @@ const GenyuProduct = () => {
 
         {/* --- FEATURES GRID --- */}
         <section className="py-32">
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 shadow-2xl">
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-black/[0.06] dark:bg-white/[0.06] border border-black/5 dark:border-white/[0.06] shadow-atlas-lg">
               {solution.features.map((f: any, i: number) => {
                 const text = typeof f === 'string' ? f : (f[lang] || f.en || '');
                 const [title, desc] = text.split(':');
                 return (
-                  <div key={i} className="p-16 bg-white dark:bg-[var(--atlas-bg-page)] space-y-8 group hover:bg-brand-blue/[0.01] transition-all duration-500 border-r border-black/5 dark:border-white/5 last:border-r-0">
-                    <div className="w-14 h-14 border border-black/10 dark:border-white/10 flex items-center justify-center text-gray-400 group-hover:text-brand-blue group-hover:border-brand-blue transition-all rounded-sm shadow-xl">
+                  <div key={i} className="p-16 bg-white dark:bg-[var(--atlas-bg-page)] space-y-8 group hover:bg-brand-blue/[0.01] transition-all duration-500 border-r border-black/5 dark:border-white/[0.06] last:border-r-0">
+                    <div className="w-14 h-14 border border-black/10 dark:border-white/10 flex items-center justify-center text-gray-400 group-hover:text-brand-blue group-hover:border-brand-blue transition-all rounded-sm shadow-atlas-lg">
                         <Zap size={24} />
                     </div>
                     <div className="space-y-3">
@@ -177,7 +177,7 @@ const GenyuProduct = () => {
         </section>
 
         {/* --- B2B TECHNICAL SPECS --- */}
-        <section className="py-32 grid grid-cols-1 lg:grid-cols-2 gap-24 items-center border-t border-black/5 dark:border-white/5">
+        <section className="py-32 grid grid-cols-1 lg:grid-cols-2 gap-24 items-center border-t border-black/5 dark:border-white/[0.06]">
            <div className="space-y-12">
               <div className="space-y-6">
                  <h2 className="text-5xl font-bold uppercase tracking-tighter italic leading-none">{getTranslation(content.specs_title)}.</h2>
@@ -200,7 +200,7 @@ const GenyuProduct = () => {
                  ))}
               </div>
            </div>
-           <div className="p-16 border border-black/10 dark:border-white/10 bg-black shadow-2xl relative overflow-hidden group rounded-sm">
+           <div className="p-16 border border-black/10 dark:border-white/10 bg-black shadow-atlas-lg relative overflow-hidden group rounded-sm">
               <div className="absolute inset-0 bg-brand-blue/5 animate-pulse"></div>
               <Activity className="w-16 h-16 text-brand-blue mb-10 relative z-10" />
               <div className="space-y-4 relative z-10">

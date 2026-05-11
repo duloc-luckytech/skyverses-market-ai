@@ -27,7 +27,7 @@ const ProductPrompt1 = () => {
       {/* 1. ARCHITECT MODAL */}
       {isDemoOpen && (
         <div className="fixed inset-0 z-[250] bg-white/98 dark:bg-black/98 flex flex-col animate-in fade-in duration-300">
-          <div className="h-16 border-b border-black/10 dark:border-white/5 bg-white/80 dark:bg-black/80 backdrop-blur-xl flex items-center justify-between px-8 shrink-0">
+          <div className="h-16 border-b border-black/10 dark:border-white/[0.06] bg-white/80 dark:bg-black/80 backdrop-blur-xl flex items-center justify-between px-8 shrink-0">
              <div className="flex items-center gap-4">
                 <div className="w-2 h-2 rounded-full bg-brand-blue animate-pulse"></div>
                 <span className="text-[11px] font-bold uppercase tracking-[0.4em] text-gray-600 dark:text-white/70">Orchestrator_Terminal // Prompt_Architect_v1.2</span>
@@ -83,7 +83,7 @@ const ProductPrompt1 = () => {
 
         {/* HERO TRIGGER */}
         <section className="mb-24 relative group">
-           <div className="aspect-[21/9] w-full bg-gray-100 dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/5 overflow-hidden relative shadow-2xl rounded-sm">
+           <div className="aspect-[21/9] w-full bg-gray-100 dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/[0.06] overflow-hidden relative shadow-atlas-lg rounded-sm">
               <img src={solution.imageUrl} className="w-full h-full object-cover grayscale opacity-40 group-hover:opacity-60 transition-all duration-1000 group-hover:scale-105" alt="Prompt Hub" />
               <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-black via-transparent to-transparent opacity-80"></div>
               
@@ -121,7 +121,7 @@ const ProductPrompt1 = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              <div className="p-8 border border-black/5 dark:border-white/5 bg-gray-50 dark:bg-white/[0.01] space-y-4 rounded-sm">
+              <div className="p-8 border border-black/5 dark:border-white/[0.06] bg-gray-50 dark:bg-white/[0.01] space-y-4 rounded-sm">
                  <Terminal size={24} className="text-brand-blue" />
                  <h3 className="text-xl font-bold uppercase tracking-tighter">Primary_Flows</h3>
                  <ul className="space-y-3">
@@ -133,7 +133,7 @@ const ProductPrompt1 = () => {
                    ))}
                  </ul>
               </div>
-              <div className="p-8 border border-black/5 dark:border-white/5 bg-gray-50 dark:bg-white/[0.01] space-y-4 flex flex-col justify-center rounded-sm">
+              <div className="p-8 border border-black/5 dark:border-white/[0.06] bg-gray-50 dark:bg-white/[0.01] space-y-4 flex flex-col justify-center rounded-sm">
                  <PackageCheck size={24} className="text-brand-blue" />
                  <h3 className="text-xl font-bold uppercase tracking-tighter">Stability_Node</h3>
                  <p className="text-sm text-gray-500 dark:text-gray-600 leading-relaxed font-medium uppercase tracking-widest">
@@ -161,7 +161,7 @@ const ProductPrompt1 = () => {
         </section>
 
         {/* NEURAL STACK */}
-        <section className="mb-32 py-20 border-y border-black/10 dark:border-white/5">
+        <section className="mb-32 py-20 border-y border-black/10 dark:border-white/[0.06]">
           <div className="flex flex-col lg:flex-row justify-between items-center gap-12">
             <div className="max-w-xl space-y-6 text-center lg:text-left">
               <h2 className="text-3xl font-bold uppercase tracking-tighter">Neural_Engine_Stack</h2>
@@ -169,7 +169,7 @@ const ProductPrompt1 = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-grow">
                {solution.neuralStack?.map(m => (
-                 <div key={m.name} className="p-8 bg-gray-50 dark:bg-white/[0.02] border border-black/5 dark:border-white/5 text-center group hover:bg-brand-blue/[0.02] transition-all rounded-sm">
+                 <div key={m.name} className="p-8 bg-gray-50 dark:bg-white/[0.02] border border-black/5 dark:border-white/[0.06] text-center group hover:bg-brand-blue/[0.02] transition-all rounded-sm">
                     <Layers size={20} className="mx-auto mb-4 text-gray-400 dark:text-gray-700 group-hover:text-brand-blue" />
                     <h4 className="text-[12px] font-bold uppercase text-black dark:text-white mb-2">{m.name}</h4>
                     <p className="text-[9px] text-gray-400 dark:text-gray-600 uppercase font-bold tracking-widest">{m.capability[lang]}</p>
@@ -181,7 +181,7 @@ const ProductPrompt1 = () => {
 
         {/* CONVERSION */}
         <section className="pb-40">
-           <div className="bg-gradient-to-br from-brand-blue/10 to-transparent border border-brand-blue/20 p-12 lg:p-24 relative overflow-hidden group rounded-sm shadow-xl">
+           <div className="bg-gradient-to-br from-brand-blue/10 to-transparent border border-brand-blue/20 p-12 lg:p-24 relative overflow-hidden group rounded-sm shadow-atlas-lg">
               <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-blue/5 rounded-full blur-[120px] pointer-events-none group-hover:bg-brand-blue/10 transition-all duration-1000"></div>
               <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-16">
                  <div className="space-y-8 max-w-2xl text-center lg:text-left">
@@ -191,7 +191,7 @@ const ProductPrompt1 = () => {
                     </p>
                  </div>
                  <div className="flex flex-col sm:flex-row gap-6 w-full lg:w-auto">
-                    <Link to="/booking" className="btn-sky-primary px-16 py-8 text-[11px] uppercase tracking-[0.4em] text-center shadow-2xl transition-all">Request_System_Integration</Link>
+                    <Link to="/booking" className="btn-sky-primary px-16 py-8 text-[11px] uppercase tracking-[0.4em] text-center shadow-atlas-lg transition-all">Request_System_Integration</Link>
                     <Link to="/booking" className="btn-sky-secondary px-16 py-8 text-[11px] uppercase tracking-[0.4em] text-center border border-black/10 dark:border-white/20 hover:border-brand-blue/50 text-black dark:text-white">Download_Architecture_PDF</Link>
                  </div>
               </div>

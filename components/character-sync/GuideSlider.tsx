@@ -50,7 +50,7 @@ export const GuideSlider: React.FC<GuideSliderProps> = ({ onOpenTemplates }) => 
             transition={{ duration: 0.35 }}
             className="flex flex-col items-center text-center space-y-4"
           >
-            <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/[0.06] flex items-center justify-center">
+            <div className="w-14 h-14 rounded-lg bg-slate-100 dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/[0.06] flex items-center justify-center">
               {slide.icon}
             </div>
             <div className="space-y-1.5">

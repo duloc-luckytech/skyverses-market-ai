@@ -68,7 +68,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
             className="fixed inset-0 z-[901] flex items-center justify-center px-4 pointer-events-none"
           >
             <div
-              className="relative w-full max-w-[780px] bg-white dark:bg-[var(--atlas-bg-panel)] rounded-3xl overflow-hidden shadow-2xl shadow-black/30 border border-black/[0.06] dark:border-white/[0.06] pointer-events-auto"
+              className="relative w-full max-w-[780px] bg-white dark:bg-[var(--atlas-bg-panel)] rounded-xl overflow-hidden shadow-atlas-lg shadow-black/30 border border-black/[0.06] dark:border-white/[0.06] pointer-events-auto"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close Button */}
@@ -132,7 +132,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
                 <div className="flex-1 p-6 md:p-8 flex flex-col gap-5 overflow-y-auto max-h-[70vh] md:max-h-[480px] no-scrollbar">
                   {/* Quick View badge */}
                   <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25 rounded-full">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/[0.15] dark:border-brand-blue/25 rounded-full">
                       <Sparkles size={10} className="text-brand-blue" />
                       <span className="text-[8px] font-bold uppercase tracking-[0.3em] text-brand-blue">Quick View</span>
                     </div>
@@ -149,7 +149,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
                   </div>
 
                   {/* Stats row */}
-                  <div className="flex items-center gap-4 pb-4 border-b border-black/5 dark:border-white/5">
+                  <div className="flex items-center gap-4 pb-4 border-b border-black/5 dark:border-white/[0.06]">
                     <div className="flex items-center gap-1.5 text-slate-400">
                       <Users size={13} />
                       <span className="text-[11px] font-bold">{fakeStats.users} users</span>
@@ -174,7 +174,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
                       {sol.tags.slice(0, 6).map((tag) => (
                         <span
                           key={tag}
-                          className="flex items-center gap-1 px-2 py-0.5 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-full text-[8px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wide"
+                          className="flex items-center gap-1 px-2 py-0.5 bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 rounded-full text-[8px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wide"
                         >
                           <Tag size={7} />
                           {tag}
@@ -191,7 +191,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
                         {sol.platforms.map((p) => (
                           <span
                             key={p}
-                            className="px-2 py-0.5 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-md text-[8px] font-bold text-slate-600 dark:text-gray-300 uppercase"
+                            className="px-2 py-0.5 bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 rounded-md text-[8px] font-bold text-slate-600 dark:text-gray-300 uppercase"
                           >
                             {p}
                           </span>
@@ -221,7 +221,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
                     {/* Secondary: Close */}
                     <button
                       onClick={onClose}
-                      className="px-5 py-3.5 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-xl text-slate-600 dark:text-gray-300 font-bold text-[13px] transition-all duration-200"
+                      className="px-5 py-3.5 bg-slate-100 dark:bg-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-xl text-slate-600 dark:text-gray-300 font-bold text-[13px] transition-all duration-200"
                     >
                       Đóng
                     </button>

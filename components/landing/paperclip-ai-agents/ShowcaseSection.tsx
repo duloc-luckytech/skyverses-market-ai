@@ -241,7 +241,7 @@ export const ShowcaseSection: React.FC = () => {
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5 text-[10px] font-bold text-brand-blue bg-brand-blue/[0.08] border border-brand-blue/15 px-3 py-1.5 rounded-full">
+              <div className="flex items-center gap-1.5 text-[10px] font-bold text-brand-blue bg-brand-blue/[0.08] border border-brand-blue/[0.15] px-3 py-1.5 rounded-full">
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}

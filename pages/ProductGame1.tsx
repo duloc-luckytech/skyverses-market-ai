@@ -20,7 +20,7 @@ const ProductGame1 = () => {
   if (isStudioOpen) {
     return (
       <div className="fixed inset-0 z-[500] bg-white dark:bg-black animate-in fade-in duration-500">
-        <div className="h-16 border-b border-black/10 dark:border-white/5 bg-white/80 dark:bg-black/80 backdrop-blur-xl flex items-center justify-between px-8 shrink-0">
+        <div className="h-16 border-b border-black/10 dark:border-white/[0.06] bg-white/80 dark:bg-black/80 backdrop-blur-xl flex items-center justify-between px-8 shrink-0">
              <div className="flex items-center gap-4">
                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                 <span className="text-[11px] font-bold uppercase tracking-[0.4em] text-gray-600 dark:text-white/70">Architect_Terminal // Neural_Logic_v1.0.4</span>
@@ -82,7 +82,7 @@ const ProductGame1 = () => {
             </div>
 
             <div className="lg:col-span-5 w-full">
-               <div className="aspect-[4/5] bg-gray-100 dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/5 relative overflow-hidden shadow-2xl rounded-sm group">
+               <div className="aspect-[4/5] bg-gray-100 dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/[0.06] relative overflow-hidden shadow-atlas-lg rounded-sm group">
                   <img src={solution.imageUrl} className="w-full h-full object-cover grayscale opacity-40 group-hover:opacity-60 transition-all duration-1000 group-hover:scale-105" alt="Game Architect Hub" />
                   <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-black via-transparent to-transparent"></div>
                   <div className="absolute bottom-10 left-10 space-y-2">

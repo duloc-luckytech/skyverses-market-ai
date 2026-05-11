@@ -31,7 +31,7 @@ export const SegmentationTab: React.FC<SegmentationTabProps> = ({ variants }) =>
             </div>
             
             <div className="text-center space-y-2">
-              <p className="text-[13px] text-gray-400 font-bold tracking-tight px-4">
+              <p className="text-[13px] text-white/60 font-bold tracking-tight px-4">
                 Split your model into editable parts
               </p>
             </div>
@@ -50,9 +50,9 @@ export const SegmentationTab: React.FC<SegmentationTabProps> = ({ variants }) =>
                 {[
                   { id: 'tripo_node_e616e6aa-fb7d-45e8-9...', status: 'done' },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-4 p-4 bg-white/5 border border-white/5 rounded-2xl group hover:border-brand-blue/30 transition-all">
+                  <div key={i} className="flex items-center gap-4 p-4 bg-white/[0.06] border border-white/[0.06] rounded-lg group hover:border-brand-blue/30 transition-all">
                     <CheckCircle2 size={16} className="text-brand-blue shrink-0" />
-                    <span className="text-[11px] font-mono text-gray-400 truncate">{item.id}</span>
+                    <span className="text-[11px] font-mono text-white/60 truncate">{item.id}</span>
                   </div>
                 ))}
              </div>
@@ -61,12 +61,12 @@ export const SegmentationTab: React.FC<SegmentationTabProps> = ({ variants }) =>
       </div>
 
       {/* Persistent Bottom Controls */}
-      <div className="mt-auto space-y-4 pt-6 border-t border-white/5 pb-4">
+      <div className="mt-auto space-y-4 pt-6 border-t border-white/[0.06] pb-4">
         {!isSegmented ? (
           <div className="space-y-4">
             <button 
               onClick={() => setIsSegmented(true)}
-              className="w-full py-4 px-6 bg-[#1c1d22] border border-white/5 rounded-full flex items-center justify-between group hover:bg-[#25272d] transition-all shadow-xl active:scale-[0.98]"
+              className="w-full py-4 px-6 bg-[#1c1d22] border border-white/[0.06] rounded-full flex items-center justify-between group hover:bg-[#25272d] transition-all shadow-atlas-lg active:scale-[0.98]"
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-brand-blue/20 rounded-full flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform">
@@ -74,25 +74,25 @@ export const SegmentationTab: React.FC<SegmentationTabProps> = ({ variants }) =>
                 </div>
                 <span className="text-xs font-bold uppercase tracking-widest text-white italic">Start Segmenting</span>
               </div>
-              <div className="flex items-center gap-2 px-3 py-1 bg-black/40 rounded-full border border-white/5">
+              <div className="flex items-center gap-2 px-3 py-1 bg-black/40 rounded-full border border-white/[0.06]">
                 <Zap size={10} className="text-yellow-400" fill="currentColor" />
                 <span className="text-[11px] font-bold italic text-white">40</span>
               </div>
             </button>
 
             <div className="flex items-center gap-3 px-4 py-2 opacity-40">
-              <Box size={14} className="text-gray-400" />
-              <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400 italic">Part Completion</span>
+              <Box size={14} className="text-white/60" />
+              <span className="text-[11px] font-bold uppercase tracking-widest text-white/60 italic">Part Completion</span>
             </div>
           </div>
         ) : (
           <div className="space-y-6">
-            <button className="w-full flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-600 hover:text-brand-blue transition-colors group">
+            <button className="w-full flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 hover:text-brand-blue transition-colors group">
               How it works <HelpCircle size={12} className="group-hover:rotate-12 transition-transform" />
             </button>
 
             <button 
-              className="w-full py-4 px-6 bg-[#1c1d22] border border-white/5 rounded-full flex items-center justify-between group hover:bg-[#25272d] transition-all shadow-xl active:scale-[0.98]"
+              className="w-full py-4 px-6 bg-[#1c1d22] border border-white/[0.06] rounded-full flex items-center justify-between group hover:bg-[#25272d] transition-all shadow-atlas-lg active:scale-[0.98]"
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-brand-blue/20 rounded-full flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform">
@@ -100,7 +100,7 @@ export const SegmentationTab: React.FC<SegmentationTabProps> = ({ variants }) =>
                 </div>
                 <span className="text-xs font-bold uppercase tracking-widest text-white italic">Part Completion</span>
               </div>
-              <div className="flex items-center gap-2 px-3 py-1 bg-black/40 rounded-full border border-white/5">
+              <div className="flex items-center gap-2 px-3 py-1 bg-black/40 rounded-full border border-white/[0.06]">
                 <Zap size={10} className="text-yellow-400" fill="currentColor" />
                 <span className="text-[11px] font-bold italic text-white">5</span>
               </div>

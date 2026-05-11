@@ -182,12 +182,12 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     <div className="fixed inset-0 z-[1000] flex flex-col bg-white dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500">
       
       {/* Header bar */}
-      <div className="h-14 border-b border-black/5 dark:border-white/5 flex items-center justify-between px-6 shrink-0 bg-white/40 dark:bg-black/40 backdrop-blur-md z-[160]">
+      <div className="h-14 border-b border-black/5 dark:border-white/[0.06] flex items-center justify-between px-6 shrink-0 bg-white/40 dark:bg-black/40 backdrop-blur-md z-[160]">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-brand-blue dark:text-white italic">
              <span>Stylist Studio</span>
           </div>
-          <div className="h-4 w-px bg-black/5 dark:bg-white/5 mx-2"></div>
+          <div className="h-4 w-px bg-black/[0.06] dark:bg-white/[0.06] mx-2"></div>
           <div className="flex items-center gap-2">
             <button 
               onClick={() => s.setIsTemplateModalOpen(true)}
@@ -225,7 +225,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
         {/* SIDEBAR: Bottom sheet on mobile, left sidebar on desktop */}
         <aside 
-          className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[340px] bg-white dark:bg-[var(--atlas-bg-page)] border-t lg:border-t-0 lg:border-r border-black/5 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-none transition-all duration-500 ease-in-out ${isMobileSidebarExpanded ? 'h-[85dvh] rounded-t-[2.5rem]' : 'h-16 lg:h-full lg:rounded-none'}`}
+          className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[340px] bg-white dark:bg-[var(--atlas-bg-page)] border-t lg:border-t-0 lg:border-r border-black/5 dark:border-white/[0.06] flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-none transition-all duration-500 ease-in-out ${isMobileSidebarExpanded ? 'h-[85dvh] rounded-t-[2.5rem]' : 'h-16 lg:h-full lg:rounded-none'}`}
         >
            {/* Mobile Handle Bar */}
            <div 
@@ -247,11 +247,11 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
            {/* Sidebar Content (Scrollable) - Hidden on mobile if not expanded */}
            <div className={`flex-grow overflow-y-auto no-scrollbar pb-48 transition-all ${!isMobileSidebarExpanded ? 'hidden lg:block' : 'block'}`}>
               <div className="p-6 flex items-center justify-between shrink-0">
-                  <div className="flex bg-slate-200 dark:bg-black/60 p-1 rounded-xl border border-black/5 dark:border-white/5">
+                  <div className="flex bg-slate-200 dark:bg-black/60 p-1 rounded-xl border border-black/5 dark:border-white/[0.06]">
                     {(['Male', 'Female'] as const).map(g => (
                       <button 
                         key={g} onClick={() => s.setGender(g)}
-                        className={`px-6 py-2 rounded-lg text-[10px] font-bold uppercase transition-all ${s.gender === g ? 'bg-white dark:bg-[#2a2a2e] text-slate-900 dark:text-white shadow-xl' : 'text-gray-600 dark:text-gray-400 hover:text-slate-900'}`}
+                        className={`px-6 py-2 rounded-lg text-[10px] font-bold uppercase transition-all ${s.gender === g ? 'bg-white dark:bg-[#2a2a2e] text-slate-900 dark:text-white shadow-atlas-lg' : 'text-gray-600 dark:text-gray-400 hover:text-slate-900'}`}
                       >
                         {g}
                       </button>
@@ -372,7 +372,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                                 <img src={p.url} className="absolute inset-0 w-full h-full object-contain p-2" alt="Pose" />
                               </div>
                               {s.selectedPose === p.id && (
-                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#dfff1a] text-black rounded-full p-2 shadow-2xl z-20">
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#dfff1a] text-black rounded-full p-2 shadow-atlas-lg z-20">
                                   <Check size={16} strokeWidth={4} />
                                 </div>
                               )}
@@ -389,7 +389,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         {/* VIEWPORT: Main Display Area */}
         <main className="flex-grow flex flex-col relative bg-slate-100 dark:bg-[var(--atlas-bg-page)] p-4 md:p-12 items-center justify-center transition-colors">
            <div 
-             className={`w-full max-w-2xl aspect-[3/4] rounded-[2rem] md:rounded-[3.5rem] bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/5 shadow-[0_0_100px_rgba(0,0,0,0.05)] dark:shadow-[0_0_100px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center overflow-hidden relative transition-all ${s.hasResult ? 'border-none' : 'border-dashed border-slate-200 dark:border-white/10'}`}
+             className={`w-full max-w-2xl aspect-[3/4] rounded-xl md:rounded-[3.5rem] bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/[0.06] shadow-[0_0_100px_rgba(0,0,0,0.05)] dark:shadow-[0_0_100px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center overflow-hidden relative transition-all ${s.hasResult ? 'border-none' : 'border-dashed border-slate-200 dark:border-white/10'}`}
            >
               {s.isGenerating ? (
                 <div className="flex flex-col items-center gap-6">
@@ -438,7 +438,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                   className="absolute inset-0 flex items-center justify-center bg-black/20 pointer-events-auto cursor-pointer group/overlay"
                   onClick={() => s.fileInputRef.current?.click()}
                 >
-                  <div className="bg-white/90 dark:bg-black/90 px-6 py-3 rounded-full border border-white/20 shadow-2xl flex items-center gap-3 transition-transform group-hover/overlay:scale-105">
+                  <div className="bg-white/90 dark:bg-black/90 px-6 py-3 rounded-full border border-white/20 shadow-atlas-lg flex items-center gap-3 transition-transform group-hover/overlay:scale-105">
                     <RefreshCcw size={16} className="text-brand-blue" />
                     <span className="text-[10px] font-bold uppercase tracking-widest text-slate-800 dark:text-white">Thay đổi hình ảnh</span>
                   </div>
@@ -454,7 +454,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 {s.history.length > 0 && !s.isGenerating && (
                   <>
                     {/* Compact history preview on mobile */}
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex gap-1.5 md:gap-2 p-1 md:p-1.5 bg-white/60 dark:bg-black/60 backdrop-blur-xl rounded-2xl border border-black/5 dark:border-white/10">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex gap-1.5 md:gap-2 p-1 md:p-1.5 bg-white/60 dark:bg-black/60 backdrop-blur-xl rounded-lg border border-black/5 dark:border-white/10">
                        {s.history.map((url, i) => (
                          <button 
                             key={i} 
@@ -490,7 +490,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                            <Edit3 size={18} className="md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
                         </button>
 
-                        <button onClick={() => s.setHasResult(false)} className="flex-grow bg-slate-900 dark:bg-white text-white dark:text-black py-4 md:py-5 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest md:tracking-[0.4em] shadow-2xl hover:bg-brand-blue hover:text-white transition-all whitespace-nowrap">
+                        <button onClick={() => s.setHasResult(false)} className="flex-grow bg-slate-900 dark:bg-white text-white dark:text-black py-4 md:py-5 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest md:tracking-[0.4em] shadow-atlas-lg hover:bg-brand-blue hover:text-white transition-all whitespace-nowrap">
                             Thử mẫu mới
                         </button>
                         
@@ -517,7 +517,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 {!s.hasResult && (
                   <div className="flex flex-col items-center gap-4 md:gap-6 w-full">
                     {/* Resource status badge */}
-                    <div className="flex items-center gap-4 px-5 py-2 bg-white/80 dark:bg-black/60 backdrop-blur-md rounded-full border border-black/5 dark:border-white/10 shadow-xl">
+                    <div className="flex items-center gap-4 px-5 py-2 bg-white/80 dark:bg-black/60 backdrop-blur-md rounded-full border border-black/5 dark:border-white/10 shadow-atlas-lg">
                       <div className="flex items-center gap-3">
                          <div className="text-right">
                            <p className={`text-[9px] md:text-[11px] font-bold italic leading-none ${s.usagePreference === 'key' ? 'text-purple-500' : 'text-brand-blue'}`}>
@@ -526,7 +526,7 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                          </div>
                          <button 
                            onClick={() => s.setShowResourceModal(true)}
-                           className="p-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-md hover:text-brand-blue transition-all active:scale-95"
+                           className="p-1 bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 rounded-md hover:text-brand-blue transition-all active:scale-95"
                          >
                            <Settings size={12} />
                          </button>
@@ -580,14 +580,14 @@ const AIStylistWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       <AnimatePresence>
         {s.showLowCreditAlert && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
-            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="max-w-md w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-12 border border-slate-200 dark:border-white/10 rounded-[2rem] text-center space-y-8 shadow-3xl transition-colors">
-              <div className="w-24 h-24 bg-orange-500/10 border border-orange-500/20 rounded-full flex items-center justify-center mx-auto text-orange-500 shadow-xl dark:shadow-[0_0_40px_rgba(245,158,11,0.2)]"><AlertTriangle size={48} /></div>
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="max-w-md w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-12 border border-slate-200 dark:border-white/10 rounded-xl text-center space-y-8 shadow-atlas-xl transition-colors">
+              <div className="w-24 h-24 bg-orange-500/10 border border-orange-500/20 rounded-full flex items-center justify-center mx-auto text-orange-500 shadow-atlas-lg dark:shadow-[0_0_40px_rgba(245,158,11,0.2)]"><AlertTriangle size={48} /></div>
               <div className="space-y-4">
                 <h3 className="text-3xl font-bold uppercase tracking-tighter italic text-slate-900 dark:text-white">Hạn ngạch cạn kiệt</h3>
                 <p className="text-sm text-slate-500 dark:text-gray-400 font-bold leading-relaxed uppercase tracking-tight">AI Styling requires **{s.GEN_COST} credits** per synthesis. <br />Your current node balance is too low.</p>
               </div>
               <div className="flex flex-col gap-4">
-                <Link to="/credits" className="bg-brand-blue text-white py-5 rounded-full text-[12px] font-bold uppercase tracking-[0.4em] shadow-xl hover:scale-105 transition-all text-center">Nạp thêm Credits</Link>
+                <Link to="/credits" className="bg-brand-blue text-white py-5 rounded-full text-[12px] font-bold uppercase tracking-[0.4em] shadow-atlas-lg hover:scale-105 transition-all text-center">Nạp thêm Credits</Link>
                 <button onClick={() => s.setShowLowCreditAlert(false)} className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors tracking-widest underline underline-offset-8 decoration-white/20">Để sau</button>
               </div>
             </motion.div>

@@ -1,4 +1,4 @@
-# Hooks — `hooks/`
+# Hooks — `hooks/` (31 files)
 
 State machine + business logic per workspace.
 
@@ -19,9 +19,9 @@ State machine + business logic per workspace.
 | `useImageModels.ts` | Image model dropdown (`MappedImageModel`) |
 | `useJobPoller.ts` | **Generic polling cho image/video/music jobs** |
 | `useMusicStudio.ts` | MusicWorkspace |
-| `usePodcastVoice.ts` | PodcastVoiceWorkspace |
 | `useOrgBuilder.ts` | OrgBuilderTab (agent-workspace) |
 | `usePageMeta.ts` | Set `<title>`, `<meta>` per page |
+| `usePodcastVoice.ts` | PodcastVoiceWorkspace |
 | `useProductImageEditor.ts` | ProductImageWorkspace |
 | `useProjectManager.ts` | Generic project CRUD (`ProjectData`) |
 | `useRealEstateAI.ts` | RealEstateWorkspace |
@@ -34,7 +34,8 @@ State machine + business logic per workspace.
 | `useVideoModels.ts` | Video model dropdown (`KNOWN_VIDEO_FAMILIES`) |
 | `useWorkflowEditor.ts` | AetherFlow legacy editor |
 | `useWorkflowEditorV2.ts` | AetherFlow v2 editor |
-| `admin-pro/useExplorerLogic.ts` | Admin CMS explorer view |
+
+**Admin hook:** `hooks/admin-pro/useExplorerLogic.ts` — Admin CMS explorer view (outside main hooks count).
 
 ## Key types exported
 

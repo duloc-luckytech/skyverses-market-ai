@@ -72,7 +72,7 @@ export const WorkflowSection: React.FC = () => (
             const Icon = step.icon;
             const thumbUrl = CDN_STEPS[step.n];
             return (
-              <HoverCard key={step.n} className="overflow-hidden bg-white dark:bg-[#111] relative">
+              <HoverCard key={step.n} className="overflow-hidden bg-white dark:bg-[var(--atlas-bg-panel)] relative">
                 {/* Step result thumbnail */}
                 {thumbUrl && (
                   <div className="relative h-24 overflow-hidden">

@@ -82,7 +82,7 @@ export const RestorationControls: React.FC<Props> = ({
 
       {/* ═══ Bottom Info Card ═══ */}
       <div className="hidden md:block p-4 border-t border-slate-100 dark:border-white/[0.04]">
-        <div className="p-5 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-500/[0.04] dark:to-teal-500/[0.04] border border-emerald-100 dark:border-emerald-500/10 rounded-2xl space-y-3">
+        <div className="p-5 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-500/[0.04] dark:to-teal-500/[0.04] border border-emerald-100 dark:border-emerald-500/10 rounded-lg space-y-3">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-emerald-500/15 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
               <ShieldCheck size={14} />

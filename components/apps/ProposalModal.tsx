@@ -44,7 +44,7 @@ export const ProposalModal: React.FC<ProposalModalProps> = ({ isOpen, onClose })
         animate={{ scale: 1, opacity: 1, y: 0 }} 
         exit={{ scale: 0.96, opacity: 0, y: 10 }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="relative w-full max-w-lg bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl"
+        className="relative w-full max-w-lg bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-lg overflow-hidden shadow-atlas-lg"
       >
         {/* Success State */}
         <AnimatePresence>
@@ -91,7 +91,7 @@ export const ProposalModal: React.FC<ProposalModalProps> = ({ isOpen, onClose })
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {/* Info Banner */}
-          <div className="flex items-start gap-3 p-3.5 bg-brand-blue/5 dark:bg-brand-blue/10 border border-brand-blue/10 dark:border-brand-blue/15 rounded-xl">
+          <div className="flex items-start gap-3 p-3.5 bg-brand-blue/5 dark:bg-brand-blue/10 border border-brand-blue/10 dark:border-brand-blue/[0.15] rounded-xl">
             <MessageSquare size={16} className="text-brand-blue shrink-0 mt-0.5" />
             <p className="text-xs text-slate-500 dark:text-gray-400 leading-relaxed">
               Mô tả dự án AI của bạn. Đội ngũ Skyverses sẽ review và phản hồi trong <strong className="text-brand-blue">48 giờ</strong>.

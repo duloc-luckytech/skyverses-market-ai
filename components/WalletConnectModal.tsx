@@ -202,7 +202,7 @@ const WalletConnectModal: React.FC<WalletConnectModalProps> = ({ isOpen, onClose
 
       <motion.div initial={{ scale: 0.95, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="relative w-full max-w-sm bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl shadow-2xl overflow-hidden">
+        className="relative w-full max-w-sm bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-lg shadow-atlas-lg overflow-hidden">
 
         {/* Header */}
         <div className="px-5 py-4 border-b border-black/[0.04] dark:border-white/[0.08] flex items-center justify-between">

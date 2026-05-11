@@ -93,7 +93,7 @@ const NexusStudioInterface = () => {
               <button
                 key={s}
                 onClick={() => setSegment(s)}
-                className={`py-3 px-3 text-[9px] font-bold uppercase border transition-all text-left ${segment === s ? 'bg-brand-blue border-brand-blue text-white' : 'border-black/5 dark:border-white/5 text-gray-400 dark:text-gray-700 hover:border-brand-blue/30'}`}
+                className={`py-3 px-3 text-[9px] font-bold uppercase border transition-all text-left ${segment === s ? 'bg-brand-blue border-brand-blue text-white' : 'border-black/5 dark:border-white/[0.06] text-gray-400 dark:text-gray-700 hover:border-brand-blue/30'}`}
               >
                 {s}
               </button>
@@ -101,13 +101,13 @@ const NexusStudioInterface = () => {
           </div>
         </div>
 
-        <div className="space-y-6 pt-6 border-t border-black/5 dark:border-white/5">
+        <div className="space-y-6 pt-6 border-t border-black/5 dark:border-white/[0.06]">
            <label className="text-[10px] font-bold uppercase text-gray-500 dark:text-gray-600 tracking-widest flex items-center gap-3">
               <Layers className="w-4 h-4 text-brand-blue" /> Master_Keyframe
            </label>
            <div
              onClick={() => fileInputRef.current?.click()}
-             className="aspect-video border border-dashed border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/[0.02] flex flex-col items-center justify-center cursor-pointer group hover:border-brand-blue transition-all relative overflow-hidden"
+             className="aspect-video border border-dashed border-black/10 dark:border-white/10 bg-black/[0.06] dark:bg-white/[0.02] flex flex-col items-center justify-center cursor-pointer group hover:border-brand-blue transition-all relative overflow-hidden"
            >
               {selectedImage ? (
                 <img src={selectedImage} className="w-full h-full object-cover" />
@@ -125,7 +125,7 @@ const NexusStudioInterface = () => {
       <div className="flex-grow flex flex-col relative bg-gray-100 dark:bg-[var(--atlas-bg-page)] overflow-hidden">
         <div className="flex-grow flex flex-col items-center justify-center p-6 lg:p-12 relative">
            <div className="w-full max-w-5xl relative z-10 group">
-              <div className="aspect-video bg-black border border-black/10 dark:border-white/10 shadow-2xl relative overflow-hidden flex items-center justify-center">
+              <div className="aspect-video bg-black border border-black/10 dark:border-white/10 shadow-atlas-lg relative overflow-hidden flex items-center justify-center">
                  {activeVideo ? (
                    <video key={activeVideo} src={activeVideo} autoPlay loop muted className={`w-full h-full object-contain ${isGenerating ? 'opacity-20 scale-105 blur-2xl' : 'opacity-100'}`} />
                  ) : (
@@ -152,7 +152,7 @@ const NexusStudioInterface = () => {
                    value={prompt}
                    onChange={(e) => setPrompt(e.target.value)}
                    placeholder="Direct industrial intent command..."
-                   className="w-full h-full bg-black/5 dark:bg-white/[0.03] border border-black/5 dark:border-white/5 p-5 text-[13px] mono font-bold focus:outline-none focus:border-brand-blue/30 text-black dark:text-white uppercase tracking-tighter resize-none"
+                   className="w-full h-full bg-black/[0.06] dark:bg-white/[0.03] border border-black/5 dark:border-white/[0.06] p-5 text-[13px] mono font-bold focus:outline-none focus:border-brand-blue/30 text-black dark:text-white uppercase tracking-tighter resize-none"
                    disabled={isGenerating}
                  />
               </div>
@@ -165,14 +165,14 @@ const NexusStudioInterface = () => {
       </div>
 
       <div className="hidden xl:flex w-[320px] shrink-0 flex-col border-l border-black/10 dark:border-white/10 bg-gray-50 dark:bg-black overflow-hidden">
-         <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
+         <div className="h-16 border-b border-black/10 dark:border-white/[0.06] flex items-center px-8 shrink-0">
             <h3 className="text-[10px] font-bold uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
                <HistoryIcon className="w-4 h-4 text-brand-blue" /> Take_Archives
             </h3>
          </div>
          <div className="flex-grow overflow-y-auto p-6 space-y-6 no-scrollbar">
             {history.map((take, idx) => (
-               <div key={idx} onClick={() => setActiveVideo(take.url)} className={`group border cursor-pointer transition-all overflow-hidden relative ${activeVideo === take.url ? 'border-brand-blue bg-brand-blue/[0.03]' : 'border-black/5 dark:border-white/5 opacity-50 hover:opacity-100'}`}>
+               <div key={idx} onClick={() => setActiveVideo(take.url)} className={`group border cursor-pointer transition-all overflow-hidden relative ${activeVideo === take.url ? 'border-brand-blue bg-brand-blue/[0.03]' : 'border-black/5 dark:border-white/[0.06] opacity-50 hover:opacity-100'}`}>
                   <video src={take.url} className="w-full h-full object-cover" muted />
                </div>
             ))}

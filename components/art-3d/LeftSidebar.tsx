@@ -38,7 +38,7 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({ activeTab, modelName, 
   };
 
   return (
-    <aside className="w-80 shrink-0 border-r border-white/5 bg-[#141519] flex flex-col overflow-hidden relative">
+    <aside className="w-80 shrink-0 border-r border-white/[0.06] bg-[var(--atlas-bg-panel)] flex flex-col overflow-hidden relative">
       {/* Dynamic Background Blur Effect */}
       <div className={`absolute -top-40 -left-40 w-80 h-80 rounded-full blur-[100px] opacity-10 pointer-events-none transition-colors duration-1000 ${
         activeTab === 'Generate' ? 'bg-yellow-600' :
@@ -49,7 +49,7 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({ activeTab, modelName, 
         'bg-pink-600'
       }`}></div>
 
-      <div className="p-6 border-b border-white/5 flex items-center justify-between shrink-0 bg-black/20 z-10">
+      <div className="p-6 border-b border-white/[0.06] flex items-center justify-between shrink-0 bg-black/20 z-10">
         <div className="flex items-center gap-2">
           {activeTab === 'Generate' && <Sparkles size={16} className="text-yellow-400" />}
           {activeTab === 'Overview' && <Box size={16} className="text-purple-400" />}
@@ -59,7 +59,7 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({ activeTab, modelName, 
           {activeTab === 'Rigging' && <Accessibility size={16} className="text-pink-400" />}
           <h2 className="text-xs font-bold uppercase tracking-widest text-white">{getHeaderTitle()}</h2>
         </div>
-        <button className="p-2 text-gray-600 hover:text-white transition-colors"><MoreVertical size={16}/></button>
+        <button className="p-2 text-white/20 hover:text-white transition-colors"><MoreVertical size={16}/></button>
       </div>
 
       <div className="flex-grow overflow-y-auto no-scrollbar p-6 relative z-10">

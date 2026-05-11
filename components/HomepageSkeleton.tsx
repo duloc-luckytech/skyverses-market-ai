@@ -23,8 +23,8 @@ const HomepageSkeleton: React.FC = () => (
             </div>
             {/* Headline */}
             <div className="space-y-3">
-              <div className={`h-10 md:h-16 bg-slate-200/60 dark:bg-white/[0.04] rounded-2xl w-full ${shimmer}`} />
-              <div className={`h-10 md:h-16 bg-slate-200/60 dark:bg-white/[0.04] rounded-2xl w-4/5 ${shimmer}`} />
+              <div className={`h-10 md:h-16 bg-slate-200/60 dark:bg-white/[0.04] rounded-lg w-full ${shimmer}`} />
+              <div className={`h-10 md:h-16 bg-slate-200/60 dark:bg-white/[0.04] rounded-lg w-4/5 ${shimmer}`} />
             </div>
             {/* Subtitle */}
             <div className="space-y-2">
@@ -34,7 +34,7 @@ const HomepageSkeleton: React.FC = () => (
             {/* CTAs */}
             <div className="flex gap-3 pt-2">
               <div className="h-12 w-40 bg-slate-900/80 dark:bg-white/10 rounded-xl" />
-              <div className="h-12 w-32 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl" />
+              <div className="h-12 w-32 bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 rounded-xl" />
             </div>
             {/* Stats */}
             <div className="flex gap-8 pt-4">
@@ -55,7 +55,7 @@ const HomepageSkeleton: React.FC = () => (
             </div>
             <div className="flex gap-3 overflow-hidden">
               {[1, 2, 3].map(i => (
-                <div key={i} className={`flex-shrink-0 w-[280px] h-[200px] rounded-2xl bg-slate-100 dark:bg-white/[0.03] ${shimmer}`} />
+                <div key={i} className={`flex-shrink-0 w-[280px] h-[200px] rounded-lg bg-slate-100 dark:bg-white/[0.03] ${shimmer}`} />
               ))}
             </div>
           </div>
@@ -64,10 +64,10 @@ const HomepageSkeleton: React.FC = () => (
             <div className="flex items-center gap-2 mb-4">
               <div className="w-3 h-3 rounded-sm bg-orange-500/30" />
               <div className="h-2.5 w-20 bg-orange-500/20 rounded" />
-              <div className="flex-1 h-px bg-white/5" />
+              <div className="flex-1 h-px bg-white/[0.06]" />
             </div>
             <div className="flex gap-3 h-[380px]">
-              <div className={`flex-[3] rounded-2xl bg-slate-100 dark:bg-white/[0.03] ${shimmer}`} />
+              <div className={`flex-[3] rounded-lg bg-slate-100 dark:bg-white/[0.03] ${shimmer}`} />
               <div className="flex-[2] flex flex-col gap-3">
                 {[1, 2, 3].map(i => (
                   <div key={i} className={`flex-1 rounded-xl bg-slate-100 dark:bg-white/[0.03] ${shimmer}`} />
@@ -80,7 +80,7 @@ const HomepageSkeleton: React.FC = () => (
 
       {/* ═══ AI MODELS MARQUEE SKELETON ═══ */}
       <div className="max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 mt-4 animate-pulse">
-        <div className="h-12 bg-slate-100/50 dark:bg-white/[0.02] rounded-2xl" />
+        <div className="h-12 bg-slate-100/50 dark:bg-white/[0.02] rounded-lg" />
       </div>
 
       {/* ═══ TRUST PILLARS SKELETON ═══ */}
@@ -92,11 +92,11 @@ const HomepageSkeleton: React.FC = () => (
           ))}
         </div>
         {/* Desktop */}
-        <div className={`hidden md:block rounded-[2.5rem] bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border border-black/[0.04] dark:border-white/[0.04] p-12 lg:p-14 ${shimmer}`}>
+        <div className={`hidden md:block rounded-xl bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border border-black/[0.04] dark:border-white/[0.04] p-12 lg:p-14 ${shimmer}`}>
           <div className="grid grid-cols-5 gap-0">
             {[1, 2, 3, 4, 5].map(i => (
               <div key={i} className="px-6 space-y-4">
-                <div className="w-14 h-14 bg-slate-200/50 dark:bg-white/[0.04] rounded-2xl" />
+                <div className="w-14 h-14 bg-slate-200/50 dark:bg-white/[0.04] rounded-lg" />
                 <div className="h-10 w-20 bg-slate-200/50 dark:bg-white/[0.04] rounded-lg" />
                 <div className="h-3 w-24 bg-slate-100 dark:bg-white/[0.03] rounded" />
                 <div className="space-y-1.5">
@@ -118,7 +118,7 @@ const HomepageSkeleton: React.FC = () => (
           </div>
           <div className="flex md:grid md:grid-cols-3 gap-3 md:gap-8 overflow-hidden">
             {[1, 2, 3].map(i => (
-              <div key={i} className={`flex-shrink-0 w-[260px] md:w-auto rounded-2xl md:rounded-3xl bg-slate-100/50 dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] overflow-hidden ${shimmer}`}>
+              <div key={i} className={`flex-shrink-0 w-[260px] md:w-auto rounded-lg md:rounded-xl bg-slate-100/50 dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] overflow-hidden ${shimmer}`}>
                 <div className="aspect-[16/9] bg-slate-200/50 dark:bg-white/[0.03]" />
                 <div className="p-4 md:p-6 space-y-3">
                   <div className="h-5 bg-slate-200/50 dark:bg-white/[0.04] rounded w-2/3" />
@@ -148,7 +148,7 @@ const HomepageSkeleton: React.FC = () => (
             </div>
             <div className="flex gap-4 md:gap-8 overflow-hidden">
               {[1, 2, 3, 4, 5].map(i => (
-                <div key={i} className={`flex-shrink-0 w-[280px] md:w-[320px] xl:w-[360px] flex flex-col bg-white dark:bg-[var(--atlas-bg-page)] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden ${shimmer}`}>
+                <div key={i} className={`flex-shrink-0 w-[280px] md:w-[320px] xl:w-[360px] flex flex-col bg-white dark:bg-[var(--atlas-bg-page)] border border-black/[0.06] dark:border-white/[0.06] rounded-lg overflow-hidden ${shimmer}`}>
                   <div className="aspect-[16/10] bg-slate-200/60 dark:bg-white/[0.03]" />
                   <div className="p-4 md:p-6 space-y-4">
                     <div className="h-6 bg-slate-200/60 dark:bg-white/[0.04] rounded w-3/4" />
@@ -164,7 +164,7 @@ const HomepageSkeleton: React.FC = () => (
         </div>
 
         {/* ═══ USE CASES SKELETON ═══ */}
-        <div className={`mt-16 rounded-2xl md:rounded-3xl h-48 md:h-72 bg-gradient-to-br from-brand-blue/5 via-purple-500/5 to-pink-500/5 border border-brand-blue/10 dark:border-white/[0.06] animate-pulse ${shimmer}`} />
+        <div className={`mt-16 rounded-lg md:rounded-xl h-48 md:h-72 bg-gradient-to-br from-brand-blue/5 via-purple-500/5 to-pink-500/5 border border-brand-blue/10 dark:border-white/[0.06] animate-pulse ${shimmer}`} />
       </div>
     </div>
 

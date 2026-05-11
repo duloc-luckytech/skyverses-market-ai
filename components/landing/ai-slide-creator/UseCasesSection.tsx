@@ -117,7 +117,7 @@ export const UseCasesSection: React.FC = () => (
         {USE_CASES.map(uc => {
           const Icon = uc.icon;
           return (
-            <HoverCard key={uc.title} className="overflow-hidden bg-white dark:bg-[#111]">
+            <HoverCard key={uc.title} className="overflow-hidden bg-white dark:bg-[var(--atlas-bg-panel)]">
               {/* CDN image thumbnail */}
               <div className="relative h-32 overflow-hidden">
                 <img

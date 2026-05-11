@@ -88,7 +88,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   const isHighRes = res.resolution && ['2k', '4k'].includes(res.resolution.toLowerCase());
   const resBadgeLabel = res.resolution?.toUpperCase();
 
-  const cardClass = `group relative p-3 rounded-2xl border transition-all flex flex-col gap-3 ${isSelected
+  const cardClass = `group relative p-3 rounded-lg border transition-all flex flex-col gap-3 ${isSelected
     ? 'border-indigo-500/40 bg-indigo-500/5'
     : 'border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-[var(--atlas-bg-panel)] hover:border-black/[0.1] dark:hover:border-white/[0.08] shadow-sm dark:shadow-none'
     }`;
@@ -141,9 +141,9 @@ export const VideoCard: React.FC<VideoCardProps> = ({
             className={`absolute inset-0 flex items-center justify-center bg-black/20 dark:bg-black/40 transition-opacity ${isPlaying ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}
           >
             {isPlaying ? (
-              <Pause size={48} className="text-white dark:text-white drop-shadow-2xl" fill="currentColor" />
+              <Pause size={48} className="text-white dark:text-white drop-shadow-atlas-lg" fill="currentColor" />
             ) : (
-              <Play size={48} className="text-white dark:text-white drop-shadow-2xl ml-2" fill="currentColor" />
+              <Play size={48} className="text-white dark:text-white drop-shadow-atlas-lg ml-2" fill="currentColor" />
             )}
           </div>
         )}
@@ -151,7 +151,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all z-20">
           <button
             onClick={(e) => { e.stopPropagation(); onViewLogs?.(res); }}
-            className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-brand-blue shadow-xl transition-all"
+            className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-brand-blue shadow-atlas-lg transition-all"
             title="Xem nhật ký tiến trình"
           >
             <Terminal size={16} />
@@ -159,7 +159,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
 
           <button
             onClick={handleReport}
-            className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-orange-500 shadow-xl transition-all"
+            className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-orange-500 shadow-atlas-lg transition-all"
             title="Báo lỗi"
           >
             <AlertTriangle size={16} />
@@ -169,14 +169,14 @@ export const VideoCard: React.FC<VideoCardProps> = ({
             <>
               <button
                 onClick={(e) => { e.stopPropagation(); onDownload(res.url!, `video_${res.id}.mp4`); }}
-                className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-purple-600 shadow-xl"
+                className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-purple-600 shadow-atlas-lg"
                 title="Tải xuống"
               >
                 <Download size={16} />
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); onFullscreen(res.url!, res.hasSound, res.id); }}
-                className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-purple-600 shadow-xl"
+                className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-purple-600 shadow-atlas-lg"
                 title="Phóng to"
               >
                 <Maximize2 size={16} />
@@ -186,7 +186,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
           {res.status === 'error' && (
             <button
               onClick={(e) => { e.stopPropagation(); onRetry(res); }}
-              className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-red-500 shadow-xl"
+              className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-red-500 shadow-atlas-lg"
               title="Thử lại"
             >
               <RefreshCw size={16} />
@@ -195,7 +195,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
           {res.status !== 'processing' && (
             <button
               onClick={(e) => { e.stopPropagation(); onDelete(res.id); }}
-              className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-red-500 shadow-xl"
+              className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-red-500 shadow-atlas-lg"
               title="Xóa"
             >
               <Trash2 size={16} />
@@ -204,7 +204,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         </div>
 
         <div
-          className={`absolute top-3 left-3 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${isSelected ? 'bg-purple-600 border-purple-500 shadow-xl scale-110' : 'border-white/20 bg-black/40 hover:bg-black/60'}`}
+          className={`absolute top-3 left-3 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${isSelected ? 'bg-purple-600 border-purple-500 shadow-atlas-lg scale-110' : 'border-white/20 bg-black/40 hover:bg-black/60'}`}
         >
           {isSelected && <Check size={14} strokeWidth={4} className="text-white" />}
         </div>

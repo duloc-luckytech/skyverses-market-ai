@@ -186,7 +186,7 @@ const REQuickRenderWidget: React.FC<{ onOpenStudio: () => void }> = ({ onOpenStu
               ))}
             </div>
             <div className="relative z-10 flex flex-col items-center gap-2">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
                 <Building2 size={22} className="text-emerald-400/60" />
               </div>
               <p className="text-[11px] text-white/40 text-center max-w-[200px]">

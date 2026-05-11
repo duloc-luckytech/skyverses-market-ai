@@ -35,7 +35,7 @@ const ProductAIAgentWorkflow = () => {
     return (
       <div className="fixed inset-0 z-[500] bg-white dark:bg-[var(--atlas-bg-page)] animate-in fade-in duration-500">
         <div className="h-full flex flex-col">
-           <div className="h-16 border-b border-black/10 dark:border-white/5 bg-white/80 dark:bg-black/80 backdrop-blur-xl flex items-center justify-between px-8 shrink-0">
+           <div className="h-16 border-b border-black/10 dark:border-white/[0.06] bg-white/80 dark:bg-black/80 backdrop-blur-xl flex items-center justify-between px-8 shrink-0">
              <div className="flex items-center gap-4">
                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
                 <span className="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300 italic">AI AGENT WORKFLOW</span>
@@ -75,7 +75,7 @@ const ProductAIAgentWorkflow = () => {
                   <Sparkles size={24} className="animate-pulse" />
                   <span className="text-[14px] font-bold uppercase tracking-[0.8em] opacity-60 italic leading-none">Creative Automation</span>
                </div>
-               <h1 className="text-6xl lg:text-[140px] font-bold uppercase tracking-tighter leading-[0.8] italic drop-shadow-2xl">
+               <h1 className="text-6xl lg:text-[140px] font-bold uppercase tracking-tighter leading-[0.8] italic drop-shadow-atlas-lg">
                  Create <br /> <span className="text-emerald-500">Masterpieces.</span>
                </h1>
             </div>
@@ -100,7 +100,7 @@ const ProductAIAgentWorkflow = () => {
         </section>
 
         {/* --- NEW TEMPLATE EXPLORER BLOCK --- */}
-        <section className="py-24 border-t border-black/5 dark:border-white/5 space-y-16">
+        <section className="py-24 border-t border-black/5 dark:border-white/[0.06] space-y-16">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-4">
                <div className="flex items-center gap-3 text-emerald-500">
@@ -110,7 +110,7 @@ const ProductAIAgentWorkflow = () => {
                <p className="text-sm text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest italic opacity-60">Kế thừa hàng nghìn quy trình đã được tối ưu hóa cho Content Creator.</p>
             </div>
             
-            <div className="flex items-center gap-4 bg-slate-50 dark:bg-white/5 p-1 rounded-xl border border-black/5 dark:border-white/10">
+            <div className="flex items-center gap-4 bg-slate-50 dark:bg-white/[0.06] p-1 rounded-xl border border-black/5 dark:border-white/10">
                <button className="px-6 py-2 bg-white dark:bg-white/10 text-emerald-500 shadow-sm rounded-lg text-[10px] font-bold uppercase tracking-widest">Tất cả</button>
                <button className="px-6 py-2 text-gray-500 hover:text-emerald-500 rounded-lg text-[10px] font-bold uppercase tracking-widest">Video AI</button>
                <button className="px-6 py-2 text-gray-500 hover:text-emerald-500 rounded-lg text-[10px] font-bold uppercase tracking-widest">Ảnh 8K</button>
@@ -125,7 +125,7 @@ const ProductAIAgentWorkflow = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.05 }}
-                className="group relative aspect-[3/4] bg-white dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/10 rounded-xl overflow-hidden shadow-xl hover:border-emerald-500/40 transition-all cursor-pointer"
+                className="group relative aspect-[3/4] bg-white dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/10 rounded-xl overflow-hidden shadow-atlas-lg hover:border-emerald-500/40 transition-all cursor-pointer"
                 onClick={() => { flow.setWorkflowId(tmpl.templateId); setIsStudioOpen(true); }}
               >
                 <img 
@@ -150,7 +150,7 @@ const ProductAIAgentWorkflow = () => {
                       <div className="flex items-center gap-4 text-[8px] font-bold text-gray-500 uppercase tracking-widest">
                          <span className="flex items-center gap-1"><Activity size={10}/> {tmpl.statistics.useCount} Users</span>
                       </div>
-                      <button className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all shadow-2xl">
+                      <button className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all shadow-atlas-lg">
                          <ArrowRight size={18} />
                       </button>
                    </div>
@@ -167,7 +167,7 @@ const ProductAIAgentWorkflow = () => {
         </section>
 
         {/* --- VALUE PROPOSITION: INDUSTRIAL WORKFLOW --- */}
-        <section className="py-40 border-t border-black/5 dark:border-white/5 relative">
+        <section className="py-40 border-t border-black/5 dark:border-white/[0.06] relative">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-24 items-center">
              <div className="lg:col-span-4 space-y-10">
                 <div className="space-y-6">
@@ -194,17 +194,17 @@ const ProductAIAgentWorkflow = () => {
                 </div>
              </div>
 
-             <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-px bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 shadow-2xl rounded-sm overflow-hidden">
+             <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-px bg-black/[0.06] dark:bg-white/[0.06] border border-black/5 dark:border-white/[0.06] shadow-atlas-lg rounded-sm overflow-hidden">
                 {[
                   { step: '01', label: 'Kết nối kịch bản', icon: <Database />, desc: 'Chọn quy trình phù hợp từ hàng nghìn mẫu được xây dựng sẵn bởi chuyên gia.' },
                   { step: '02', label: 'Tùy chỉnh thông số', icon: <Sliders />, desc: 'Nhập yêu cầu, ảnh mỏ neo hoặc kịch bản của riêng bạn vào các khối node trực quan.' },
                   { step: '03', label: 'Tổng hợp Neural', icon: <Cpu />, desc: 'Hệ thống thực thi trên cụm GPU H100, xử lý hàng loạt khung hình trong tích tắc.' },
                   { step: '04', label: 'Xuất bản Master', icon: <Share2 />, desc: 'Nhận thành phẩm chất lượng cao nhất, sẵn sàng cho mọi nền tảng truyền thông.' }
                 ].map((item) => (
-                  <div key={item.step} className="p-16 bg-white dark:bg-[var(--atlas-bg-page)] space-y-10 group hover:bg-emerald-500/[0.01] transition-all duration-700 border-r border-black/5 dark:border-white/5 last:border-r-0">
+                  <div key={item.step} className="p-16 bg-white dark:bg-[var(--atlas-bg-page)] space-y-10 group hover:bg-emerald-500/[0.01] transition-all duration-700 border-r border-black/5 dark:border-white/[0.06] last:border-r-0">
                     <div className="flex justify-between items-start">
                        <span className="text-5xl font-bold text-emerald-500 italic opacity-20 group-hover:opacity-100 transition-opacity">{item.step}</span>
-                       <div className="p-5 border border-black/10 dark:border-white/10 text-gray-500 group-hover:text-emerald-500 group-hover:border-emerald-500 transition-all rounded-sm shadow-xl bg-slate-50 dark:bg-white/[0.02]">
+                       <div className="p-5 border border-black/10 dark:border-white/10 text-gray-500 group-hover:text-emerald-500 group-hover:border-emerald-500 transition-all rounded-sm shadow-atlas-lg bg-slate-50 dark:bg-white/[0.02]">
                           {React.cloneElement(item.icon as React.ReactElement<any>, { size: 24 })}
                        </div>
                     </div>
@@ -219,7 +219,7 @@ const ProductAIAgentWorkflow = () => {
         </section>
 
         {/* --- FINAL CONVERSION --- */}
-        <section className="py-60 text-center relative overflow-hidden bg-emerald-500 rounded-xl shadow-3xl mx-4 transition-all duration-700 group">
+        <section className="py-60 text-center relative overflow-hidden bg-emerald-500 rounded-xl shadow-atlas-xl mx-4 transition-all duration-700 group">
            <div className="absolute inset-0 opacity-10 flex flex-wrap gap-4 p-8 pointer-events-none text-[220px] font-bold text-white leading-none tracking-tighter select-none italic uppercase">
               CREATE CREATE CREATE CREATE
            </div>
@@ -228,7 +228,7 @@ const ProductAIAgentWorkflow = () => {
               <h2 className="text-7xl lg:text-[140px] font-bold uppercase tracking-tighter leading-[0.8] italic text-white">Let's <br /> <span className="text-black">Build It.</span></h2>
               
               <div className="flex flex-col sm:flex-row items-center justify-center gap-12 pt-10">
-                 <button onClick={() => setIsStudioOpen(true)} className="bg-black text-white px-24 py-8 rounded-full text-sm font-bold uppercase tracking-[0.4em] shadow-2xl hover:scale-110 active:scale-95 transition-all flex items-center gap-6 group">
+                 <button onClick={() => setIsStudioOpen(true)} className="bg-black text-white px-24 py-8 rounded-full text-sm font-bold uppercase tracking-[0.4em] shadow-atlas-lg hover:scale-110 active:scale-95 transition-all flex items-center gap-6 group">
                     BẮT ĐẦU NGAY <Zap size={24} fill="currentColor" className="group-hover:rotate-12 transition-transform" />
                  </button>
                  <Link to="/booking" className="px-16 py-8 border-2 border-black/20 text-black hover:bg-black hover:text-white text-sm font-bold uppercase tracking-[0.4em] transition-all rounded-full italic">

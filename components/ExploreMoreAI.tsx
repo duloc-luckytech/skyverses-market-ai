@@ -19,7 +19,7 @@ const ExploreMoreAI: React.FC = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="relative overflow-hidden rounded-[2rem] md:rounded-[2.5rem]"
+          className="relative overflow-hidden rounded-xl md:rounded-xl"
         >
           {/* Gradient background */}
           <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 dark:from-[#0c0c10] dark:via-[#0e0e14] dark:to-[#0c0c10]" />
@@ -30,7 +30,7 @@ const ExploreMoreAI: React.FC = () => {
             <div className="grid md:grid-cols-5 gap-10 md:gap-16 items-center">
               {/* Left: Content (3 cols) */}
               <div className="md:col-span-3 space-y-6">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.06] border border-white/10">
                   <Building2 size={12} className="text-brand-blue" />
                   <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-white/60">Enterprise Solutions</span>
                 </div>
@@ -63,7 +63,7 @@ const ExploreMoreAI: React.FC = () => {
               <div className="md:col-span-2 space-y-4">
                 <button 
                   onClick={() => navigate('/booking')}
-                  className="group w-full inline-flex items-center justify-center gap-3 bg-white text-black px-8 py-5 rounded-2xl text-sm font-bold hover:bg-white/95 hover:shadow-2xl hover:shadow-white/10 transition-all active:scale-[0.98]"
+                  className="group w-full inline-flex items-center justify-center gap-3 bg-white text-black px-8 py-5 rounded-lg text-sm font-bold hover:bg-white/95 hover:shadow-atlas-lg hover:shadow-white/10 transition-all active:scale-[0.98]"
                 >
                   <MessageCircle size={16} />
                   Liên hệ tư vấn
@@ -73,7 +73,7 @@ const ExploreMoreAI: React.FC = () => {
                 {!isAuthenticated && (
                   <button 
                     onClick={() => navigate('/login')}
-                    className="w-full inline-flex items-center justify-center gap-3 bg-white/5 text-white border border-white/10 px-8 py-5 rounded-2xl text-sm font-bold hover:bg-white/10 transition-all"
+                    className="w-full inline-flex items-center justify-center gap-3 bg-white/[0.06] text-white border border-white/10 px-8 py-5 rounded-lg text-sm font-bold hover:bg-white/10 transition-all"
                   >
                     Tạo tài khoản miễn phí
                   </button>

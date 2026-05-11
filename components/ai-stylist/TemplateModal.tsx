@@ -88,9 +88,9 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose, o
       <motion.div 
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="relative w-full max-w-4xl bg-white dark:bg-[var(--atlas-bg-page)] rounded-[2.5rem] overflow-hidden shadow-3xl flex flex-col max-h-[85vh]"
+        className="relative w-full max-w-4xl bg-white dark:bg-[var(--atlas-bg-page)] rounded-xl overflow-hidden shadow-atlas-xl flex flex-col max-h-[85vh]"
       >
-        <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-center justify-between shrink-0">
+        <div className="p-8 border-b border-black/5 dark:border-white/[0.06] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
              <div className="p-2.5 bg-brand-blue/10 rounded-xl text-brand-blue">
                 <LayoutGrid size={24} />
@@ -110,7 +110,7 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose, o
               {TEMPLATES.map(tmpl => (
                 <div 
                   key={tmpl.id}
-                  className="group bg-slate-50 dark:bg-white/[0.02] border border-black/5 dark:border-white/5 rounded-3xl overflow-hidden hover:border-brand-blue transition-all shadow-sm hover:shadow-2xl"
+                  className="group bg-slate-50 dark:bg-white/[0.02] border border-black/5 dark:border-white/[0.06] rounded-xl overflow-hidden hover:border-brand-blue transition-all shadow-sm hover:shadow-atlas-lg"
                 >
                    <div className="aspect-video relative overflow-hidden">
                       <img src={tmpl.image} className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" />
@@ -134,7 +134,7 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose, o
            </div>
         </div>
 
-        <div className="p-6 bg-slate-50 dark:bg-black/40 border-t border-black/5 dark:border-white/5 text-center">
+        <div className="p-6 bg-slate-50 dark:bg-black/40 border-t border-black/5 dark:border-white/[0.06] text-center">
            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic">Hệ thống sẽ tự động cấu hình các thuộc tính phù hợp với phong cách đã chọn.</p>
         </div>
       </motion.div>

@@ -23,7 +23,7 @@ const AIModelsMarquee: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="mb-10 md:mb-24 w-full py-4 md:py-8 border-y border-black/5 dark:border-white/5 flex items-center justify-center">
+      <div className="mb-10 md:mb-24 w-full py-4 md:py-8 border-y border-black/5 dark:border-white/[0.06] flex items-center justify-center">
         <Loader2 className="w-5 h-5 text-brand-blue animate-spin" />
       </div>
     );
@@ -32,7 +32,7 @@ const AIModelsMarquee: React.FC = () => {
   if (models.length === 0) return null;
 
   return (
-    <div className="mb-10 md:mb-24 w-full overflow-hidden py-4 md:py-8 border-y border-black/5 dark:border-white/5 relative group cursor-default bg-white/30 dark:bg-white/[0.02] backdrop-blur-sm">
+    <div className="mb-10 md:mb-24 w-full overflow-hidden py-4 md:py-8 border-y border-black/5 dark:border-white/[0.06] relative group cursor-default bg-white/30 dark:bg-white/[0.02] backdrop-blur-sm">
       <div className="flex whitespace-nowrap animate-marquee-optimized">
         {marqueeItems.map((model, idx) => (
           <div key={`${model.key}-${idx}`} className="flex items-center mx-6 md:mx-12 shrink-0">

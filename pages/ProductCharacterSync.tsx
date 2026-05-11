@@ -234,7 +234,7 @@ const ProductCharacterSync = () => {
             <Fingerprint size={13} /> Identity Persistence Engine
           </motion.div>
 
-          <motion.h1 {...fadeUp(0.1)} className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[0.9] text-white drop-shadow-2xl">
+          <motion.h1 {...fadeUp(0.1)} className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[0.9] text-white drop-shadow-atlas-lg">
             Nhất quán nhân vật
             <br />
             <span className="bg-gradient-to-r from-purple-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
@@ -248,13 +248,13 @@ const ProductCharacterSync = () => {
 
           <motion.div {...fadeUp(0.3)} className="flex flex-wrap items-center justify-center gap-4 pt-2">
             <button onClick={() => setIsStudioOpen(true)}
-              className="group bg-gradient-to-r from-purple-500 to-violet-600 text-white px-10 py-5 rounded-2xl font-bold text-sm shadow-[0_20px_50px_rgba(147,51,234,0.4)] hover:shadow-[0_25px_60px_rgba(147,51,234,0.5)] hover:scale-[1.02] transition-all flex items-center gap-3">
+              className="group bg-gradient-to-r from-purple-500 to-violet-600 text-white px-10 py-5 rounded-lg font-bold text-sm shadow-[0_20px_50px_rgba(147,51,234,0.4)] hover:shadow-[0_25px_60px_rgba(147,51,234,0.5)] hover:scale-[1.02] transition-all flex items-center gap-3">
               <Fingerprint size={18} />
               Thử Character Sync
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>
             <a href="#features"
-              className="group px-10 py-5 border border-white/20 rounded-2xl font-bold text-sm text-white/70 hover:bg-white/10 hover:border-white/30 transition-all backdrop-blur-sm flex items-center gap-2">
+              className="group px-10 py-5 border border-white/20 rounded-lg font-bold text-sm text-white/70 hover:bg-white/10 hover:border-white/30 transition-all backdrop-blur-sm flex items-center gap-2">
               <Play size={14} className="group-hover:text-purple-400 transition-colors" /> Tìm hiểu thêm
             </a>
           </motion.div>
@@ -323,7 +323,7 @@ const ProductCharacterSync = () => {
           </motion.div>
 
           {/* Right: Image */}
-          <motion.div {...fadeUp(0.15)} className="relative rounded-2xl overflow-hidden order-1 lg:order-2 shadow-2xl">
+          <motion.div {...fadeUp(0.15)} className="relative rounded-lg overflow-hidden order-1 lg:order-2 shadow-atlas-lg">
             <img
               src={CDN.problem_broken_identity}
               alt="Broken character identity"
@@ -332,7 +332,7 @@ const ProductCharacterSync = () => {
             {/* Overlay badge */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
             <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between">
-              <span className="bg-red-500 text-white px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider shadow-xl -rotate-2">
+              <span className="bg-red-500 text-white px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider shadow-atlas-lg -rotate-2">
                 ✗ Broken Identity
               </span>
               <span className="bg-black/60 backdrop-blur-sm text-red-400 border border-red-500/30 px-3 py-2 rounded-lg text-[10px] font-semibold">
@@ -361,7 +361,7 @@ const ProductCharacterSync = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {FEATURES.map((f, i) => (
               <motion.div key={i} {...fadeUp(i * 0.07)}
-                className="group bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.08] rounded-2xl overflow-hidden hover:border-purple-500/25 hover:shadow-xl dark:hover:shadow-purple-500/5 transition-all duration-500">
+                className="group bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.08] rounded-lg overflow-hidden hover:border-purple-500/25 hover:shadow-xl dark:hover:shadow-purple-500/5 transition-all duration-500">
                 {/* Image */}
                 <div className="relative aspect-[16/9] overflow-hidden">
                   <img
@@ -427,7 +427,7 @@ const ProductCharacterSync = () => {
               className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
 
               {/* Image */}
-              <div className="rounded-2xl overflow-hidden shadow-2xl border border-slate-200/80 dark:border-white/[0.05]">
+              <div className="rounded-lg overflow-hidden shadow-atlas-lg border border-slate-200/80 dark:border-white/[0.05]">
                 <img
                   src={WORKFLOW[activeStep].img}
                   alt={WORKFLOW[activeStep].title}
@@ -438,7 +438,7 @@ const ProductCharacterSync = () => {
               {/* Info */}
               <div className="space-y-6">
                 <div className="inline-flex items-center gap-3">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500/15 to-violet-500/15 border border-purple-500/25 flex items-center justify-center text-purple-500">
+                  <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-purple-500/15 to-violet-500/15 border border-purple-500/25 flex items-center justify-center text-purple-500">
                     {WORKFLOW[activeStep].icon}
                   </div>
                   <div>
@@ -477,7 +477,7 @@ const ProductCharacterSync = () => {
           </motion.div>
 
           <motion.div {...fadeUp(0.1)}
-            className="bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-xl dark:shadow-black/40">
+            className="bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.08] rounded-lg overflow-hidden shadow-atlas-lg dark:shadow-black/40">
             <table className="w-full">
               <thead>
                 <tr className="bg-slate-50 dark:bg-white/[0.02] border-b border-slate-200/80 dark:border-white/[0.08]">
@@ -527,7 +527,7 @@ const ProductCharacterSync = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {USE_CASES.map((uc, i) => (
               <motion.div key={i} {...fadeUp(i * 0.07)}
-                className="group relative rounded-2xl overflow-hidden border border-slate-200/80 dark:border-white/[0.08] cursor-pointer hover:border-purple-500/30 transition-all duration-500 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-purple-500/5">
+                className="group relative rounded-lg overflow-hidden border border-slate-200/80 dark:border-white/[0.08] cursor-pointer hover:border-purple-500/30 transition-all duration-500 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-purple-500/5">
                 <img
                   src={uc.img}
                   alt={uc.title}
@@ -565,7 +565,7 @@ const ProductCharacterSync = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {TESTIMONIALS.map((t, i) => (
               <motion.div key={i} {...fadeUp(i * 0.12)}
-                className="group p-8 bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.08] rounded-2xl space-y-5 hover:border-purple-500/20 hover:shadow-xl dark:hover:shadow-purple-500/5 transition-all duration-500">
+                className="group p-8 bg-white dark:bg-white/[0.015] border border-slate-200/80 dark:border-white/[0.08] rounded-lg space-y-5 hover:border-purple-500/20 hover:shadow-xl dark:hover:shadow-purple-500/5 transition-all duration-500">
                 {/* Stars */}
                 <div className="flex gap-0.5">
                   {Array.from({ length: t.stars }).map((_, j) => (
@@ -615,13 +615,13 @@ const ProductCharacterSync = () => {
 
           <motion.div {...fadeUp(0.15)} className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button onClick={() => setIsStudioOpen(true)}
-              className="group bg-gradient-to-r from-purple-500 to-violet-600 text-white px-14 py-6 rounded-2xl text-sm font-bold shadow-[0_25px_60px_rgba(147,51,234,0.3)] hover:shadow-[0_30px_70px_rgba(147,51,234,0.45)] hover:scale-[1.03] transition-all inline-flex items-center gap-3">
+              className="group bg-gradient-to-r from-purple-500 to-violet-600 text-white px-14 py-6 rounded-lg text-sm font-bold shadow-[0_25px_60px_rgba(147,51,234,0.3)] hover:shadow-[0_30px_70px_rgba(147,51,234,0.45)] hover:scale-[1.03] transition-all inline-flex items-center gap-3">
               <Fingerprint size={18} />
               Bắt đầu tạo nhân vật
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>
             <Link to="/booking"
-              className="px-10 py-6 border border-slate-200 dark:border-white/10 rounded-2xl text-sm font-bold text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 transition-all">
+              className="px-10 py-6 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-bold text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/[0.06] transition-all">
               Enterprise Access
             </Link>
           </motion.div>

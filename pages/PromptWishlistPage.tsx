@@ -58,7 +58,7 @@ const PromptWishlistPage: React.FC = () => {
   /* ── Not authenticated ── */
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#060608] flex flex-col items-center justify-center gap-6 px-4 text-center">
+      <div className="min-h-screen bg-[var(--atlas-bg-page)] flex flex-col items-center justify-center gap-6 px-4 text-center">
         <Heart className="w-16 h-16 text-white/10" />
         <h2 className="text-2xl font-bold text-white">
           {t('prompt_market.wishlist_login_title') || 'Sign in to view your wishlist'}
@@ -77,9 +77,9 @@ const PromptWishlistPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#060608] text-white">
+    <div className="min-h-screen bg-[var(--atlas-bg-page)] text-white">
       {/* ── Breadcrumb ── */}
-      <div className="border-b border-white/[0.04] bg-[#060608]/80 backdrop-blur-lg sticky top-0 z-30">
+      <div className="border-b border-white/[0.04] bg-[var(--atlas-bg-page)]/80 backdrop-blur-lg sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-2 text-sm text-white/35">
           <Link to="/prompt-market" className="hover:text-white/60 transition-colors">
             Prompt Market
@@ -137,7 +137,7 @@ const PromptWishlistPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col items-center justify-center py-20 gap-6 text-center"
           >
-            <div className="w-20 h-20 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-center">
+            <div className="w-20 h-20 rounded-lg bg-white/[0.02] border border-white/[0.06] flex items-center justify-center">
               <Heart className="w-10 h-10 text-white/10" />
             </div>
             <div>

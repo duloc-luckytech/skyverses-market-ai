@@ -68,7 +68,7 @@ const V2EditorContent: React.FC<{
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: 20, opacity: 0 }}
                 onClick={() => setIsTaskListOpen(true)}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-[100] h-32 w-10 bg-white dark:bg-[var(--atlas-bg-panel)] border border-r-0 border-black/5 dark:border-white/10 rounded-l-2xl shadow-2xl flex flex-col items-center justify-center gap-2 group transition-all hover:w-12"
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-[100] h-32 w-10 bg-white dark:bg-[var(--atlas-bg-panel)] border border-r-0 border-black/5 dark:border-white/10 rounded-l-2xl shadow-atlas-lg flex flex-col items-center justify-center gap-2 group transition-all hover:w-12"
               >
                 <div className="flex flex-col items-center gap-1.5">
                    <ChevronLeft size={16} className="text-brand-blue group-hover:-translate-x-0.5 transition-transform" />

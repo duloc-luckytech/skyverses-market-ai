@@ -91,7 +91,7 @@ const OmniGridDemoInterface = () => {
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[var(--atlas-bg-page)] overflow-hidden text-black dark:text-white">
 
-      <div className="w-full lg:w-[350px] shrink-0 flex flex-col border-r border-black/10 dark:border-white/5 bg-gray-50 dark:bg-[var(--atlas-bg-page)] overflow-y-auto no-scrollbar p-6 space-y-8">
+      <div className="w-full lg:w-[350px] shrink-0 flex flex-col border-r border-black/10 dark:border-white/[0.06] bg-gray-50 dark:bg-[var(--atlas-bg-page)] overflow-y-auto no-scrollbar p-6 space-y-8">
         <div className="space-y-6">
           <label className="text-[9px] font-bold uppercase text-gray-500 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">
             <Settings2 size={12} className="text-brand-blue" /> Production_Profile
@@ -101,7 +101,7 @@ const OmniGridDemoInterface = () => {
               <button
                 key={p}
                 onClick={() => setProfile(p)}
-                className={`w-full p-4 border text-left text-[10px] font-bold uppercase transition-all ${profile === p ? 'border-brand-blue bg-brand-blue/5 text-brand-blue' : 'border-black/5 dark:border-white/5 text-gray-400'}`}
+                className={`w-full p-4 border text-left text-[10px] font-bold uppercase transition-all ${profile === p ? 'border-brand-blue bg-brand-blue/5 text-brand-blue' : 'border-black/5 dark:border-white/[0.06] text-gray-400'}`}
               >
                 {p.replace('_', ' ')}
               </button>
@@ -109,7 +109,7 @@ const OmniGridDemoInterface = () => {
           </div>
         </div>
 
-        <div className="space-y-6 pt-6 border-t border-black/10 dark:border-white/5">
+        <div className="space-y-6 pt-6 border-t border-black/10 dark:border-white/[0.06]">
            <label className="text-[9px] font-bold uppercase text-gray-500 dark:text-gray-600 tracking-[0.4em]">Batch_Parameters</label>
            <div className="space-y-6">
               <div className="space-y-3">
@@ -119,7 +119,7 @@ const OmniGridDemoInterface = () => {
                  </div>
                  <div className="grid grid-cols-3 gap-2">
                     {[4, 9, 16].map(s => (
-                      <button key={s} onClick={() => setBatchSize(s)} className={`py-2 border text-[10px] font-bold ${batchSize === s ? 'bg-brand-blue border-brand-blue text-white' : 'border-black/5 dark:border-white/5 text-gray-400'}`}>{s}</button>
+                      <button key={s} onClick={() => setBatchSize(s)} className={`py-2 border text-[10px] font-bold ${batchSize === s ? 'bg-brand-blue border-brand-blue text-white' : 'border-black/5 dark:border-white/[0.06] text-gray-400'}`}>{s}</button>
                     ))}
                  </div>
               </div>
@@ -133,7 +133,7 @@ const OmniGridDemoInterface = () => {
            </div>
         </div>
 
-        <div className="mt-auto pt-6 border-t border-black/10 dark:border-white/5">
+        <div className="mt-auto pt-6 border-t border-black/10 dark:border-white/[0.06]">
            <div className="p-4 bg-brand-blue/5 border border-brand-blue/20 space-y-3">
               <div className="flex items-center gap-3 text-brand-blue">
                  <ShieldCheck size={14} />
@@ -157,7 +157,7 @@ const OmniGridDemoInterface = () => {
                     <div
                       key={item.id}
                       onClick={() => setActiveItem(item)}
-                      className={`relative aspect-square border transition-all cursor-pointer group overflow-hidden ${activeItem?.id === item.id ? 'ring-2 ring-brand-blue border-transparent' : 'border-black/5 dark:border-white/5 hover:border-brand-blue/50'}`}
+                      className={`relative aspect-square border transition-all cursor-pointer group overflow-hidden ${activeItem?.id === item.id ? 'ring-2 ring-brand-blue border-transparent' : 'border-black/5 dark:border-white/[0.06] hover:border-brand-blue/50'}`}
                     >
                        <img src={item.url} className={`w-full h-full object-cover transition-all ${item.isRefined ? 'scale-100' : 'scale-105 blur-sm opacity-60'}`} />
                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -185,20 +185,20 @@ const OmniGridDemoInterface = () => {
            )}
         </div>
 
-        <div className="h-32 border-t border-black/10 dark:border-white/5 bg-white dark:bg-black p-4 flex gap-4 shrink-0 relative z-20">
+        <div className="h-32 border-t border-black/10 dark:border-white/[0.06] bg-white dark:bg-black p-4 flex gap-4 shrink-0 relative z-20">
           <div className="flex-grow flex flex-col gap-2">
             <label className="text-[8px] font-bold uppercase text-gray-400 dark:text-gray-700 tracking-[0.3em] flex items-center gap-2"><Wand2 size={12} className="text-brand-blue" /> Master_Directive</label>
             <textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              className="flex-grow bg-black/5 dark:bg-white/[0.03] border border-black/10 dark:border-white/10 p-3 text-[11px] font-bold uppercase text-black dark:text-white focus:outline-none focus:border-brand-blue/30 resize-none tracking-tight"
+              className="flex-grow bg-black/[0.06] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 p-3 text-[11px] font-bold uppercase text-black dark:text-white focus:outline-none focus:border-brand-blue/30 resize-none tracking-tight"
               placeholder="Describe universal visual concept..."
             />
           </div>
           <button
             onClick={handleBatchSynthesis}
             disabled={isGenerating || !prompt.trim() || credits <= 0}
-            className="w-40 bg-brand-blue text-white flex flex-col items-center justify-center gap-2 hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all group shadow-2xl active:scale-[0.98] disabled:opacity-20"
+            className="w-40 bg-brand-blue text-white flex flex-col items-center justify-center gap-2 hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all group shadow-atlas-lg active:scale-[0.98] disabled:opacity-20"
           >
             <Zap size={20} className="fill-current group-hover:scale-110 transition-transform" />
             <span className="text-[8px] font-bold uppercase tracking-[0.2em]">Run Batch</span>
@@ -206,7 +206,7 @@ const OmniGridDemoInterface = () => {
         </div>
       </div>
 
-      <div className="hidden xl:flex w-[320px] shrink-0 flex-col bg-gray-50 dark:bg-[var(--atlas-bg-page)] border-l border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar p-6 space-y-8">
+      <div className="hidden xl:flex w-[320px] shrink-0 flex-col bg-gray-50 dark:bg-[var(--atlas-bg-page)] border-l border-black/10 dark:border-white/[0.06] overflow-y-auto no-scrollbar p-6 space-y-8">
         <div className="space-y-6">
           <label className="text-[9px] font-bold uppercase text-gray-500 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">
             <Sparkles size={14} className="text-brand-blue" /> Selected_Node
@@ -233,7 +233,7 @@ const OmniGridDemoInterface = () => {
                           key={tool.label}
                           onClick={handleRefine}
                           disabled={isGenerating || activeItem.isRefined}
-                          className="w-full p-3 border border-black/5 dark:border-white/5 bg-white dark:bg-white/[0.02] flex items-center gap-4 text-[9px] font-bold uppercase text-gray-600 dark:text-gray-400 hover:border-brand-blue transition-all disabled:opacity-30"
+                          className="w-full p-3 border border-black/5 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] flex items-center gap-4 text-[9px] font-bold uppercase text-gray-600 dark:text-gray-400 hover:border-brand-blue transition-all disabled:opacity-30"
                         >
                            {tool.icon} {tool.label}
                         </button>
@@ -241,8 +241,8 @@ const OmniGridDemoInterface = () => {
                    </div>
                 </div>
 
-                <div className="pt-6 border-t border-black/10 dark:border-white/5 flex gap-2">
-                   <button className="flex-grow py-4 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 text-[9px] font-bold uppercase tracking-widest hover:text-brand-blue transition-all">Export_Candidate</button>
+                <div className="pt-6 border-t border-black/10 dark:border-white/[0.06] flex gap-2">
+                   <button className="flex-grow py-4 bg-white dark:bg-white/[0.06] border border-black/10 dark:border-white/10 text-[9px] font-bold uppercase tracking-widest hover:text-brand-blue transition-all">Export_Candidate</button>
                    <button className="p-4 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all"><Trash2 size={14} /></button>
                 </div>
              </div>
@@ -255,8 +255,8 @@ const OmniGridDemoInterface = () => {
         </div>
 
         {items.some(i => i.isSelected) && (
-           <div className="mt-auto pt-6 border-t border-black/10 dark:border-white/5 animate-in slide-in-from-bottom-4">
-              <button className="w-full bg-brand-blue text-white py-4 text-[10px] font-bold uppercase tracking-[0.2em] shadow-2xl hover:scale-105 transition-all">
+           <div className="mt-auto pt-6 border-t border-black/10 dark:border-white/[0.06] animate-in slide-in-from-bottom-4">
+              <button className="w-full bg-brand-blue text-white py-4 text-[10px] font-bold uppercase tracking-[0.2em] shadow-atlas-lg hover:scale-105 transition-all">
                  Package_Selected_({items.filter(i => i.isSelected).length})
               </button>
            </div>

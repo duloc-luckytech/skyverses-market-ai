@@ -594,7 +594,7 @@ const SlideTextObject: React.FC<Props> = ({
       {/* ── Right-click context menu ── */}
       {ctxMenu && createPortal(
         <div
-          className="fixed z-[99999] min-w-[180px] py-1 rounded-xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.08] dark:border-white/[0.1] shadow-2xl"
+          className="fixed z-[99999] min-w-[180px] py-1 rounded-xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.08] dark:border-white/[0.1] shadow-atlas-lg"
           style={{ top: ctxMenu.y, left: ctxMenu.x }}
           onMouseDown={e => e.stopPropagation()}
           onContextMenu={e => e.preventDefault()}

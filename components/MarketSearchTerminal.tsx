@@ -151,7 +151,7 @@ const MarketSearchTerminal: React.FC<MarketSearchTerminalProps> = ({
         <div className={`absolute -inset-3 bg-brand-blue/8 dark:bg-brand-blue/12 blur-2xl rounded-full transition-opacity duration-500 pointer-events-none ${isFocused || isModalOpen ? 'opacity-100' : 'opacity-0'}`} />
         
         <div 
-          className={`relative flex items-center gap-3 bg-white dark:bg-[var(--atlas-bg-page)] rounded-2xl md:rounded-full h-14 md:h-[60px] px-5 md:px-6 border transition-all duration-300 ${
+          className={`relative flex items-center gap-3 bg-white dark:bg-[var(--atlas-bg-page)] rounded-lg md:rounded-full h-14 md:h-[60px] px-5 md:px-6 border transition-all duration-300 ${
             isFocused || isModalOpen
               ? 'border-brand-blue/50 shadow-lg shadow-brand-blue/10' 
               : 'border-black/[0.06] dark:border-white/[0.06] shadow-sm hover:shadow-md hover:border-black/10 dark:hover:border-white/10'
@@ -214,14 +214,14 @@ const MarketSearchTerminal: React.FC<MarketSearchTerminalProps> = ({
               className={`flex items-center gap-2 px-3 py-2 rounded-xl text-[10px] font-bold transition-all ${
                 isModalOpen 
                   ? 'bg-brand-blue text-white shadow-md' 
-                  : 'bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-gray-500 hover:text-brand-blue hover:bg-brand-blue/5'
+                  : 'bg-slate-50 dark:bg-white/[0.06] text-slate-400 dark:text-gray-500 hover:text-brand-blue hover:bg-brand-blue/5'
               }`}
             >
               <Filter size={12} />
               <span className="hidden sm:inline uppercase tracking-wider">Bộ lọc</span>
             </button>
 
-            <div className="hidden md:flex items-center gap-1 px-2.5 py-1.5 bg-slate-50 dark:bg-white/5 rounded-lg text-[10px] font-bold text-slate-300 dark:text-gray-600">
+            <div className="hidden md:flex items-center gap-1 px-2.5 py-1.5 bg-slate-50 dark:bg-white/[0.06] rounded-lg text-[10px] font-bold text-slate-300 dark:text-gray-600">
               <Command size={10} /> K
             </div>
           </div>
@@ -245,7 +245,7 @@ const MarketSearchTerminal: React.FC<MarketSearchTerminalProps> = ({
               animate={{ opacity: 1, y: 0, scale: 1 }} 
               exit={{ opacity: 0, y: 8, scale: 0.98 }}
               transition={{ type: 'spring', damping: 25, stiffness: 400 }}
-              className="absolute top-full left-0 right-0 mt-3 z-[200] bg-white dark:bg-[var(--atlas-bg-page)] border border-black/[0.06] dark:border-white/[0.06] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[70vh]"
+              className="absolute top-full left-0 right-0 mt-3 z-[200] bg-white dark:bg-[var(--atlas-bg-page)] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-atlas-lg overflow-hidden flex flex-col max-h-[70vh]"
             >
               {/* Header */}
               <div className="px-6 md:px-8 py-5 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between">
@@ -253,7 +253,7 @@ const MarketSearchTerminal: React.FC<MarketSearchTerminalProps> = ({
                   <Layers size={16} className="text-brand-blue" />
                   <span className="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Danh mục sản phẩm</span>
                 </div>
-                <button onClick={() => setIsModalOpen(false)} className="p-2 text-slate-300 hover:text-slate-500 dark:text-gray-600 dark:hover:text-gray-400 transition-colors rounded-lg hover:bg-slate-50 dark:hover:bg-white/5">
+                <button onClick={() => setIsModalOpen(false)} className="p-2 text-slate-300 hover:text-slate-500 dark:text-gray-600 dark:hover:text-gray-400 transition-colors rounded-lg hover:bg-slate-50 dark:hover:bg-white/[0.06]">
                   <X size={16} />
                 </button>
               </div>
@@ -270,14 +270,14 @@ const MarketSearchTerminal: React.FC<MarketSearchTerminalProps> = ({
                     {/* ALL card */}
                     <button 
                       onClick={() => handleSelectNode('ALL')}
-                      className={`flex items-center gap-4 p-5 rounded-2xl border-2 transition-all text-left group ${
+                      className={`flex items-center gap-4 p-5 rounded-lg border-2 transition-all text-left group ${
                         primary === 'ALL' 
                           ? 'border-brand-blue bg-brand-blue/5 shadow-md' 
                           : 'border-transparent bg-slate-50/80 dark:bg-white/[0.02] hover:bg-slate-100 dark:hover:bg-white/[0.04]'
                       }`}
                     >
                       <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-all ${
-                        primary === 'ALL' ? 'bg-brand-blue text-white' : 'bg-white dark:bg-white/5 text-slate-400 group-hover:text-brand-blue border border-black/[0.04] dark:border-white/[0.06]'
+                        primary === 'ALL' ? 'bg-brand-blue text-white' : 'bg-white dark:bg-white/[0.06] text-slate-400 group-hover:text-brand-blue border border-black/[0.04] dark:border-white/[0.06]'
                       }`}>
                         <Sparkles size={18} />
                       </div>
@@ -292,14 +292,14 @@ const MarketSearchTerminal: React.FC<MarketSearchTerminalProps> = ({
                       <button 
                         key={cat._id}
                         onClick={() => handleSelectNode(cat.code)}
-                        className={`flex items-center gap-4 p-5 rounded-2xl border-2 transition-all text-left group ${
+                        className={`flex items-center gap-4 p-5 rounded-lg border-2 transition-all text-left group ${
                           primary === cat.code 
                             ? 'border-brand-blue bg-brand-blue/5 shadow-md' 
                             : 'border-transparent bg-slate-50/80 dark:bg-white/[0.02] hover:bg-slate-100 dark:hover:bg-white/[0.04]'
                         }`}
                       >
                         <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-all ${
-                          primary === cat.code ? 'bg-brand-blue text-white' : 'bg-white dark:bg-white/5 text-slate-400 group-hover:text-brand-blue border border-black/[0.04] dark:border-white/[0.06]'
+                          primary === cat.code ? 'bg-brand-blue text-white' : 'bg-white dark:bg-white/[0.06] text-slate-400 group-hover:text-brand-blue border border-black/[0.04] dark:border-white/[0.06]'
                         }`}>
                           {getIcon(cat.code)}
                         </div>

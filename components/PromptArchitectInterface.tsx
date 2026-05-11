@@ -139,7 +139,7 @@ const PromptArchitectInterface = () => {
   const RepositoryPanel = () => (
     <div className="flex flex-col h-full bg-[#fdfdfd] dark:bg-[var(--atlas-bg-page)]">
       <div className="p-4 lg:p-8 space-y-6">
-        <div className="relative flex items-center bg-white dark:bg-[var(--atlas-bg-page)] border border-black/[0.08] dark:border-white/5 rounded-md shadow-sm overflow-hidden h-14">
+        <div className="relative flex items-center bg-white dark:bg-[var(--atlas-bg-page)] border border-black/[0.08] dark:border-white/[0.06] rounded-md shadow-sm overflow-hidden h-14">
           <div className="pl-5 pr-2"><Search size={16} className="text-gray-300" /></div>
           <input 
             type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
@@ -151,7 +151,7 @@ const PromptArchitectInterface = () => {
           {['ALL', 'IMG', 'VID', 'PROMPT'].map(cat => (
             <button 
               key={cat} onClick={() => setActiveCategory(cat as any)}
-              className={`px-6 py-2 border text-[9px] font-bold uppercase tracking-widest rounded-sm transition-all whitespace-nowrap ${activeCategory === cat ? 'bg-brand-blue border-brand-blue text-white shadow-lg' : 'bg-white dark:bg-white/[0.02] border-black/5 dark:border-white/5 text-gray-400'}`}
+              className={`px-6 py-2 border text-[9px] font-bold uppercase tracking-widest rounded-sm transition-all whitespace-nowrap ${activeCategory === cat ? 'bg-brand-blue border-brand-blue text-white shadow-lg' : 'bg-white dark:bg-white/[0.02] border-black/5 dark:border-white/[0.06] text-gray-400'}`}
             >
               {cat}
             </button>
@@ -167,7 +167,7 @@ const PromptArchitectInterface = () => {
       </div>
       <div className="flex-grow overflow-y-auto px-4 lg:px-8 pb-20 no-scrollbar space-y-3">
         {filteredAssets.map(asset => (
-          <div key={asset.id} onClick={() => loadAsset(asset)} className="p-4 bg-white dark:bg-white/[0.01] border border-black/[0.05] dark:border-white/5 hover:border-brand-blue/30 cursor-pointer rounded-sm group transition-all">
+          <div key={asset.id} onClick={() => loadAsset(asset)} className="p-4 bg-white dark:bg-white/[0.01] border border-black/[0.05] dark:border-white/[0.06] hover:border-brand-blue/30 cursor-pointer rounded-sm group transition-all">
             <div className="flex justify-between items-center mb-2">
               <span className="text-[10px] font-bold uppercase group-hover:text-brand-blue transition-colors">{asset.name}</span>
               <span className="text-[7px] font-bold bg-brand-blue/10 text-brand-blue px-2 py-0.5">{asset.type}</span>
@@ -183,7 +183,7 @@ const PromptArchitectInterface = () => {
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[var(--atlas-bg-page)] overflow-hidden text-black dark:text-white font-mono transition-all duration-500">
       
       {/* DESKTOP SIDEBAR / MOBILE REPOSITORY TAB */}
-      <aside className={`${mobileTab === 'REPOSITORY' ? 'flex' : 'hidden'} lg:flex w-full lg:w-[450px] shrink-0 border-r border-black/10 dark:border-white/5 z-20`}>
+      <aside className={`${mobileTab === 'REPOSITORY' ? 'flex' : 'hidden'} lg:flex w-full lg:w-[450px] shrink-0 border-r border-black/10 dark:border-white/[0.06] z-20`}>
         <RepositoryPanel />
       </aside>
 
@@ -191,7 +191,7 @@ const PromptArchitectInterface = () => {
       <main className={`${mobileTab === 'ARCHITECT' ? 'flex' : 'hidden'} lg:flex flex-grow flex-col bg-white dark:bg-[var(--atlas-bg-page)] relative overflow-hidden`}>
         <div className="flex-grow flex flex-col p-6 lg:p-12 overflow-y-auto no-scrollbar">
            <div className="max-w-4xl mx-auto w-full space-y-10 pb-48 lg:pb-32">
-              <header className="flex justify-between items-center border-b border-black/10 dark:border-white/5 pb-8">
+              <header className="flex justify-between items-center border-b border-black/10 dark:border-white/[0.06] pb-8">
                  <div className="flex items-center gap-4">
                     <Terminal className="w-5 h-5 text-brand-blue" />
                     <div>
@@ -207,7 +207,7 @@ const PromptArchitectInterface = () => {
               
               <div className="space-y-6">
                  {fields.map((field) => (
-                    <div key={field.id} className={`p-5 border transition-all ${field.active ? 'border-black/[0.08] dark:border-white/5' : 'border-dashed opacity-30'}`}>
+                    <div key={field.id} className={`p-5 border transition-all ${field.active ? 'border-black/[0.08] dark:border-white/[0.06]' : 'border-dashed opacity-30'}`}>
                        <div className="flex justify-between items-center mb-4">
                           <label className="text-[9px] font-bold uppercase tracking-[0.4em] text-brand-blue">{field.label}</label>
                           <button onClick={() => setFields(fields.map(f => f.id === field.id ? {...f, active: !f.active} : f))}>
@@ -226,14 +226,14 @@ const PromptArchitectInterface = () => {
         </div>
 
         {/* COMPILE HUD - REPOSITIONED FOR MOBILE VISIBILITY */}
-        <div className={`fixed lg:absolute bottom-20 lg:bottom-0 left-0 right-0 lg:h-36 bg-white dark:bg-black border-t border-black/10 dark:border-white/5 p-6 flex items-center justify-between z-[50] lg:z-30 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] ${mobileTab === 'ARCHITECT' ? 'flex' : 'hidden lg:flex'}`}>
+        <div className={`fixed lg:absolute bottom-20 lg:bottom-0 left-0 right-0 lg:h-36 bg-white dark:bg-black border-t border-black/10 dark:border-white/[0.06] p-6 flex items-center justify-between z-[50] lg:z-30 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] ${mobileTab === 'ARCHITECT' ? 'flex' : 'hidden lg:flex'}`}>
            <div className="hidden sm:flex items-center gap-12">
               <div className="space-y-2">
                  <div className="flex justify-between text-[8px] font-bold uppercase text-gray-400">
                     <span>SYNTAX STRENGTH</span>
                     <span className="text-brand-blue">{strength}%</span>
                  </div>
-                 <div className="h-1 w-40 bg-black/10 dark:bg-white/5 rounded-full overflow-hidden">
+                 <div className="h-1 w-40 bg-black/10 dark:bg-white/[0.06] rounded-full overflow-hidden">
                     <div className="h-full bg-brand-blue transition-all duration-1000" style={{ width: `${strength}%` }}></div>
                  </div>
               </div>
@@ -248,7 +248,7 @@ const PromptArchitectInterface = () => {
 
            <button 
              onClick={handleCompile} disabled={isCompiling}
-             className="w-full sm:w-auto bg-brand-blue text-white px-10 py-5 text-[11px] font-bold uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-black transition-all shadow-xl active:scale-[0.98] disabled:opacity-20"
+             className="w-full sm:w-auto bg-brand-blue text-white px-10 py-5 text-[11px] font-bold uppercase tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-black transition-all shadow-atlas-lg active:scale-[0.98] disabled:opacity-20"
            >
              {isCompiling ? <Loader2 className="w-5 h-5 animate-spin" /> : <Zap className="w-5 h-5 fill-current" />}
              COMPILE_LOGIC
@@ -257,8 +257,8 @@ const PromptArchitectInterface = () => {
       </main>
 
       {/* PRODUCTION AUDIT PANEL (RIGHT/MODAL) */}
-      <aside className={`${mobileTab === 'AUDIT' ? 'flex' : 'hidden'} lg:flex w-full lg:w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[var(--atlas-bg-page)] border-l border-black/10 dark:border-white/5 overflow-hidden z-20`}>
-         <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
+      <aside className={`${mobileTab === 'AUDIT' ? 'flex' : 'hidden'} lg:flex w-full lg:w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[var(--atlas-bg-page)] border-l border-black/10 dark:border-white/[0.06] overflow-hidden z-20`}>
+         <div className="h-16 border-b border-black/10 dark:border-white/[0.06] flex items-center px-8 shrink-0">
             <h3 className="text-[10px] font-bold uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
                <Eye className="w-4 h-4 text-brand-blue" /> Production_Audit
             </h3>

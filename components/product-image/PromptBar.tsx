@@ -150,7 +150,7 @@ export const PromptBar: React.FC<PromptBarProps> = ({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.98 }}
               transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="bg-white/97 dark:bg-[var(--atlas-bg-panel)]/97 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.06] rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,0.14)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.5)] overflow-hidden"
+              className="bg-white/97 dark:bg-[var(--atlas-bg-panel)]/97 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.06] rounded-lg shadow-[0_8px_40px_rgba(0,0,0,0.14)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.5)] overflow-hidden"
             >
               {/* Panel Header */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-white/[0.04]">
@@ -160,7 +160,7 @@ export const PromptBar: React.FC<PromptBarProps> = ({
                 </span>
                 <button
                   onClick={() => setIsSettingsOpen(false)}
-                  className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors"
+                  className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.06] text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors"
                   aria-label="Close settings"
                 >
                   <X size={13} />
@@ -201,7 +201,7 @@ export const PromptBar: React.FC<PromptBarProps> = ({
         {/* ══════════════════════════════════════════════════════════
             MAIN BOTTOM BAR CARD
         ═══════════════════════════════════════════════════════════ */}
-        <div className="bg-white/95 dark:bg-[var(--atlas-bg-panel)]/95 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.07] rounded-2xl shadow-[0_4px_32px_rgba(0,0,0,0.10)] dark:shadow-[0_4px_32px_rgba(0,0,0,0.35)] overflow-hidden">
+        <div className="bg-white/95 dark:bg-[var(--atlas-bg-panel)]/95 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.07] rounded-lg shadow-[0_4px_32px_rgba(0,0,0,0.10)] dark:shadow-[0_4px_32px_rgba(0,0,0,0.35)] overflow-hidden">
 
           {/* ── Top row: mode badge + references + input ── */}
           <div className="flex items-center gap-2 px-3 pt-2.5 pb-1.5">
@@ -241,7 +241,7 @@ export const PromptBar: React.FC<PromptBarProps> = ({
             </button>
 
             {/* Divider */}
-            <div className="w-px h-5 bg-slate-100 dark:bg-white/5 shrink-0" />
+            <div className="w-px h-5 bg-slate-100 dark:bg-white/[0.06] shrink-0" />
 
             {/* Prompt input */}
             <input
@@ -349,7 +349,7 @@ export const PromptBar: React.FC<PromptBarProps> = ({
               {/* Tooltip */}
               {generateTooltip && !isGenerating && (
                 <div className="absolute bottom-full right-0 mb-2 opacity-0 group-hover/genbtn:opacity-100 pointer-events-none transition-opacity z-50">
-                  <div className="bg-slate-900 dark:bg-white text-white dark:text-black px-3 py-2 rounded-lg text-[9px] font-semibold whitespace-nowrap shadow-xl">
+                  <div className="bg-slate-900 dark:bg-white text-white dark:text-black px-3 py-2 rounded-lg text-[9px] font-semibold whitespace-nowrap shadow-atlas-lg">
                     {generateTooltip}
                   </div>
                   <div className="absolute top-full right-4 border-4 border-transparent border-t-slate-900 dark:border-t-white" />

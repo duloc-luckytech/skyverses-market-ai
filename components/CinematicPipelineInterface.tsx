@@ -195,8 +195,8 @@ const CinematicPipelineInterface = () => {
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[var(--atlas-bg-page)] overflow-hidden text-black dark:text-white font-mono">
 
-      <div className="w-full lg:w-[320px] shrink-0 flex flex-col bg-[#f8f8f8] dark:bg-[var(--atlas-bg-page)] border-r border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar">
-         <div className="p-8 border-b border-black/10 dark:border-white/5">
+      <div className="w-full lg:w-[320px] shrink-0 flex flex-col bg-[#f8f8f8] dark:bg-[var(--atlas-bg-page)] border-r border-black/10 dark:border-white/[0.06] overflow-y-auto no-scrollbar">
+         <div className="p-8 border-b border-black/10 dark:border-white/[0.06]">
             <h3 className="text-[10px] font-bold uppercase text-brand-blue tracking-[0.4em] flex items-center gap-3">
                <Film className="w-4 h-4" /> Pipeline_Ops
             </h3>
@@ -213,7 +213,7 @@ const CinematicPipelineInterface = () => {
               <button
                 key={step.id}
                 onClick={() => !isBusy && setActiveStage(step.id as PipelineStage)}
-                className={`w-full flex items-center gap-4 p-4 border transition-all rounded-sm group ${activeStage === step.id ? 'bg-brand-blue border-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'bg-white dark:bg-white/[0.02] border-black/5 dark:border-white/5 text-gray-400 hover:border-brand-blue/30'}`}
+                className={`w-full flex items-center gap-4 p-4 border transition-all rounded-sm group ${activeStage === step.id ? 'bg-brand-blue border-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'bg-white dark:bg-white/[0.02] border-black/5 dark:border-white/[0.06] text-gray-400 hover:border-brand-blue/30'}`}
               >
                 <div className={`p-2 border rounded-sm transition-colors ${activeStage === step.id ? 'border-white/40' : 'border-black/10 dark:border-white/10 group-hover:border-brand-blue/50'}`}>
                   {step.icon}
@@ -226,7 +226,7 @@ const CinematicPipelineInterface = () => {
               </button>
             ))}
          </div>
-         <div className="p-6 mt-auto border-t border-black/10 dark:border-white/5">
+         <div className="p-6 mt-auto border-t border-black/10 dark:border-white/[0.06]">
             <div className="p-4 bg-brand-blue/5 border border-brand-blue/20 space-y-3">
                <div className="flex items-center gap-3 text-brand-blue">
                   <ShieldCheck size={14} />
@@ -242,7 +242,7 @@ const CinematicPipelineInterface = () => {
 
         <div className="flex-grow overflow-y-auto p-8 lg:p-12 relative z-10 no-scrollbar">
            <div className="max-w-4xl mx-auto space-y-12 pb-40">
-              <div className="flex justify-between items-center border-b border-black/10 dark:border-white/5 pb-8">
+              <div className="flex justify-between items-center border-b border-black/10 dark:border-white/[0.06] pb-8">
                  <div className="flex items-center gap-4">
                     <Bot className="w-8 h-8 text-brand-blue" />
                     <div className="space-y-0.5">
@@ -296,7 +296,7 @@ const CinematicPipelineInterface = () => {
                        {data.animationBlueprint ? (
                           <div className="space-y-4">
                              {data.animationBlueprint.map((line, i) => (
-                                <div key={i} className="p-6 border border-black/5 dark:border-white/5 bg-black/[0.01] dark:bg-white/[0.01] flex items-center gap-6">
+                                <div key={i} className="p-6 border border-black/5 dark:border-white/[0.06] bg-black/[0.01] dark:bg-white/[0.01] flex items-center gap-6">
                                    <div className="w-8 h-8 rounded-full bg-brand-blue/10 flex items-center justify-center text-[10px] font-bold text-brand-blue">0{i+1}</div>
                                    <p className="text-xs font-bold uppercase tracking-tight text-gray-600 dark:text-gray-400">{line}</p>
                                    <CheckCircle2 className="ml-auto w-4 h-4 text-green-500" />
@@ -317,7 +317,7 @@ const CinematicPipelineInterface = () => {
                        {data.motionAssets ? (
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                              {data.motionAssets.map(asset => (
-                                <div key={asset.id} className="relative group border border-black/10 dark:border-white/5 bg-black/[0.02] overflow-hidden rounded-sm transition-all hover:border-brand-blue/30">
+                                <div key={asset.id} className="relative group border border-black/10 dark:border-white/[0.06] bg-black/[0.02] overflow-hidden rounded-sm transition-all hover:border-brand-blue/30">
                                    <div className="aspect-video bg-black flex items-center justify-center relative">
                                       <video src={asset.url} autoPlay loop muted className="w-full h-full object-cover" />
                                       <div className="absolute top-4 left-4 bg-black/60 px-2 py-0.5 text-[8px] font-bold text-white uppercase border border-white/10">{asset.label}</div>
@@ -364,7 +364,7 @@ const CinematicPipelineInterface = () => {
                     <div className="w-full space-y-10 animate-in fade-in zoom-in-95 duration-500">
                        {data.finalScenes ? (
                           <div className="space-y-10">
-                             <div className="aspect-video bg-black border-4 border-brand-blue/20 relative shadow-2xl">
+                             <div className="aspect-video bg-black border-4 border-brand-blue/20 relative shadow-atlas-lg">
                                 <video src={data.finalScenes[0].url} autoPlay loop muted className="w-full h-full object-cover" />
                                 <div className="absolute top-6 left-6 flex items-center gap-3 bg-black/60 px-4 py-2 text-[10px] font-bold text-white uppercase tracking-widest border border-white/10 backdrop-blur-md">
                                    <Sparkles className="text-brand-blue w-4 h-4" /> Final_Render_Alpha
@@ -404,7 +404,7 @@ const CinematicPipelineInterface = () => {
            </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-[var(--atlas-bg-panel-hover)] dark:bg-black border-t border-black/10 dark:border-white/5 p-6 lg:p-10 flex items-center justify-between z-30 shadow-[0_-20px_40px_rgba(0,0,0,0.1)]">
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-[var(--atlas-bg-panel-hover)] dark:bg-black border-t border-black/10 dark:border-white/[0.06] p-6 lg:p-10 flex items-center justify-between z-30 shadow-[0_-20px_40px_rgba(0,0,0,0.1)]">
            <div className="hidden lg:flex flex-col gap-3">
               <div className="flex items-center gap-6">
                  {['FOUNDATION', 'MOTION', 'SCRIPT', 'RENDER', 'DONE'].map((step, i) => (
@@ -432,8 +432,8 @@ const CinematicPipelineInterface = () => {
         </div>
       </div>
 
-      <div className="hidden xl:flex w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[var(--atlas-bg-page)] border-l border-black/10 dark:border-white/5 overflow-hidden">
-         <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
+      <div className="hidden xl:flex w-[400px] shrink-0 flex flex-col bg-[#fdfdfd] dark:bg-[var(--atlas-bg-page)] border-l border-black/10 dark:border-white/[0.06] overflow-hidden">
+         <div className="h-16 border-b border-black/10 dark:border-white/[0.06] flex items-center px-8 shrink-0">
             <h3 className="text-[10px] font-bold uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
                <Activity className="w-4 h-4 text-brand-blue" /> Director_Log
             </h3>
@@ -448,7 +448,7 @@ const CinematicPipelineInterface = () => {
                logs.map((log, i) => (
                   <div key={i} className="space-y-2 animate-in fade-in slide-in-from-right-4 duration-500">
                      <div className="flex justify-between items-center text-[7px] font-bold uppercase text-gray-400">
-                        <span className={`px-2 py-0.5 rounded-sm ${log.type === 'THINK' ? 'bg-brand-blue/10 text-brand-blue' : 'bg-black/5 dark:bg-white/5'}`}>{log.type}</span>
+                        <span className={`px-2 py-0.5 rounded-sm ${log.type === 'THINK' ? 'bg-brand-blue/10 text-brand-blue' : 'bg-black/[0.06] dark:bg-white/[0.06]'}`}>{log.type}</span>
                         <span>{log.t}</span>
                      </div>
                      <p className="text-[10px] leading-relaxed text-black dark:text-white/80 font-bold uppercase tracking-tight">

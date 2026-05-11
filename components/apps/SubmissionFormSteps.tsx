@@ -304,7 +304,7 @@ export const Step3Technical: React.FC<StepProps> = ({ formData, updateField }) =
     </div>
 
     {/* Info banner */}
-    <div className="flex items-start gap-3 p-3.5 bg-brand-blue/5 dark:bg-brand-blue/10 border border-brand-blue/10 dark:border-brand-blue/15 rounded-xl">
+    <div className="flex items-start gap-3 p-3.5 bg-brand-blue/5 dark:bg-brand-blue/10 border border-brand-blue/10 dark:border-brand-blue/[0.15] rounded-xl">
       <AlertCircle size={16} className="text-brand-blue shrink-0 mt-0.5" />
       <p className="text-xs text-slate-500 dark:text-gray-400 leading-relaxed">
         Các thông tin kỹ thuật giúp đội ngũ Skyverses hiểu rõ sản phẩm của bạn và tích hợp nhanh hơn vào Marketplace.
@@ -486,7 +486,7 @@ export const SuccessOverlay: React.FC<{ onReset: () => void }> = ({ onReset }) =
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
-    className="absolute inset-0 z-50 bg-white/95 dark:bg-[var(--atlas-bg-page)]/95 backdrop-blur-sm flex flex-col items-center justify-center gap-5 rounded-2xl"
+    className="absolute inset-0 z-50 bg-white/95 dark:bg-[var(--atlas-bg-page)]/95 backdrop-blur-sm flex flex-col items-center justify-center gap-5 rounded-lg"
   >
     <motion.div
       initial={{ scale: 0 }}

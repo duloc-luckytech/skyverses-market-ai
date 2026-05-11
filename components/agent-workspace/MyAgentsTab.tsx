@@ -48,7 +48,7 @@ const AgentCard: React.FC<{
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.18 }}
       onClick={onSelect}
-      className={`relative group cursor-pointer rounded-2xl border-2 p-4 transition-all hover:shadow-md ${
+      className={`relative group cursor-pointer rounded-lg border-2 p-4 transition-all hover:shadow-md ${
         isSelected
           ? 'shadow-lg'
           : 'border-black/[0.06] dark:border-white/[0.06] bg-white dark:bg-white/[0.02]'
@@ -69,7 +69,7 @@ const AgentCard: React.FC<{
 
       <div className="flex items-start gap-3 mb-3">
         <div
-          className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shrink-0 border"
+          className="w-11 h-11 rounded-lg flex items-center justify-center text-xl shrink-0 border"
           style={{ backgroundColor: `${agent.color}15`, borderColor: `${agent.color}30` }}
         >
           {agent.emoji}
@@ -293,9 +293,9 @@ const MyAgentsTab: React.FC<Props> = ({
                   whileHover={{ scale: 1.02, borderColor: 'rgba(201, 168, 76,0.5)' }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => { setEditingAgent(null); setShowBuilder(true); }}
-                  className="rounded-2xl border-2 border-dashed border-black/[0.08] dark:border-white/[0.08] p-4 flex flex-col items-center justify-center gap-2 text-slate-400 hover:text-brand-blue transition-all min-h-[140px] group"
+                  className="rounded-lg border-2 border-dashed border-black/[0.08] dark:border-white/[0.08] p-4 flex flex-col items-center justify-center gap-2 text-slate-400 hover:text-brand-blue transition-all min-h-[140px] group"
                 >
-                  <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-white/[0.04] flex items-center justify-center group-hover:bg-brand-blue/10 transition-colors">
+                  <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-white/[0.04] flex items-center justify-center group-hover:bg-brand-blue/10 transition-colors">
                     <Plus size={18} className="group-hover:text-brand-blue transition-colors" />
                   </div>
                   <p className="text-[11px] font-semibold">New Agent</p>
@@ -321,7 +321,7 @@ const MyAgentsTab: React.FC<Props> = ({
                   style={{ background: `linear-gradient(160deg, ${selectedAgent.color}12 0%, transparent 60%)` }}
                 >
                   <div
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl border-2"
+                    className="w-14 h-14 rounded-lg flex items-center justify-center text-3xl border-2"
                     style={{ backgroundColor: `${selectedAgent.color}15`, borderColor: `${selectedAgent.color}40` }}
                   >
                     {selectedAgent.emoji}
@@ -352,7 +352,7 @@ const MyAgentsTab: React.FC<Props> = ({
                       className={`flex items-center gap-1.5 flex-1 justify-center py-1.5 rounded-xl text-[10px] font-bold transition-all ${
                         rightTab === tab.id
                           ? 'bg-brand-blue/10 text-brand-blue'
-                          : 'text-slate-400 dark:text-white/30 hover:text-slate-700 dark:hover:text-white/60 hover:bg-slate-100 dark:hover:bg-white/5'
+                          : 'text-slate-400 dark:text-white/30 hover:text-slate-700 dark:hover:text-white/60 hover:bg-slate-100 dark:hover:bg-white/[0.06]'
                       }`}
                     >
                       <tab.icon size={10} /> {tab.label}
@@ -375,7 +375,7 @@ const MyAgentsTab: React.FC<Props> = ({
                         <div>
                           <p className="text-[8px] font-bold uppercase text-slate-400 dark:text-white/25 mb-1.5">Model & Config</p>
                           <div className="flex flex-wrap gap-1.5">
-                            <div className="flex items-center gap-1 text-[10px] font-semibold text-slate-700 dark:text-white/70 bg-slate-100 dark:bg-white/5 px-2 py-1 rounded-lg">
+                            <div className="flex items-center gap-1 text-[10px] font-semibold text-slate-700 dark:text-white/70 bg-slate-100 dark:bg-white/[0.06] px-2 py-1 rounded-lg">
                               <Zap size={10} className="text-brand-blue" />
                               {selectedAgent.model === 'claude-opus' ? 'Opus 4' : 'Sonnet 4'}
                             </div>
@@ -386,7 +386,7 @@ const MyAgentsTab: React.FC<Props> = ({
                               </div>
                             )}
                             {selectedAgent.maxTokens && (
-                              <div className="flex items-center gap-1 text-[10px] font-semibold text-slate-500 dark:text-white/40 bg-slate-100 dark:bg-white/5 px-2 py-1 rounded-lg">
+                              <div className="flex items-center gap-1 text-[10px] font-semibold text-slate-500 dark:text-white/40 bg-slate-100 dark:bg-white/[0.06] px-2 py-1 rounded-lg">
                                 {selectedAgent.maxTokens.toLocaleString()}tok
                               </div>
                             )}
@@ -410,7 +410,7 @@ const MyAgentsTab: React.FC<Props> = ({
                                   <span
                                     key={id}
                                     title={sk.rule}
-                                    className="text-[8px] px-2 py-1 rounded-full bg-brand-blue/[0.08] text-brand-blue border border-brand-blue/15 font-semibold"
+                                    className="text-[8px] px-2 py-1 rounded-full bg-brand-blue/[0.08] text-brand-blue border border-brand-blue/[0.15] font-semibold"
                                   >
                                     {sk.label}
                                   </span>

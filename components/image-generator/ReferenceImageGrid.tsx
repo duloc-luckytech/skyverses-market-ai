@@ -88,7 +88,7 @@ export const ReferenceImageGrid: React.FC<ReferenceImageGridProps> = ({
                   <Plus size={14} />
                   <span className="text-[7px] font-medium">Drag & Drop</span>
                 </div>
-                <div className="absolute inset-0 bg-[#1a1a1e] opacity-0 group-hover:opacity-100 transition-all flex flex-col p-0.5 gap-0.5 z-10 border border-white/[0.08] rounded-lg shadow-xl">
+                <div className="absolute inset-0 bg-[#1a1a1e] opacity-0 group-hover:opacity-100 transition-all flex flex-col p-0.5 gap-0.5 z-10 border border-white/[0.08] rounded-lg shadow-atlas-lg">
                   <button onClick={onUploadTrigger} className="flex-grow flex items-center justify-center gap-1 bg-white/[0.04] rounded text-[#666] hover:bg-rose-500 hover:text-white transition-all text-[8px]">
                     <Upload size={10} /> Tải lên
                   </button>

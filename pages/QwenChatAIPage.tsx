@@ -205,7 +205,7 @@ const QwenChatAIPage: React.FC = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <div className="rounded-2xl overflow-hidden border border-black/[0.06] dark:border-white/[0.06] shadow-2xl shadow-black/10 dark:shadow-black/40">
+              <div className="rounded-lg overflow-hidden border border-black/[0.06] dark:border-white/[0.06] shadow-atlas-lg shadow-black/10 dark:shadow-black/40">
                 {/* Chat UI Preview */}
                 <div className="bg-[#0c0d14] min-h-[520px] flex flex-col">
                   {/* Sidebar + Main area mock */}
@@ -333,7 +333,7 @@ const QwenChatAIPage: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ delay: i * 0.08 }}
-                className="p-5 bg-black/[0.01] dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.04] rounded-2xl flex gap-4 group hover:border-purple-500/20 transition-all"
+                className="p-5 bg-black/[0.01] dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.04] rounded-lg flex gap-4 group hover:border-purple-500/20 transition-all"
               >
                 <div className="shrink-0">
                   <div className="w-9 h-9 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500 dark:text-purple-400 group-hover:scale-110 transition-transform">{s.icon}</div>
@@ -365,7 +365,7 @@ const QwenChatAIPage: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {MODES.map(m => (
-              <div key={m.sub} className={`p-5 bg-black/[0.01] dark:bg-white/[0.015] border rounded-2xl space-y-4 transition-all ${accentBorder[m.accent]}`}>
+              <div key={m.sub} className={`p-5 bg-black/[0.01] dark:bg-white/[0.015] border rounded-lg space-y-4 transition-all ${accentBorder[m.accent]}`}>
                 <div className="flex justify-between items-start">
                   <div className={`w-9 h-9 rounded-xl ${iconBg[m.accent]} flex items-center justify-center`}>{m.icon}</div>
                   <span className="text-[7px] font-medium uppercase tracking-wider text-slate-400 dark:text-gray-500">{m.sub}</span>
@@ -393,7 +393,7 @@ const QwenChatAIPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             {/* Left: Code block */}
             <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-              <div className="rounded-2xl overflow-hidden border border-black/[0.06] dark:border-white/[0.06] shadow-xl">
+              <div className="rounded-lg overflow-hidden border border-black/[0.06] dark:border-white/[0.06] shadow-atlas-lg">
                 <div className="bg-slate-100 dark:bg-[var(--atlas-bg-panel)] px-4 py-2.5 flex items-center gap-2 border-b border-black/[0.04] dark:border-white/[0.04]">
                   <div className="flex gap-1.5">
                     <div className="w-2 h-2 rounded-full bg-red-400" />
@@ -514,11 +514,11 @@ const QwenChatAIPage: React.FC = () => {
               href={PRODUCT_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-white text-purple-700 px-8 py-3.5 rounded-xl text-[10px] font-semibold uppercase tracking-widest hover:scale-105 transition-all shadow-xl flex items-center gap-2 group"
+              className="bg-white text-purple-700 px-8 py-3.5 rounded-xl text-[10px] font-semibold uppercase tracking-widest hover:scale-105 transition-all shadow-atlas-lg flex items-center gap-2 group"
             >
               <ExternalLink size={14} /> Mở Chat Studio <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
             </a>
-            <Link to="/markets" className="bg-white/10 text-white/80 border border-white/15 px-8 py-3.5 rounded-xl text-[10px] font-semibold uppercase tracking-widest hover:bg-white/20 transition-all backdrop-blur-md">
+            <Link to="/markets" className="bg-white/10 text-white/80 border border-white/[0.15] px-8 py-3.5 rounded-xl text-[10px] font-semibold uppercase tracking-widest hover:bg-white/20 transition-all backdrop-blur-md">
               Xem giải pháp khác
             </Link>
           </div>

@@ -33,20 +33,20 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
   if (scenesCount === 0) return null;
 
   return (
-    <div className="relative border-t border-white/5 bg-[#08080a] flex items-center justify-center px-4 py-3 shrink-0 z-10">
+    <div className="relative border-t border-white/[0.06] bg-[#08080a] flex items-center justify-center px-4 py-3 shrink-0 z-10">
        <div className="flex items-center gap-4 w-full max-w-5xl justify-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-2 bg-[#1c1c1f]/90 backdrop-blur-xl px-3 lg:px-4 py-2.5 lg:py-3 border border-brand-blue/30 rounded-[1.5rem] lg:rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] w-full sm:w-auto"
+            className="flex items-center gap-2 bg-[#1c1c1f]/90 backdrop-blur-xl px-3 lg:px-4 py-2.5 lg:py-3 border border-brand-blue/30 rounded-[1.5rem] lg:rounded-lg shadow-[0_20px_50px_rgba(0,0,0,0.5)] w-full sm:w-auto"
           >
              <div className="flex items-center gap-2 px-2 lg:px-4 border-r border-white/10 mr-1 lg:mr-2">
-                <div className={`w-4 h-4 lg:w-5 h-5 rounded-full flex items-center justify-center text-white shadow-lg transition-colors ${hasSelection ? 'bg-brand-blue shadow-brand-blue/40' : 'bg-gray-600'}`}>
+                <div className={`w-4 h-4 lg:w-5 h-5 rounded-full flex items-center justify-center text-white shadow-lg transition-colors ${hasSelection ? 'bg-brand-blue shadow-brand-blue/40' : 'bg-[var(--atlas-bg-panel)]'}`}>
                    <Check size={10} strokeWidth={4} />
                 </div>
                 <div className="flex flex-col items-start min-w-[50px] lg:min-w-[60px]">
                   <span className="text-[10px] lg:text-xs font-bold text-white whitespace-nowrap leading-none">{selectedCount} / {scenesCount}</span>
-                  <span className="text-[7px] font-bold text-gray-500 uppercase tracking-widest mt-1">Đã chọn</span>
+                  <span className="text-[7px] font-bold text-white/50 uppercase tracking-widest mt-1">Đã chọn</span>
                 </div>
                 {totalDuration !== undefined && totalDuration > 0 && (
                   <div className="hidden lg:flex items-center gap-1.5 ml-3 pl-3 border-l border-white/10 text-white/40">
@@ -92,7 +92,7 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
                 )}
 
                 {!hasSelection && (
-                  <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 whitespace-nowrap pointer-events-none animate-bounce shadow-2xl">
+                  <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 whitespace-nowrap pointer-events-none animate-bounce shadow-atlas-lg">
                      <p className="text-[8px] font-bold text-white uppercase tracking-widest flex items-center gap-2">
                        <AlertCircle size={10} className="text-brand-blue" /> Chọn cảnh để bắt đầu
                      </p>
@@ -115,7 +115,7 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
                  <button
                    onClick={() => setConfirmReset(false)}
                    title="Hủy"
-                   className="px-2.5 py-1.5 rounded-xl bg-white/5 text-gray-400 hover:text-white text-[9px] font-bold uppercase tracking-widest transition-all"
+                   className="px-2.5 py-1.5 rounded-xl bg-white/[0.06] text-white/60 hover:text-white text-[9px] font-bold uppercase tracking-widest transition-all"
                  >
                    Hủy
                  </button>
@@ -125,7 +125,7 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
                  onClick={() => setConfirmReset(true)}
                  title="Xóa tất cả phân cảnh"
                  aria-label="Xóa tất cả phân cảnh"
-                 className="p-1.5 lg:p-2 text-gray-500 hover:text-red-500 transition-colors"
+                 className="p-1.5 lg:p-2 text-white/50 hover:text-red-500 transition-colors"
                >
                  <X size={18}/>
                </button>

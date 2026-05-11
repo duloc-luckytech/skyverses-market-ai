@@ -135,11 +135,11 @@ const StatsSection = () => {
       >
         {STATS.map((s, i) => (
           <motion.div key={i} variants={fadeUp} custom={i}
-            className="group relative overflow-hidden rounded-lg border border-white/5 bg-white/[0.02] p-6 text-center hover:border-brand-blue/30 hover:bg-brand-blue/5 transition-all duration-500"
+            className="group relative overflow-hidden rounded-lg border border-white/[0.06] bg-white/[0.02] p-6 text-center hover:border-brand-blue/30 hover:bg-brand-blue/5 transition-all duration-500"
           >
             <div className="text-brand-blue flex justify-center mb-3 opacity-60 group-hover:opacity-100 transition-opacity">{s.icon}</div>
             <div className="text-3xl md:text-4xl font-bold bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent mb-1">{s.value}</div>
-            <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-widest">{s.label}</div>
+            <div className="text-[11px] font-semibold text-white/50 uppercase tracking-widest">{s.label}</div>
           </motion.div>
         ))}
       </motion.div>
@@ -161,7 +161,7 @@ const ProductsSection = () => {
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
             One Platform, <span className="text-brand-blue">Every Medium</span>
           </h2>
-          <p className="text-gray-400 max-w-2xl mx-auto">
+          <p className="text-white/60 max-w-2xl mx-auto">
             From text to cinematic video, photorealistic images, original music, and natural voices —
             Skyverses unifies the entire creative pipeline.
           </p>
@@ -171,7 +171,7 @@ const ProductsSection = () => {
           {PRODUCTS.map((p, i) => (
             <motion.div key={i} variants={fadeUp} custom={i + 1}>
               <Link to={p.route}
-                className="group block relative overflow-hidden rounded-lg border border-white/5 bg-white/[0.02] p-8 hover:border-white/20 transition-all duration-500 h-full"
+                className="group block relative overflow-hidden rounded-lg border border-white/[0.06] bg-white/[0.02] p-8 hover:border-white/20 transition-all duration-500 h-full"
               >
                 {/* Gradient glow on hover */}
                 <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${p.color} opacity-0 group-hover:opacity-10 rounded-full blur-3xl transition-opacity duration-700`} />
@@ -180,7 +180,7 @@ const ProductsSection = () => {
                   {p.icon}
                 </div>
                 <h3 className="text-xl font-bold mb-2 group-hover:text-white transition-colors">{p.name}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed mb-4">{p.desc}</p>
+                <p className="text-sm text-white/50 leading-relaxed mb-4">{p.desc}</p>
                 <span className="text-brand-blue text-xs font-bold uppercase tracking-widest flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   Try Now <ChevronRight size={14} />
                 </span>
@@ -208,13 +208,13 @@ const ValuesSection = () => {
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
               What Drives <span className="text-brand-blue">Us</span>
             </h2>
-            <p className="text-gray-400 max-w-xl mx-auto">Our core principles shape every feature, every pixel, every model we deploy.</p>
+            <p className="text-white/60 max-w-xl mx-auto">Our core principles shape every feature, every pixel, every model we deploy.</p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {VALUES.map((v, i) => (
               <motion.div key={i} variants={fadeUp} custom={i + 1}
-                className="group relative rounded-lg border border-white/5 bg-white/[0.02] p-8 hover:border-brand-blue/20 transition-all duration-500 overflow-hidden"
+                className="group relative rounded-lg border border-white/[0.06] bg-white/[0.02] p-8 hover:border-brand-blue/20 transition-all duration-500 overflow-hidden"
               >
                 <div className="absolute top-0 right-0 w-40 h-40 bg-brand-blue/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative z-10">
@@ -222,7 +222,7 @@ const ValuesSection = () => {
                     {v.icon}
                   </div>
                   <h3 className="text-lg font-bold mb-2">{v.title}</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">{v.desc}</p>
+                  <p className="text-sm text-white/50 leading-relaxed">{v.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -248,7 +248,7 @@ const TechSection = () => {
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
               Built With <span className="text-brand-blue">Modern Tech</span>
             </h2>
-            <p className="text-gray-400 max-w-xl mx-auto">Enterprise-grade infrastructure powering creative AI at scale.</p>
+            <p className="text-white/60 max-w-xl mx-auto">Enterprise-grade infrastructure powering creative AI at scale.</p>
           </motion.div>
 
           <motion.div variants={fadeUp} custom={1} className="flex flex-wrap justify-center gap-3">
@@ -257,7 +257,7 @@ const TechSection = () => {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
                 transition={{ delay: 0.05 * i, duration: 0.4 }}
-                className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-white/[0.03] border border-white/5 text-gray-400 hover:border-brand-blue/30 hover:text-brand-blue hover:bg-brand-blue/5 transition-all cursor-default"
+                className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-white/[0.03] border border-white/[0.06] text-white/60 hover:border-brand-blue/30 hover:text-brand-blue hover:bg-brand-blue/5 transition-all cursor-default"
               >
                 {tech}
               </motion.span>
@@ -291,12 +291,12 @@ const CTASection = () => {
               Ready to
               <span className="atlas-text-gradient"> Create?</span>
             </h2>
-            <p className="text-gray-400 max-w-xl mx-auto mb-10 text-lg">
+            <p className="text-white/60 max-w-xl mx-auto mb-10 text-lg">
               Join thousands of creators already using Skyverses to produce professional content at the speed of thought.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/apps"
-                className="group bg-white text-black px-10 py-4 rounded-lg font-bold text-sm flex items-center gap-3 hover:scale-105 transition-all shadow-xl shadow-white/10"
+                className="group bg-white text-black px-10 py-4 rounded-lg font-bold text-sm flex items-center gap-3 hover:scale-105 transition-all shadow-atlas-lg shadow-white/10"
               >
                 Start Creating <Rocket size={18} className="group-hover:translate-x-1 transition-transform" />
               </Link>

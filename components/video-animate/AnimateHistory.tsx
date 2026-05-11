@@ -20,7 +20,7 @@ export const AnimateHistory: React.FC<Props> = ({ tasks, isExpanded, setIsExpand
       {!isHistoryVisible && (
         <button 
           onClick={() => setIsExpanded(true)}
-          className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] px-10 py-4 bg-white/90 dark:bg-[var(--atlas-bg-panel)]/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-full text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-cyan-600 hover:text-white transition-all shadow-2xl flex items-center gap-4 animate-in slide-in-from-bottom-8 text-slate-700 dark:text-white group"
+          className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] px-10 py-4 bg-white/90 dark:bg-[var(--atlas-bg-panel)]/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-full text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-cyan-600 hover:text-white transition-all shadow-atlas-lg flex items-center gap-4 animate-in slide-in-from-bottom-8 text-slate-700 dark:text-white group"
         >
           <HistoryIcon size={16} className="group-hover:rotate-180 transition-transform duration-700" /> 
           Lịch sử sản xuất <ChevronUp size={16} className="animate-bounce" />
@@ -69,7 +69,7 @@ export const AnimateHistory: React.FC<Props> = ({ tasks, isExpanded, setIsExpand
 
             <div className="flex gap-6 overflow-x-auto no-scrollbar pb-6 pt-2">
                {tasks.length > 0 ? tasks.map((task) => (
-                  <div key={task.id} className="relative group shrink-0 w-44 aspect-[3/4.2] bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-md transition-all hover:border-cyan-500/50">
+                  <div key={task.id} className="relative group shrink-0 w-44 aspect-[3/4.2] bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-xl overflow-hidden shadow-md transition-all hover:border-cyan-500/50">
                      {task.thumb ? (
                        <img src={task.thumb} className={`w-full h-full object-cover grayscale opacity-40 transition-all duration-700 ${task.status === 'processing' ? 'blur-[2px]' : 'group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-110'}`} alt="" />
                      ) : (
@@ -83,7 +83,7 @@ export const AnimateHistory: React.FC<Props> = ({ tasks, isExpanded, setIsExpand
                      )}
 
                      <div className="absolute top-4 left-4">
-                        <span className={`px-3 py-1 rounded-md text-[8px] font-bold uppercase text-white shadow-xl ${task.type === 'MOTION' ? 'bg-cyan-500' : 'bg-purple-600'}`}>
+                        <span className={`px-3 py-1 rounded-md text-[8px] font-bold uppercase text-white shadow-atlas-lg ${task.type === 'MOTION' ? 'bg-cyan-500' : 'bg-purple-600'}`}>
                            {task.type}
                         </span>
                      </div>
@@ -102,16 +102,16 @@ export const AnimateHistory: React.FC<Props> = ({ tasks, isExpanded, setIsExpand
                         </div>
                      )}
 
-                     <div className="absolute bottom-0 inset-x-0 p-4 bg-white/90 dark:bg-black/80 border-t border-slate-200 dark:border-white/5 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 flex justify-between items-center transition-colors">
+                     <div className="absolute bottom-0 inset-x-0 p-4 bg-white/90 dark:bg-black/80 border-t border-slate-200 dark:border-white/[0.06] opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 flex justify-between items-center transition-colors">
                         <div className="space-y-1 overflow-hidden">
                            <p className="text-[9px] font-bold text-slate-800 dark:text-white/80 truncate uppercase italic leading-none">{task.model}</p>
                            <p className="text-[7px] font-bold text-gray-500 uppercase leading-none">{task.timestamp}</p>
                         </div>
-                        <button onClick={(e) => { e.stopPropagation(); onDelete(task.id); }} className="p-2 text-slate-400 dark:text-white/40 hover:text-red-500 transition-colors bg-white/5 rounded-full"><Trash2 size={12}/></button>
+                        <button onClick={(e) => { e.stopPropagation(); onDelete(task.id); }} className="p-2 text-slate-400 dark:text-white/40 hover:text-red-500 transition-colors bg-white/[0.06] rounded-full"><Trash2 size={12}/></button>
                      </div>
                   </div>
                )) : (
-                  <div className="w-full h-36 flex flex-col items-center justify-center opacity-10 border-2 border-dashed border-slate-200 dark:border-white/20 rounded-[2rem] transition-colors">
+                  <div className="w-full h-36 flex flex-col items-center justify-center opacity-10 border-2 border-dashed border-slate-200 dark:border-white/20 rounded-xl transition-colors">
                      <Database size={48} strokeWidth={1} className="text-slate-900 dark:text-white" />
                      <span className="text-xs font-bold uppercase mt-4 tracking-[0.5em] italic text-slate-900 dark:text-white">Registry Empty</span>
                   </div>

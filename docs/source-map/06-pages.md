@@ -1,10 +1,11 @@
-# Pages — `pages/` (63 files)
+# Pages — `pages/` (69 files)
 
-## Top-level
+## Top-level (47 files)
 
 | File | Notes |
 |------|-------|
 | `MarketPage.tsx` | Homepage, dynamic block layout via `BLOCK_ICONS` map |
+| `MarketPage.legacy.tsx` | Legacy homepage (not routed, backup reference) |
 | `MarketsPage.tsx` | Browse all tools, `STATIC_CATEGORIES` |
 | `CategoryPage.tsx` | Category detail, `CATEGORY_UI_MAP` |
 | `ExplorerPage.tsx` | Gallery, `ASPECT_CLASSES` |
@@ -30,6 +31,7 @@
 | `SpatialArchitectPage.tsx` | 3D spatial product, `LIVE_3D_MODELS` |
 | `NoCodeExportPage.tsx` | NoCode export landing |
 | `QwenChatAIPage.tsx` | Qwen chat product |
+| `PromptMarketPage.tsx` | Prompt marketplace — `/prompt-market`; browse, filter, search, featured carousel |
 | `PromptDetailPage.tsx` | Single prompt-set detail — `/prompt-market/:slug`; fetches by slug, shows prompts, opens `PromptPurchaseModal` |
 | `PromptSellPage.tsx` | Seller dashboard — `/prompt-market/sell`; listings table, earnings summary cards, recent sales tab; auth-gated |
 | `PromptCreatePage.tsx` | Create new prompt set — `/prompt-market/sell/new`; multi-section form (basic info, pricing, preview, prompts+variables), calls `promptMarketApi.create()`, auth-gated |
@@ -38,11 +40,6 @@
 | `PromptWishlistPage.tsx` | Wishlist — `/prompt-market/wishlist`; grid of saved prompts, remove, auth gate, pagination |
 | `PromptSellerProfilePage.tsx` | Seller profile — `/prompt-market/seller/:sellerId`; avatar, badges, stats, follow, listings tabs |
 | `SkyTokenPage.tsx` | SKT wallet — `/skytoken`; balance card, packages grid, withdrawal form, tx history |
-
-## Product (top-level)
-
-| File | Slug |
-|------|------|
 | `ProductAIAgentWorkflow.tsx` | `/product/ai-agent-workflow` |
 | `ProductCaptchaToken.tsx` | `/product/captcha-veo3` |
 | `ProductCharacterSync.tsx` | `/product/character-sync-ai` (có CDN const) |
@@ -54,7 +51,7 @@
 | `ProductPrompt1.tsx` | (legacy) |
 | `ProductUniversalProducer.tsx` | (legacy) |
 
-## `pages/audio/`
+## `pages/audio/` (5 files)
 
 | File | Slug |
 |------|------|
@@ -64,7 +61,7 @@
 | `AIPodcastVoice.tsx` | `/product/ai-podcast-voice` |
 | `VoiceStudio.tsx` | `/product/ai-voice-studio` |
 
-## `pages/images/`
+## `pages/images/` (15 files)
 
 | File | Slug |
 |------|------|
@@ -84,13 +81,13 @@
 | `RealEstateVisualAI.tsx` | `/product/realestate-visual-ai` |
 | `SocialBannerAI.tsx` | `/product/social-banner-ai` |
 
-## `pages/slides/`
+## `pages/slides/` (1 file)
 
 | File | Slug |
 |------|------|
 | `AISlideCreatorPage.tsx` | `/product/ai-slide-creator` |
 
-## `pages/videos/`
+## `pages/videos/` (6 files)
 
 | File | Slug |
 |------|------|

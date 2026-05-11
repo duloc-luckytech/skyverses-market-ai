@@ -106,7 +106,7 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[9998] bg-emerald-500/10 backdrop-blur-md flex items-center justify-center pointer-events-none"
           >
-            <div className="bg-white dark:bg-[var(--atlas-bg-panel)] p-12 rounded-3xl border-2 border-dashed border-emerald-500 shadow-2xl text-center space-y-4">
+            <div className="bg-white dark:bg-[var(--atlas-bg-panel)] p-12 rounded-xl border-2 border-dashed border-emerald-500 shadow-atlas-lg text-center space-y-4">
               <Upload size={48} className="text-emerald-500 mx-auto" />
               <p className="text-lg font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Thả ảnh vào đây</p>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Hỗ trợ nhiều ảnh cùng lúc</p>
@@ -122,7 +122,7 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
             initial={{ opacity: 0, y: -20, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -20, scale: 0.95 }}
             className="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] max-w-md w-full px-4"
           >
-            <div className={`flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl border backdrop-blur-2xl ${
+            <div className={`flex items-center gap-3 px-5 py-3.5 rounded-lg shadow-atlas-lg border backdrop-blur-2xl ${
               toast.type === 'error'   ? 'bg-red-50/95 dark:bg-red-500/10 border-red-200 dark:border-red-500/20 text-red-700 dark:text-red-400'
               : toast.type === 'success' ? 'bg-emerald-50/95 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400'
               : 'bg-blue-50/95 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20 text-blue-700 dark:text-blue-400'
@@ -156,7 +156,7 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
           fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[340px] xl:w-[360px]
           bg-white dark:bg-[var(--atlas-bg-panel)] border-t lg:border-t-0 lg:border-r border-slate-200/80 dark:border-white/[0.08]
           flex flex-col z-[150] lg:z-50 transition-all duration-300
-          ${isMobileExpanded ? 'h-[92dvh] rounded-t-2xl shadow-2xl' : 'h-14 lg:h-full lg:rounded-none'}
+          ${isMobileExpanded ? 'h-[92dvh] rounded-t-2xl shadow-atlas-lg' : 'h-14 lg:h-full lg:rounded-none'}
         `}>
 
           {/* Mobile toggle */}
@@ -187,7 +187,7 @@ const RestorationWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
             <div className="flex items-center gap-2.5">
               <button
                 onClick={onClose}
-                className="p-1.5 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors rounded-lg hover:bg-black/5 dark:hover:bg-white/5"
+                className="p-1.5 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors rounded-lg hover:bg-black/[0.06] dark:hover:bg-white/[0.06]"
               >
                 <ChevronLeft size={18} />
               </button>

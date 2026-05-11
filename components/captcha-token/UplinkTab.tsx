@@ -34,7 +34,7 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
       exit={{ opacity: 0, x: -20 }} 
       className="space-y-10"
     >
-      <div className="p-8 lg:p-12 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/5 rounded-[2.5rem] shadow-2xl space-y-10 relative overflow-hidden transition-colors">
+      <div className="p-8 lg:p-12 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/[0.06] rounded-xl shadow-atlas-lg space-y-10 relative overflow-hidden transition-colors">
          <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#D4B85A 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
          
          <div className="space-y-3 relative z-10">
@@ -58,7 +58,7 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
                         type={showKey ? "text" : "password"} 
                         value={accountData.apiKey?.key || ''}
                         placeholder={accountData.apiKey ? '' : 'Chưa có Key được tạo'}
-                        className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 p-5 rounded-2xl font-mono text-sm font-bold text-indigo-600 dark:text-indigo-400 tracking-widest outline-none shadow-inner transition-all focus:border-indigo-500/30"
+                        className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 p-5 rounded-lg font-mono text-sm font-bold text-indigo-600 dark:text-indigo-400 tracking-widest outline-none shadow-inner transition-all focus:border-indigo-500/30"
                       />
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
                          <button 
@@ -84,7 +84,7 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
                   <motion.div 
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-5 bg-amber-500/5 border border-amber-500/20 rounded-2xl flex gap-5 items-start animate-in fade-in duration-700"
+                    className="p-5 bg-amber-500/5 border border-amber-500/20 rounded-lg flex gap-5 items-start animate-in fade-in duration-700"
                   >
                     <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-500 shrink-0 shadow-inner">
                       <AlertTriangle size={20} />
@@ -103,7 +103,7 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
                      <button 
                        onClick={handleGenerateKey} 
                        disabled={isGeneratingKey}
-                       className="flex-grow py-5 bg-indigo-600 text-white rounded-2xl text-[11px] font-bold uppercase tracking-widest shadow-xl shadow-indigo-600/20 flex items-center justify-center gap-3 hover:scale-102 active:scale-95 transition-all group relative overflow-hidden h-14"
+                       className="flex-grow py-5 bg-indigo-600 text-white rounded-lg text-[11px] font-bold uppercase tracking-widest shadow-atlas-lg shadow-indigo-600/20 flex items-center justify-center gap-3 hover:scale-102 active:scale-95 transition-all group relative overflow-hidden h-14"
                      >
                         <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                         {isGeneratingKey ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} fill="currentColor" />} 
@@ -113,15 +113,15 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
 
                    <button 
                      onClick={onTryIt}
-                     className="flex-grow py-5 border-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 rounded-2xl text-[11px] font-bold uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-center gap-3 active:scale-95 h-14"
+                     className="flex-grow py-5 border-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 rounded-lg text-[11px] font-bold uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-center gap-3 active:scale-95 h-14"
                    >
                       <Play size={16} fill="currentColor" /> Try it
                    </button>
                 </div>
               </div>
             ) : (
-              <div className="py-12 border-2 border-dashed border-slate-200 dark:border-white/10 rounded-[2.5rem] flex flex-col items-center justify-center text-center gap-6 bg-slate-50/50 dark:bg-white/[0.01]">
-                 <div className="w-16 h-16 bg-white dark:bg-white/5 rounded-full flex items-center justify-center text-slate-300 dark:text-gray-700 shadow-sm">
+              <div className="py-12 border-2 border-dashed border-slate-200 dark:border-white/10 rounded-xl flex flex-col items-center justify-center text-center gap-6 bg-slate-50/50 dark:bg-white/[0.01]">
+                 <div className="w-16 h-16 bg-white dark:bg-white/[0.06] rounded-full flex items-center justify-center text-slate-300 dark:text-gray-700 shadow-sm">
                     <LinkIcon size={32} />
                  </div>
                  <div className="space-y-2 px-8">
@@ -133,7 +133,7 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
                  <button 
                    onClick={isAuthenticated ? handleLinkAccount : login}
                    disabled={isLinking}
-                   className="px-12 py-5 bg-indigo-600 text-white rounded-2xl text-[11px] font-bold uppercase tracking-[0.3em] shadow-xl shadow-indigo-600/20 hover:scale-105 active:scale-95 transition-all group relative overflow-hidden"
+                   className="px-12 py-5 bg-indigo-600 text-white rounded-lg text-[11px] font-bold uppercase tracking-[0.3em] shadow-atlas-lg shadow-indigo-600/20 hover:scale-105 active:scale-95 transition-all group relative overflow-hidden"
                  >
                     <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                     {isLinking && <Loader2 className="animate-spin mr-2" size={16} />}
@@ -150,8 +150,8 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-         <div className="p-10 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/5 rounded-[3rem] space-y-6 shadow-sm group hover:border-indigo-500/20 transition-all">
-            <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 shadow-inner group-hover:scale-110 transition-transform">
+         <div className="p-10 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/[0.06] rounded-xl space-y-6 shadow-sm group hover:border-indigo-500/20 transition-all">
+            <div className="w-14 h-14 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-600 shadow-inner group-hover:scale-110 transition-transform">
                <ShieldCheck size={28}/>
             </div>
             <div className="space-y-3">
@@ -161,8 +161,8 @@ export const UplinkTab: React.FC<UplinkTabProps> = ({
                </p>
             </div>
          </div>
-         <div className="p-10 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/5 rounded-[3rem] space-y-6 shadow-sm group hover:border-brand-blue/20 transition-all">
-            <div className="w-14 h-14 rounded-2xl bg-brand-blue/10 flex items-center justify-center text-brand-blue shadow-inner group-hover:scale-110 transition-transform">
+         <div className="p-10 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/[0.06] rounded-xl space-y-6 shadow-sm group hover:border-brand-blue/20 transition-all">
+            <div className="w-14 h-14 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue shadow-inner group-hover:scale-110 transition-transform">
                <Layers size={28}/>
             </div>
             <div className="space-y-3">

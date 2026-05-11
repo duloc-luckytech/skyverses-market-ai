@@ -110,13 +110,13 @@ const CustomStudioDropdown = ({ label, value, options, onSelect }: any) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl z-[150] max-h-64 overflow-y-auto no-scrollbar py-2"
+            className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-xl shadow-atlas-lg z-[150] max-h-64 overflow-y-auto no-scrollbar py-2"
           >
             {options.map((opt: string) => (
               <button
                 key={opt}
                 onClick={() => { onSelect(opt); setIsOpen(false); }}
-                className={`w-full flex items-center justify-between px-4 py-2.5 text-[10px] font-bold transition-colors ${value === opt ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400' : 'text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/5'}`}
+                className={`w-full flex items-center justify-between px-4 py-2.5 text-[10px] font-bold transition-colors ${value === opt ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400' : 'text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/[0.06]'}`}
               >
                 <div className="flex items-center gap-3">
                   {opt === 'Random' ? (
@@ -351,8 +351,8 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
     <div className="h-full w-full flex bg-[#f4f7f9] dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500">
       
       {/* SIDEBAR */}
-      <aside className="w-[380px] shrink-0 border-r border-slate-200 dark:border-white/5 flex flex-col bg-white dark:bg-[var(--atlas-bg-panel)] overflow-hidden relative shadow-2xl transition-colors">
-        <div className="p-6 border-b border-slate-100 dark:border-white/5 flex items-center gap-4 shrink-0">
+      <aside className="w-[380px] shrink-0 border-r border-slate-200 dark:border-white/[0.06] flex flex-col bg-white dark:bg-[var(--atlas-bg-panel)] overflow-hidden relative shadow-atlas-lg transition-colors">
+        <div className="p-6 border-b border-slate-100 dark:border-white/[0.06] flex items-center gap-4 shrink-0">
            <Link to="/" className="p-2 -ml-2 text-slate-400 hover:text-brand-blue dark:hover:text-white transition-colors"><ChevronLeft size={24} /></Link>
            <div className="w-10 h-10 bg-pink-600/10 dark:bg-pink-600/20 border border-pink-500/20 dark:border-pink-500/30 rounded-lg flex items-center justify-center text-pink-600 dark:text-pink-500"><Shirt size={22} /></div>
            <div className="space-y-0.5"><h2 className="text-lg font-bold uppercase tracking-tighter leading-none text-slate-900 dark:text-white">Fashion Studio</h2><p className="text-[9px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest italic">PRODUCTION_v4.2</p></div>
@@ -365,7 +365,7 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                 {TOOLS.map(t => (
                   <button 
                     key={t.id} onClick={() => setActiveTool(t.id)} 
-                    className={`flex items-center gap-3 p-3 border rounded-md transition-all text-left group ${activeTool === t.id ? 'border-pink-500 bg-pink-500/5 dark:bg-pink-500/10 text-pink-600 dark:text-white font-bold' : 'border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-gray-500 hover:border-slate-200'}`}
+                    className={`flex items-center gap-3 p-3 border rounded-md transition-all text-left group ${activeTool === t.id ? 'border-pink-500 bg-pink-500/5 dark:bg-pink-500/10 text-pink-600 dark:text-white font-bold' : 'border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.06] text-slate-400 dark:text-gray-500 hover:border-slate-200'}`}
                   >
                     <div className={`transition-colors ${activeTool === t.id ? 'text-pink-600 dark:text-pink-500' : 'text-slate-300 dark:text-gray-400'}`}>{t.icon}</div>
                     <span className="text-[11px]">{t.label}</span>
@@ -374,7 +374,7 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
               </div>
            </section>
            
-           <section className="space-y-4 pt-4 border-t border-slate-100 dark:border-white/5">
+           <section className="space-y-4 pt-4 border-t border-slate-100 dark:border-white/[0.06]">
               <label className="text-[10px] font-bold text-slate-400 dark:text-gray-400 uppercase tracking-widest px-1">Tài sản tham chiếu</label>
 
               <div className="p-4 bg-pink-500/5 border border-pink-500/20 rounded-lg text-left">
@@ -420,7 +420,7 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                   <span className="text-[8px] font-bold uppercase text-gray-400 dark:text-gray-600 ml-1">Người mẫu</span>
                   <div 
                     onClick={() => modelInputRef.current?.click()}
-                    className={`aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all overflow-hidden relative group ${modelImg ? 'border-pink-500 bg-pink-500/5' : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 hover:border-pink-500/50'}`}
+                    className={`aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all overflow-hidden relative group ${modelImg ? 'border-pink-500 bg-pink-500/5' : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.06] hover:border-pink-500/50'}`}
                   >
                     {isUploading === 'MODEL' ? (
                       <Loader2 size={24} className="animate-spin text-pink-500" />
@@ -453,7 +453,7 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                   <span className="text-[8px] font-bold uppercase text-gray-400 dark:text-gray-600 ml-1">Sản phẩm (Áo/Váy)</span>
                   <div 
                     onClick={() => garmentInputRef.current?.click()}
-                    className={`aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all overflow-hidden relative group ${garmentImg ? 'border-pink-500 bg-pink-500/5' : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 hover:border-pink-500/50'}`}
+                    className={`aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all overflow-hidden relative group ${garmentImg ? 'border-pink-500 bg-pink-500/5' : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.06] hover:border-pink-500/50'}`}
                   >
                     {isUploading === 'GARMENT' ? (
                       <Loader2 size={24} className="animate-spin text-pink-500" />
@@ -514,7 +514,7 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
               />
            </section>
 
-           <section className="space-y-4 pt-4 border-t border-slate-100 dark:border-white/5">
+           <section className="space-y-4 pt-4 border-t border-slate-100 dark:border-white/[0.06]">
               <div className="flex justify-between items-center">
                 <label className="text-[10px] font-bold text-slate-400 dark:text-gray-400 uppercase tracking-widest">Mô tả kịch bản</label>
                 <button onClick={handleEnhancePrompt} className="text-[9px] font-bold text-orange-500 uppercase flex items-center gap-1 hover:brightness-110">
@@ -523,7 +523,7 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
               </div>
               <textarea 
                 value={prompt} onChange={e => setPrompt(e.target.value)} 
-                className="w-full h-24 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 p-3 text-[11px] font-bold focus:border-pink-500 outline-none rounded-lg text-slate-800 dark:text-white shadow-inner" 
+                className="w-full h-24 bg-slate-50 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.06] p-3 text-[11px] font-bold focus:border-pink-500 outline-none rounded-lg text-slate-800 dark:text-white shadow-inner" 
                 placeholder="VD: Ánh sáng Studio, bối cảnh sang trọng..." 
               />
            </section>
@@ -562,8 +562,8 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
       </aside>
 
       <main className="flex-grow flex flex-col relative overflow-hidden">
-         <div className="h-16 border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-8 bg-white/60 dark:bg-[var(--atlas-bg-panel)]/60 backdrop-blur-md z-[70]">
-            <div className="flex bg-slate-200/50 dark:bg-white/5 p-1.5 rounded-lg border border-slate-100 dark:border-white/5">
+         <div className="h-16 border-b border-slate-200 dark:border-white/[0.06] flex items-center justify-between px-8 bg-white/60 dark:bg-[var(--atlas-bg-panel)]/60 backdrop-blur-md z-[70]">
+            <div className="flex bg-slate-200/50 dark:bg-white/[0.06] p-1.5 rounded-lg border border-slate-100 dark:border-white/[0.06]">
               <button onClick={() => setActiveTab('current')} className={`px-8 py-2 text-[11px] font-bold uppercase rounded-full transition-all ${activeTab === 'current' ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg' : 'text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>Phiên hiện tại</button>
               <button onClick={() => setActiveTab('collection')} className={`px-8 py-2 text-[11px] font-bold uppercase rounded-full transition-all ${activeTab === 'collection' ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg' : 'text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>Bộ sưu tập</button>
             </div>
@@ -572,7 +572,7 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
          <div className="flex-grow flex items-center justify-center p-12 relative">
             <AnimatePresence mode="wait">
                {activeResult ? (
-                  <motion.div key={activeResult.id} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="relative group max-w-4xl w-full aspect-[3/4] max-h-[75vh] bg-black rounded-sm overflow-hidden shadow-3xl">
+                  <motion.div key={activeResult.id} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="relative group max-w-4xl w-full aspect-[3/4] max-h-[75vh] bg-black rounded-sm overflow-hidden shadow-atlas-xl">
                     {activeResult.status === 'processing' ? (
                       <div className="absolute inset-0 flex flex-col items-center justify-center gap-8 bg-slate-100/80 dark:bg-black/60 backdrop-blur-sm">
                         <div className="relative">
@@ -591,8 +591,8 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                     )}
                     {activeResult.status === 'done' && (
                       <div className="absolute top-6 right-6 flex flex-col gap-4 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
-                        <button onClick={() => openEditor(activeResult.url!)} className="p-4 bg-white/90 dark:bg-black/80 backdrop-blur-xl rounded-full hover:bg-brand-blue hover:text-white transition-all shadow-2xl text-slate-800 dark:text-white"><Edit3 size={18}/></button>
-                        <a href={activeResult.url!} download className="p-4 bg-white text-black rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all flex items-center justify-center"><Download size={20}/></a>
+                        <button onClick={() => openEditor(activeResult.url!)} className="p-4 bg-white/90 dark:bg-black/80 backdrop-blur-xl rounded-full hover:bg-brand-blue hover:text-white transition-all shadow-atlas-lg text-slate-800 dark:text-white"><Edit3 size={18}/></button>
+                        <a href={activeResult.url!} download className="p-4 bg-white text-black rounded-full shadow-atlas-lg hover:scale-110 active:scale-95 transition-all flex items-center justify-center"><Download size={20}/></a>
                       </div>
                     )}
                   </motion.div>
@@ -605,7 +605,7 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
             </AnimatePresence>
          </div>
 
-         <div className="absolute bottom-0 left-0 w-full p-6 bg-white/95 dark:bg-[var(--atlas-bg-panel)]/95 backdrop-blur-xl border-t border-slate-100 dark:border-white/5 z-[80] shadow-2xl">
+         <div className="absolute bottom-0 left-0 w-full p-6 bg-white/95 dark:bg-[var(--atlas-bg-panel)]/95 backdrop-blur-xl border-t border-slate-100 dark:border-white/[0.06] z-[80] shadow-atlas-lg">
             <div className="max-w-5xl mx-auto flex items-center justify-between gap-6">
                <ResourceControl 
                   usagePreference={usagePreference}
@@ -617,7 +617,7 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                <button 
                  onClick={handleGenerate} 
                  disabled={isGenerateDisabled} 
-                 className={`flex-grow py-5 bg-gradient-to-r from-pink-700 to-purple-600 text-white font-bold uppercase text-xs tracking-[0.5em] shadow-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-4 rounded-lg relative overflow-hidden ${isGenerateDisabled ? 'opacity-30 grayscale cursor-not-allowed' : 'group'}`}
+                 className={`flex-grow py-5 bg-gradient-to-r from-pink-700 to-purple-600 text-white font-bold uppercase text-xs tracking-[0.5em] shadow-atlas-lg hover:scale-[1.02] transition-all flex items-center justify-center gap-4 rounded-lg relative overflow-hidden ${isGenerateDisabled ? 'opacity-30 grayscale cursor-not-allowed' : 'group'}`}
                >
                   <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                   {isGenerating ? <Loader2 className="animate-spin" size={20} /> : <Zap size={18} fill="currentColor" />}
@@ -627,13 +627,13 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
          </div>
       </main>
 
-      <aside className="w-[320px] shrink-0 border-l border-slate-200 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-panel)] flex flex-col overflow-hidden z-50 transition-all duration-500">
-         <div className="h-16 border-b border-slate-200 dark:border-white/5 flex items-center px-6 shrink-0 bg-slate-50 dark:bg-black/20"><div className="flex items-center gap-2"><HistoryIcon size={14} className="text-brand-blue" /><span className="text-[10px] font-bold uppercase tracking-widest text-slate-900 dark:text-white">Lịch sử</span></div></div>
+      <aside className="w-[320px] shrink-0 border-l border-slate-200 dark:border-white/[0.06] bg-white dark:bg-[var(--atlas-bg-panel)] flex flex-col overflow-hidden z-50 transition-all duration-500">
+         <div className="h-16 border-b border-slate-200 dark:border-white/[0.06] flex items-center px-6 shrink-0 bg-slate-50 dark:bg-black/20"><div className="flex items-center gap-2"><HistoryIcon size={14} className="text-brand-blue" /><span className="text-[10px] font-bold uppercase tracking-widest text-slate-900 dark:text-white">Lịch sử</span></div></div>
          <div className="flex-grow overflow-y-auto p-4 space-y-4 no-scrollbar">
             <AnimatePresence initial={false}>
                {results.map((res) => (
-                  <motion.div key={res.id} layout initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className={`relative p-3 rounded-2xl border-2 transition-all cursor-pointer flex flex-col gap-3 group ${activeResultId === res.id ? 'border-pink-500 bg-pink-500/5 shadow-lg' : 'border-black/5 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-panel)] hover:border-black/10'}`} onClick={() => setActiveResultId(res.id)}>
-                     <div className="relative aspect-square rounded-xl overflow-hidden bg-black/5 border border-black/5">
+                  <motion.div key={res.id} layout initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className={`relative p-3 rounded-lg border-2 transition-all cursor-pointer flex flex-col gap-3 group ${activeResultId === res.id ? 'border-pink-500 bg-pink-500/5 shadow-lg' : 'border-black/5 dark:border-white/[0.06] bg-white dark:bg-[var(--atlas-bg-panel)] hover:border-black/10'}`} onClick={() => setActiveResultId(res.id)}>
+                     <div className="relative aspect-square rounded-xl overflow-hidden bg-black/[0.06] border border-black/5">
                         {res.status === 'processing' ? (<div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-slate-50/50 dark:bg-black/20"><Loader2 size={24} className="text-pink-500 animate-spin" /></div>) : res.url ? (<img src={res.url} className="w-full h-full object-cover" alt="" />) : (<div className="absolute inset-0 flex items-center justify-center text-red-500 bg-red-50 gap-4"><AlertCircle size={20}/></div>)}
                      </div>
                      <div className="px-1 space-y-1"><h4 className="text-[10px] font-bold uppercase italic tracking-tighter truncate text-slate-800 dark:text-white/90">"{res.prompt}"</h4><div className="flex justify-between items-center text-[7px] font-bold text-gray-500 uppercase tracking-widest"><span>{res.timestamp}</span><span className="text-pink-600">{res.type}</span></div></div>
@@ -659,7 +659,7 @@ const FashionStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
       />
 
       <AnimatePresence>
-        {showLowCreditAlert && (<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6"><motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} className="max-w-md w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-10 border border-slate-200 dark:border-white/10 rounded-sm text-center space-y-8 shadow-3xl"><div className="w-24 h-24 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-amber-500"><AlertTriangle size={40} /></div><div className="space-y-3"><h3 className="text-3xl font-bold uppercase tracking-tighter italic text-slate-900 dark:text-white">Hạn ngạch cạn kiệt</h3><p className="text-sm text-slate-500 dark:text-gray-400 font-medium leading-relaxed uppercase tracking-tight">Fashion synthesis yêu cầu ít nhất **{actionCost} credits**.</p></div><div className="flex flex-col gap-4"><Link to="/credits" className="bg-pink-600 text-white py-5 rounded-sm text-xs font-bold uppercase tracking-[0.4em] shadow-xl text-center hover:bg-pink-700 transition-colors">Nạp thêm Credits</Link><button onClick={() => setShowLowCreditAlert(false)} className="text-[10px] font-bold uppercase text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Đóng</button></div></motion.div></motion.div>)}
+        {showLowCreditAlert && (<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6"><motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} className="max-w-md w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-10 border border-slate-200 dark:border-white/10 rounded-sm text-center space-y-8 shadow-atlas-xl"><div className="w-24 h-24 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-amber-500"><AlertTriangle size={40} /></div><div className="space-y-3"><h3 className="text-3xl font-bold uppercase tracking-tighter italic text-slate-900 dark:text-white">Hạn ngạch cạn kiệt</h3><p className="text-sm text-slate-500 dark:text-gray-400 font-medium leading-relaxed uppercase tracking-tight">Fashion synthesis yêu cầu ít nhất **{actionCost} credits**.</p></div><div className="flex flex-col gap-4"><Link to="/credits" className="bg-pink-600 text-white py-5 rounded-sm text-xs font-bold uppercase tracking-[0.4em] shadow-atlas-lg text-center hover:bg-pink-700 transition-colors">Nạp thêm Credits</Link><button onClick={() => setShowLowCreditAlert(false)} className="text-[10px] font-bold uppercase text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Đóng</button></div></motion.div></motion.div>)}
       </AnimatePresence>
       
       <ImageLibraryModal isOpen={isLibraryOpen} onClose={() => setIsLibraryOpen(false)} onConfirm={handleLibrarySelect} onEdit={(url) => { openEditor(url); setIsLibraryOpen(false); }} maxSelect={6} />

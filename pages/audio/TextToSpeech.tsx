@@ -83,7 +83,7 @@ const TextToSpeech = () => {
             </div>
 
             <div className="lg:col-span-5 w-full">
-               <div className="aspect-[4/5] bg-gray-100 dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/5 relative overflow-hidden shadow-2xl rounded-sm group p-12 flex flex-col justify-between">
+               <div className="aspect-[4/5] bg-gray-100 dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/[0.06] relative overflow-hidden shadow-atlas-lg rounded-sm group p-12 flex flex-col justify-between">
                   <div className="space-y-6">
                     <div className="h-1 w-24 bg-brand-blue/40"></div>
                     <div className="space-y-8">
@@ -107,8 +107,8 @@ const TextToSpeech = () => {
         </section>
 
         {/* --- FEATURES GRID --- */}
-        <section className="py-40 border-t border-black/5 dark:border-white/5">
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 shadow-2xl">
+        <section className="py-40 border-t border-black/5 dark:border-white/[0.06]">
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-black/[0.06] dark:bg-white/[0.06] border border-black/5 dark:border-white/[0.06] shadow-atlas-lg">
               {[
                 { title: 'Ultra-Lifelike', icon: <BrainCircuit />, desc: 'Advanced neural networks simulate human breath, tone, and emotional nuance.' },
                 { title: 'Instant Synthesis', icon: <Zap />, desc: 'Convert thousands of words into speech in seconds with our high-throughput cluster.' },
@@ -117,8 +117,8 @@ const TextToSpeech = () => {
                 { title: 'Voice Design', icon: <Settings2 />, desc: 'Fine-tune pitch, speed, and emotional stability for the perfect brand match.' },
                 { title: 'HD Mastering', icon: <AudioLines />, desc: 'Professional 48kHz audio output ready for broadcast and high-end media.' }
               ].map((f, i) => (
-                <div key={i} className="p-16 bg-white dark:bg-[var(--atlas-bg-page)] space-y-8 group hover:bg-brand-blue/[0.01] transition-all duration-500 border-r border-black/5 dark:border-white/5 last:border-r-0">
-                   <div className="w-14 h-14 border border-black/10 dark:border-white/10 flex items-center justify-center text-gray-400 group-hover:text-brand-blue group-hover:border-brand-blue transition-all rounded-sm shadow-xl">
+                <div key={i} className="p-16 bg-white dark:bg-[var(--atlas-bg-page)] space-y-8 group hover:bg-brand-blue/[0.01] transition-all duration-500 border-r border-black/5 dark:border-white/[0.06] last:border-r-0">
+                   <div className="w-14 h-14 border border-black/10 dark:border-white/10 flex items-center justify-center text-gray-400 group-hover:text-brand-blue group-hover:border-brand-blue transition-all rounded-sm shadow-atlas-lg">
                       {React.cloneElement(f.icon as React.ReactElement<any>, { size: 24 })}
                    </div>
                    <div className="space-y-3">

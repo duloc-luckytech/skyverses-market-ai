@@ -25,7 +25,7 @@ export const FinalCTA: React.FC<FinalCTAProps> = ({ onStartStudio }) => (
         >
           <Zap size={14} fill="currentColor" /> Vào Studio <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
         </button>
-        <Link to="/market" className="bg-white/10 text-white/80 border border-white/15 px-8 py-3.5 rounded-xl text-[10px] font-semibold uppercase tracking-widest hover:bg-white/20 transition-all backdrop-blur-md">
+        <Link to="/market" className="bg-white/10 text-white/80 border border-white/[0.15] px-8 py-3.5 rounded-xl text-[10px] font-semibold uppercase tracking-widest hover:bg-white/20 transition-all backdrop-blur-md">
           Xem giải pháp khác
         </Link>
       </div>

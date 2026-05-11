@@ -41,7 +41,7 @@ const FeaturedSectionComponent: React.FC<FeaturedSectionProps> = ({
                   key={sol.id} initial={false}
                   animate={{ x: offset * (window.innerWidth < 768 ? 12 : 25), y: offset * (window.innerWidth < 768 ? -10 : -20), scale: 1 - offset * 0.06, rotate: offset * 2, opacity: 1 - offset * 0.2, zIndex: solutions.length - offset }}
                   transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                  className={`absolute inset-0 rounded-2xl md:rounded-[2rem] overflow-hidden border-2 md:border-4 bg-black shadow-3xl cursor-pointer ${offset === 0 ? 'border-brand-blue' : 'border-white/10'}`}
+                  className={`absolute inset-0 rounded-lg md:rounded-xl overflow-hidden border-2 md:border-4 bg-black shadow-atlas-xl cursor-pointer ${offset === 0 ? 'border-brand-blue' : 'border-white/10'}`}
                   onClick={() => onNavigate(sol.slug)}
                 >
                   <img src={sol.imageUrl} loading="lazy" className="w-full h-full object-cover" alt="" />
@@ -71,7 +71,7 @@ const FeaturedSectionComponent: React.FC<FeaturedSectionProps> = ({
           <button onClick={() => onNavigate(solutions[index].slug)} className="inline-flex items-center gap-2 bg-brand-blue text-white px-5 py-2.5 rounded-full text-[9px] font-bold uppercase tracking-[0.15em] shadow-lg shadow-brand-blue/20 hover:scale-105 active:scale-95 transition-all">
             Explore <Wand2 size={12} fill="currentColor" />
           </button>
-          <button onClick={onOpenDemo} className="inline-flex items-center gap-2 bg-white dark:bg-white/5 text-slate-700 dark:text-white border border-slate-200 dark:border-white/10 px-5 py-2.5 rounded-full text-[9px] font-bold uppercase tracking-[0.15em] hover:bg-slate-50 transition-all">
+          <button onClick={onOpenDemo} className="inline-flex items-center gap-2 bg-white dark:bg-white/[0.06] text-slate-700 dark:text-white border border-slate-200 dark:border-white/10 px-5 py-2.5 rounded-full text-[9px] font-bold uppercase tracking-[0.15em] hover:bg-slate-50 transition-all">
             Demo <MonitorPlay size={12} />
           </button>
         </div>

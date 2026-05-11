@@ -120,7 +120,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
             )}
           </div>
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
-            <div className="w-20 h-20 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center bg-white/60 dark:bg-white/5 backdrop-blur-xl animate-pulse">
+            <div className="w-20 h-20 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center bg-white/60 dark:bg-white/[0.06] backdrop-blur-xl animate-pulse">
               <Play size={28} className="text-indigo-500 dark:text-indigo-400 ml-1" fill="currentColor" />
             </div>
           </div>

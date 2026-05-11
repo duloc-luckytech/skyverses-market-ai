@@ -356,7 +356,7 @@ export const Viewport: React.FC<ViewportProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-[200] bg-[#141519]/80 backdrop-blur-md flex flex-col items-center justify-center gap-6"
+            className="absolute inset-0 z-[200] bg-[var(--atlas-bg-panel)]/80 backdrop-blur-md flex flex-col items-center justify-center gap-6"
           >
             <div className="relative">
               <Loader2 className="w-16 h-16 text-brand-blue animate-spin" strokeWidth={1} />
@@ -364,14 +364,14 @@ export const Viewport: React.FC<ViewportProps> = ({
             </div>
             <div className="space-y-2 text-center">
               <h3 className="text-sm font-bold uppercase tracking-[0.4em] text-white animate-pulse">Syncing Mesh Lattice</h3>
-              <div className="w-48 h-1 bg-white/5 rounded-full overflow-hidden mx-auto">
+              <div className="w-48 h-1 bg-white/[0.06] rounded-full overflow-hidden mx-auto">
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: `${loadProgress}%` }}
                   className="h-full bg-brand-blue shadow-[0_0_15px_rgba(201, 168, 76,0.8)]"
                 />
               </div>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{loadProgress}% Complete</p>
+              <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">{loadProgress}% Complete</p>
             </div>
           </motion.div>
         )}
@@ -386,17 +386,17 @@ export const Viewport: React.FC<ViewportProps> = ({
             exit={{ opacity: 0 }}
             className="absolute inset-0 z-[210] bg-black/60 backdrop-blur-md flex items-center justify-center p-8"
           >
-             <div className="bg-[#1a1b1e] border border-red-500/20 rounded-[2.5rem] p-10 max-w-md w-full text-center space-y-6 shadow-3xl">
+             <div className="bg-[var(--atlas-bg-panel)] border border-red-500/20 rounded-xl p-10 max-w-md w-full text-center space-y-6 shadow-atlas-xl">
                 <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto text-red-500">
                    <AlertCircle size={32} />
                 </div>
                 <div className="space-y-2">
                    <h4 className="text-xl font-bold uppercase tracking-tight text-white">Lỗi nạp mô hình</h4>
-                   <p className="text-sm text-gray-400 leading-relaxed">{loadError}</p>
+                   <p className="text-sm text-white/60 leading-relaxed">{loadError}</p>
                 </div>
                 <button 
                   onClick={() => setLoadError(null)}
-                  className="w-full py-4 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all"
+                  className="w-full py-4 bg-white/[0.06] border border-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all"
                 >
                    Đóng thông báo
                 </button>
@@ -428,7 +428,7 @@ export const Viewport: React.FC<ViewportProps> = ({
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="absolute top-6 left-6 text-left font-mono text-[10px] text-gray-500 space-y-1 p-5 bg-black/40 backdrop-blur-xl rounded-2xl border border-white/5 shadow-2xl z-30 pointer-events-none"
+            className="absolute top-6 left-6 text-left font-mono text-[10px] text-white/50 space-y-1 p-5 bg-black/40 backdrop-blur-xl rounded-lg border border-white/[0.06] shadow-atlas-lg z-30 pointer-events-none"
           >
             <p className="flex justify-between gap-8 text-brand-blue font-bold tracking-widest uppercase italic">Topology_Monitor</p>
             <p className="flex justify-between gap-8 pt-2">Topology: <span className="text-brand-blue">Triangle</span></p>

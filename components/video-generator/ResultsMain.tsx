@@ -217,7 +217,7 @@ export const ResultsMain: React.FC<ResultsMainProps> = ({
                   const stats = getFakeStats(item._id || item.id || idx.toString());
                   return (
                     <motion.div layout key={item._id || item.id} ref={isLast ? lastItemRef : null}
-                      className="relative overflow-hidden bg-white dark:bg-[var(--atlas-bg-panel)] group border border-black/[0.06] dark:border-white/[0.08] rounded-2xl transition-all hover:border-indigo-500/20 shadow-sm dark:shadow-none">
+                      className="relative overflow-hidden bg-white dark:bg-[var(--atlas-bg-panel)] group border border-black/[0.06] dark:border-white/[0.08] rounded-lg transition-all hover:border-indigo-500/20 shadow-sm dark:shadow-none">
                       <div className="aspect-video relative overflow-hidden bg-black cursor-pointer" onClick={() => setSelectedDetailItem(item)}>
                         <img src={item.thumbnailUrl} className="w-full h-full object-cover opacity-60 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700" alt={item.title} />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />

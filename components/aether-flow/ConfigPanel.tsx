@@ -28,7 +28,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
         if (part.startsWith('```')) {
           const code = part.replace(/```/g, '').trim();
           return (
-            <div key={i} className="my-4 p-4 bg-black/40 border border-dashed border-white/20 rounded-lg font-mono text-[11px] text-zinc-400 overflow-x-auto leading-normal">
+            <div key={i} className="my-4 p-4 bg-black/40 border border-dashed border-white/20 rounded-lg font-mono text-[11px] text-white/60 overflow-x-auto leading-normal">
               <pre>{code}</pre>
             </div>
           );
@@ -128,7 +128,7 @@ const WidgetField = ({ value, index, nodeId, onChange }: any) => {
            </button>
         </div>
         
-        <div className="bg-[#121214] border border-white/5 rounded-2xl p-6 lg:p-8 shadow-inner overflow-hidden relative group">
+        <div className="bg-[#121214] border border-white/[0.06] rounded-lg p-6 lg:p-8 shadow-inner overflow-hidden relative group">
            {/* Decor icon mờ ở nền */}
            <div className="absolute top-4 right-4 opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity">
               <FileText size={120} />
@@ -279,7 +279,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
       </div>
 
       {/* STICKY BOTTOM BUTTON */}
-      <div className="mt-auto bg-slate-50 dark:bg-[var(--atlas-bg-panel)] p-0 z-30 border-t border-black/5 dark:border-white/5 sticky bottom-0">
+      <div className="mt-auto bg-slate-50 dark:bg-[var(--atlas-bg-panel)] p-0 z-30 border-t border-black/5 dark:border-white/[0.06] sticky bottom-0">
         <button 
           onClick={onGenerate}
           disabled={isGenerating || isUploadingJson || isMissingRequirements}

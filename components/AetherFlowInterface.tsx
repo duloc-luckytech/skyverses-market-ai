@@ -79,7 +79,7 @@ const AetherFlowInterface: React.FC = () => {
       <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-0 flex-grow overflow-hidden">
         
         {/* LEFT PANEL: CONFIGURATION (4/12 width) - Cố định và có vùng cuộn riêng */}
-        <div className="md:col-span-4 flex flex-col h-full bg-white dark:bg-[var(--atlas-bg-panel)] border-r border-black/5 dark:border-white/5 overflow-hidden">
+        <div className="md:col-span-4 flex flex-col h-full bg-white dark:bg-[var(--atlas-bg-panel)] border-r border-black/5 dark:border-white/[0.06] overflow-hidden">
           <SettingsDrawer 
             isOpen={showSettings}
             apiKey={flow.apiKey}

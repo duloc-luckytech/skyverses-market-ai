@@ -20,7 +20,7 @@ export const ModelAISelector: React.FC<ModelAISelectorProps> = ({
 }) => {
   if (!selectedModel) {
     return (
-      <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-white/5 rounded-lg opacity-50">
+      <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-white/[0.06] rounded-lg opacity-50">
         <Loader2 size={12} className="animate-spin" />
         <span className="text-[10px] font-bold uppercase">Đang tải model...</span>
       </div>
@@ -37,7 +37,7 @@ export const ModelAISelector: React.FC<ModelAISelectorProps> = ({
           <select 
             value={selectedEngine}
             onChange={(e) => onSelectEngine?.(e.target.value)}
-            className="appearance-none bg-slate-100 dark:bg-white/5 border border-slate-100 dark:border-white/[0.06] pl-2.5 pr-7 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-tight outline-none focus:border-brand-blue transition-all cursor-pointer text-slate-700 dark:text-white"
+            className="appearance-none bg-slate-100 dark:bg-white/[0.06] border border-slate-100 dark:border-white/[0.06] pl-2.5 pr-7 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-tight outline-none focus:border-brand-blue transition-all cursor-pointer text-slate-700 dark:text-white"
           >
             <option value="gommo">Gommo</option>
             <option value="fxlab">FxLab</option>
@@ -49,7 +49,7 @@ export const ModelAISelector: React.FC<ModelAISelectorProps> = ({
           <select 
             value={selectedModel.id} 
             onChange={e => onSelect(models.find(m => m.id === e.target.value)!)} 
-            className="appearance-none bg-slate-100 dark:bg-white/5 border border-slate-100 dark:border-white/[0.06] pl-2.5 pr-7 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-tight outline-none focus:border-brand-blue transition-all cursor-pointer text-slate-700 dark:text-white"
+            className="appearance-none bg-slate-100 dark:bg-white/[0.06] border border-slate-100 dark:border-white/[0.06] pl-2.5 pr-7 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-tight outline-none focus:border-brand-blue transition-all cursor-pointer text-slate-700 dark:text-white"
           >
             {models.map(m => (
               <option key={m.id} value={m.id} className="dark:bg-[var(--atlas-bg-panel)]">{m.name}</option>

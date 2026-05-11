@@ -9,7 +9,7 @@ export const GroupNode = ({ data }: any) => {
     <div className="w-full h-full relative">
       {/* Container Background & Border */}
       <div 
-        className="absolute inset-0 border-2 rounded-[2.5rem] pointer-events-none"
+        className="absolute inset-0 border-2 rounded-xl pointer-events-none"
         style={{ 
           borderColor: color, 
           backgroundColor: `${color}05`, // 5% opacity

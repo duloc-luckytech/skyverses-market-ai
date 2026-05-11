@@ -84,9 +84,9 @@ const OrgNodeCard: React.FC<{
       onClick={onClick}
     >
       <div
-        className={`rounded-2xl border-2 transition-all duration-150 overflow-hidden ${
+        className={`rounded-lg border-2 transition-all duration-150 overflow-hidden ${
           isSelected
-            ? 'shadow-xl'
+            ? 'shadow-atlas-lg'
             : 'shadow-md hover:shadow-lg'
         }`}
         style={isSelected ? {
@@ -263,7 +263,7 @@ const ActivationModal: React.FC<{
         exit={{ scale: 0.92, y: 20 }}
         transition={{ type: 'spring', stiffness: 340, damping: 28 }}
         onClick={e => e.stopPropagation()}
-        className="w-full max-w-2xl bg-[var(--atlas-bg-page)] rounded-3xl border border-white/[0.08] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        className="w-full max-w-2xl bg-[var(--atlas-bg-page)] rounded-xl border border-white/[0.08] shadow-atlas-lg overflow-hidden flex flex-col max-h-[90vh]"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
@@ -277,7 +277,7 @@ const ActivationModal: React.FC<{
             </div>
           </div>
           {allDone && (
-            <button onClick={onClose} className="p-1.5 rounded-xl hover:bg-white/5 transition-colors">
+            <button onClick={onClose} className="p-1.5 rounded-xl hover:bg-white/[0.06] transition-colors">
               <X size={16} className="text-white/40" />
             </button>
           )}
@@ -292,7 +292,7 @@ const ActivationModal: React.FC<{
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold transition-all ${
                 activeTab === tab
                   ? 'bg-brand-blue/15 text-brand-blue'
-                  : 'text-white/30 hover:text-white/60 hover:bg-white/5'
+                  : 'text-white/30 hover:text-white/60 hover:bg-white/[0.06]'
               }`}
             >
               {tab === 'current' ? <Network size={10} /> : <Clock size={10} />}
@@ -309,7 +309,7 @@ const ActivationModal: React.FC<{
                 <span>Progress</span>
                 <span>{done}/{total} agents</span>
               </div>
-              <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+              <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
                 <motion.div
                   className="h-full rounded-full bg-gradient-to-r from-brand-blue to-violet-500"
                   animate={{ width: `${pct}%` }}
@@ -327,7 +327,7 @@ const ActivationModal: React.FC<{
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05 }}
-                    className={`rounded-2xl border overflow-hidden ${
+                    className={`rounded-lg border overflow-hidden ${
                       result.status === 'running' ? 'border-amber-500/30 bg-amber-500/[0.04]'
                       : result.status === 'done'  ? 'border-emerald-500/25 bg-emerald-500/[0.03]'
                       : result.status === 'error' ? 'border-red-500/25 bg-red-500/[0.03]'
@@ -403,7 +403,7 @@ const ActivationModal: React.FC<{
               </div>
             ) : (
               [...memoryEntries].reverse().map((entry, i) => (
-                <div key={i} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+                <div key={i} className="rounded-lg border border-white/[0.06] bg-white/[0.02] overflow-hidden">
                   <div className="px-4 py-2.5 border-b border-white/[0.04]">
                     <p className="text-[11px] font-bold text-white/70 truncate">{entry.mission}</p>
                     <p className="text-[9px] text-white/25 mt-0.5">
@@ -901,7 +901,7 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
         <button
           onClick={applyAutoLayout}
           title="Auto layout"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold text-slate-500 dark:text-white/40 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-brand-blue transition-all"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold text-slate-500 dark:text-white/40 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-brand-blue transition-all"
         >
           <LayoutGrid size={12} /> Auto Layout
         </button>
@@ -910,7 +910,7 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
             const ceoNode = config.nodes.find(n => !n.parentId);
             if (ceoNode) addNode(ceoNode.id);
           }}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold text-slate-500 dark:text-white/40 hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold text-slate-500 dark:text-white/40 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-all"
         >
           <Plus size={12} /> Add Node
         </button>
@@ -926,7 +926,7 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
         <div className="flex items-center gap-1 ml-auto">
           <button
             onClick={() => setZoom(z => Math.max(ZOOM_MIN, z - ZOOM_STEP))}
-            className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-500 dark:text-white/40 hover:text-brand-blue transition-colors"
+            className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center text-slate-500 dark:text-white/40 hover:text-brand-blue transition-colors"
           >
             <ZoomOut size={11} />
           </button>
@@ -939,13 +939,13 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
           </button>
           <button
             onClick={() => setZoom(z => Math.min(ZOOM_MAX, z + ZOOM_STEP))}
-            className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-500 dark:text-white/40 hover:text-brand-blue transition-colors"
+            className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center text-slate-500 dark:text-white/40 hover:text-brand-blue transition-colors"
           >
             <ZoomIn size={11} />
           </button>
           <button
             onClick={() => setZoom(1)}
-            className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-500 dark:text-white/40 hover:text-brand-blue transition-colors"
+            className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center text-slate-500 dark:text-white/40 hover:text-brand-blue transition-colors"
             title="Fit to screen"
           >
             <Maximize2 size={11} />
@@ -1054,7 +1054,7 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
               {/* Header */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-black/[0.05] dark:border-white/[0.04]">
                 <p className="text-[10px] font-bold uppercase text-slate-400 dark:text-white/30 tracking-widest">Node Settings</p>
-                <button onClick={() => setSelectedNodeId(null)} className="p-1 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg transition-colors">
+                <button onClick={() => setSelectedNodeId(null)} className="p-1 hover:bg-slate-100 dark:hover:bg-white/[0.06] rounded-lg transition-colors">
                   <X size={13} className="text-slate-400" />
                 </button>
               </div>
@@ -1085,7 +1085,7 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
                           : 'border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/20'
                       }`}
                     >
-                      <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-400">
+                      <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center text-slate-400">
                         <X size={12} />
                       </div>
                       <span className="text-[10px] text-slate-500 dark:text-white/40 font-medium">Unassigned</span>
@@ -1167,11 +1167,11 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
             exit={{ scale: 0.93, y: 16 }}
             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             onClick={e => e.stopPropagation()}
-            className="w-full max-w-[480px] bg-white dark:bg-[var(--atlas-bg-panel)] rounded-3xl shadow-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden"
+            className="w-full max-w-[480px] bg-white dark:bg-[var(--atlas-bg-panel)] rounded-xl shadow-atlas-lg border border-black/[0.06] dark:border-white/[0.06] overflow-hidden"
           >
             <div className="p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-brand-blue to-violet-500 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-blue to-violet-500 flex items-center justify-center">
                   <Sparkles size={18} className="text-white" />
                 </div>
                 <div>
@@ -1187,7 +1187,7 @@ const OrgBuilderTab: React.FC<Props> = ({ agents }) => {
                 onChange={e => setMissionText(e.target.value)}
                 rows={4}
                 placeholder="e.g. Launch a new AI productivity app targeting SMBs in Q2 2025. Coordinate across marketing, engineering, sales, and HR."
-                className="w-full px-3.5 py-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08] text-[12px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-brand-blue/40 resize-none"
+                className="w-full px-3.5 py-3 rounded-xl bg-slate-50 dark:bg-white/[0.06] border border-black/[0.08] dark:border-white/[0.08] text-[12px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-brand-blue/40 resize-none"
               />
               <p className="text-[9px] text-slate-400 mt-1.5">
                 CEO Agent (Opus) will delegate → all departments run in parallel ⚡

@@ -233,13 +233,13 @@ Return ONLY the system prompt text. No labels, no quotes, no preamble.`;
         exit={{ scale: 0.93, opacity: 0, y: 20 }}
         transition={{ type: 'spring', stiffness: 360, damping: 28 }}
         onClick={e => e.stopPropagation()}
-        className="w-full max-w-[580px] bg-white dark:bg-[var(--atlas-bg-panel)] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-black/[0.06] dark:border-white/[0.06]"
+        className="w-full max-w-[580px] bg-white dark:bg-[var(--atlas-bg-panel)] rounded-xl shadow-atlas-lg flex flex-col overflow-hidden border border-black/[0.06] dark:border-white/[0.06]"
       >
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-black/[0.05] dark:border-white/[0.05]">
           <div className="flex items-center gap-3">
             <div
-              className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl shrink-0 border-2"
+              className="w-10 h-10 rounded-lg flex items-center justify-center text-xl shrink-0 border-2"
               style={{ backgroundColor: `${color}15`, borderColor: `${color}40` }}
             >
               {emoji}
@@ -309,7 +309,7 @@ Return ONLY the system prompt text. No labels, no quotes, no preamble.`;
                         value={name}
                         onChange={e => setName(e.target.value)}
                         placeholder="Marketing AI"
-                        className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08] text-[12px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-brand-blue/40"
+                        className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.06] border border-black/[0.08] dark:border-white/[0.08] text-[12px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-brand-blue/40"
                       />
                     </div>
                     <div>
@@ -318,7 +318,7 @@ Return ONLY the system prompt text. No labels, no quotes, no preamble.`;
                         value={role}
                         onChange={e => setRole(e.target.value)}
                         placeholder="Head of Marketing"
-                        className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08] text-[12px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-brand-blue/40"
+                        className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.06] border border-black/[0.08] dark:border-white/[0.08] text-[12px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-brand-blue/40"
                       />
                     </div>
                   </div>
@@ -369,7 +369,7 @@ Return ONLY the system prompt text. No labels, no quotes, no preamble.`;
                           <button
                             key={t.id}
                             onClick={() => handleTierChange(t.id)}
-                            className={`p-3 rounded-2xl border-2 text-left transition-all ${
+                            className={`p-3 rounded-lg border-2 text-left transition-all ${
                               isActive
                                 ? 'border-brand-blue/60 bg-brand-blue/[0.07]'
                                 : 'border-black/[0.06] dark:border-white/[0.06] hover:border-brand-blue/30'
@@ -425,7 +425,7 @@ Return ONLY the system prompt text. No labels, no quotes, no preamble.`;
               {step === 1 && (
                 <>
                   {/* AI Prompt Generator */}
-                  <div className="rounded-2xl border border-violet-500/25 bg-violet-500/[0.04] p-4">
+                  <div className="rounded-lg border border-violet-500/25 bg-violet-500/[0.04] p-4">
                     <div className="flex items-center gap-2 mb-3">
                       <Wand2 size={13} className="text-violet-500" />
                       <p className="text-[10px] font-bold text-violet-500">AI Prompt Generator</p>
@@ -466,7 +466,7 @@ Return ONLY the system prompt text. No labels, no quotes, no preamble.`;
                       onChange={e => setSystemPrompt(e.target.value)}
                       rows={7}
                       placeholder="Describe the agent's personality, expertise, and behavior..."
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08] text-[11px] leading-relaxed text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-brand-blue/40 resize-none font-mono"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.06] border border-black/[0.08] dark:border-white/[0.08] text-[11px] leading-relaxed text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-brand-blue/40 resize-none font-mono"
                     />
                     <p className="text-[8px] text-slate-400 mt-1">{systemPrompt.length} chars</p>
                   </div>
@@ -555,7 +555,7 @@ Return ONLY the system prompt text. No labels, no quotes, no preamble.`;
                         <button
                           key={m.id}
                           onClick={() => setModel(m.id)}
-                          className={`p-3.5 rounded-2xl border-2 text-left transition-all ${
+                          className={`p-3.5 rounded-lg border-2 text-left transition-all ${
                             model === m.id
                               ? 'border-current shadow-md'
                               : 'border-black/[0.07] dark:border-white/[0.07] hover:border-current'
@@ -668,12 +668,12 @@ Return ONLY the system prompt text. No labels, no quotes, no preamble.`;
                       onChange={e => setBrief(e.target.value)}
                       rows={3}
                       placeholder="e.g. Our company sells B2B SaaS to HR teams in Vietnam. Primary market: enterprises 200-2000 employees. Brand tone: professional, friendly."
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08] text-[11px] leading-relaxed text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-brand-blue/40 resize-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.06] border border-black/[0.08] dark:border-white/[0.08] text-[11px] leading-relaxed text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-brand-blue/40 resize-none"
                     />
                   </div>
 
                   {/* Summary box */}
-                  <div className="p-3.5 rounded-2xl border border-black/[0.06] dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02]">
+                  <div className="p-3.5 rounded-lg border border-black/[0.06] dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02]">
                     <p className="text-[9px] font-bold uppercase text-slate-400 dark:text-white/30 mb-2">Agent Summary</p>
                     <div className="flex items-center gap-3">
                       <div

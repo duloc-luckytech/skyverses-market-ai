@@ -113,7 +113,7 @@ const Art3DWorkspace: React.FC<Art3DWorkspaceProps> = ({ onClose, logic }) => {
 
   return (
     <div 
-      className="fixed inset-0 z-[600] flex flex-col bg-[#141519] text-slate-300 font-sans overflow-hidden select-none"
+      className="fixed inset-0 z-[600] flex flex-col bg-[var(--atlas-bg-panel)] text-slate-300 font-sans overflow-hidden select-none"
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
@@ -172,7 +172,7 @@ const Art3DWorkspace: React.FC<Art3DWorkspaceProps> = ({ onClose, logic }) => {
 
           <button 
             onClick={() => setRightSidebarOpen(!rightSidebarOpen)}
-            className="absolute top-1/2 -translate-y-1/2 right-0 z-50 w-6 h-12 bg-[#141519]/80 backdrop-blur-md border border-white/10 border-r-0 rounded-l-xl flex items-center justify-center text-gray-400 hover:text-white transition-all shadow-2xl"
+            className="absolute top-1/2 -translate-y-1/2 right-0 z-50 w-6 h-12 bg-[var(--atlas-bg-panel)]/80 backdrop-blur-md border border-white/10 border-r-0 rounded-l-xl flex items-center justify-center text-white/40 hover:text-white transition-all shadow-atlas-lg"
           >
             {rightSidebarOpen ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
           </button>

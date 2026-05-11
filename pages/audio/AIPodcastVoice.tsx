@@ -118,12 +118,12 @@ const HeroSection: React.FC<{ onStart: () => void }> = ({ onStart }) => (
       >
         <button
           onClick={onStart}
-          className="group relative px-6 py-3.5 rounded-2xl bg-gradient-to-r from-brand-blue to-purple-500 text-white text-[13px] font-bold shadow-2xl shadow-brand-blue/30 hover:shadow-brand-blue/50 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
+          className="group relative px-6 py-3.5 rounded-lg bg-gradient-to-r from-brand-blue to-purple-500 text-white text-[13px] font-bold shadow-atlas-lg shadow-brand-blue/30 hover:shadow-brand-blue/50 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
         >
           <Mic size={15} /> Tạo podcast ngay
           <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
         </button>
-        <a href="#features" className="px-5 py-3 rounded-2xl border border-slate-200 dark:border-white/[0.1] text-slate-700 dark:text-white/80 text-[13px] font-bold hover:border-brand-blue/40 hover:text-brand-blue transition-colors flex items-center gap-1.5">
+        <a href="#features" className="px-5 py-3 rounded-lg border border-slate-200 dark:border-white/[0.1] text-slate-700 dark:text-white/80 text-[13px] font-bold hover:border-brand-blue/40 hover:text-brand-blue transition-colors flex items-center gap-1.5">
           Xem tính năng <ChevronDown size={13} />
         </a>
       </motion.div>
@@ -134,7 +134,7 @@ const HeroSection: React.FC<{ onStart: () => void }> = ({ onStart }) => (
         className="mt-14 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl"
       >
         {STATS.map(s => (
-          <div key={s.label} className="rounded-2xl bg-white/60 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] backdrop-blur p-4">
+          <div key={s.label} className="rounded-lg bg-white/60 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] backdrop-blur p-4">
             <p className="text-2xl lg:text-3xl font-bold bg-gradient-to-br from-brand-blue to-purple-500 bg-clip-text text-transparent">{s.num}</p>
             <p className="text-[11px] text-slate-500 dark:text-gray-400 mt-1 font-semibold">{s.label}</p>
           </div>
@@ -159,7 +159,7 @@ const PreviewSection: React.FC = () => {
         <p className="text-center text-[12px] text-slate-500 dark:text-gray-400 mt-2 mb-8">Mỗi giọng có tone & accent riêng — chọn người dẫn phù hợp nội dung tập</p>
         <div className="space-y-3">
           {samples.map((s, i) => (
-            <div key={i} className="flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/[0.08]">
+            <div key={i} className="flex items-center gap-3 p-4 rounded-lg bg-white dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/[0.08]">
               <button
                 onClick={() => setPlaying(p => p === i ? null : i)}
                 className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-blue to-purple-500 text-white flex items-center justify-center hover:brightness-110 shrink-0"
@@ -204,7 +204,7 @@ const FeaturesSection: React.FC = () => (
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: i * 0.05 }}
             viewport={{ once: true }}
-            className="rounded-2xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.08] p-5 hover:border-brand-blue/40 hover:shadow-lg transition-all"
+            className="rounded-lg bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.08] p-5 hover:border-brand-blue/40 hover:shadow-lg transition-all"
           >
             <div className={`w-10 h-10 rounded-xl ${f.bg} flex items-center justify-center mb-3`}>
               <f.icon size={18} className={f.color} />
@@ -295,7 +295,7 @@ const FAQSection: React.FC = () => {
         <p className="text-center text-[12px] text-slate-500 dark:text-gray-400 mb-10">Còn thắc mắc? Liên hệ team Skyverses qua chat support</p>
         <div className="space-y-2">
           {FAQS.map((f, i) => (
-            <div key={i} className="rounded-2xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.08] overflow-hidden">
+            <div key={i} className="rounded-lg bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.08] overflow-hidden">
               <button
                 onClick={() => setOpen(o => o === i ? null : i)}
                 className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors"
@@ -323,7 +323,7 @@ const FinalCTA: React.FC<{ onStart: () => void }> = ({ onStart }) => (
       <p className="relative text-[13px] text-white/85 mt-3 max-w-md mx-auto">5 phút setup. Tập đầu free. Không cần thẻ tín dụng.</p>
       <button
         onClick={onStart}
-        className="relative mt-6 px-7 py-3.5 rounded-2xl bg-white text-brand-blue text-[13px] font-bold shadow-2xl hover:scale-105 active:scale-95 transition-all inline-flex items-center gap-2"
+        className="relative mt-6 px-7 py-3.5 rounded-lg bg-white text-brand-blue text-[13px] font-bold shadow-atlas-lg hover:scale-105 active:scale-95 transition-all inline-flex items-center gap-2"
       >
         <Mic size={15} /> Mở Workspace
         <ArrowRight size={14} />

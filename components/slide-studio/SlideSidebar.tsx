@@ -292,7 +292,7 @@ const SlideSidebar: React.FC<Props> = ({
                 onChange={(e) => setDeckTopic(e.target.value)}
                 placeholder="Nhập chủ đề bản trình chiếu..."
                 rows={4}
-                className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08] text-[12px] placeholder-slate-400 dark:placeholder-white/30 focus:outline-none focus:border-brand-blue/40 resize-none text-slate-900 dark:text-white leading-relaxed"
+                className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.06] border border-black/[0.08] dark:border-white/[0.08] text-[12px] placeholder-slate-400 dark:placeholder-white/30 focus:outline-none focus:border-brand-blue/40 resize-none text-slate-900 dark:text-white leading-relaxed"
               />
             </div>
 
@@ -309,7 +309,7 @@ const SlideSidebar: React.FC<Props> = ({
                     className={`px-2 py-2 rounded-lg text-[9px] font-semibold transition-all truncate ${
                       deckStyle === style.id
                         ? 'bg-brand-blue/20 border border-brand-blue/50 text-brand-blue'
-                        : 'bg-slate-100 dark:bg-white/5 border border-transparent text-slate-700 dark:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10'
+                        : 'bg-slate-100 dark:bg-white/[0.06] border border-transparent text-slate-700 dark:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10'
                     }`}
                   >
                     {style.emoji} {style.label}
@@ -366,7 +366,7 @@ const SlideSidebar: React.FC<Props> = ({
                     className={`py-2 rounded-lg text-[11px] font-bold transition-all ${
                       aspectRatio === r
                         ? 'bg-brand-blue text-white shadow-md shadow-brand-blue/30'
-                        : 'bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10'
+                        : 'bg-slate-100 dark:bg-white/[0.06] text-slate-700 dark:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10'
                     }`}
                     title={r === '16:9' ? 'Thuyết trình tiêu chuẩn' : r === '9:16' ? 'Mobile reels / TikTok' : r === '1:1' ? 'Instagram square post' : 'Facebook feed portrait'}
                   >
@@ -412,7 +412,7 @@ const SlideSidebar: React.FC<Props> = ({
                     className={`py-2 rounded-lg text-[11px] font-bold transition-all ${
                       slideCount === count
                         ? 'bg-brand-blue text-white shadow-md shadow-brand-blue/30'
-                        : 'bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10'
+                        : 'bg-slate-100 dark:bg-white/[0.06] text-slate-700 dark:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10'
                     } ${carouselMode ? 'opacity-40 cursor-not-allowed' : ''}`}
                   >
                     {count}
@@ -430,7 +430,7 @@ const SlideSidebar: React.FC<Props> = ({
               <div className="relative">
                 <button
                   onClick={() => setLangOpen(!langOpen)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08] text-[12px] font-medium text-slate-700 dark:text-white/80 flex items-center justify-between hover:bg-slate-200 dark:hover:bg-white/10 transition-all"
+                  className="w-full px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-white/[0.06] border border-black/[0.08] dark:border-white/[0.08] text-[12px] font-medium text-slate-700 dark:text-white/80 flex items-center justify-between hover:bg-slate-200 dark:hover:bg-white/10 transition-all"
                 >
                   <span>{currentLang.flag} {currentLang.label}</span>
                   <ChevronDown size={12} className={`transition-transform ${langOpen ? 'rotate-180' : ''}`} />
@@ -450,7 +450,7 @@ const SlideSidebar: React.FC<Props> = ({
                           className={`w-full px-3 py-2.5 text-left text-[12px] font-medium transition-colors ${
                             deckLanguage === lang.value
                               ? 'bg-brand-blue/10 text-brand-blue'
-                              : 'text-slate-700 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5'
+                              : 'text-slate-700 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/[0.06]'
                           }`}
                         >
                           {lang.flag} {lang.label}
@@ -510,7 +510,7 @@ const SlideSidebar: React.FC<Props> = ({
               <div className="flex items-center gap-3">
                 {brandLogo ? (
                   <div className="relative group shrink-0">
-                    <img src={brandLogo} alt="brand logo" className="w-14 h-14 rounded-xl object-contain border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-white/5" />
+                    <img src={brandLogo} alt="brand logo" className="w-14 h-14 rounded-xl object-contain border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-white/[0.06]" />
                     <button
                       onClick={() => setBrandLogo(null)}
                       className="absolute -top-1.5 -right-1.5 p-0.5 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
@@ -544,7 +544,7 @@ const SlideSidebar: React.FC<Props> = ({
                 onChange={e => setBrandSlogan(e.target.value)}
                 placeholder="VD: Innovate · Connect · Grow"
                 maxLength={80}
-                className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08] text-[12px] placeholder-slate-300 dark:placeholder-white/20 focus:outline-none focus:border-brand-blue/40 text-slate-900 dark:text-white"
+                className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.06] border border-black/[0.08] dark:border-white/[0.08] text-[12px] placeholder-slate-300 dark:placeholder-white/20 focus:outline-none focus:border-brand-blue/40 text-slate-900 dark:text-white"
               />
             </div>
 
@@ -558,7 +558,7 @@ const SlideSidebar: React.FC<Props> = ({
                 onChange={e => setBrandDescription(e.target.value.slice(0, 200))}
                 placeholder="Mô tả ngắn để AI có ngữ cảnh..."
                 rows={4}
-                className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08] text-[12px] placeholder-slate-300 dark:placeholder-white/20 focus:outline-none focus:border-brand-blue/40 resize-none text-slate-900 dark:text-white"
+                className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.06] border border-black/[0.08] dark:border-white/[0.08] text-[12px] placeholder-slate-300 dark:placeholder-white/20 focus:outline-none focus:border-brand-blue/40 resize-none text-slate-900 dark:text-white"
               />
               <p className="text-right text-[9px] text-slate-300 dark:text-white/45 mt-0.5">
                 {brandDescription.length}/200

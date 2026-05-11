@@ -56,7 +56,7 @@ const VoiceStudio = () => {
   ];
 
   return (
-    <div className="bg-[#050505] min-h-screen text-white font-sans selection:bg-[#ff4b3a]/30 overflow-x-hidden pt-20 transition-colors duration-500">
+    <div className="bg-[var(--atlas-bg-page)] min-h-screen text-white font-sans selection:bg-[#ff4b3a]/30 overflow-x-hidden pt-20 transition-colors duration-500">
       
       {/* --- BACKGROUND AMBIENCE --- */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -96,7 +96,7 @@ const VoiceStudio = () => {
               >
                 Launch Voice Studio <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="px-12 py-6 border border-white/10 rounded-sm text-xs font-bold uppercase tracking-[0.4em] hover:bg-white hover:text-black transition-all bg-white/5 backdrop-blur-md flex items-center justify-center gap-4">
+              <button className="px-12 py-6 border border-white/10 rounded-sm text-xs font-bold uppercase tracking-[0.4em] hover:bg-white hover:text-black transition-all bg-white/[0.06] backdrop-blur-md flex items-center justify-center gap-4">
                 View Use Cases <ChevronRight size={16} />
               </button>
             </div>
@@ -108,16 +108,16 @@ const VoiceStudio = () => {
             transition={{ duration: 1, delay: 0.2 }}
             className="lg:col-span-6 relative"
           >
-            <div className="relative aspect-video bg-[var(--atlas-bg-page)] border border-white/5 rounded-xl p-4 shadow-3xl overflow-hidden group ring-1 ring-white/10">
+            <div className="relative aspect-video bg-[var(--atlas-bg-page)] border border-white/[0.06] rounded-xl p-4 shadow-atlas-xl overflow-hidden group ring-1 ring-white/10">
                <div className="absolute inset-0 bg-gradient-to-tr from-[#ff4b3a]/10 to-transparent"></div>
-               <div className="h-full w-full bg-[#050505] rounded-lg border border-white/5 flex overflow-hidden">
-                  <div className="w-1/3 border-r border-white/5 p-4 space-y-6 hidden md:block">
+               <div className="h-full w-full bg-[var(--atlas-bg-page)] rounded-lg border border-white/[0.06] flex overflow-hidden">
+                  <div className="w-1/3 border-r border-white/[0.06] p-4 space-y-6 hidden md:block">
                     <div className="space-y-2">
                       <div className="h-1 w-8 bg-[#ff4b3a]"></div>
-                      <div className="h-3 w-full bg-white/5 rounded-sm"></div>
+                      <div className="h-3 w-full bg-white/[0.06] rounded-sm"></div>
                     </div>
                     <div className="space-y-4 pt-4 opacity-40">
-                      {[1, 2, 3].map(i => <div key={i} className="h-8 w-full bg-white/5 rounded-sm border border-white/5"></div>)}
+                      {[1, 2, 3].map(i => <div key={i} className="h-8 w-full bg-white/[0.06] rounded-sm border border-white/[0.06]"></div>)}
                     </div>
                   </div>
                   <div className="flex-grow p-6 flex flex-col justify-between">
@@ -127,9 +127,9 @@ const VoiceStudio = () => {
                            <div className="h-2 w-32 bg-white/10 rounded-full"></div>
                         </div>
                         <div className="space-y-2">
-                           <div className="h-3 w-full bg-white/5 rounded-sm"></div>
-                           <div className="h-3 w-5/6 bg-white/5 rounded-sm"></div>
-                           <div className="h-3 w-4/6 bg-white/5 rounded-sm"></div>
+                           <div className="h-3 w-full bg-white/[0.06] rounded-sm"></div>
+                           <div className="h-3 w-5/6 bg-white/[0.06] rounded-sm"></div>
+                           <div className="h-3 w-4/6 bg-white/[0.06] rounded-sm"></div>
                         </div>
                      </div>
                      <div className="flex justify-between items-end">
@@ -137,7 +137,7 @@ const VoiceStudio = () => {
                            <p className="text-[8px] font-bold text-[#ff4b3a] uppercase tracking-widest italic leading-none mb-1">Acoustic_Engine_v4.2</p>
                            <h3 className="text-xl font-bold italic uppercase tracking-tighter text-white">Identity Mastery.</h3>
                         </div>
-                        <div className="w-12 h-12 rounded-full bg-[#ff4b3a] flex items-center justify-center shadow-2xl">
+                        <div className="w-12 h-12 rounded-full bg-[#ff4b3a] flex items-center justify-center shadow-atlas-lg">
                            <Play size={20} fill="white" className="ml-1" />
                         </div>
                      </div>
@@ -149,7 +149,7 @@ const VoiceStudio = () => {
       </section>
 
       {/* --- SECTION 2: PRICING --- */}
-      <section className="py-40 border-t border-white/5 bg-black">
+      <section className="py-40 border-t border-white/[0.06] bg-black">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 text-center space-y-24">
            <div className="space-y-6 max-w-2xl mx-auto">
               <h2 className="text-5xl lg:text-7xl font-bold uppercase italic tracking-tighter leading-none">Investment <br /><span className="text-[#ff4b3a]">Tiers.</span></h2>
@@ -158,23 +158,23 @@ const VoiceStudio = () => {
            
            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
               {PRICING_TIERS.map((tier) => (
-                <div key={tier.name} className={`p-12 bg-[#08080a] border-2 rounded-xl flex flex-col justify-between transition-all duration-500 group relative overflow-hidden ${tier.popular ? 'border-[#ff4b3a] shadow-[0_30px_100px_rgba(255,75,58,0.1)] scale-105 z-10' : 'border-white/5 opacity-80 hover:opacity-100 hover:border-white/10'}`}>
+                <div key={tier.name} className={`p-12 bg-[#08080a] border-2 rounded-xl flex flex-col justify-between transition-all duration-500 group relative overflow-hidden ${tier.popular ? 'border-[#ff4b3a] shadow-[0_30px_100px_rgba(255,75,58,0.1)] scale-105 z-10' : 'border-white/[0.06] opacity-80 hover:opacity-100 hover:border-white/10'}`}>
                    {tier.popular && (
-                      <div className="absolute top-0 right-0 bg-[#ff4b3a] text-white px-6 py-2 text-[8px] font-bold uppercase tracking-widest rounded-bl-2xl shadow-xl">MOST POPULAR</div>
+                      <div className="absolute top-0 right-0 bg-[#ff4b3a] text-white px-6 py-2 text-[8px] font-bold uppercase tracking-widest rounded-bl-2xl shadow-atlas-lg">MOST POPULAR</div>
                    )}
                    <div className="space-y-10 text-left">
                       <div className="space-y-1">
                          <p className="text-[10px] font-bold uppercase text-gray-500 tracking-[0.3em]">{tier.name}</p>
                          <h4 className="text-5xl font-bold italic tracking-tighter text-white">{tier.price}</h4>
                       </div>
-                      <div className="p-4 bg-white/5 border border-white/5 rounded-2xl">
+                      <div className="p-4 bg-white/[0.06] border border-white/[0.06] rounded-lg">
                          <p className="text-[8px] font-bold uppercase text-gray-500 mb-1">Monthly Power</p>
                          <div className="flex items-center gap-2">
                             <Zap size={14} className="text-[#ff4b3a]" fill="currentColor" />
                             <span className="text-lg font-bold italic">{tier.credits} <span className="text-[10px] not-italic opacity-40">CR</span></span>
                          </div>
                       </div>
-                      <div className="space-y-4 pt-4 border-t border-white/5">
+                      <div className="space-y-4 pt-4 border-t border-white/[0.06]">
                          {tier.features.map(f => (
                             <div key={f} className="flex items-center gap-4">
                                <CheckCircle2 size={16} className="text-[#ff4b3a] shrink-0" />
@@ -186,7 +186,7 @@ const VoiceStudio = () => {
                    <div className="mt-16">
                       <button 
                         onClick={() => setIsStudioOpen(true)}
-                        className={`w-full py-5 rounded-2xl text-[10px] font-bold uppercase tracking-[0.4em] transition-all shadow-xl active:scale-95 ${tier.popular ? 'bg-[#ff4b3a] text-white' : 'bg-white/5 text-gray-400 border border-white/10 hover:bg-white hover:text-black'}`}
+                        className={`w-full py-5 rounded-lg text-[10px] font-bold uppercase tracking-[0.4em] transition-all shadow-atlas-lg active:scale-95 ${tier.popular ? 'bg-[#ff4b3a] text-white' : 'bg-white/[0.06] text-gray-400 border border-white/10 hover:bg-white hover:text-black'}`}
                       >
                          Initialize Plan
                       </button>
@@ -198,7 +198,7 @@ const VoiceStudio = () => {
       </section>
 
       {/* --- SECTION 3: FINAL CTA --- */}
-      <section className="py-60 text-center relative overflow-hidden bg-white text-black border-t border-white/5 transition-colors">
+      <section className="py-60 text-center relative overflow-hidden bg-white text-black border-t border-white/[0.06] transition-colors">
         <div className="absolute inset-0 opacity-10 flex flex-wrap gap-4 p-8 pointer-events-none text-[220px] font-bold text-black leading-none tracking-tighter select-none italic">
           VOICE VOICE VOICE VOICE
         </div>
@@ -217,7 +217,7 @@ const VoiceStudio = () => {
       </section>
 
       {/* --- FOOTER --- */}
-      <footer className="py-20 border-t border-white/5 bg-black transition-colors duration-500">
+      <footer className="py-20 border-t border-white/[0.06] bg-black transition-colors duration-500">
         <div className="max-w-[1600px] mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-12 text-[10px] font-bold uppercase tracking-widest text-gray-500">
            <div className="flex flex-col items-center md:items-start gap-4">
               <div className="flex items-center gap-4">

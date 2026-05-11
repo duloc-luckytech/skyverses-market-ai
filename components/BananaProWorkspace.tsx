@@ -228,7 +228,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             initial={{ x: -450, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -450, opacity: 0 }}
-            className="absolute lg:relative w-[320px] lg:w-[420px] h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-page)] z-[100] overflow-y-auto no-scrollbar p-0 shadow-2xl"
+            className="absolute lg:relative w-[320px] lg:w-[420px] h-full flex flex-col border-r border-black/5 dark:border-white/[0.06] bg-white dark:bg-[var(--atlas-bg-page)] z-[100] overflow-y-auto no-scrollbar p-0 shadow-atlas-lg"
           >
             <div className="p-8 lg:p-10 space-y-12 pb-40">
               <header className="flex justify-between items-center">
@@ -246,7 +246,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                  </button>
               </header>
 
-              <div className="p-5 border border-black/5 dark:border-white/10 bg-black/5 dark:bg-white/[0.02] rounded-sm space-y-4">
+              <div className="p-5 border border-black/5 dark:border-white/10 bg-black/[0.06] dark:bg-white/[0.02] rounded-sm space-y-4">
                  <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2 text-gray-500">
                        <Coins size={14} />
@@ -272,13 +272,13 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                  </div>
                  <div className="grid grid-cols-2 gap-3">
                     {actors.length === 0 ? (
-                       <div className="col-span-2 py-8 border border-dashed border-black/5 dark:border-white/5 flex flex-col items-center justify-center opacity-20 text-center">
+                       <div className="col-span-2 py-8 border border-dashed border-black/5 dark:border-white/[0.06] flex flex-col items-center justify-center opacity-20 text-center">
                           <Fingerprint size={32} className="mb-2" />
                           <p className="text-[8px] font-bold uppercase">No Identity Locked</p>
                        </div>
                     ) : (
                        actors.map(actor => (
-                          <div key={actor.id} className="p-3 border border-black/5 dark:border-white/5 bg-gray-50 dark:bg-black group relative rounded-sm shadow-sm overflow-hidden text-black dark:text-white">
+                          <div key={actor.id} className="p-3 border border-black/5 dark:border-white/[0.06] bg-gray-50 dark:bg-black group relative rounded-sm shadow-sm overflow-hidden text-black dark:text-white">
                              <div className="aspect-square bg-black overflow-hidden mb-3">
                                 <img src={actor.refs[0]} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
                              </div>
@@ -297,7 +297,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                  </div>
               </section>
 
-              <section className="space-y-6 pt-6 border-t border-black/5 dark:border-white/5">
+              <section className="space-y-6 pt-6 border-t border-black/5 dark:border-white/[0.06]">
                  <label className="text-[10px] font-bold uppercase text-gray-400 tracking-[0.4em] flex items-center gap-3">
                     <Database size={14} /> Narrative Vault
                  </label>
@@ -306,7 +306,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                        <div
                          key={ch.id}
                          onClick={() => { setActiveChapterId(ch.id); setIsCanonMode(ch.isCanon); }}
-                         className={`w-full p-4 border transition-all text-left flex justify-between items-center cursor-pointer ${activeChapterId === ch.id ? 'border-[#FFE135] bg-[#FFE135]/5 shadow-sm' : 'border-black/5 dark:border-white/5 text-gray-500'}`}
+                         className={`w-full p-4 border transition-all text-left flex justify-between items-center cursor-pointer ${activeChapterId === ch.id ? 'border-[#FFE135] bg-[#FFE135]/5 shadow-sm' : 'border-black/5 dark:border-white/[0.06] text-gray-500'}`}
                        >
                           <div className="space-y-1 flex-grow pr-4">
                              <span className="text-[8px] font-bold opacity-40 uppercase">{ch.isCanon ? 'Serial Work' : 'Parallel Arc'}</span>
@@ -338,7 +338,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
       <main className="flex-grow flex flex-col bg-[#f0f0f2] dark:bg-[var(--atlas-bg-page)] relative overflow-hidden">
 
-        <div className="h-16 border-b border-black/5 dark:border-white/5 flex items-center justify-between px-8 bg-white/50 dark:bg-black/50 backdrop-blur-md z-[70] shadow-sm">
+        <div className="h-16 border-b border-black/5 dark:border-white/[0.06] flex items-center justify-between px-8 bg-white/50 dark:bg-black/50 backdrop-blur-md z-[70] shadow-sm">
           <div className="flex items-center gap-6">
             {!sidebarOpen && (
               <button onClick={() => setSidebarOpen(true)} className="p-2 text-gray-500 hover:text-[#FFE135] transition-colors">
@@ -367,7 +367,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
               {currentChapter?.panels.map((p, idx) => (
                  <div
                    key={p.id}
-                   className={`relative border-2 border-black/5 dark:border-white/5 transition-all group hover:border-[#FFE135] ${idx === 0 ? 'col-span-2' : ''}`}
+                   className={`relative border-2 border-black/5 dark:border-white/[0.06] transition-all group hover:border-[#FFE135] ${idx === 0 ? 'col-span-2' : ''}`}
                  >
                     {p.url ? (
                        <div className="w-full h-full relative overflow-hidden bg-black flex items-center justify-center">
@@ -376,7 +376,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 z-40">
                             <button
                               onClick={(e: React.MouseEvent) => { e.stopPropagation(); setSelectedFullImage(p.url); }}
-                              className="p-4 bg-white text-black rounded-full shadow-2xl hover:bg-[#FFE135] transition-all transform scale-90 group-hover:scale-100 active:scale-95"
+                              className="p-4 bg-white text-black rounded-full shadow-atlas-lg hover:bg-[#FFE135] transition-all transform scale-90 group-hover:scale-100 active:scale-95"
                               title="Maximize Viewport"
                             >
                                <Maximize2 size={24} />
@@ -398,7 +398,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
                     {p.url && p.status === 'done' && (
                        <div className="absolute bottom-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0 z-50">
-                          <a href={p.url} download className="p-3 bg-black text-white shadow-xl rounded-full hover:scale-110 active:scale-95"><Download size={14} /></a>
+                          <a href={p.url} download className="p-3 bg-black text-white shadow-atlas-lg rounded-full hover:scale-110 active:scale-95"><Download size={14} /></a>
                        </div>
                     )}
                  </div>
@@ -416,7 +416,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
            </div>
         </div>
 
-        <div className="h-32 border-t border-black/5 dark:border-white/10 bg-white dark:bg-[var(--atlas-bg-page)] p-8 lg:px-12 flex items-center justify-between z-40 shadow-2xl shrink-0">
+        <div className="h-32 border-t border-black/5 dark:border-white/10 bg-white dark:bg-[var(--atlas-bg-page)] p-8 lg:px-12 flex items-center justify-between z-40 shadow-atlas-lg shrink-0">
            <div className="flex items-center gap-12 lg:gap-16">
               <div className="hidden md:flex flex-col gap-3">
                  <div className="flex items-center gap-3">
@@ -435,7 +435,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
               <button
                 onClick={constructChapter}
                 disabled={isConstructing || actors.length === 0}
-                className={`group h-24 px-16 lg:px-32 flex flex-col items-center justify-center gap-2 transition-all relative overflow-hidden rounded-sm shadow-2xl ${actors.length > 0 ? 'bg-black dark:bg-white text-white dark:text-black hover:scale-105 active:scale-95' : 'bg-gray-100 dark:bg-white/5 text-gray-300 dark:text-gray-800'}`}
+                className={`group h-24 px-16 lg:px-32 flex flex-col items-center justify-center gap-2 transition-all relative overflow-hidden rounded-sm shadow-atlas-lg ${actors.length > 0 ? 'bg-black dark:bg-white text-white dark:text-black hover:scale-105 active:scale-95' : 'bg-gray-100 dark:bg-white/[0.06] text-gray-300 dark:text-gray-800'}`}
               >
                  <BookOpen size={24} className={isConstructing ? 'animate-pulse' : 'group-hover:scale-110 transition-transform'} />
                  <span className="text-[9px] font-bold uppercase tracking-[0.4em]">{isConstructing ? 'Synthesizing' : 'Manifest Chapter'}</span>
@@ -453,7 +453,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           >
              <motion.div
                initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
-               className="max-w-md w-full bg-white dark:bg-[var(--atlas-bg-page)] p-10 border border-black/10 dark:border-white/10 rounded-sm space-y-8 text-center shadow-3xl"
+               className="max-w-md w-full bg-white dark:bg-[var(--atlas-bg-page)] p-10 border border-black/10 dark:border-white/10 rounded-sm space-y-8 text-center shadow-atlas-xl"
              >
                 <div className="w-20 h-20 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-amber-500">
                    <AlertTriangle size={40} />
@@ -467,7 +467,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 <div className="flex flex-col gap-4">
                    <Link
                      to="/credits"
-                     className="bg-brand-blue text-white py-5 rounded-sm text-xs font-bold uppercase tracking-[0.4em] shadow-xl hover:scale-105 transition-all"
+                     className="bg-brand-blue text-white py-5 rounded-sm text-xs font-bold uppercase tracking-[0.4em] shadow-atlas-lg hover:scale-105 transition-all"
                    >
                      Top Up Credits
                    </Link>
@@ -510,7 +510,7 @@ const BananaProWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 />
 
                 <div className="mt-12 mb-20 flex flex-col sm:flex-row items-center gap-6">
-                   <button className="flex items-center gap-3 bg-[#FFE135] text-black px-12 py-4 text-[12px] font-bold uppercase rounded-sm shadow-2xl hover:scale-105 active:scale-95 transition-all">
+                   <button className="flex items-center gap-3 bg-[#FFE135] text-black px-12 py-4 text-[12px] font-bold uppercase rounded-sm shadow-atlas-lg hover:scale-105 active:scale-95 transition-all">
                       <Download size={16} /> Save Masterpiece
                    </button>
                    <button className="flex items-center gap-3 bg-white/10 text-white border border-white/10 px-10 py-4 text-[12px] font-bold uppercase rounded-sm hover:bg-white hover:text-black transition-all backdrop-blur-md">

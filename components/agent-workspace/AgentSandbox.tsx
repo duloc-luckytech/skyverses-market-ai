@@ -468,7 +468,7 @@ const AgentSandbox: React.FC<{ agent: CustomAgent }> = ({ agent }) => {
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
-                className="absolute top-full left-0 right-0 mt-1 z-50 bg-white dark:bg-[var(--atlas-bg-panel)] rounded-xl shadow-xl border border-black/[0.08] dark:border-white/[0.08] overflow-hidden max-h-[200px] overflow-y-auto"
+                className="absolute top-full left-0 right-0 mt-1 z-50 bg-white dark:bg-[var(--atlas-bg-panel)] rounded-xl shadow-atlas-lg border border-black/[0.08] dark:border-white/[0.08] overflow-hidden max-h-[200px] overflow-y-auto"
               >
                 {threads.length === 0 ? (
                   <p className="text-[10px] text-slate-400 p-3 text-center">No conversations yet</p>
@@ -476,7 +476,7 @@ const AgentSandbox: React.FC<{ agent: CustomAgent }> = ({ agent }) => {
                   [...threads].reverse().map(t => (
                     <div
                       key={t.id}
-                      className={`flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer group ${
+                      className={`flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-white/[0.06] cursor-pointer group ${
                         t.id === activeThreadId ? 'bg-brand-blue/5' : ''
                       }`}
                       onClick={() => { setActiveThreadId(t.id); setShowThreadList(false); }}
@@ -527,7 +527,7 @@ const AgentSandbox: React.FC<{ agent: CustomAgent }> = ({ agent }) => {
           // Empty state with templates
           <div className="flex flex-col items-center justify-center h-full py-4 gap-3">
             <div
-              className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl border"
+              className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl border"
               style={{ backgroundColor: `${agent.color}15`, borderColor: `${agent.color}30` }}
             >
               {agent.emoji}
@@ -581,7 +581,7 @@ const AgentSandbox: React.FC<{ agent: CustomAgent }> = ({ agent }) => {
                         onChange={e => setEditText(e.target.value)}
                         autoFocus
                         rows={3}
-                        className="w-full px-3 py-2 rounded-2xl bg-brand-blue/10 border border-brand-blue/30 text-[11px] text-slate-900 dark:text-white focus:outline-none resize-none"
+                        className="w-full px-3 py-2 rounded-lg bg-brand-blue/10 border border-brand-blue/30 text-[11px] text-slate-900 dark:text-white focus:outline-none resize-none"
                       />
                       <div className="flex gap-1.5 mt-1 justify-end">
                         <button
@@ -601,7 +601,7 @@ const AgentSandbox: React.FC<{ agent: CustomAgent }> = ({ agent }) => {
                   ) : (
                     <>
                       <div
-                        className={`px-3 py-2.5 rounded-2xl ${
+                        className={`px-3 py-2.5 rounded-lg ${
                           msg.role === 'user'
                             ? 'bg-brand-blue text-white rounded-tr-sm'
                             : 'bg-slate-100 dark:bg-white/[0.06] text-slate-800 dark:text-white/85 rounded-tl-sm'

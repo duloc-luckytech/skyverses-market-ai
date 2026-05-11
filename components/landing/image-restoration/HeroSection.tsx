@@ -116,11 +116,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
           {/* Browser chrome */}
           <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-white/[0.06]">
             {/* Top bar */}
-            <div className="flex items-center gap-2 px-4 py-3 bg-slate-100 dark:bg-[#111] border-b border-slate-200/80 dark:border-white/[0.05]">
+            <div className="flex items-center gap-2 px-4 py-3 bg-slate-100 dark:bg-[var(--atlas-bg-panel)] border-b border-slate-200/80 dark:border-white/[0.05]">
               <div className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
               <div className="w-2.5 h-2.5 rounded-full bg-amber-400/70" />
               <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/70" />
-              <div className="mx-auto px-6 py-1 bg-white/70 dark:bg-white/5 rounded-full border border-slate-200 dark:border-white/10">
+              <div className="mx-auto px-6 py-1 bg-white/70 dark:bg-white/[0.06] rounded-full border border-slate-200 dark:border-white/10">
                 <span className="text-[9px] font-mono text-slate-400 dark:text-[#555]">skyverses.ai/restore — Neural Core Active</span>
               </div>
             </div>

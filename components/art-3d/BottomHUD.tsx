@@ -123,11 +123,11 @@ export const BottomHUD: React.FC<BottomHUDProps> = ({ onRotate, showSettings, se
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[1000] bg-[#0c0c0e]/95 backdrop-blur-3xl flex flex-col items-center justify-center p-8"
+            className="fixed inset-0 z-[1000] bg-[var(--atlas-bg-page)]/95 backdrop-blur-3xl flex flex-col items-center justify-center p-8"
           >
             <div className="max-w-md w-full space-y-12 text-center">
               <div className="relative mx-auto w-32 h-32 flex items-center justify-center">
-                <div className="absolute inset-0 rounded-full border-4 border-white/5"></div>
+                <div className="absolute inset-0 rounded-full border-4 border-white/[0.06]"></div>
                 <motion.div 
                   className="absolute inset-0 rounded-full border-4 border-t-brand-blue border-r-transparent border-b-transparent border-l-transparent"
                   animate={{ rotate: 360 }}
@@ -139,11 +139,11 @@ export const BottomHUD: React.FC<BottomHUDProps> = ({ onRotate, showSettings, se
               <div className="space-y-8">
                 <div className="space-y-3">
                   <h3 className="text-3xl font-bold uppercase italic tracking-tighter text-white">Exporting Asset</h3>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.6em] text-gray-500">Node Syncing: {selectedFormat} Package</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.6em] text-white/50">Node Syncing: {selectedFormat} Package</p>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                  <div className="w-full h-1 bg-white/[0.06] rounded-full overflow-hidden">
                     <motion.div 
                       initial={{ width: 0 }}
                       animate={{ width: `${exportProgress}%` }}
@@ -151,7 +151,7 @@ export const BottomHUD: React.FC<BottomHUDProps> = ({ onRotate, showSettings, se
                     />
                   </div>
                   <div className="flex justify-between items-center px-2 font-mono">
-                    <span className="text-[9px] font-bold uppercase text-gray-600 tracking-[0.3em] flex items-center gap-2">
+                    <span className="text-[9px] font-bold uppercase text-white/40 tracking-[0.3em] flex items-center gap-2">
                         <Activity size={10} className="animate-pulse text-brand-blue" /> Cluster_ID: X42
                     </span>
                     <span className="text-[11px] font-bold text-brand-blue">{exportProgress}%</span>
@@ -159,9 +159,9 @@ export const BottomHUD: React.FC<BottomHUDProps> = ({ onRotate, showSettings, se
                 </div>
 
                 <div className="pt-8 flex justify-center">
-                   <div className="flex items-center gap-3 px-5 py-2 bg-white/5 border border-white/10 rounded-full">
+                   <div className="flex items-center gap-3 px-5 py-2 bg-white/[0.06] border border-white/10 rounded-full">
                       <ShieldCheck size={14} className="text-emerald-500" />
-                      <span className="text-[9px] font-bold uppercase tracking-widest text-gray-400">Security: Encrypted Uplink</span>
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-white/60">Security: Encrypted Uplink</span>
                    </div>
                 </div>
               </div>
@@ -171,20 +171,20 @@ export const BottomHUD: React.FC<BottomHUDProps> = ({ onRotate, showSettings, se
       </AnimatePresence>
 
       <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-4 w-full px-4 pointer-events-none">
-        <div className="flex items-center gap-2 px-4 py-1.5 bg-black/60 backdrop-blur-xl border border-white/10 rounded-full shadow-2xl pointer-events-auto">
+        <div className="flex items-center gap-2 px-4 py-1.5 bg-black/60 backdrop-blur-xl border border-white/10 rounded-full shadow-atlas-lg pointer-events-auto">
           <Zap size={12} className="text-yellow-400" fill="currentColor" />
           <span className="text-[10px] font-bold uppercase tracking-widest text-white/80">Balance: {credits.toLocaleString()} CR</span>
         </div>
 
-        <div className="flex items-center gap-2 p-2 bg-[#141519]/90 backdrop-blur-3xl border border-white/10 rounded-full shadow-[0_30px_90px_rgba(0,0,0,0.5)] max-w-full overflow-x-auto no-scrollbar pointer-events-auto">
-          <button onClick={() => onRotate(-45)} className="p-4 text-gray-500 hover:text-white transition-all hover:scale-110 shrink-0"><RotateCcw size={20}/></button>
-          <button onClick={() => onRotate(45)} className="p-4 text-gray-500 hover:text-white transition-all hover:scale-110 shrink-0"><RotateCw size={20}/></button>
+        <div className="flex items-center gap-2 p-2 bg-[var(--atlas-bg-panel)]/90 backdrop-blur-3xl border border-white/10 rounded-full shadow-[0_30px_90px_rgba(0,0,0,0.5)] max-w-full overflow-x-auto no-scrollbar pointer-events-auto">
+          <button onClick={() => onRotate(-45)} className="p-4 text-white/50 hover:text-white transition-all hover:scale-110 shrink-0"><RotateCcw size={20}/></button>
+          <button onClick={() => onRotate(45)} className="p-4 text-white/50 hover:text-white transition-all hover:scale-110 shrink-0"><RotateCw size={20}/></button>
           
           <div className="h-8 w-px bg-white/10 mx-2 shrink-0"></div>
 
           <button 
             onClick={() => setShowSettings(!showSettings)} 
-            className={`p-4 transition-all hover:scale-110 shrink-0 ${showSettings ? 'text-purple-400' : 'text-gray-500 hover:text-white'}`}
+            className={`p-4 transition-all hover:scale-110 shrink-0 ${showSettings ? 'text-purple-400' : 'text-white/50 hover:text-white'}`}
             title="View Settings"
           >
             <Settings size={20} />
@@ -192,7 +192,7 @@ export const BottomHUD: React.FC<BottomHUDProps> = ({ onRotate, showSettings, se
 
           <div className="h-8 w-px bg-white/10 mx-2 shrink-0"></div>
 
-          <button className="group flex items-center gap-4 px-8 py-4 bg-[#323337] text-white border border-white/5 rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-[#3f4147] hover:border-purple-500/50 transition-all shadow-xl shrink-0">
+          <button className="group flex items-center gap-4 px-8 py-4 bg-[#323337] text-white border border-white/[0.06] rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-[#3f4147] hover:border-purple-500/50 transition-all shadow-atlas-lg shrink-0">
             <motion.div whileHover={{ rotate: 180 }} transition={{ duration: 0.5 }}>
               <Sparkles size={16} className="text-yellow-400" />
             </motion.div>
@@ -204,8 +204,8 @@ export const BottomHUD: React.FC<BottomHUDProps> = ({ onRotate, showSettings, se
 
           <div className="h-8 w-px bg-white/10 mx-2 shrink-0"></div>
 
-          <button className="p-4 text-gray-500 hover:text-yellow-400 transition-all hover:scale-110 shrink-0"><Star size={20}/></button>
-          <button className="p-4 text-gray-500 hover:text-cyan-400 transition-all hover:scale-110 shrink-0"><Share2 size={20}/></button>
+          <button className="p-4 text-white/50 hover:text-yellow-400 transition-all hover:scale-110 shrink-0"><Star size={20}/></button>
+          <button className="p-4 text-white/50 hover:text-cyan-400 transition-all hover:scale-110 shrink-0"><Share2 size={20}/></button>
           
           <div className="relative shrink-0" ref={exportRef}>
             <button 
@@ -222,7 +222,7 @@ export const BottomHUD: React.FC<BottomHUDProps> = ({ onRotate, showSettings, se
                   initial={{ opacity: 0, y: 20, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                  className="absolute bottom-full mb-6 right-0 w-[280px] bg-[#1a1b1e] border border-white/10 rounded-[2rem] shadow-3xl overflow-hidden p-2"
+                  className="absolute bottom-full mb-6 right-0 w-[280px] bg-[var(--atlas-bg-panel)] border border-white/10 rounded-xl shadow-atlas-xl overflow-hidden p-2"
                 >
                   <div className="flex flex-col">
                     <div className="py-2">
@@ -230,7 +230,7 @@ export const BottomHUD: React.FC<BottomHUDProps> = ({ onRotate, showSettings, se
                         <button 
                           key={f}
                           onClick={() => setSelectedFormat(f)}
-                          className={`w-full flex items-center justify-between px-6 py-3 text-[11px] font-bold uppercase transition-all rounded-xl ${selectedFormat === f ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}
+                          className={`w-full flex items-center justify-between px-6 py-3 text-[11px] font-bold uppercase transition-all rounded-xl ${selectedFormat === f ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white hover:bg-white/[0.06]'}`}
                         >
                           <div className="flex items-center gap-2">
                             {f}
@@ -241,7 +241,7 @@ export const BottomHUD: React.FC<BottomHUDProps> = ({ onRotate, showSettings, se
                       ))}
                     </div>
 
-                    <div className="px-6 py-4 border-t border-white/5 space-y-6">
+                    <div className="px-6 py-4 border-t border-white/[0.06] space-y-6">
                       <div className="relative">
                         <div className="flex items-center justify-between w-full bg-black/40 border border-white/10 p-3 rounded-xl text-[10px] font-bold uppercase text-white">
                           <span>{selectedFormat}</span>
@@ -251,7 +251,7 @@ export const BottomHUD: React.FC<BottomHUDProps> = ({ onRotate, showSettings, se
 
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold uppercase text-gray-400">Bottom-Center Pivot</span>
+                          <span className="text-[10px] font-bold uppercase text-white/60">Bottom-Center Pivot</span>
                           <HelpCircle size={12} className="opacity-20" />
                         </div>
                         <button 
@@ -267,7 +267,7 @@ export const BottomHUD: React.FC<BottomHUDProps> = ({ onRotate, showSettings, se
 
                       <button 
                         onClick={handleExportClick}
-                        className="w-full py-4 bg-[#FFE135] text-black rounded-full font-bold uppercase text-[11px] tracking-[0.2em] flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-xl active:scale-95 group relative overflow-hidden"
+                        className="w-full py-4 bg-[#FFE135] text-black rounded-full font-bold uppercase text-[11px] tracking-[0.2em] flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-atlas-lg active:scale-95 group relative overflow-hidden"
                       >
                         <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                         <span className="relative z-10">Start Export</span> 

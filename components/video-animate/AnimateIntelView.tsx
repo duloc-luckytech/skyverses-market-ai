@@ -65,7 +65,7 @@ export const AnimateIntelView: React.FC<AnimateIntelViewProps> = ({ mode, onShow
             {/* Left: Info */}
             <motion.div {...fadeUp(0)} className="space-y-8">
               <div className="flex items-center gap-4">
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-colors duration-500 ${mode === 'MOTION'
+                <div className={`w-14 h-14 rounded-lg flex items-center justify-center shadow-lg transition-colors duration-500 ${mode === 'MOTION'
                     ? 'bg-gradient-to-br from-indigo-500 to-blue-500 shadow-indigo-500/20'
                     : 'bg-gradient-to-br from-violet-600 to-fuchsia-500 shadow-violet-500/20'}`}>
                   {mode === 'MOTION' ? <Move size={24} className="text-white" /> : <User size={24} className="text-white" />}
@@ -136,7 +136,7 @@ export const AnimateIntelView: React.FC<AnimateIntelViewProps> = ({ mode, onShow
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
             {DEMO_LIST.map((demo, i) => (
               <motion.div key={demo.id} {...fadeUp(0.05 * i)}
-                className="group bg-white dark:bg-white/[0.02] border border-slate-200/80 dark:border-white/[0.04] rounded-2xl overflow-hidden hover:border-indigo-500/20 hover:shadow-lg transition-all duration-500">
+                className="group bg-white dark:bg-white/[0.02] border border-slate-200/80 dark:border-white/[0.04] rounded-lg overflow-hidden hover:border-indigo-500/20 hover:shadow-lg transition-all duration-500">
                 <div className="aspect-video bg-black relative overflow-hidden">
                   <video src={demo.video} autoPlay loop muted playsInline
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
@@ -168,8 +168,8 @@ export const AnimateIntelView: React.FC<AnimateIntelViewProps> = ({ mode, onShow
             {/* CTA Card */}
             <motion.div {...fadeUp(0.3)}
               onClick={onShowTemplates}
-              className="cursor-pointer p-8 bg-indigo-500/5 dark:bg-indigo-500/[0.03] border border-dashed border-indigo-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-4 group hover:bg-indigo-500/10 dark:hover:bg-indigo-500/[0.06] transition-all min-h-[240px]">
-              <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 group-hover:scale-110 transition-transform">
+              className="cursor-pointer p-8 bg-indigo-500/5 dark:bg-indigo-500/[0.03] border border-dashed border-indigo-500/20 rounded-lg flex flex-col items-center justify-center text-center space-y-4 group hover:bg-indigo-500/10 dark:hover:bg-indigo-500/[0.06] transition-all min-h-[240px]">
+              <div className="w-14 h-14 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-500 group-hover:scale-110 transition-transform">
                 <Zap size={28} />
               </div>
               <div className="space-y-1.5">

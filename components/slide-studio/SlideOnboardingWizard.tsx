@@ -161,7 +161,7 @@ export const SlideOnboardingWizard: React.FC<Props> = ({ onComplete, onSkip }) =
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 50, scale: 0.96 }}
         transition={{ duration: 0.3, ease: 'easeOut' }}
-        className="w-full sm:max-w-lg bg-white dark:bg-[var(--atlas-bg-panel)] rounded-t-3xl sm:rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-2xl flex flex-col overflow-hidden max-h-[92dvh]"
+        className="w-full sm:max-w-lg bg-white dark:bg-[var(--atlas-bg-panel)] rounded-t-3xl sm:rounded-lg border border-black/[0.06] dark:border-white/[0.06] shadow-atlas-lg flex flex-col overflow-hidden max-h-[92dvh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ── Header ─────────────────────────────────────────────────────── */}
@@ -336,7 +336,7 @@ export const SlideOnboardingWizard: React.FC<Props> = ({ onComplete, onSkip }) =
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -4 }}
                             transition={{ duration: 0.12 }}
-                            className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-xl z-20 overflow-hidden"
+                            className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-atlas-lg z-20 overflow-hidden"
                           >
                             {LANGUAGES.map((lang) => (
                               <button

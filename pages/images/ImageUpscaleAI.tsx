@@ -173,7 +173,7 @@ const ImageUpscaleAI = () => {
             initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.2 }}
             className="lg:col-span-6"
           >
-            <div className="aspect-[16/10] bg-slate-50 dark:bg-[var(--atlas-bg-page)] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl p-3 overflow-hidden relative">
+            <div className="aspect-[16/10] bg-slate-50 dark:bg-[var(--atlas-bg-page)] border border-black/[0.06] dark:border-white/[0.06] rounded-lg p-3 overflow-hidden relative">
               <div className="relative w-full h-full rounded-xl overflow-hidden bg-white dark:bg-black">
                 <div className="absolute inset-0 grid grid-cols-2">
                   <img
@@ -248,7 +248,7 @@ const ImageUpscaleAI = () => {
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
                 whileHover={{ y: -5, transition: { duration: 0.3 } }}
-                className="p-7 md:p-8 rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] hover:border-emerald-500/20 hover:shadow-xl hover:shadow-emerald-500/5 transition-all duration-500 group"
+                className="p-7 md:p-8 rounded-lg bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] hover:border-emerald-500/20 hover:shadow-xl hover:shadow-emerald-500/5 transition-all duration-500 group"
               >
                 <div className="space-y-5">
                   <div className={`w-12 h-12 rounded-xl ${mode.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform`}>
@@ -280,7 +280,7 @@ const ImageUpscaleAI = () => {
           {/* Left text */}
           <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="space-y-8">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-blue/[0.08] border border-brand-blue/15 rounded-full mb-5">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-blue/[0.08] border border-brand-blue/[0.15] rounded-full mb-5">
                 <Maximize2 size={12} className="text-brand-blue" />
                 <span className="text-[9px] font-semibold uppercase tracking-wider text-brand-blue">Độ phân giải</span>
               </div>
@@ -311,7 +311,7 @@ const ImageUpscaleAI = () => {
 
           {/* Right - quality meter */}
           <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-            <div className="bg-white dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] p-8 rounded-2xl space-y-8">
+            <div className="bg-white dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] p-8 rounded-lg space-y-8">
               <div className="flex justify-between items-center border-b border-black/[0.04] dark:border-white/[0.04] pb-5">
                 <span className="text-[10px] font-semibold uppercase text-slate-400 dark:text-gray-400 tracking-wider">Quality Inspector</span>
                 <ScanLine size={16} className="text-emerald-500" />
@@ -327,7 +327,7 @@ const ImageUpscaleAI = () => {
                       <span>{item.label}</span>
                       <span className="text-emerald-500">{item.value}%</span>
                     </div>
-                    <div className="h-1.5 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-slate-100 dark:bg-white/[0.06] rounded-full overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
                         whileInView={{ width: `${item.value}%` }}
@@ -372,7 +372,7 @@ const ImageUpscaleAI = () => {
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
                 whileHover={{ y: -5, transition: { duration: 0.3 } }}
-                className="p-6 rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] hover:border-amber-500/20 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-500 group"
+                className="p-6 rounded-lg bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] hover:border-amber-500/20 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-500 group"
               >
                 <div className="space-y-4">
                   <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 group-hover:scale-110 transition-transform">
@@ -404,7 +404,7 @@ const ImageUpscaleAI = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className="flex gap-5 items-start p-6 rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] hover:border-emerald-500/15 transition-all group"
+                className="flex gap-5 items-start p-6 rounded-lg bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] hover:border-emerald-500/15 transition-all group"
               >
                 <div className={`w-12 h-12 rounded-xl ${item.iconBg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
                   {item.icon}

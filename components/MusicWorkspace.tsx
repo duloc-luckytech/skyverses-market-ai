@@ -63,7 +63,7 @@ const MusicWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Enterprise Composition Engine</p>
           </div>
         </div>
-        <button onClick={onClose} className="p-2 text-gray-400 hover:text-red-500 transition-colors bg-gray-50 dark:bg-white/5 rounded-full">
+        <button onClick={onClose} className="p-2 text-gray-400 hover:text-red-500 transition-colors bg-gray-50 dark:bg-white/[0.06] rounded-full">
           <X size={24} />
         </button>
       </div>
@@ -71,10 +71,10 @@ const MusicWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       <div className="flex-grow overflow-y-auto no-scrollbar pb-32">
         <div className="max-w-[1200px] mx-auto p-12">
           
-          <div className="bg-white dark:bg-[var(--atlas-bg-page)] border border-gray-100 dark:border-white/5 rounded-[2rem] shadow-2xl overflow-hidden flex flex-col lg:flex-row h-full min-h-[600px]">
+          <div className="bg-white dark:bg-[var(--atlas-bg-page)] border border-gray-100 dark:border-white/[0.06] rounded-xl shadow-atlas-lg overflow-hidden flex flex-col lg:flex-row h-full min-h-[600px]">
              
              {/* LEFT PANEL: CONFIG */}
-             <div className="w-full lg:w-1/2 p-10 border-r border-gray-50 dark:border-white/5 flex flex-col justify-between">
+             <div className="w-full lg:w-1/2 p-10 border-r border-gray-50 dark:border-white/[0.06] flex flex-col justify-between">
                 <div className="space-y-10">
                    <div className="space-y-4">
                       <label className="text-[11px] font-bold uppercase text-gray-400 tracking-[0.4em] block">{t('music.workspace.label')}</label>
@@ -82,7 +82,7 @@ const MusicWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
                         placeholder={t('music.workspace.placeholder')}
-                        className="w-full bg-gray-50 dark:bg-black/40 border border-gray-100 dark:border-white/5 rounded-xl p-6 text-sm font-medium focus:ring-1 focus:ring-brand-blue outline-none transition-all resize-none h-40 leading-relaxed"
+                        className="w-full bg-gray-50 dark:bg-black/40 border border-gray-100 dark:border-white/[0.06] rounded-xl p-6 text-sm font-medium focus:ring-1 focus:ring-brand-blue outline-none transition-all resize-none h-40 leading-relaxed"
                       />
                       <button 
                         onClick={handleGenerate}
@@ -101,7 +101,7 @@ const MusicWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                             <button 
                               key={pick.id}
                               onClick={() => setActivePick(pick)}
-                              className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all ${activePick.id === pick.id ? 'bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                              className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all ${activePick.id === pick.id ? 'bg-gray-50 dark:bg-white/[0.06] border-gray-200 dark:border-white/10' : 'border-transparent opacity-60 hover:opacity-100'}`}
                             >
                                <div className={`w-12 h-12 rounded-lg ${pick.color} flex items-center justify-center text-white/50 shadow-lg`}>
                                   <Disc className={isPlaying && activePick.id === pick.id ? 'animate-spin' : ''} />
@@ -122,7 +122,7 @@ const MusicWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 
                 {/* 3D Orbiting Sphere Visualizer */}
                 <div className="relative w-full max-w-[400px] aspect-square flex items-center justify-center">
-                   <div className={`absolute inset-0 rounded-[2.5rem] ${activePick.color} opacity-80 shadow-2xl transition-all duration-700`}></div>
+                   <div className={`absolute inset-0 rounded-xl ${activePick.color} opacity-80 shadow-atlas-lg transition-all duration-700`}></div>
                    
                    <div className="relative z-10 w-full h-full p-10 flex flex-col justify-between text-white">
                       <h3 className="text-2xl font-bold uppercase italic tracking-tighter">{activePick.name}</h3>
@@ -134,7 +134,7 @@ const MusicWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                            transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
                            className="w-48 h-48 rounded-full bg-gradient-to-tr from-white/30 to-transparent backdrop-blur-3xl border border-white/20 shadow-[0_0_80px_rgba(255,255,255,0.2)] flex items-center justify-center"
                          >
-                            <div className="w-40 h-40 rounded-full bg-white/10 border border-white/5 flex items-center justify-center">
+                            <div className="w-40 h-40 rounded-full bg-white/10 border border-white/[0.06] flex items-center justify-center">
                                <div className="w-12 h-12 rounded-full bg-white/20 shadow-inner"></div>
                             </div>
                          </motion.div>
@@ -152,7 +152,7 @@ const MusicWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 <div className="mt-12 w-full max-w-[400px] flex items-center gap-6">
                    <button 
                      onClick={() => setIsPlaying(!isPlaying)}
-                     className="w-14 h-14 rounded-full bg-white dark:bg-black/60 flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all text-slate-800 dark:text-white"
+                     className="w-14 h-14 rounded-full bg-white dark:bg-black/60 flex items-center justify-center shadow-atlas-lg hover:scale-110 active:scale-95 transition-all text-slate-800 dark:text-white"
                    >
                       {isPlaying ? <Pause fill="currentColor" /> : <Play fill="currentColor" className="ml-1" />}
                    </button>
@@ -172,10 +172,10 @@ const MusicWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
                 {/* Footer Controls */}
                 <div className="absolute bottom-8 right-8 flex gap-3">
-                   <button className="p-3 bg-white dark:bg-white/5 rounded-full border border-gray-100 dark:border-white/10 hover:text-brand-blue transition-colors shadow-sm">
+                   <button className="p-3 bg-white dark:bg-white/[0.06] rounded-full border border-gray-100 dark:border-white/10 hover:text-brand-blue transition-colors shadow-sm">
                       <Download size={18} />
                    </button>
-                   <button className="p-3 bg-white dark:bg-white/5 rounded-full border border-gray-100 dark:border-white/10 hover:text-brand-blue transition-colors shadow-sm">
+                   <button className="p-3 bg-white dark:bg-white/[0.06] rounded-full border border-gray-100 dark:border-white/10 hover:text-brand-blue transition-colors shadow-sm">
                       <Share size={18} />
                    </button>
                 </div>

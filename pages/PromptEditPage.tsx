@@ -56,7 +56,7 @@ const AI_MODELS: { value: AIModel; label: string }[] = [
 ];
 
 const INPUT_CLASS =
-  'bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:border-[#7036F0]/50 focus:outline-none w-full transition-colors';
+  'bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:border-[#C9A84C]/50 focus:outline-none w-full transition-colors';
 const LABEL_CLASS = 'text-sm text-white/60 mb-1.5 block';
 
 /* ─── Types ─── */
@@ -124,7 +124,7 @@ function emptyLocalized(): LocalizedFields {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-6 space-y-5">
+    <div className="bg-white/[0.03] border border-white/10 rounded-lg p-6 space-y-5">
       <h2 className="text-white font-semibold text-base">{title}</h2>
       {children}
     </div>
@@ -151,7 +151,7 @@ function LangTabs({
           onClick={() => onChange(code)}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
             active === code
-              ? 'bg-[#7036F0] text-white shadow-lg'
+              ? 'bg-[#C9A84C] text-white shadow-lg'
               : 'text-white/40 hover:text-white/70 hover:bg-white/[0.04]'
           }`}
         >
@@ -278,7 +278,7 @@ export default function PromptEditPage() {
         </p>
         <button
           onClick={login}
-          className="px-6 py-3 rounded-xl bg-[#7036F0] text-white font-semibold hover:bg-[#5d2ac8] transition-colors"
+          className="px-6 py-3 rounded-xl bg-[#C9A84C] text-white font-semibold hover:bg-[#B8963F] transition-colors"
         >
           {t('common.login') || 'Log In'}
         </button>
@@ -289,7 +289,7 @@ export default function PromptEditPage() {
   if (pageLoading) {
     return (
       <div className="min-h-screen bg-black/95 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#7036F0] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#C9A84C] animate-spin" />
       </div>
     );
   }
@@ -302,7 +302,7 @@ export default function PromptEditPage() {
         </p>
         <Link
           to="/prompt-market/sell"
-          className="inline-flex items-center gap-2 text-[#7036F0] hover:underline text-sm"
+          className="inline-flex items-center gap-2 text-[#C9A84C] hover:underline text-sm"
         >
           <ArrowLeft className="w-4 h-4" /> Back to My Listings
         </Link>
@@ -604,13 +604,13 @@ export default function PromptEditPage() {
                     onClick={() => setPreviewTemplate(tpl)}
                     className={`relative text-left p-4 rounded-xl border transition-all group ${
                       isApplied
-                        ? 'bg-[#7036F0]/10 border-[#7036F0]/40'
-                        : 'bg-white/[0.03] border-white/10 hover:border-[#7036F0]/30 hover:bg-white/[0.05]'
+                        ? 'bg-[#C9A84C]/10 border-[#C9A84C]/40'
+                        : 'bg-white/[0.03] border-white/10 hover:border-[#C9A84C]/30 hover:bg-white/[0.05]'
                     }`}
                   >
                     {isApplied && (
                       <div className="absolute top-3 right-3">
-                        <CheckCircle2 size={16} className="text-[#7036F0]" />
+                        <CheckCircle2 size={16} className="text-[#C9A84C]" />
                       </div>
                     )}
                     <div className="flex items-center gap-2 mb-2">
@@ -637,7 +637,7 @@ export default function PromptEditPage() {
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-xs text-[#7036F0]/80 flex items-center gap-1.5"
+                className="text-xs text-[#C9A84C]/80 flex items-center gap-1.5"
               >
                 <CheckCircle2 size={12} />
                 Template applied — category, tags, and prompts have been replaced. Edit freely below.
@@ -660,7 +660,7 @@ export default function PromptEditPage() {
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0.95, opacity: 0 }}
                   onClick={(e) => e.stopPropagation()}
-                  className="bg-[#111] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-y-auto"
+                  className="bg-[var(--atlas-bg-panel)] border border-white/10 rounded-lg w-full max-w-2xl max-h-[80vh] overflow-y-auto"
                 >
                   <div className="p-6 border-b border-white/10">
                     <div className="flex items-center gap-3 mb-2">
@@ -671,7 +671,7 @@ export default function PromptEditPage() {
                     <div className="flex items-center gap-2 mt-3">
                       <span className="px-2 py-0.5 rounded bg-white/[0.06] text-xs text-white/50">{previewTemplate.category}</span>
                       {previewTemplate.tags.map((tag) => (
-                        <span key={tag} className="px-2 py-0.5 rounded bg-[#7036F0]/10 text-xs text-[#7036F0]/70">{tag}</span>
+                        <span key={tag} className="px-2 py-0.5 rounded bg-[#C9A84C]/10 text-xs text-[#C9A84C]/70">{tag}</span>
                       ))}
                     </div>
                   </div>
@@ -687,7 +687,7 @@ export default function PromptEditPage() {
                         {p.variables.length > 0 && (
                           <div className="mt-2 flex flex-wrap gap-1.5">
                             {p.variables.map((v) => (
-                              <span key={v.name} className="px-2 py-0.5 rounded bg-[#7036F0]/10 text-[10px] text-[#7036F0]/70">
+                              <span key={v.name} className="px-2 py-0.5 rounded bg-[#C9A84C]/10 text-[10px] text-[#C9A84C]/70">
                                 {`{{${v.name}}}`}
                               </span>
                             ))}
@@ -710,7 +710,7 @@ export default function PromptEditPage() {
                         applyTemplate(previewTemplate);
                         setPreviewTemplate(null);
                       }}
-                      className="px-5 py-2 rounded-xl text-sm font-medium text-white bg-[#7036F0] hover:bg-[#7036F0]/80 transition-colors flex items-center gap-2"
+                      className="px-5 py-2 rounded-xl text-sm font-medium text-white bg-[#C9A84C] hover:bg-[#C9A84C]/80 transition-colors flex items-center gap-2"
                     >
                       <Wand2 size={14} />
                       Apply Template
@@ -737,7 +737,7 @@ export default function PromptEditPage() {
               <label className={LABEL_CLASS}>
                 {t('promptCreate.labelTitle') || 'Title'}{' '}
                 ({LANGS.find((l) => l.code === activeLang)?.label})
-                {activeLang === 'en' && <span className="text-[#7036F0] ml-1">*</span>}
+                {activeLang === 'en' && <span className="text-[#C9A84C] ml-1">*</span>}
               </label>
               <input
                 type="text"
@@ -823,7 +823,7 @@ export default function PromptEditPage() {
                   type="button"
                   onClick={() => coverFileRef.current?.click()}
                   disabled={coverUploading}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#7036F0]/20 border border-[#7036F0]/30 text-[#a87aff] hover:bg-[#7036F0]/30 transition-colors text-sm font-medium disabled:opacity-50 whitespace-nowrap"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#C9A84C]/20 border border-[#C9A84C]/30 text-[#E5C767] hover:bg-[#C9A84C]/30 transition-colors text-sm font-medium disabled:opacity-50 whitespace-nowrap"
                 >
                   {coverUploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
                   {coverUploading ? 'Uploading…' : 'Upload'}
@@ -861,8 +861,8 @@ export default function PromptEditPage() {
                 onClick={() => setField('isFree', true)}
                 className={`px-5 py-2 rounded-lg text-sm font-medium transition-colors ${
                   form.isFree
-                    ? 'bg-[#7036F0] text-white'
-                    : 'bg-white/5 border border-white/10 text-white/50 hover:text-white'
+                    ? 'bg-[#C9A84C] text-white'
+                    : 'bg-white/[0.06] border border-white/10 text-white/50 hover:text-white'
                 }`}
               >
                 {t('promptCreate.free') || 'Free'}
@@ -872,8 +872,8 @@ export default function PromptEditPage() {
                 onClick={() => setField('isFree', false)}
                 className={`px-5 py-2 rounded-lg text-sm font-medium transition-colors ${
                   !form.isFree
-                    ? 'bg-[#7036F0] text-white'
-                    : 'bg-white/5 border border-white/10 text-white/50 hover:text-white'
+                    ? 'bg-[#C9A84C] text-white'
+                    : 'bg-white/[0.06] border border-white/10 text-white/50 hover:text-white'
                 }`}
               >
                 {t('promptCreate.paid') || 'Paid'}
@@ -949,7 +949,7 @@ export default function PromptEditPage() {
                     onClick={() => toggleModel(m.value)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
                       selected
-                        ? 'bg-[#7036F0]/20 border-[#7036F0]/50 text-[#a87aff]'
+                        ? 'bg-[#C9A84C]/20 border-[#C9A84C]/50 text-[#E5C767]'
                         : 'bg-white/[0.03] border-white/10 text-white/40 hover:text-white/60 hover:border-white/20'
                     }`}
                   >
@@ -1062,7 +1062,7 @@ export default function PromptEditPage() {
             <button
               type="button"
               onClick={addExample}
-              className="w-full flex items-center gap-2 px-4 py-3 rounded-xl border border-dashed border-white/20 text-white/50 hover:text-white hover:border-[#7036F0]/40 transition-colors justify-center text-sm"
+              className="w-full flex items-center gap-2 px-4 py-3 rounded-xl border border-dashed border-white/20 text-white/50 hover:text-white hover:border-[#C9A84C]/40 transition-colors justify-center text-sm"
             >
               <Plus size={16} />
               {t('promptCreate.addExample') || 'Add Example'}
@@ -1091,7 +1091,7 @@ export default function PromptEditPage() {
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.18 }}
                     className="bg-white/[0.03] border border-white/10 rounded-xl p-5 space-y-4 cursor-grab active:cursor-grabbing"
-                    whileDrag={{ scale: 1.02, boxShadow: '0 8px 32px rgba(112,54,240,0.2)' }}
+                    whileDrag={{ scale: 1.02, boxShadow: '0 8px 32px rgba(201,168,76,0.2)' }}
                   >
                     {/* Prompt header */}
                     <div className="flex items-center justify-between">
@@ -1117,7 +1117,7 @@ export default function PromptEditPage() {
                     <div>
                       <label className={LABEL_CLASS}>
                         {t('promptCreate.promptTitle') || 'Prompt Title'}{' '}
-                        <span className="text-[#7036F0]">*</span>
+                        <span className="text-[#C9A84C]">*</span>
                       </label>
                       <input
                         type="text"
@@ -1146,7 +1146,7 @@ export default function PromptEditPage() {
                     <div>
                       <label className={LABEL_CLASS}>
                         {t('promptCreate.promptContent') || 'Prompt Content'}{' '}
-                        <span className="text-[#7036F0]">*</span>
+                        <span className="text-[#C9A84C]">*</span>
                       </label>
                       <textarea
                         rows={5}
@@ -1169,7 +1169,7 @@ export default function PromptEditPage() {
                         <button
                           type="button"
                           onClick={() => addVariable(prompt._id)}
-                          className="flex items-center gap-1 text-xs text-[#7036F0] hover:text-[#8a52f5] transition-colors"
+                          className="flex items-center gap-1 text-xs text-[#C9A84C] hover:text-[#E5C767] transition-colors"
                         >
                           <Plus size={13} />
                           {t('promptCreate.addVariable') || 'Add Variable'}
@@ -1259,7 +1259,7 @@ export default function PromptEditPage() {
               <button
                 type="button"
                 onClick={addPrompt}
-                className="flex-1 flex items-center gap-2 px-4 py-3 rounded-xl border border-dashed border-white/20 text-white/50 hover:text-white hover:border-[#7036F0]/40 transition-colors justify-center text-sm"
+                className="flex-1 flex items-center gap-2 px-4 py-3 rounded-xl border border-dashed border-white/20 text-white/50 hover:text-white hover:border-[#C9A84C]/40 transition-colors justify-center text-sm"
               >
                 <Plus size={16} />
                 {t('promptCreate.addPrompt') || 'Add Prompt'}
@@ -1307,7 +1307,7 @@ export default function PromptEditPage() {
             <button
               type="submit"
               disabled={saving}
-              className="flex items-center gap-2 px-8 py-3.5 rounded-xl bg-[#7036F0] text-white font-semibold hover:bg-[#5d2ac8] disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-[0_0_20px_rgba(112,54,240,0.3)]"
+              className="flex items-center gap-2 px-8 py-3.5 rounded-xl bg-[#C9A84C] text-white font-semibold hover:bg-[#B8963F] disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-[0_0_20px_rgba(201,168,76,0.3)]"
             >
               {saving ? (
                 <Loader2 size={18} className="animate-spin" />

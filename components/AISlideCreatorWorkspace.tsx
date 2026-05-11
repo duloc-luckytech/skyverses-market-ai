@@ -599,7 +599,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -6, scale: 0.97 }}
                     transition={{ duration: 0.13 }}
-                    className="absolute top-full mt-1.5 right-0 z-50 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-xl overflow-hidden min-w-[130px]"
+                    className="absolute top-full mt-1.5 right-0 z-50 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-atlas-lg overflow-hidden min-w-[130px]"
                   >
                     {[
                       { label: 'PowerPoint (.pptx)', value: 'pptx' as const },
@@ -668,7 +668,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
                     animate={{ scale: [1, 1.18, 1], opacity: [0.5, 0.2, 0.5] }}
                     transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
                   />
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-blue to-violet-500 flex items-center justify-center shadow-xl shadow-brand-blue/20 z-10">
+                  <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-brand-blue to-violet-500 flex items-center justify-center shadow-xl shadow-brand-blue/20 z-10">
                     <Layers size={28} className="text-white" />
                   </div>
                 </div>
@@ -693,7 +693,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
                       initial={{ opacity: 0, y: 16 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.12, duration: 0.4 }}
-                      className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-white dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] shadow-sm"
+                      className="flex flex-col items-center gap-1.5 p-3 rounded-lg bg-white dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] shadow-sm"
                     >
                       <div className="w-8 h-8 rounded-xl bg-brand-blue/10 flex items-center justify-center text-base">{item.emoji}</div>
                       <p className="text-[11px] font-bold text-slate-700 dark:text-white/80">{item.label}</p>
@@ -939,7 +939,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-md bg-white dark:bg-[var(--atlas-bg-panel)] rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-2xl overflow-hidden"
+              className="w-full max-w-md bg-white dark:bg-[var(--atlas-bg-panel)] rounded-lg border border-black/[0.08] dark:border-white/[0.08] shadow-atlas-lg overflow-hidden"
             >
               <div className="p-5">
                 <div className="flex items-center gap-2 mb-3">
@@ -982,7 +982,7 @@ const AISlideCreatorWorkspace: React.FC<Props> = ({ onClose }) => {
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-lg bg-white dark:bg-[var(--atlas-bg-panel)] rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
+              className="w-full max-w-lg bg-white dark:bg-[var(--atlas-bg-panel)] rounded-lg border border-black/[0.08] dark:border-white/[0.08] shadow-atlas-lg overflow-hidden flex flex-col max-h-[80vh]"
             >
               <div className="px-5 py-4 border-b border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between">
                 <div className="flex items-center gap-2">

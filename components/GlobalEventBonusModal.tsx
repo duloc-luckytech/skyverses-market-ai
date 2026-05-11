@@ -120,13 +120,13 @@ const GlobalEventBonusModal: React.FC = () => {
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 260, damping: 26 }}
-              className="relative max-w-3xl w-full rounded-2xl overflow-hidden"
+              className="relative max-w-3xl w-full rounded-lg overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
               {lightbox.type === 'video' ? (
-                <video src={lightbox.src} autoPlay muted loop playsInline controls className="w-full rounded-2xl" />
+                <video src={lightbox.src} autoPlay muted loop playsInline controls className="w-full rounded-lg" />
               ) : (
-                <img src={lightbox.src} alt="" className="w-full rounded-2xl object-contain" />
+                <img src={lightbox.src} alt="" className="w-full rounded-lg object-contain" />
               )}
               <button
                 onClick={() => setLightbox(null)}
@@ -352,7 +352,7 @@ const GlobalEventBonusModal: React.FC = () => {
                     <div className="px-6 pb-6">
                       <motion.button whileHover={{ scale: 1.025, y: -1 }} whileTap={{ scale: .97 }}
                         onClick={() => setStep(1)}
-                        className="group w-full relative inline-flex items-center justify-center gap-2 py-[14px] rounded-2xl text-[13px] font-bold text-white overflow-hidden"
+                        className="group w-full relative inline-flex items-center justify-center gap-2 py-[14px] rounded-lg text-[13px] font-bold text-white overflow-hidden"
                         style={{ background: 'linear-gradient(135deg,#C9A84C,#9333ea,#a78bfa)', boxShadow: '0 8px 30px rgba(201, 168, 76,.5),0 0 0 1px rgba(255,255,255,.1)', animation: 'ev-pulse 2.5s ease-in-out infinite' }}>
                         <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                           style={{ background: 'linear-gradient(135deg,#D4B85A,#a78bfa,#c4b5fd)' }} />
@@ -467,7 +467,7 @@ const GlobalEventBonusModal: React.FC = () => {
                     <div className="px-6 pb-6 pt-3">
                       <motion.button whileHover={{ scale: 1.025, y: -1 }} whileTap={{ scale: .97 }}
                         onClick={handleCTA}
-                        className="group w-full relative inline-flex items-center justify-center gap-2 py-[14px] rounded-2xl text-[13px] font-bold text-white overflow-hidden"
+                        className="group w-full relative inline-flex items-center justify-center gap-2 py-[14px] rounded-lg text-[13px] font-bold text-white overflow-hidden"
                         style={{ background: 'linear-gradient(135deg,#C9A84C,#9333ea,#a78bfa)', boxShadow: '0 8px 30px rgba(201, 168, 76,.45),0 0 0 1px rgba(255,255,255,.1)' }}>
                         <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                           style={{ background: 'linear-gradient(135deg,#D4B85A,#fbbf24,#fb923c)' }} />

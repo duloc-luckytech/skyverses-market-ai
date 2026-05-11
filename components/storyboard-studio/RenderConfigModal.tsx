@@ -53,7 +53,7 @@ const ModelCard: React.FC<ModelCardProps & { type: 'video' | 'image' }> = ({ mod
   return (
     <button
       onClick={onSelect}
-      className={`relative w-full text-left rounded-2xl overflow-hidden border-2 transition-all duration-300 group ${
+      className={`relative w-full text-left rounded-lg overflow-hidden border-2 transition-all duration-300 group ${
         isSelected
           ? 'border-brand-blue shadow-xl shadow-brand-blue/15 scale-[1.01]'
           : 'border-slate-200 dark:border-white/8 hover:border-brand-blue/40 hover:shadow-lg'
@@ -104,7 +104,7 @@ const PillSelector: React.FC<{
           className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all border ${
             value === opt
               ? 'bg-brand-blue text-white border-brand-blue shadow-md shadow-brand-blue/20'
-              : 'bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/8 text-slate-500 dark:text-gray-400 hover:border-brand-blue/40 hover:text-brand-blue dark:hover:text-white'
+              : 'bg-slate-50 dark:bg-white/[0.06] border-slate-200 dark:border-white/8 text-slate-500 dark:text-gray-400 hover:border-brand-blue/40 hover:text-brand-blue dark:hover:text-white'
           }`}
         >
           {formatLabel ? formatLabel(opt) : opt}
@@ -198,7 +198,7 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
             transition={{ type: 'spring', damping: 30, stiffness: 400 }}
-            className="relative w-full max-w-3xl bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-panel)] rounded-[2rem] overflow-hidden shadow-[0_50px_120px_rgba(0,0,0,0.4)] flex flex-col max-h-[88vh] border border-black/8 dark:border-white/8"
+            className="relative w-full max-w-3xl bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-panel)] rounded-xl overflow-hidden shadow-[0_50px_120px_rgba(0,0,0,0.4)] flex flex-col max-h-[88vh] border border-black/8 dark:border-white/8"
           >
             {/* Header */}
             <div className="px-7 pt-7 pb-0 shrink-0">
@@ -226,7 +226,7 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
               </div>
 
               {/* Tabs */}
-              <div className="flex gap-1 bg-slate-100 dark:bg-black/40 p-1 rounded-xl border border-slate-200 dark:border-white/5">
+              <div className="flex gap-1 bg-slate-100 dark:bg-black/40 p-1 rounded-xl border border-slate-200 dark:border-white/[0.06]">
                 {TABS.map((tab) => (
                   <button
                     key={tab.id}
@@ -278,7 +278,7 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
                                 />
                               ))
                             : Array.from({ length: 4 }).map((_, i) => (
-                                <div key={i} className="h-24 bg-slate-100 dark:bg-white/5 rounded-2xl animate-pulse" />
+                                <div key={i} className="h-24 bg-slate-100 dark:bg-white/[0.06] rounded-lg animate-pulse" />
                               ))
                           }
                         </div>
@@ -315,13 +315,13 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
                             <button
                               key={r.val}
                               onClick={() => handleChange('aspectRatio', r.val)}
-                              className={`flex flex-col items-center gap-2.5 p-4 rounded-2xl border-2 transition-all ${
+                              className={`flex flex-col items-center gap-2.5 p-4 rounded-lg border-2 transition-all ${
                                 (settings.aspectRatio ?? '16:9') === r.val
                                   ? 'border-brand-blue bg-brand-blue/5'
                                   : 'border-slate-200 dark:border-white/8 hover:border-brand-blue/30'
                               }`}
                             >
-                              <div className={`${r.shape} border-2 rounded-sm ${(settings.aspectRatio ?? '16:9') === r.val ? 'border-brand-blue bg-brand-blue/20' : 'border-slate-300 dark:border-white/20 bg-slate-100 dark:bg-white/5'} transition-all`} />
+                              <div className={`${r.shape} border-2 rounded-sm ${(settings.aspectRatio ?? '16:9') === r.val ? 'border-brand-blue bg-brand-blue/20' : 'border-slate-300 dark:border-white/20 bg-slate-100 dark:bg-white/[0.06]'} transition-all`} />
                               <span className={`text-[9px] font-bold uppercase tracking-widest ${(settings.aspectRatio ?? '16:9') === r.val ? 'text-brand-blue' : 'text-slate-400 dark:text-gray-500'}`}>{r.label}</span>
                             </button>
                           ))}
@@ -331,7 +331,7 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
                       {/* Priority mode */}
                       <div className="space-y-3">
                         <p className="text-[9px] font-bold uppercase tracking-[0.35em] text-slate-400 dark:text-gray-400">Chế độ ưu tiên</p>
-                        <div className="flex gap-2 bg-slate-100 dark:bg-black/40 p-1.5 rounded-xl w-fit border border-slate-200 dark:border-white/5">
+                        <div className="flex gap-2 bg-slate-100 dark:bg-black/40 p-1.5 rounded-xl w-fit border border-slate-200 dark:border-white/[0.06]">
                           {['fast', 'quality', 'relaxed'].map((mode) => (
                             <button
                               key={mode}
@@ -373,7 +373,7 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
                                 />
                               ))
                             : Array.from({ length: 4 }).map((_, i) => (
-                                <div key={i} className="h-24 bg-slate-100 dark:bg-white/5 rounded-2xl animate-pulse" />
+                                <div key={i} className="h-24 bg-slate-100 dark:bg-white/[0.06] rounded-lg animate-pulse" />
                               ))
                           }
                         </div>
@@ -423,7 +423,7 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
                             <button
                               key={opt.val}
                               onClick={() => handleChange('privacy', opt.val)}
-                              className={`p-4 rounded-2xl border-2 text-left transition-all ${
+                              className={`p-4 rounded-lg border-2 text-left transition-all ${
                                 (settings.privacy ?? 'private') === opt.val
                                   ? 'border-brand-blue bg-brand-blue/5'
                                   : 'border-slate-200 dark:border-white/8 hover:border-brand-blue/30'
@@ -447,7 +447,7 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
                             <div
                               key={opt.key}
                               onClick={() => handleChange(opt.key, !settings[opt.key])}
-                              className={`flex items-center justify-between p-4 rounded-2xl border transition-all cursor-pointer ${
+                              className={`flex items-center justify-between p-4 rounded-lg border transition-all cursor-pointer ${
                                 settings[opt.key]
                                   ? 'border-brand-blue/30 bg-brand-blue/5'
                                   : 'border-slate-200 dark:border-white/8 hover:border-brand-blue/20'
@@ -471,7 +471,7 @@ export const RenderConfigModal: React.FC<RenderConfigModalProps> = ({
             </div>
 
             {/* Footer */}
-            <div className="px-7 py-5 border-t border-black/5 dark:border-white/5 bg-slate-50/80 dark:bg-black/30 flex items-center justify-between shrink-0">
+            <div className="px-7 py-5 border-t border-black/5 dark:border-white/[0.06] bg-slate-50/80 dark:bg-black/30 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2.5 text-emerald-500">
                 <ShieldCheck size={15} />
                 <span className="text-[9px] font-bold uppercase tracking-widest">Enterprise Validated</span>

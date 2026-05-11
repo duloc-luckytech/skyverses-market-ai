@@ -212,7 +212,7 @@ const SlideTextStyleBar: React.FC<Props> = ({ visible }) => {
         </button>
         {showColors && (
           <div
-            className="absolute left-0 top-full mt-1 z-50 p-2 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-xl grid grid-cols-6 gap-1"
+            className="absolute left-0 top-full mt-1 z-50 p-2 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-atlas-lg grid grid-cols-6 gap-1"
             onMouseDown={noFocusSteal}
           >
             {TEXT_COLORS.map(color => (

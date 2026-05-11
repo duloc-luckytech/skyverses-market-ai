@@ -48,7 +48,7 @@ const NebulaVisionEngine = () => {
       />
 
       <div className="max-w-[1700px] mx-auto px-6 lg:px-20 py-12 relative z-10">
-        <Link to="/market" className="inline-flex items-center gap-3 text-[10px] mono text-gray-500 hover:text-brand-blue mb-16 uppercase tracking-[0.4em] group transition-all">
+        <Link to="/market" className="inline-flex items-center gap-3 text-[10px] mono text-white/30 hover:text-brand-blue mb-16 uppercase tracking-[0.4em] group transition-all">
           <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> 
           RETURN_TO_REPOSITORY
         </Link>
@@ -79,13 +79,13 @@ const NebulaVisionEngine = () => {
               <div className="absolute bottom-10 right-10">
                 <button 
                   onClick={() => setIsDemoOpen(true)}
-                  className="bg-brand-blue text-white px-12 py-6 font-bold text-[11px] uppercase tracking-[0.3em] flex items-center gap-6 hover:bg-white hover:text-black transition-all shadow-2xl group/btn"
+                  className="bg-brand-blue text-white px-12 py-6 font-bold text-[11px] uppercase tracking-[0.3em] flex items-center gap-6 hover:bg-white hover:text-black transition-all shadow-atlas-lg group/btn"
                 >
                   INITIALIZE SYNTHESIS <Sparkles className="w-5 h-5 group-hover/btn:rotate-12 transition-transform" />
                 </button>
               </div>
 
-              <div className="absolute bottom-10 left-10 text-[9px] mono text-gray-500 uppercase tracking-widest flex items-center gap-4">
+              <div className="absolute bottom-10 left-10 text-[9px] mono text-white/30 uppercase tracking-widest flex items-center gap-4">
                  <Activity className="w-4 h-4 text-brand-blue" /> LIVE_RENDER_STREAMING_v4.2
               </div>
             </div>
@@ -112,23 +112,23 @@ const NebulaVisionEngine = () => {
                 <span className="bg-brand-blue/10 border border-brand-blue/30 px-3 py-1 text-[9px] font-bold mono text-brand-blue uppercase tracking-widest">VISION_CLASS_S</span>
                 <div className="flex items-center gap-2">
                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                   <span className="text-[9px] font-bold mono text-gray-500 uppercase tracking-widest tracking-tight">NODE_ONLINE</span>
+                   <span className="text-[9px] font-bold mono text-white/30 uppercase tracking-widest tracking-tight">NODE_ONLINE</span>
                 </div>
               </div>
               
               <div className="space-y-4">
                 <h2 className="text-5xl font-bold uppercase tracking-tighter text-white leading-none">The Future <br /> of Rendering.</h2>
-                <p className="text-xl font-light text-gray-400 leading-relaxed italic opacity-80">
+                <p className="text-xl font-light text-white/40 leading-relaxed italic opacity-80">
                   "{solution.description[lang]}"
                 </p>
               </div>
             </div>
 
             {/* Spec Table */}
-            <div className="bg-white/5 border border-white/10">
+            <div className="bg-white/[0.06] border border-white/10">
               {specs.map((spec, i) => (
-                <div key={spec.label} className={`p-6 flex justify-between items-center group hover:bg-white/5 transition-colors ${i !== specs.length - 1 ? 'border-b border-white/5' : ''}`}>
-                  <span className="text-[9px] font-bold uppercase text-gray-600 tracking-widest group-hover:text-gray-400">{spec.label}</span>
+                <div key={spec.label} className={`p-6 flex justify-between items-center group hover:bg-white/[0.06] transition-colors ${i !== specs.length - 1 ? 'border-b border-white/[0.06]' : ''}`}>
+                  <span className="text-[9px] font-bold uppercase text-white/20 tracking-widest group-hover:text-white/40">{spec.label}</span>
                   <span className="mono text-[11px] font-bold text-white group-hover:text-brand-blue">{spec.value}</span>
                 </div>
               ))}
@@ -140,7 +140,7 @@ const NebulaVisionEngine = () => {
                   <ShieldCheck className="w-6 h-6" />
                   <span className="text-xs font-bold uppercase tracking-[0.2em]">Enterprise_Encryption</span>
                </div>
-               <p className="relative z-10 text-[11px] text-gray-500 leading-loose font-medium uppercase tracking-tight">
+               <p className="relative z-10 text-[11px] text-white/30 leading-loose font-medium uppercase tracking-tight">
                  Nebula-7 implements Zero-Knowledge-Proofs for every architectural frame generated. 
                  Proprietary geometry never leaves your designated VPC instance.
                </p>
@@ -149,32 +149,32 @@ const NebulaVisionEngine = () => {
         </div>
 
         {/* Neural Stack Section */}
-        <section className="py-24 border-t border-white/5 relative mb-32">
+        <section className="py-24 border-t border-white/[0.06] relative mb-32">
            <div className="flex flex-col lg:flex-row gap-20">
               <div className="lg:w-1/3 space-y-8">
                  <div className="inline-block p-4 bg-brand-blue text-white mb-6">
                     <Layers className="w-8 h-8" />
                  </div>
                  <h3 className="text-5xl font-bold uppercase tracking-tighter leading-none">Neural Stack <br /> Architecture.</h3>
-                 <p className="text-gray-500 text-sm mono leading-relaxed uppercase tracking-widest">
+                 <p className="text-white/30 text-sm mono leading-relaxed uppercase tracking-widest">
                    Proprietary multi-modal orchestration combining standard logic with temporal synthesis.
                  </p>
               </div>
 
-              <div className="lg:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-px bg-white/5 border border-white/5">
+              <div className="lg:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-px bg-white/[0.06] border border-white/[0.06]">
                  {solution.neuralStack?.map((stack, idx) => (
                     <div key={idx} className="bg-black p-12 space-y-8 hover:bg-brand-gray/50 transition-all group">
                        <div className="flex justify-between items-start">
                           <div className="space-y-1">
                              <h4 className="text-3xl font-bold uppercase tracking-tighter text-white group-hover:text-brand-blue transition-colors">{stack.name}</h4>
-                             <p className="text-[9px] font-bold text-gray-600 uppercase tracking-widest">BUILD_v{stack.version}</p>
+                             <p className="text-[9px] font-bold text-white/20 uppercase tracking-widest">BUILD_v{stack.version}</p>
                           </div>
-                          <Info className="w-5 h-5 text-gray-800 group-hover:text-brand-blue" />
+                          <Info className="w-5 h-5 text-white/10 group-hover:text-brand-blue" />
                        </div>
-                       <p className="text-gray-500 text-sm italic font-medium group-hover:text-white transition-colors">
+                       <p className="text-white/30 text-sm italic font-medium group-hover:text-white transition-colors">
                          {stack.capability[lang]}
                        </p>
-                       <div className="pt-8 border-t border-white/5 flex items-center justify-between text-[9px] font-bold uppercase text-gray-700">
+                       <div className="pt-8 border-t border-white/[0.06] flex items-center justify-between text-[9px] font-bold uppercase text-white/15">
                           <span>Status: Optimized</span>
                           <Zap className="w-4 h-4 text-brand-blue" />
                        </div>
@@ -185,7 +185,7 @@ const NebulaVisionEngine = () => {
         </section>
 
         {/* Detailed Logic breakdown */}
-        <section className="py-32 border-y border-white/5 bg-white/[0.01]">
+        <section className="py-32 border-y border-white/[0.06] bg-white/[0.01]">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-32">
             <div className="space-y-10">
                <div className="flex items-center gap-4 text-brand-blue">
@@ -201,7 +201,7 @@ const NebulaVisionEngine = () => {
                    return (
                      <div key={i} className="space-y-2 border-l border-brand-blue/30 pl-8 py-2 hover:border-brand-blue transition-all">
                         <h4 className="text-lg font-bold uppercase text-white tracking-tight">{title}</h4>
-                        <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+                        <p className="text-white/30 text-sm leading-relaxed">{desc}</p>
                      </div>
                    );
                  })}
@@ -211,15 +211,15 @@ const NebulaVisionEngine = () => {
             <div className="relative">
                <div className="absolute inset-0 bg-brand-blue/5 blur-[120px] rounded-full"></div>
                <div className="relative border border-white/10 p-16 aspect-square flex flex-col justify-between overflow-hidden group">
-                  <div className="absolute inset-0 bg-white/5 translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></div>
+                  <div className="absolute inset-0 bg-white/[0.06] translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></div>
                   <div className="relative z-10 flex justify-between items-start">
                      <Cpu className="w-16 h-16 text-brand-blue animate-pulse" />
-                     <span className="mono text-[10px] text-gray-700 uppercase font-bold">Performance_Audit</span>
+                     <span className="mono text-[10px] text-white/15 uppercase font-bold">Performance_Audit</span>
                   </div>
                   <div className="relative z-10 space-y-6">
                      <div className="text-[120px] font-bold leading-none tracking-tighter text-white group-hover:text-brand-blue transition-colors">8X</div>
                      <p className="text-2xl font-bold uppercase tracking-[0.2em] text-white">Faster Rendering Cycle</p>
-                     <p className="text-xs text-gray-600 uppercase font-bold tracking-widest italic">Compared to Legacy RTX-Nodes</p>
+                     <p className="text-xs text-white/20 uppercase font-bold tracking-widest italic">Compared to Legacy RTX-Nodes</p>
                   </div>
                </div>
             </div>
@@ -233,7 +233,7 @@ const NebulaVisionEngine = () => {
               Ready to <br /> <span className="text-brand-blue italic">Build?</span>
             </h2>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-10">
-              <Link to="/booking" className="btn-sky-primary px-20 py-8 text-[11px] uppercase tracking-widest shadow-2xl">
+              <Link to="/booking" className="btn-sky-primary px-20 py-8 text-[11px] uppercase tracking-widest shadow-atlas-lg">
                 Deploy Nebula Node
               </Link>
               <button 

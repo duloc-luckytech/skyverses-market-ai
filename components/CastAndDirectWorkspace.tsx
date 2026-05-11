@@ -186,7 +186,7 @@ const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[var(--atlas-bg-page)] text-black dark:text-white font-sans overflow-hidden relative">
 
-      <aside className="w-full lg:w-[400px] shrink-0 h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-page)] z-[60] overflow-y-auto no-scrollbar shadow-2xl">
+      <aside className="w-full lg:w-[400px] shrink-0 h-full flex flex-col border-r border-black/5 dark:border-white/[0.06] bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-page)] z-[60] overflow-y-auto no-scrollbar shadow-atlas-lg">
         <div className="p-8 lg:p-10 space-y-12 pb-40">
 
           <section className="space-y-6">
@@ -236,7 +236,7 @@ const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
       </aside>
 
       <main className="flex-grow flex flex-col bg-gray-50 dark:bg-[var(--atlas-bg-page)] relative overflow-hidden">
-        <div className="h-16 border-b border-black/5 dark:border-white/5 flex items-center justify-between px-8 bg-white/50 dark:bg-black/50 backdrop-blur-md z-30">
+        <div className="h-16 border-b border-black/5 dark:border-white/[0.06] flex items-center justify-between px-8 bg-white/50 dark:bg-black/50 backdrop-blur-md z-30">
           <div className="flex items-center gap-6">
             <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-brand-blue mono italic">CAST BUILDER STUDIO</span>
             <div className="h-4 w-px bg-black/10 dark:border-white/10"></div>
@@ -261,7 +261,7 @@ const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                 <p className="text-[14px] font-bold uppercase tracking-[0.8em] animate-pulse">Staging Scene</p>
               </motion.div>
             ) : (
-              <motion.div key="result" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="relative group max-w-5xl w-full aspect-video lg:aspect-[16/10] bg-black rounded-sm overflow-hidden shadow-2xl border border-white/5">
+              <motion.div key="result" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="relative group max-w-5xl w-full aspect-video lg:aspect-[16/10] bg-black rounded-sm overflow-hidden shadow-atlas-lg border border-white/[0.06]">
                 {resultScene ? (
                   <video key={resultScene} src={resultScene} autoPlay loop muted className="w-full h-full object-cover" />
                 ) : (
@@ -296,7 +296,7 @@ const CastAndDirectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
               <button
                 onClick={handleStageScene}
                 disabled={isRehearsing || isUnfolding || selectedActors.length < 1}
-                className={`h-20 px-16 lg:px-32 flex flex-col items-center justify-center gap-2 transition-all rounded-sm shadow-2xl ${selectedActors.length > 0 ? 'bg-brand-blue text-white hover:scale-105' : 'bg-gray-100 dark:bg-white/5 text-gray-300'}`}
+                className={`h-20 px-16 lg:px-32 flex flex-col items-center justify-center gap-2 transition-all rounded-sm shadow-atlas-lg ${selectedActors.length > 0 ? 'bg-brand-blue text-white hover:scale-105' : 'bg-gray-100 dark:bg-white/[0.06] text-gray-300'}`}
               >
                  <Camera size={24} className={isRehearsing ? 'animate-spin' : ''} />
                  <span className="text-[9px] font-bold uppercase tracking-[0.4em]">{isRehearsing ? 'Rendering' : 'Stage Scene'}</span>

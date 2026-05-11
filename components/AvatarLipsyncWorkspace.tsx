@@ -59,9 +59,9 @@ const AvatarLibraryModal: React.FC<{
     >
       <motion.div
         initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-        className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/5 rounded-2xl w-full max-w-6xl h-[85vh] flex flex-col overflow-hidden shadow-3xl transition-colors duration-500"
+        className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.06] rounded-lg w-full max-w-6xl h-[85vh] flex flex-col overflow-hidden shadow-atlas-xl transition-colors duration-500"
       >
-        <div className="h-20 border-b border-slate-100 dark:border-white/5 flex items-center justify-between px-8 shrink-0">
+        <div className="h-20 border-b border-slate-100 dark:border-white/[0.06] flex items-center justify-between px-8 shrink-0">
           <div className="flex items-center gap-4">
             <div className="p-2.5 bg-purple-100 dark:bg-purple-500/10 rounded-lg text-purple-600 dark:text-purple-400">
               <User size={20} />
@@ -84,7 +84,7 @@ const AvatarLibraryModal: React.FC<{
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Tìm avatar mẫu..."
-              className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 rounded-xl py-4 pl-14 pr-6 text-sm font-bold text-slate-900 dark:text-white focus:border-purple-500/50 outline-none transition-all placeholder:text-slate-300 dark:placeholder:text-gray-700"
+              className="w-full bg-slate-50 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.06] rounded-xl py-4 pl-14 pr-6 text-sm font-bold text-slate-900 dark:text-white focus:border-purple-500/50 outline-none transition-all placeholder:text-slate-300 dark:placeholder:text-gray-700"
             />
           </div>
         </div>
@@ -99,11 +99,11 @@ const AvatarLibraryModal: React.FC<{
               >
                 <img src={av.url} className="w-full h-full object-cover" alt="" />
                 {selectedId === av.id && (
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-purple-600 rounded-full p-2 shadow-2xl">
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-purple-600 rounded-full p-2 shadow-atlas-lg">
                     <Check size={18} strokeWidth={4} className="text-white" />
                   </div>
                 )}
-                <div className="absolute bottom-0 inset-x-0 bg-white/60 dark:bg-black/60 p-2 backdrop-blur-md border-t border-slate-200 dark:border-white/5">
+                <div className="absolute bottom-0 inset-x-0 bg-white/60 dark:bg-black/60 p-2 backdrop-blur-md border-t border-slate-200 dark:border-white/[0.06]">
                   <p className="text-[8px] font-bold text-slate-900 dark:text-white/80 truncate text-center uppercase tracking-widest">{av.label}</p>
                 </div>
               </button>
@@ -206,7 +206,7 @@ const AvatarGeneratorModal: React.FC<{
     >
       <motion.div
         initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-        className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-2xl w-full max-w-5xl h-[80vh] flex flex-col overflow-hidden shadow-2xl transition-colors duration-500"
+        className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-lg w-full max-w-5xl h-[80vh] flex flex-col overflow-hidden shadow-atlas-lg transition-colors duration-500"
       >
         <div className="h-16 border-b border-slate-100 dark:border-white/10 flex items-center justify-between px-6 shrink-0">
           <div className="flex items-center gap-3">
@@ -227,7 +227,7 @@ const AvatarGeneratorModal: React.FC<{
               <div className="relative">
                 <select
                   value={model} onChange={e => setModel(e.target.value)}
-                  className="w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5 rounded-lg p-3 text-xs font-bold appearance-none outline-none focus:border-blue-500/50 text-slate-900 dark:text-white transition-colors"
+                  className="w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/[0.06] rounded-lg p-3 text-xs font-bold appearance-none outline-none focus:border-blue-500/50 text-slate-900 dark:text-white transition-colors"
                 >
                   <option>Nano Banana Pro x Cheap</option>
                   <option>Gemini 3 Pro Image</option>
@@ -240,7 +240,7 @@ const AvatarGeneratorModal: React.FC<{
               <label className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest">ẢNH THAM CHIẾU</label>
               <div
                 onClick={() => fileRef.current?.click()}
-                className="aspect-video border-2 border-dashed border-slate-200 dark:border-white/5 rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-blue-500/30 transition-all bg-white dark:bg-black/20 group overflow-hidden"
+                className="aspect-video border-2 border-dashed border-slate-200 dark:border-white/[0.06] rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-blue-500/30 transition-all bg-white dark:bg-black/20 group overflow-hidden"
               >
                 {refImg ? (
                   <img src={refImg} className="w-full h-full object-cover" alt="Reference" />
@@ -268,27 +268,27 @@ const AvatarGeneratorModal: React.FC<{
               <textarea
                 value={prompt} onChange={e => setPrompt(e.target.value)}
                 placeholder="Mô tả ảnh bạn muốn tạo..."
-                className="w-full h-32 bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5 rounded-lg p-4 text-xs font-bold outline-none focus:border-blue-500/50 resize-none transition-all placeholder:text-slate-300 dark:placeholder:text-gray-700 text-slate-900 dark:text-white"
+                className="w-full h-32 bg-white dark:bg-black/40 border border-slate-200 dark:border-white/[0.06] rounded-lg p-4 text-xs font-bold outline-none focus:border-blue-500/50 resize-none transition-all placeholder:text-slate-300 dark:placeholder:text-gray-700 text-slate-900 dark:text-white"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest">TỶ LỆ</label>
-                <div className="bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5 rounded-lg p-3 text-xs font-bold text-slate-600 dark:text-gray-300">{ratio}</div>
+                <div className="bg-white dark:bg-black/40 border border-slate-200 dark:border-white/[0.06] rounded-lg p-3 text-xs font-bold text-slate-600 dark:text-gray-300">{ratio}</div>
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest">CHẾ ĐỘ</label>
-                <div className="bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5 rounded-lg p-3 text-xs font-bold text-slate-600 dark:text-gray-300">{mode}</div>
+                <div className="bg-white dark:bg-black/40 border border-slate-200 dark:border-white/[0.06] rounded-lg p-3 text-xs font-bold text-slate-600 dark:text-gray-300">{mode}</div>
               </div>
             </div>
 
             <div className="space-y-2">
               <label className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest">ĐỘ PHÂN GIẢI</label>
-              <div className="bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5 rounded-lg p-3 text-xs font-bold text-slate-600 dark:text-gray-300">{resolution}</div>
+              <div className="bg-white dark:bg-black/40 border border-slate-200 dark:border-white/[0.06] rounded-lg p-3 text-xs font-bold text-slate-600 dark:text-gray-300">{resolution}</div>
             </div>
 
-            <div className="pt-4 border-t border-slate-100 dark:border-white/5 space-y-4">
+            <div className="pt-4 border-t border-slate-100 dark:border-white/[0.06] space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500">Chi phí ước tính</span>
                 <div className="flex items-center gap-2 text-orange-600 dark:text-yellow-500">
@@ -298,7 +298,7 @@ const AvatarGeneratorModal: React.FC<{
               </div>
               <button
                 onClick={handleGenerate} disabled={isGenerating || !prompt.trim()}
-                className="w-full py-4 bg-blue-600 hover:bg-blue-500 disabled:opacity-30 disabled:grayscale transition-all rounded-xl text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl text-white"
+                className="w-full py-4 bg-blue-600 hover:bg-blue-500 disabled:opacity-30 disabled:grayscale transition-all rounded-xl text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-3 shadow-atlas-lg text-white"
               >
                 {isGenerating ? <Loader2 size={18} className="animate-spin" /> : <Zap size={18} />}
                 Tạo ảnh
@@ -308,18 +308,18 @@ const AvatarGeneratorModal: React.FC<{
 
           <div className="flex-grow bg-slate-100 dark:bg-black/20 p-8 flex flex-col overflow-hidden transition-colors">
             <h3 className="text-xs font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest mb-6">Kết quả</h3>
-            <div className="flex-grow border border-slate-200 dark:border-white/5 rounded-2xl bg-white dark:bg-black/40 relative overflow-hidden flex items-center justify-center group shadow-inner">
+            <div className="flex-grow border border-slate-200 dark:border-white/[0.06] rounded-lg bg-white dark:bg-black/40 relative overflow-hidden flex items-center justify-center group shadow-inner">
               {result ? (
                 <div className="w-full h-full relative group">
                   <img src={result} className="w-full h-full object-contain" alt="Result" />
                   <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => onGenerated(result)}
-                      className="p-3 bg-blue-600 text-white rounded-full shadow-xl hover:scale-110 active:scale-95 transition-all"
+                      className="p-3 bg-blue-600 text-white rounded-full shadow-atlas-lg hover:scale-110 active:scale-95 transition-all"
                     >
                       <Check size={20} strokeWidth={3} />
                     </button>
-                    <a href={result} download="ai_avatar.png" className="p-3 bg-white text-black rounded-full shadow-xl hover:scale-110 active:scale-95 transition-all">
+                    <a href={result} download="ai_avatar.png" className="p-3 bg-white text-black rounded-full shadow-atlas-lg hover:scale-110 active:scale-95 transition-all">
                       <Download size={20} />
                     </a>
                   </div>
@@ -440,7 +440,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
   return (
     <div className="h-full w-full flex flex-col bg-slate-50 dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500">
 
-      <header className="h-16 border-b border-slate-200 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-panel)] flex items-center justify-between px-8 shrink-0 z-[100] transition-colors">
+      <header className="h-16 border-b border-slate-200 dark:border-white/[0.06] bg-white dark:bg-[var(--atlas-bg-panel)] flex items-center justify-between px-8 shrink-0 z-[100] transition-colors">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-500/10 flex items-center justify-center text-purple-600 dark:text-purple-400">
             <User size={18} />
@@ -449,7 +449,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
         </div>
 
         <div className="flex items-center gap-6">
-          <button className="flex items-center gap-3 px-5 py-2 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-full hover:bg-slate-200 dark:hover:bg-white/10 transition-all group shadow-sm dark:shadow-none">
+          <button className="flex items-center gap-3 px-5 py-2 bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 rounded-full hover:bg-slate-200 dark:hover:bg-white/10 transition-all group shadow-sm dark:shadow-none">
              <Sparkles size={14} className="text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform" />
              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-700 dark:text-white">Tạo video avatar nói với giọng của bạn</span>
           </button>
@@ -463,7 +463,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
       <div className="flex-grow flex flex-col md:flex-row overflow-hidden p-4 md:p-8 gap-4 md:gap-8 no-scrollbar">
 
         <div className="w-full md:w-[450px] flex flex-col gap-6 overflow-y-auto no-scrollbar shrink-0">
-          <div className="bg-white dark:bg-[var(--atlas-bg-panel)] rounded-2xl border border-slate-200 dark:border-white/5 p-6 lg:p-8 space-y-8 shadow-xl transition-colors">
+          <div className="bg-white dark:bg-[var(--atlas-bg-panel)] rounded-lg border border-slate-200 dark:border-white/[0.06] p-6 lg:p-8 space-y-8 shadow-atlas-lg transition-colors">
             <div className="space-y-1">
               <div className="flex items-center gap-3">
                 <User size={18} className="text-purple-600 dark:text-purple-500" />
@@ -473,7 +473,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
             </div>
 
             <div className="flex flex-col items-center">
-              <div className="relative group w-48 aspect-[3/4] bg-slate-100 dark:bg-black rounded-xl border-2 border-purple-500 shadow-2xl dark:shadow-[0_0_40px_rgba(168,85,247,0.2)] overflow-hidden transition-colors">
+              <div className="relative group w-48 aspect-[3/4] bg-slate-100 dark:bg-black rounded-xl border-2 border-purple-500 shadow-atlas-lg dark:shadow-[0_0_40px_rgba(168,85,247,0.2)] overflow-hidden transition-colors">
                 <img src={selectedAvatar.url} className="w-full h-full object-cover" alt="Selected" />
                 <button
                   onClick={() => setSelectedAvatar(AVATAR_SAMPLES[0])}
@@ -495,7 +495,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                 <Upload size={18} /> Upload
                 <input type="file" ref={avatarUploadRef} className="hidden" accept="image/*" onChange={handleAvatarUpload} />
               </button>
-              <button className="flex flex-col items-center justify-center gap-2 py-4 bg-slate-100 dark:bg-[var(--atlas-bg-panel)] rounded-xl text-[11px] font-bold uppercase tracking-widest text-slate-700 dark:text-white hover:bg-slate-200 dark:hover:bg-[#25252b] transition-all border border-slate-200 dark:border-white/5">
+              <button className="flex flex-col items-center justify-center gap-2 py-4 bg-slate-100 dark:bg-[var(--atlas-bg-panel)] rounded-xl text-[11px] font-bold uppercase tracking-widest text-slate-700 dark:text-white hover:bg-slate-200 dark:hover:bg-[#25252b] transition-all border border-slate-200 dark:border-white/[0.06]">
                 <ImageIcon size={18} /> Album
               </button>
               <button
@@ -506,7 +506,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
               </button>
             </div>
 
-            <div className="space-y-6 pt-6 border-t border-slate-100 dark:border-white/5">
+            <div className="space-y-6 pt-6 border-t border-slate-100 dark:border-white/[0.06]">
                <div className="flex items-center justify-between">
                   <h4 className="text-[11px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-[0.3em]">AVATAR MẪU</h4>
                   <div className="flex gap-4">
@@ -530,7 +530,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                   <input
                     type="text"
                     placeholder="Tìm kiếm mẫu avatar..."
-                    className="w-full bg-slate-50 dark:bg-black/60 border border-slate-200 dark:border-white/5 rounded-xl py-3.5 pl-12 pr-4 text-xs font-bold text-slate-800 dark:text-white focus:border-purple-500/50 outline-none transition-all placeholder:text-slate-300 dark:placeholder:text-gray-700 shadow-inner"
+                    className="w-full bg-slate-50 dark:bg-black/60 border border-slate-200 dark:border-white/[0.06] rounded-xl py-3.5 pl-12 pr-4 text-xs font-bold text-slate-800 dark:text-white focus:border-purple-500/50 outline-none transition-all placeholder:text-slate-300 dark:placeholder:text-gray-700 shadow-inner"
                   />
                </div>
 
@@ -544,7 +544,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                       <img src={sample.url} className="w-full h-full object-cover" alt="" />
                       <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all" />
                       {selectedAvatar.id === sample.id && (
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-purple-500 rounded-full p-1.5 shadow-xl">
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-purple-500 rounded-full p-1.5 shadow-atlas-lg">
                            <Check size={14} strokeWidth={4} className="text-white" />
                         </div>
                       )}
@@ -559,7 +559,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
         </div>
 
         <div className="flex-grow flex flex-col gap-6 overflow-y-auto no-scrollbar">
-          <div className="bg-white dark:bg-[var(--atlas-bg-panel)] rounded-2xl border border-slate-200 dark:border-white/5 p-6 lg:p-8 flex flex-col h-full shadow-xl transition-colors">
+          <div className="bg-white dark:bg-[var(--atlas-bg-panel)] rounded-lg border border-slate-200 dark:border-white/[0.06] p-6 lg:p-8 flex flex-col h-full shadow-atlas-lg transition-colors">
             <div className="space-y-1 mb-8">
               <div className="flex items-center gap-3">
                 <Volume2 size={18} className="text-cyan-600 dark:text-cyan-400" />
@@ -568,7 +568,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
               <p className="text-[11px] text-slate-400 dark:text-gray-500 uppercase tracking-widest">Tải lên, ghi âm hoặc tạo TTS (tối đa 30s)</p>
             </div>
 
-            <div className="grid grid-cols-4 gap-2 p-1.5 bg-slate-100 dark:bg-black/40 rounded-xl mb-8 shrink-0 border border-slate-200 dark:border-white/5 transition-colors">
+            <div className="grid grid-cols-4 gap-2 p-1.5 bg-slate-100 dark:bg-black/40 rounded-xl mb-8 shrink-0 border border-slate-200 dark:border-white/[0.06] transition-colors">
               {[
                 { id: 'UPLOAD', label: 'Upload', icon: <Upload size={14} /> },
                 { id: 'LIBRARY', label: 'Thư viện', icon: <History size={14} /> },
@@ -585,7 +585,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
               ))}
             </div>
 
-            <div className="flex-grow flex flex-col items-center justify-center border-2 border-dashed border-slate-100 dark:border-white/5 rounded-2xl bg-slate-50 dark:bg-black/20 relative overflow-hidden group hover:border-cyan-500/20 transition-all shadow-inner">
+            <div className="flex-grow flex flex-col items-center justify-center border-2 border-dashed border-slate-100 dark:border-white/[0.06] rounded-lg bg-slate-50 dark:bg-black/20 relative overflow-hidden group hover:border-cyan-500/20 transition-all shadow-inner">
                <AnimatePresence mode="wait">
                   {audioMode === 'UPLOAD' && (
                     <motion.div
@@ -593,7 +593,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                       className="flex flex-col items-center gap-6 cursor-pointer p-12 text-center"
                       onClick={() => audioUploadRef.current?.click()}
                     >
-                      <div className="w-20 h-20 rounded-full bg-white dark:bg-white/5 flex items-center justify-center text-slate-300 dark:text-gray-500 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 group-hover:bg-cyan-50 dark:group-hover:bg-cyan-400/10 transition-all shadow-sm">
+                      <div className="w-20 h-20 rounded-full bg-white dark:bg-white/[0.06] flex items-center justify-center text-slate-300 dark:text-gray-500 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 group-hover:bg-cyan-50 dark:group-hover:bg-cyan-400/10 transition-all shadow-sm">
                          <Volume2 size={40} />
                       </div>
                       <div className="space-y-2">
@@ -622,7 +622,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                       key="record" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
                       className="flex flex-col items-center gap-8"
                     >
-                      <button className="w-28 h-28 rounded-full bg-red-600 flex items-center justify-center text-white shadow-2xl dark:shadow-[0_0_50px_rgba(220,38,38,0.4)] hover:scale-110 active:scale-95 transition-all group border-4 border-white/20">
+                      <button className="w-28 h-28 rounded-full bg-red-600 flex items-center justify-center text-white shadow-atlas-lg dark:shadow-[0_0_50px_rgba(220,38,38,0.4)] hover:scale-110 active:scale-95 transition-all group border-4 border-white/20">
                          <Mic size={48} className="group-hover:scale-110 transition-transform" />
                       </button>
                       <div className="space-y-1 text-center">
@@ -641,7 +641,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                          <div className="space-y-2">
                            <label className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest">CHỌN MODEL TTS</label>
                            <div className="relative">
-                              <select className="w-full bg-white dark:bg-black/60 border border-slate-200 dark:border-white/5 rounded-xl p-4 text-xs font-bold outline-none appearance-none focus:border-cyan-500/40 text-slate-800 dark:text-gray-300 shadow-sm transition-colors">
+                              <select className="w-full bg-white dark:bg-black/60 border border-slate-200 dark:border-white/[0.06] rounded-xl p-4 text-xs font-bold outline-none appearance-none focus:border-cyan-500/40 text-slate-800 dark:text-gray-300 shadow-sm transition-colors">
                                 <option>ElevenLabs V3 - High Quality</option>
                                 <option>Skyverses Neural V1.2</option>
                               </select>
@@ -651,7 +651,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
 
                          <div className="space-y-2">
                            <label className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-400 tracking-widest">CHỌN GIỌNG</label>
-                           <div className="bg-white dark:bg-black/60 border border-slate-200 dark:border-white/5 rounded-xl p-4 flex justify-between items-center cursor-pointer hover:border-cyan-500/20 transition-all shadow-sm">
+                           <div className="bg-white dark:bg-black/60 border border-slate-200 dark:border-white/[0.06] rounded-xl p-4 flex justify-between items-center cursor-pointer hover:border-cyan-500/20 transition-all shadow-sm">
                               <div className="flex items-center gap-3">
                                 <User size={16} className="text-cyan-600 dark:text-cyan-400" />
                                 <span className="text-xs font-bold uppercase tracking-widest text-slate-700 dark:text-gray-300">Chọn giọng mẫu...</span>
@@ -667,7 +667,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                               value={ttsText}
                               onChange={(e) => setTtsText(e.target.value)}
                               placeholder="Tìm giọng hoặc nhập nội dung..."
-                              className="w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5 rounded-xl py-3.5 pl-12 pr-4 text-xs font-bold outline-none focus:border-cyan-500/20 text-slate-900 dark:text-white shadow-sm transition-colors"
+                              className="w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/[0.06] rounded-xl py-3.5 pl-12 pr-4 text-xs font-bold outline-none focus:border-cyan-500/20 text-slate-900 dark:text-white shadow-sm transition-colors"
                             />
                          </div>
 
@@ -680,14 +680,14 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                </AnimatePresence>
             </div>
 
-            <div className="mt-8 space-y-6 pt-6 border-t border-slate-100 dark:border-white/5 transition-colors">
+            <div className="mt-8 space-y-6 pt-6 border-t border-slate-100 dark:border-white/[0.06] transition-colors">
                <div className="space-y-3">
                   <label className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest">CHỌN MODEL LIPSYNC</label>
                   <div className="relative">
                      <select
                        value={selectedModel}
                        onChange={e => setSelectedModel(e.target.value)}
-                       className="w-full bg-white dark:bg-black/60 border border-slate-200 dark:border-white/5 rounded-xl p-5 text-sm font-bold uppercase italic tracking-widest outline-none appearance-none focus:border-purple-500/50 transition-all text-purple-700 dark:text-purple-400 shadow-sm"
+                       className="w-full bg-white dark:bg-black/60 border border-slate-200 dark:border-white/[0.06] rounded-xl p-5 text-sm font-bold uppercase italic tracking-widest outline-none appearance-none focus:border-purple-500/50 transition-all text-purple-700 dark:text-purple-400 shadow-sm"
                      >
                         <option>OmniHuman 1.5 - Industrial Grade</option>
                         <option>Fastwave V2 - Low Latency</option>
@@ -712,7 +712,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                   <button
                     onClick={handleGenerate}
                     disabled={isGenerating || (!audioFile && !ttsText.trim() && audioMode !== 'RECORD')}
-                    className="w-full py-6 bg-purple-700 dark:bg-[#6d28d9] text-white rounded-2xl text-xs font-bold uppercase tracking-[0.5em] shadow-xl dark:shadow-[0_15px_50px_rgba(109,40,217,0.4)] hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-4 disabled:opacity-30 disabled:grayscale group overflow-hidden relative"
+                    className="w-full py-6 bg-purple-700 dark:bg-[#6d28d9] text-white rounded-lg text-xs font-bold uppercase tracking-[0.5em] shadow-atlas-lg dark:shadow-[0_15px_50px_rgba(109,40,217,0.4)] hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-4 disabled:opacity-30 disabled:grayscale group overflow-hidden relative"
                   >
                      <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                      {isGenerating ? <Loader2 className="animate-spin" size={22} /> : <MonitorPlay size={22} strokeWidth={2.5} />}
@@ -730,7 +730,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
              className="fixed inset-0 z-[600] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-6 lg:p-20"
            >
-              <div className="max-w-5xl w-full bg-white dark:bg-[var(--atlas-bg-panel)] rounded-[2rem] border border-slate-200 dark:border-white/10 overflow-hidden relative shadow-3xl dark:shadow-[0_0_150px_rgba(168,85,247,0.3)] transition-colors duration-500">
+              <div className="max-w-5xl w-full bg-white dark:bg-[var(--atlas-bg-panel)] rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden relative shadow-atlas-xl dark:shadow-[0_0_150px_rgba(168,85,247,0.3)] transition-colors duration-500">
                  <button
                    onClick={() => setResultVideo(null)}
                    className="absolute top-6 right-6 p-3 bg-black/60 rounded-full hover:bg-red-500 hover:text-white transition-all z-50 border border-white/10 text-white"
@@ -751,7 +751,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                     </div>
                  </div>
 
-                 <div className="p-8 lg:p-10 flex flex-col md:flex-row justify-between items-center bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border-t border-slate-100 dark:border-white/5 gap-8 transition-colors">
+                 <div className="p-8 lg:p-10 flex flex-col md:flex-row justify-between items-center bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border-t border-slate-100 dark:border-white/[0.06] gap-8 transition-colors">
                     <div className="space-y-2 text-center md:text-left">
                        <h3 className="text-2xl font-bold italic uppercase tracking-tighter text-slate-900 dark:text-white">RENDER_MANIFEST_01</h3>
                        <div className="flex flex-wrap justify-center md:justify-start gap-4">
@@ -760,7 +760,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                        </div>
                     </div>
                     <div className="flex gap-4">
-                       <button className="px-12 py-5 bg-black dark:bg-white text-white dark:text-black rounded-xl text-[11px] font-bold uppercase tracking-[0.2em] hover:bg-purple-600 dark:hover:bg-purple-500 hover:text-white transition-all shadow-xl active:scale-95">
+                       <button className="px-12 py-5 bg-black dark:bg-white text-white dark:text-black rounded-xl text-[11px] font-bold uppercase tracking-[0.2em] hover:bg-purple-600 dark:hover:bg-purple-500 hover:text-white transition-all shadow-atlas-lg active:scale-95">
                           Tải Video .MP4
                        </button>
                        <button className="p-5 border border-slate-200 dark:border-white/10 rounded-xl text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white hover:border-slate-400 dark:hover:border-white/30 transition-all">
@@ -804,9 +804,9 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
              <motion.div
                initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
-               className="max-w-md w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-12 border border-slate-200 dark:border-white/10 rounded-[2rem] text-center space-y-8 shadow-3xl transition-colors"
+               className="max-w-md w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-12 border border-slate-200 dark:border-white/10 rounded-xl text-center space-y-8 shadow-atlas-xl transition-colors"
              >
-                <div className="w-24 h-24 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-amber-500 shadow-xl dark:shadow-[0_0_40px_rgba(245,158,11,0.2)]">
+                <div className="w-24 h-24 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-amber-500 shadow-atlas-lg dark:shadow-[0_0_40px_rgba(245,158,11,0.2)]">
                    <AlertTriangle size={48} />
                 </div>
                 <div className="space-y-4">
@@ -817,7 +817,7 @@ const AvatarLipsyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                    </p>
                 </div>
                 <div className="flex flex-col gap-4">
-                   <Link to="/credits" className="bg-purple-600 text-white py-5 rounded-2xl text-[12px] font-bold uppercase tracking-[0.4em] shadow-2xl hover:bg-purple-700 transition-colors text-center">Nạp thêm Credits</Link>
+                   <Link to="/credits" className="bg-purple-600 text-white py-5 rounded-lg text-[12px] font-bold uppercase tracking-[0.4em] shadow-atlas-lg hover:bg-purple-700 transition-colors text-center">Nạp thêm Credits</Link>
                    <button onClick={() => setShowLowCreditAlert(false)} className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white transition-colors tracking-widest underline underline-offset-8">Để sau</button>
                 </div>
              </motion.div>

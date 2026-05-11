@@ -68,9 +68,9 @@ export const GeneratorHistory: React.FC<GeneratorHistoryProps> = ({
   }, [isFetchingServer, hasMoreServer, onLoadMoreServer]);
 
   return (
-    <aside className="hidden xl:flex w-[340px] shrink-0 border-l border-slate-200 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-panel)] flex flex-col overflow-hidden z-50 transition-all duration-500 shadow-2xl">
+    <aside className="hidden xl:flex w-[340px] shrink-0 border-l border-slate-200 dark:border-white/[0.06] bg-white dark:bg-[var(--atlas-bg-panel)] flex flex-col overflow-hidden z-50 transition-all duration-500 shadow-atlas-lg">
       {/* Tab Selector Header */}
-      <div className="h-14 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/20 p-1 flex">
+      <div className="h-14 border-b border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-black/20 p-1 flex">
         <button
           onClick={() => setActiveTab('MY_HISTORY')}
           className={`flex-1 flex items-center justify-center gap-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'MY_HISTORY' ? 'bg-white dark:bg-[var(--atlas-bg-panel)] text-rose-500 shadow-sm' : 'text-slate-400 dark:text-gray-500'}`}
@@ -178,7 +178,7 @@ export const GeneratorHistory: React.FC<GeneratorHistoryProps> = ({
               ) : (
                 <div className="space-y-4">
                   {explorerItems.map(item => (
-                    <div key={item._id} className="group relative bg-slate-50 dark:bg-white/[0.02] border border-black/5 dark:border-white/5 rounded-2xl overflow-hidden transition-all hover:border-rose-500/30 shadow-sm">
+                    <div key={item._id} className="group relative bg-slate-50 dark:bg-white/[0.02] border border-black/5 dark:border-white/[0.06] rounded-lg overflow-hidden transition-all hover:border-rose-500/30 shadow-sm">
                       <div className="aspect-[16/10] overflow-hidden relative">
                         <img src={item.thumbnailUrl} className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" alt="" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -186,7 +186,7 @@ export const GeneratorHistory: React.FC<GeneratorHistoryProps> = ({
                           onClick={() => onUsePrompt(item.prompt)}
                           className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
                         >
-                          <div className="bg-rose-500 text-white px-5 py-2 rounded-full text-[9px] font-bold uppercase tracking-widest shadow-2xl scale-90 group-hover:scale-100 transition-transform flex items-center gap-2">
+                          <div className="bg-rose-500 text-white px-5 py-2 rounded-full text-[9px] font-bold uppercase tracking-widest shadow-atlas-lg scale-90 group-hover:scale-100 transition-transform flex items-center gap-2">
                             <Wand2 size={12} /> Sử dụng Prompt
                           </div>
                         </button>
@@ -205,7 +205,7 @@ export const GeneratorHistory: React.FC<GeneratorHistoryProps> = ({
       </div>
 
       {/* System Footer */}
-      <div className="p-4 border-t border-black/5 dark:border-white/5 bg-slate-50 dark:bg-black/20 shrink-0">
+      <div className="p-4 border-t border-black/5 dark:border-white/[0.06] bg-slate-50 dark:bg-black/20 shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 text-[8px] font-bold uppercase text-gray-400 italic">
             <Database size={10} />

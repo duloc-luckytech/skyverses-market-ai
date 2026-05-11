@@ -12,8 +12,8 @@ interface TelemetryTabProps {
 export const TelemetryTab: React.FC<TelemetryTabProps> = ({ logs, setLogs }) => {
   return (
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
-      <div className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl transition-all">
-         <div className="p-8 border-b border-black/5 dark:border-white/5 flex justify-between items-center bg-slate-50/50 dark:bg-black/20">
+      <div className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/10 rounded-xl overflow-hidden shadow-atlas-lg transition-all">
+         <div className="p-8 border-b border-black/5 dark:border-white/[0.06] flex justify-between items-center bg-slate-50/50 dark:bg-black/20">
             <div className="flex items-center gap-3">
                <BarChart3 size={20} className="text-indigo-600" />
                <h3 className="text-xl font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white">Lịch sử Truy xuất.</h3>
@@ -24,7 +24,7 @@ export const TelemetryTab: React.FC<TelemetryTabProps> = ({ logs, setLogs }) => 
          <div className="overflow-x-auto no-scrollbar">
             <table className="w-full text-left border-collapse font-mono">
                <thead>
-                  <tr className="bg-black/5 dark:bg-white/5 text-[9px] font-bold uppercase tracking-widest text-gray-500">
+                  <tr className="bg-black/[0.06] dark:bg-white/[0.06] text-[9px] font-bold uppercase tracking-widest text-gray-500">
                      <th className="px-10 py-6">Trace ID</th>
                      <th className="px-10 py-6">Thời gian</th>
                      <th className="px-10 py-6 text-center">Loại</th>
@@ -33,7 +33,7 @@ export const TelemetryTab: React.FC<TelemetryTabProps> = ({ logs, setLogs }) => 
                      <th className="px-10 py-6 text-right">Chi phí</th>
                   </tr>
                </thead>
-               <tbody className="divide-y divide-black/5 dark:divide-white/5">
+               <tbody className="divide-y divide-black/5 dark:divide-white/[0.06]">
                   {logs.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="py-32 text-center opacity-10">

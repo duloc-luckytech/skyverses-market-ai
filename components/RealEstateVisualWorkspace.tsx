@@ -875,7 +875,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -4, scale: 0.97 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute right-0 top-5 z-50 w-72 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-2xl overflow-hidden"
+                    className="absolute right-0 top-5 z-50 w-72 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-atlas-lg overflow-hidden"
                   >
                     <div className="p-2 border-b border-black/[0.05] dark:border-white/[0.05]">
                       <p className="text-[9px] font-bold uppercase text-slate-400 tracking-widest px-1">10 Prompts gần nhất</p>
@@ -936,7 +936,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               className="overflow-hidden"
             >
               <div className="mt-2 rounded-xl border border-brand-blue/25 bg-brand-blue/[0.03] overflow-hidden">
-                <div className="flex items-center justify-between px-3 py-1.5 border-b border-brand-blue/15 bg-brand-blue/[0.04]">
+                <div className="flex items-center justify-between px-3 py-1.5 border-b border-brand-blue/[0.15] bg-brand-blue/[0.04]">
                   <span className="text-[9px] font-bold text-brand-blue uppercase tracking-wider flex items-center gap-1">
                     <Wand2 size={9} /> Prompt đã được tối ưu
                   </span>
@@ -974,7 +974,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         <p className="text-[9px] font-semibold uppercase text-slate-400 dark:text-gray-400 mb-2 tracking-widest">Ảnh tham chiếu ({references.length}/6)</p>
         <div className="grid grid-cols-3 gap-1.5">
           {references.map((ref, i) => (
-            <div key={i} className="aspect-square rounded-lg overflow-hidden relative group bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/5">
+            <div key={i} className="aspect-square rounded-lg overflow-hidden relative group bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.06]">
               <img src={ref} alt="" className="w-full h-full object-cover" />
               <button
                 onClick={() => setReferences(prev => prev.filter((_, idx) => idx !== i))}
@@ -1005,7 +1005,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
     <div className="h-full w-full flex flex-col bg-[#f4f7f9] dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white font-sans overflow-hidden relative transition-colors duration-500">
 
       {/* ── TOP NAV (h-14) ── */}
-      <div className="h-14 bg-white dark:bg-[var(--atlas-bg-page)] border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-4 md:px-6 shrink-0 z-[100] transition-colors gap-3">
+      <div className="h-14 bg-white dark:bg-[var(--atlas-bg-page)] border-b border-slate-200 dark:border-white/[0.06] flex items-center justify-between px-4 md:px-6 shrink-0 z-[100] transition-colors gap-3">
         {/* Left: title + processing indicator */}
         <div className="flex items-center gap-2">
           <span className="text-[12px] font-bold text-slate-700 dark:text-white/80 whitespace-nowrap">
@@ -1021,7 +1021,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         {/* Right: mode toggle + credits + close */}
         <div className="flex items-center gap-2 shrink-0">
           {/* Mode toggle pill */}
-          <div className="flex items-center gap-0.5 bg-slate-100 dark:bg-white/5 p-0.5 rounded-full border border-slate-200 dark:border-white/10">
+          <div className="flex items-center gap-0.5 bg-slate-100 dark:bg-white/[0.06] p-0.5 rounded-full border border-slate-200 dark:border-white/10">
             {modeOptions.map(opt => (
               <button
                 key={opt.id}
@@ -1059,11 +1059,11 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       <div className="flex-grow flex overflow-hidden">
 
         {/* ── SIDEBAR (hidden on mobile) ── */}
-        <div className="hidden md:flex w-[380px] shrink-0 bg-white dark:bg-[var(--atlas-bg-panel)] border-r border-slate-200 dark:border-white/5 flex-col overflow-hidden transition-colors">
+        <div className="hidden md:flex w-[380px] shrink-0 bg-white dark:bg-[var(--atlas-bg-panel)] border-r border-slate-200 dark:border-white/[0.06] flex-col overflow-hidden transition-colors">
           {renderSidebarContent()}
 
           {/* Generate button footer */}
-          <div className="p-4 border-t border-slate-100 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-panel)] shrink-0 space-y-2">
+          <div className="p-4 border-t border-slate-100 dark:border-white/[0.06] bg-white dark:bg-[var(--atlas-bg-panel)] shrink-0 space-y-2">
             <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-gray-400">
               <div className="flex items-center gap-1.5">
                 {/* W11: Status dot */}
@@ -1109,8 +1109,8 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         <div className="flex-1 flex overflow-hidden bg-[#f0f2f5] dark:bg-[var(--atlas-bg-page)]">
 
           {/* ── Task list / history panel (right rail) ── */}
-          <div className="hidden lg:flex w-[220px] shrink-0 flex-col bg-white dark:bg-[var(--atlas-bg-panel)] border-l border-slate-200 dark:border-white/5 overflow-hidden">
-            <div className="flex items-center gap-1 p-2 border-b border-slate-100 dark:border-white/5 shrink-0">
+          <div className="hidden lg:flex w-[220px] shrink-0 flex-col bg-white dark:bg-[var(--atlas-bg-panel)] border-l border-slate-200 dark:border-white/[0.06] overflow-hidden">
+            <div className="flex items-center gap-1 p-2 border-b border-slate-100 dark:border-white/[0.06] shrink-0">
               {(['current', 'library'] as const).map(m => (
                 <button
                   key={m}
@@ -1126,7 +1126,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               {viewMode === 'current' ? (
                 results.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full gap-2 text-center p-4">
-                    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center">
                       <ImageIcon size={18} className="text-slate-300 dark:text-gray-500" />
                     </div>
                     <p className="text-[10px] text-slate-400 dark:text-gray-400">Chưa có tác vụ</p>
@@ -1157,7 +1157,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                               <p className="text-[9px] text-slate-400 dark:text-gray-400 mt-0.5">{task.cost.toLocaleString()} CR · {task.createdAt.split(' ')[0]}</p>
                             </div>
                           }
-                          cardClassName="border border-slate-100 dark:border-white/5"
+                          cardClassName="border border-slate-100 dark:border-white/[0.06]"
                         />
                         {task.status !== 'processing' && (
                           <button
@@ -1174,7 +1174,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               ) : (
                 sessions.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full gap-2 text-center p-4">
-                    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center">
                       <History size={18} className="text-slate-300 dark:text-gray-500" />
                     </div>
                     <p className="text-[10px] text-slate-400 dark:text-gray-400">Chưa có lịch sử</p>
@@ -1222,7 +1222,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                               <p className="text-[9px] text-slate-400 dark:text-gray-400 mt-0.5">{session.createdAt}</p>
                             </div>
                           }
-                          cardClassName="border border-slate-100 dark:border-white/5"
+                          cardClassName="border border-slate-100 dark:border-white/[0.06]"
                         />
                         <button
                           onClick={(e) => deleteSession(e, session.id)}
@@ -1259,7 +1259,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                 /* Empty state — starter prompt cards */
                 <div className="flex flex-col items-center justify-center gap-6 text-center w-full max-w-md">
                   <div>
-                    <div className="w-16 h-16 rounded-2xl bg-brand-blue/10 flex items-center justify-center mx-auto mb-3">
+                    <div className="w-16 h-16 rounded-lg bg-brand-blue/10 flex items-center justify-center mx-auto mb-3">
                       {workspaceMode === 'image' ? <ImageIcon size={28} className="text-brand-blue" /> : <Film size={28} className="text-brand-blue" />}
                     </div>
                     <p className="text-sm font-semibold text-slate-400 dark:text-gray-400">Bắt đầu tạo {workspaceMode === 'image' ? 'ảnh' : 'video'} BĐS</p>
@@ -1312,7 +1312,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
               onClick={e => e.stopPropagation()}
-              className="bg-white dark:bg-[var(--atlas-bg-panel)] rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-black/[0.06] dark:border-white/[0.06] text-center"
+              className="bg-white dark:bg-[var(--atlas-bg-panel)] rounded-lg p-6 max-w-sm w-full shadow-atlas-lg border border-black/[0.06] dark:border-white/[0.06] text-center"
             >
               <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
                 <AlertTriangle size={24} className="text-amber-500" />
@@ -1329,7 +1329,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowLowCreditAlert(false)}
-                  className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                  className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/[0.06] transition-colors"
                 >
                   Hủy
                 </button>
@@ -1360,7 +1360,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 26, stiffness: 300 }}
               onClick={e => e.stopPropagation()}
-              className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[var(--atlas-bg-panel)] rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
+              className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[var(--atlas-bg-panel)] rounded-t-3xl shadow-atlas-lg max-h-[85vh] flex flex-col"
             >
               {/* Sheet handle */}
               <div className="flex items-center justify-between px-5 pt-4 pb-2 shrink-0 relative">
@@ -1379,7 +1379,7 @@ const RealEstateVisualWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
               </div>
 
               {/* Sheet footer CTA */}
-              <div className="shrink-0 p-4 border-t border-slate-100 dark:border-white/5">
+              <div className="shrink-0 p-4 border-t border-slate-100 dark:border-white/[0.06]">
                 <motion.button
                   onClick={() => { setShowMobileSheet(false); handleGenerate(); }}
                   disabled={isGenerating || !prompt.trim()}

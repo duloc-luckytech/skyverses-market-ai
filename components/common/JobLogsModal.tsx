@@ -64,7 +64,7 @@ export const JobLogsModal: React.FC<JobLogsModalProps> = ({
     processing: { label: 'Đang xử lý', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20', dot: 'bg-amber-400', icon: <Loader2 size={12} className="animate-spin" /> },
     done: { label: 'Hoàn thành', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20', dot: 'bg-emerald-400', icon: <CheckCircle2 size={12} /> },
     error: { label: 'Lỗi', color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/20', dot: 'bg-red-400', icon: <XCircle size={12} /> },
-  }[status] || { label: status, color: 'text-slate-400', bg: 'bg-slate-500/10 border-slate-500/20', dot: 'bg-slate-400', icon: <CircleDot size={12} /> };
+  }[status] || { label: status, color: 'text-slate-400', bg: 'bg-white/[0.06] border-white/[0.12]', dot: 'bg-white/40', icon: <CircleDot size={12} /> };
 
   const getLogStyle = (log: string) => {
     const u = log.toUpperCase();
@@ -78,7 +78,7 @@ export const JobLogsModal: React.FC<JobLogsModalProps> = ({
       return { color: 'text-blue-400', accent: '#3b82f6', tag: 'bg-blue-500/15 text-blue-400 border-blue-500/20' };
     if (u.includes('[DIRECT]') || u.includes('[GPU]'))
       return { color: 'text-purple-400', accent: '#a855f7', tag: 'bg-purple-500/15 text-purple-400 border-purple-500/20' };
-    return { color: 'text-slate-400', accent: '#64748b', tag: 'bg-slate-500/10 text-slate-500 border-slate-500/10' };
+    return { color: 'text-slate-400', accent: '#64748b', tag: 'bg-white/[0.06] text-slate-500 border-white/[0.12]' };
   };
 
   return (
@@ -96,7 +96,7 @@ export const JobLogsModal: React.FC<JobLogsModalProps> = ({
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.92, opacity: 0, y: 20 }}
         transition={{ type: 'spring', damping: 28, stiffness: 350 }}
-        className="relative w-full max-w-[680px] h-[85vh] max-h-[700px] bg-[#0d0d10] border border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+        className="relative w-full max-w-[680px] h-[85vh] max-h-[700px] bg-[#0d0d10] border border-white/[0.06] rounded-lg overflow-hidden shadow-atlas-lg flex flex-col"
       >
         {/* ─── HEADER ─── */}
         <div className="px-5 py-4 border-b border-white/[0.04] bg-[#0f0f13] flex items-center justify-between shrink-0">
@@ -195,7 +195,7 @@ export const JobLogsModal: React.FC<JobLogsModalProps> = ({
               })
             ) : (
               <div className="flex flex-col items-center justify-center py-24 gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-white/[0.02] border border-white/[0.04] flex items-center justify-center">
+                <div className="w-14 h-14 rounded-lg bg-white/[0.02] border border-white/[0.04] flex items-center justify-center">
                   <Terminal size={24} strokeWidth={1.5} className="text-slate-600" />
                 </div>
                 <div className="text-center">

@@ -87,7 +87,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
           <FadeInUp>
             <div className="space-y-5">
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-blue/[0.08] border border-brand-blue/15 rounded-full text-brand-blue text-[10px] font-semibold uppercase tracking-wider">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-blue/[0.08] border border-brand-blue/[0.15] rounded-full text-brand-blue text-[10px] font-semibold uppercase tracking-wider">
                 <Sparkles size={12} /> AI Org Orchestrator · Open Source
               </div>
 

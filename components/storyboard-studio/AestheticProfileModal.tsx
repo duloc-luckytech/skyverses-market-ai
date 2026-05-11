@@ -56,7 +56,7 @@ const FormatCard: React.FC<{
 }> = ({ opt, isSelected, onSelect }) => (
   <button
     onClick={onSelect}
-    className={`relative text-left w-full rounded-2xl p-4 border-2 transition-all duration-200 group ${
+    className={`relative text-left w-full rounded-lg p-4 border-2 transition-all duration-200 group ${
       isSelected
         ? 'border-brand-blue bg-brand-blue/5 shadow-md shadow-brand-blue/10'
         : 'border-slate-200 dark:border-white/8 bg-white dark:bg-white/[0.02] hover:border-brand-blue/30 hover:shadow-sm'
@@ -87,7 +87,7 @@ const StyleCard: React.FC<{
 }> = ({ opt, isSelected, onSelect }) => (
   <button
     onClick={onSelect}
-    className={`relative overflow-hidden rounded-2xl border-2 transition-all duration-200 ${
+    className={`relative overflow-hidden rounded-lg border-2 transition-all duration-200 ${
       isSelected
         ? 'border-brand-blue shadow-md shadow-brand-blue/15 scale-[1.02]'
         : 'border-slate-200 dark:border-white/8 hover:border-brand-blue/30 hover:scale-[1.01]'
@@ -150,13 +150,13 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 30 }}
             transition={{ type: 'spring', damping: 30, stiffness: 400 }}
-            className="relative w-full max-w-4xl bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-panel)] rounded-[2rem] overflow-hidden shadow-[0_60px_120px_rgba(0,0,0,0.45)] flex flex-col max-h-[90vh] border border-black/8 dark:border-white/8"
+            className="relative w-full max-w-4xl bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-panel)] rounded-xl overflow-hidden shadow-[0_60px_120px_rgba(0,0,0,0.45)] flex flex-col max-h-[90vh] border border-black/8 dark:border-white/8"
           >
             {/* Header */}
-            <div className="px-7 py-6 border-b border-black/5 dark:border-white/5 bg-white/60 dark:bg-black/20 shrink-0 flex items-center justify-between">
+            <div className="px-7 py-6 border-b border-black/5 dark:border-white/[0.06] bg-white/60 dark:bg-black/20 shrink-0 flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="relative w-12 h-12 bg-brand-blue/10 dark:bg-brand-blue/15 rounded-2xl flex items-center justify-center text-brand-blue">
-                  <div className="absolute inset-0 bg-brand-blue blur-2xl opacity-15 rounded-2xl" />
+                <div className="relative w-12 h-12 bg-brand-blue/10 dark:bg-brand-blue/15 rounded-lg flex items-center justify-center text-brand-blue">
+                  <div className="absolute inset-0 bg-brand-blue blur-2xl opacity-15 rounded-lg" />
                   <Palette size={24} className="relative z-10" />
                 </div>
                 <div>
@@ -231,7 +231,7 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
                       className={`flex items-center gap-2 px-3.5 py-2 rounded-full text-[10px] font-bold border transition-all ${
                         settings.culture === p.val
                           ? 'bg-brand-blue text-white border-brand-blue shadow-md'
-                          : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/8 text-slate-500 dark:text-gray-400 hover:border-brand-blue/40 hover:text-brand-blue dark:hover:text-white'
+                          : 'bg-white dark:bg-white/[0.06] border-slate-200 dark:border-white/8 text-slate-500 dark:text-gray-400 hover:border-brand-blue/40 hover:text-brand-blue dark:hover:text-white'
                       }`}
                     >
                       <span>{p.flag}</span>
@@ -324,7 +324,7 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
               </section>
 
               {/* AI tip */}
-              <div className="p-5 bg-brand-blue/5 border border-brand-blue/10 dark:border-brand-blue/15 rounded-2xl flex gap-4 items-start">
+              <div className="p-5 bg-brand-blue/5 border border-brand-blue/10 dark:border-brand-blue/[0.15] rounded-lg flex gap-4 items-start">
                 <Zap className="text-brand-blue shrink-0 mt-0.5" size={16} />
                 <div className="space-y-1">
                   <p className="text-[10px] text-slate-800 dark:text-slate-300 font-bold uppercase tracking-tight italic">AI Archetype Sync Active</p>
@@ -336,7 +336,7 @@ export const AestheticProfileModal: React.FC<AestheticProfileModalProps> = ({
             </div>
 
             {/* Footer */}
-            <div className="px-7 py-5 border-t border-black/5 dark:border-white/5 bg-white/60 dark:bg-black/30 flex items-center justify-between shrink-0">
+            <div className="px-7 py-5 border-t border-black/5 dark:border-white/[0.06] bg-white/60 dark:bg-black/30 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2.5 text-brand-blue opacity-70">
                 <ShieldCheck size={15} />
                 <span className="text-[9px] font-bold uppercase tracking-widest">Aesthetic Protocol Synchronized</span>

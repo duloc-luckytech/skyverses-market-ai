@@ -132,8 +132,8 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
         setIsMobileExpanded={setIsMobileExpanded}
       />
 
-      <main className="flex-grow flex flex-col bg-white dark:bg-[var(--atlas-bg-page)] relative transition-all min-w-0 border-l border-black/5 dark:border-white/5 h-full">
-        <header className="h-16 lg:h-20 flex items-center justify-between px-4 lg:px-8 border-b border-black/5 dark:border-white/5 shrink-0 z-50 bg-white/80 dark:bg-[var(--atlas-bg-page)]/80 backdrop-blur-xl">
+      <main className="flex-grow flex flex-col bg-white dark:bg-[var(--atlas-bg-page)] relative transition-all min-w-0 border-l border-black/5 dark:border-white/[0.06] h-full">
+        <header className="h-16 lg:h-20 flex items-center justify-between px-4 lg:px-8 border-b border-black/5 dark:border-white/[0.06] shrink-0 z-50 bg-white/80 dark:bg-[var(--atlas-bg-page)]/80 backdrop-blur-xl">
           
           <div className="flex items-center gap-2">
             <Music size={18} className="text-brand-blue lg:hidden" />
@@ -153,12 +153,12 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
             
             <button 
               onClick={s.handleDownloadAll}
-              className="flex items-center gap-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 px-3 lg:px-5 py-2 rounded-full border border-black/5 dark:border-white/5 text-[9px] lg:text-[10px] font-bold uppercase tracking-widest transition-all text-slate-600 dark:text-gray-300 shadow-sm"
+              className="flex items-center gap-2 bg-slate-100 dark:bg-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/10 px-3 lg:px-5 py-2 rounded-full border border-black/5 dark:border-white/[0.06] text-[9px] lg:text-[10px] font-bold uppercase tracking-widest transition-all text-slate-600 dark:text-gray-300 shadow-sm"
             >
               <Download size={14} /> <span className="hidden sm:inline">Tải tất cả</span>
             </button>
 
-            <div className="h-8 w-px bg-black/5 dark:border-white/5 hidden lg:block"></div>
+            <div className="h-8 w-px bg-black/[0.06] dark:border-white/[0.06] hidden lg:block"></div>
             <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
               <X size={24} />
             </button>
@@ -198,7 +198,7 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-8 lg:gap-10 text-center max-w-2xl px-6 relative z-10">
                 <div className="relative group">
                   <div className="absolute inset-0 bg-brand-blue blur-[60px] opacity-10 rounded-full animate-pulse"></div>
-                  <div className="w-24 h-24 lg:w-40 lg:h-40 bg-slate-50 dark:bg-white/[0.03] rounded-xl lg:rounded-xl border border-black/5 dark:border-white/10 flex items-center justify-center relative z-10 shadow-2xl transition-transform group-hover:scale-110 duration-700">
+                  <div className="w-24 h-24 lg:w-40 lg:h-40 bg-slate-50 dark:bg-white/[0.03] rounded-xl lg:rounded-xl border border-black/5 dark:border-white/10 flex items-center justify-center relative z-10 shadow-atlas-lg transition-transform group-hover:scale-110 duration-700">
                     <Music strokeWidth={1} className="w-10 h-10 lg:w-20 lg:h-20 text-brand-blue opacity-40 group-hover:opacity-100 transition-opacity" />
                   </div>
                 </div>
@@ -211,7 +211,7 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                        { icon: <Mic2 size={14} />, text: 'Tùy chỉnh lời hoặc tạo bản không lời' },
                        { icon: <Sparkles size={14} />, text: 'Nhấn "TẠO NHẠC" để AI bắt đầu' }
                      ].map((step, i) => (
-                       <div key={i} className="flex items-center gap-3 lg:gap-4 text-[10px] lg:text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-gray-400 bg-slate-50/50 dark:bg-white/5 p-3 lg:p-4 rounded-xl lg:rounded-2xl border border-black/5 dark:border-white/5 shadow-sm">
+                       <div key={i} className="flex items-center gap-3 lg:gap-4 text-[10px] lg:text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-gray-400 bg-slate-50/50 dark:bg-white/[0.06] p-3 lg:p-4 rounded-xl lg:rounded-lg border border-black/5 dark:border-white/[0.06] shadow-sm">
                           <div className="text-brand-blue">{step.icon}</div>
                           <span>{step.text}</span>
                        </div>
@@ -221,7 +221,7 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                   <div className="pt-6">
                     <button 
                       onClick={() => setShowTemplates(true)}
-                      className="inline-flex items-center gap-3 px-10 py-5 bg-brand-blue text-white rounded-2xl text-xs font-bold uppercase tracking-[0.2em] shadow-2xl shadow-brand-blue/20 hover:scale-105 active:scale-95 transition-all group"
+                      className="inline-flex items-center gap-3 px-10 py-5 bg-brand-blue text-white rounded-lg text-xs font-bold uppercase tracking-[0.2em] shadow-atlas-lg shadow-brand-blue/20 hover:scale-105 active:scale-95 transition-all group"
                     >
                       <LayoutTemplate size={20} className="group-hover:rotate-12 transition-transform" />
                       Mẫu kịch bản nhanh
@@ -242,9 +242,9 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
             >
               <motion.div 
                 initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }}
-                className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/10 w-full max-w-2xl rounded-3xl flex flex-col shadow-3xl overflow-hidden"
+                className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/10 w-full max-w-2xl rounded-xl flex flex-col shadow-atlas-xl overflow-hidden"
               >
-                <div className="p-6 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-slate-50 dark:bg-transparent">
+                <div className="p-6 border-b border-black/5 dark:border-white/[0.06] flex items-center justify-between bg-slate-50 dark:bg-transparent">
                   <div className="flex items-center gap-3 text-brand-blue">
                     <LayoutTemplate size={20} />
                     <h3 className="text-lg font-bold uppercase tracking-tight italic">Mẫu kịch bản nhanh</h3>
@@ -259,7 +259,7 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                       <button 
                         key={t.id}
                         onClick={() => applyTemplate(t)}
-                        className="flex flex-col p-5 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-2xl hover:border-brand-blue transition-all group text-left shadow-sm"
+                        className="flex flex-col p-5 bg-slate-50 dark:bg-white/[0.06] border border-slate-100 dark:border-white/[0.06] rounded-lg hover:border-brand-blue transition-all group text-left shadow-sm"
                       >
                          <div className="flex items-center gap-3 mb-3">
                             <div className="w-10 h-10 rounded-xl bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-all">
@@ -275,7 +275,7 @@ const MusicStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                     ))}
                   </div>
                 </div>
-                <div className="p-6 border-t border-black/5 dark:border-white/5 bg-slate-50 dark:bg-transparent text-center">
+                <div className="p-6 border-t border-black/5 dark:border-white/[0.06] bg-slate-50 dark:bg-transparent text-center">
                   <p className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest italic leading-none">Hệ thống kịch bản chuyên nghiệp tối ưu cho Gemini v3.2</p>
                 </div>
               </motion.div>
@@ -376,7 +376,7 @@ const MusicGenerator: React.FC = () => {
             </div>
 
             <div className="lg:col-span-5 w-full">
-               <div className="aspect-[4/5] bg-gray-100 dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/5 relative overflow-hidden shadow-2xl rounded-sm group p-12 flex flex-col justify-between">
+               <div className="aspect-[4/5] bg-gray-100 dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/[0.06] relative overflow-hidden shadow-atlas-lg rounded-sm group p-12 flex flex-col justify-between">
                   <div className="space-y-6">
                     <div className="h-1 w-24 bg-orange-500/40"></div>
                     <div className="space-y-8">
@@ -400,7 +400,7 @@ const MusicGenerator: React.FC = () => {
         </section>
 
         {/* FEATURES */}
-        <section className="py-40 border-t border-black/5 dark:border-white/5 relative">
+        <section className="py-40 border-t border-black/5 dark:border-white/[0.06] relative">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-20">
              <div className="lg:col-span-4 space-y-8">
                 <div className="space-y-4">
@@ -415,15 +415,15 @@ const MusicGenerator: React.FC = () => {
                 </p>
              </div>
 
-             <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-px bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 shadow-2xl">
+             <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-px bg-black/[0.06] dark:bg-white/[0.06] border border-black/5 dark:border-white/[0.06] shadow-atlas-lg">
                 {[
                   { title: 'BPM & Key Control', icon: <SlidersHorizontal />, desc: 'Kiểm soát nhịp độ và cung bậc âm nhạc chính xác cho từng dự án.' },
                   { title: 'Commercial Rights', icon: <ShieldCheck />, desc: 'Sở hữu 100% bản quyền âm nhạc được tạo ra cho mục đích thương mại.' },
                   { title: 'Multi-genre Synth', icon: <Layers />, desc: 'Hỗ trợ hơn 20 thể loại âm nhạc từ Lo-fi, Cinematic đến Heavy Metal.' },
                   { title: 'HD Mastering', icon: <Sparkles />, desc: 'Tự động hậu kỳ và tối ưu chất lượng âm thanh 48kHz / 24-bit.' }
                 ].map((f, i) => (
-                  <div key={i} className="p-16 bg-white dark:bg-[var(--atlas-bg-page)] space-y-8 group hover:bg-brand-blue/[0.01] transition-all duration-700 border-r border-black/5 dark:border-white/5 last:border-r-0">
-                    <div className="w-14 h-14 border border-black/10 dark:border-white/10 flex items-center justify-center text-gray-400 group-hover:text-brand-blue group-hover:border-brand-blue transition-all rounded-sm shadow-xl">
+                  <div key={i} className="p-16 bg-white dark:bg-[var(--atlas-bg-page)] space-y-8 group hover:bg-brand-blue/[0.01] transition-all duration-700 border-r border-black/5 dark:border-white/[0.06] last:border-r-0">
+                    <div className="w-14 h-14 border border-black/10 dark:border-white/10 flex items-center justify-center text-gray-400 group-hover:text-brand-blue group-hover:border-brand-blue transition-all rounded-sm shadow-atlas-lg">
                         {React.cloneElement(f.icon as React.ReactElement<any>, { size: 24 })}
                     </div>
                     <div className="space-y-3">

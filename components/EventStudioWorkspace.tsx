@@ -55,7 +55,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
         </AnimatePresence>
 
         {/* ═══ SIDEBAR ═══ */}
-        <aside className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[370px] shrink-0 bg-white dark:bg-[var(--atlas-bg-page)] border-t lg:border-t-0 lg:border-r border-black/[0.06] dark:border-white/[0.08] flex flex-col z-[150] lg:z-50 shadow-2xl lg:shadow-none transition-all duration-500 ease-in-out ${s.isMobileExpanded ? 'h-[92dvh] rounded-t-[2rem]' : 'h-[150px] lg:h-full lg:rounded-none'}`}>
+        <aside className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[370px] shrink-0 bg-white dark:bg-[var(--atlas-bg-page)] border-t lg:border-t-0 lg:border-r border-black/[0.06] dark:border-white/[0.08] flex flex-col z-[150] lg:z-50 shadow-atlas-lg lg:shadow-none transition-all duration-500 ease-in-out ${s.isMobileExpanded ? 'h-[92dvh] rounded-t-[2rem]' : 'h-[150px] lg:h-full lg:rounded-none'}`}>
           <MobileGeneratorBar 
             isExpanded={s.isMobileExpanded} 
             setIsExpanded={s.setIsMobileExpanded}
@@ -273,7 +273,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
                   ) : s.historyResults.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 pb-20">
                       {s.historyResults.map((res) => (
-                        <div key={res.id} className="bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-2xl overflow-hidden shadow-sm group transition-all hover:shadow-xl hover:border-brand-blue/20">
+                        <div key={res.id} className="bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-lg overflow-hidden shadow-sm group transition-all hover:shadow-xl hover:border-brand-blue/20">
                           <div 
                             className="aspect-[3/4] relative overflow-hidden bg-slate-100 dark:bg-black cursor-pointer" 
                             onClick={() => { s.setActiveResultId(res.id); s.setResults(prev => { if (prev.some(r => r.id === res.id)) return prev; return [...prev, res]; }); s.setActiveTab('CURRENT'); }}
@@ -402,8 +402,8 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
       <AnimatePresence>
         {s.showLowCreditAlert && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
-            <motion.div initial={{ scale: 0.95, y: 10 }} animate={{ scale: 1, y: 0 }} className="max-w-sm w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-10 border border-black/[0.06] dark:border-white/[0.06] rounded-2xl text-center space-y-6 shadow-2xl">
-              <div className="w-20 h-20 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center mx-auto text-amber-500">
+            <motion.div initial={{ scale: 0.95, y: 10 }} animate={{ scale: 1, y: 0 }} className="max-w-sm w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-10 border border-black/[0.06] dark:border-white/[0.06] rounded-lg text-center space-y-6 shadow-atlas-lg">
+              <div className="w-20 h-20 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-center justify-center mx-auto text-amber-500">
                 <AlertTriangle size={36} />
               </div>
               <div className="space-y-2">
@@ -455,7 +455,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="max-w-[90vw] max-h-[85vh] object-contain rounded-2xl shadow-2xl" 
+              className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-atlas-lg" 
               alt="" 
               onClick={(e) => e.stopPropagation()}
             />
@@ -478,7 +478,7 @@ const EventStudioWorkspace: React.FC<EventStudioWorkspaceProps> = ({ config, onC
           >
             <motion.div 
               initial={{ scale: 0.9 }} animate={{ scale: 1 }}
-              className="bg-white dark:bg-[var(--atlas-bg-panel)] p-8 rounded-2xl border border-black/[0.06] dark:border-white/[0.06] text-center space-y-4 max-w-xs w-full shadow-2xl"
+              className="bg-white dark:bg-[var(--atlas-bg-panel)] p-8 rounded-lg border border-black/[0.06] dark:border-white/[0.06] text-center space-y-4 max-w-xs w-full shadow-atlas-lg"
               onClick={e => e.stopPropagation()}
             >
               <QrCode size={28} className="mx-auto text-brand-blue" />

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -37,7 +37,7 @@
     <meta property="og:locale:alternate" content="ja_JP" />
 
     <!-- Mobile Theme -->
-    <meta name="theme-color" content="#7036F0" />
+    <meta name="theme-color" content="#0A0A0A" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
@@ -224,16 +224,16 @@
     <!-- Critical CSS: instant first paint (Atlas-style light theme) -->
     <style>
       :root{
-        --atlas-purple:#7036F0;--atlas-purple-hover:#5326B5;
-        --atlas-bg-page:#FFFFFF;--atlas-bg-panel:#FFFFFF;--atlas-bg-panel-hover:#F5F5F7;
-        --atlas-text-primary:#1A2330;--atlas-text-secondary:rgba(26,35,48,.6);
-        --atlas-border:#E5E7EB;
-        --total-navbar-height:60px;
-      }
-      html.dark{
+        --atlas-purple:#C9A84C;--atlas-purple-hover:#B8963F;
         --atlas-bg-page:#0D0D1A;--atlas-bg-panel:#1A1A2E;--atlas-bg-panel-hover:#2A2A3E;
         --atlas-text-primary:#FFFFFF;--atlas-text-secondary:rgba(255,255,255,.7);
         --atlas-border:rgba(255,255,255,.10);
+        --total-navbar-height:60px;
+      }
+      html:not(.dark){
+        --atlas-bg-page:#FFFFFF;--atlas-bg-panel:#FFFFFF;--atlas-bg-panel-hover:#F5F5F7;
+        --atlas-text-primary:#1A2330;--atlas-text-secondary:rgba(26,35,48,.6);
+        --atlas-border:#E5E7EB;
       }
       body{margin:0;overflow-x:hidden;font-family:Manrope,Inter,-apple-system,BlinkMacSystemFont,sans-serif;background:var(--atlas-bg-page);color:var(--atlas-text-primary);font-feature-settings:"cv11","ss01";-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
       .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(112,54,240,.04) 1px,transparent 0),linear-gradient(90deg,rgba(112,54,240,.04) 1px,transparent 0);background-size:50px 50px;z-index:1;pointer-events:none}
@@ -243,6 +243,10 @@
       #root{position:relative;z-index:10}
       .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}
     </style>
+    <script>
+      // Prevent flash: default dark, respect saved preference
+      (function(){var t=localStorage.getItem('skyverses_theme');if(t==='light'){document.documentElement.classList.remove('dark')}})();
+    </script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
   <body>

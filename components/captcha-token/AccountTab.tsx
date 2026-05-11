@@ -26,7 +26,7 @@ export const AccountTab: React.FC<AccountTabProps> = ({
   return (
     <motion.div key="account" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
       {!accountData ? (
-        <div className="p-20 text-center bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/10 rounded-[3rem] shadow-2xl flex flex-col items-center gap-8">
+        <div className="p-20 text-center bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/10 rounded-xl shadow-atlas-lg flex flex-col items-center gap-8">
            <div className="w-24 h-24 bg-slate-50 dark:bg-black/40 rounded-full flex items-center justify-center text-slate-300 dark:text-gray-700">
               <User size={48} />
            </div>
@@ -34,20 +34,20 @@ export const AccountTab: React.FC<AccountTabProps> = ({
               <h3 className="text-2xl font-bold uppercase italic tracking-tighter">Chưa liên kết tài khoản</h3>
               <p className="text-sm text-gray-500 font-medium">Vui lòng liên kết định danh Captcha để xem thông tin truy cập và quản lý Token của bạn.</p>
            </div>
-           <button onClick={handleLinkAccount} disabled={isLinking} className="bg-brand-blue text-white px-10 py-4 rounded-xl text-xs font-bold uppercase tracking-widest shadow-xl flex items-center justify-center gap-3 hover:brightness-110 active:scale-0.95 transition-all">
+           <button onClick={handleLinkAccount} disabled={isLinking} className="bg-brand-blue text-white px-10 py-4 rounded-xl text-xs font-bold uppercase tracking-widest shadow-atlas-lg flex items-center justify-center gap-3 hover:brightness-110 active:scale-0.95 transition-all">
               {isLinking ? <Loader2 size={16} className="animate-spin" /> : <LinkIcon size={16} />} 
               Liên kết dịch vụ Captcha
            </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-8 animate-in fade-in duration-700">
-           <div className="p-10 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/5 rounded-[3rem] shadow-2xl space-y-10 relative overflow-hidden">
+           <div className="p-10 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/[0.06] rounded-xl shadow-atlas-lg space-y-10 relative overflow-hidden">
               <div className="absolute top-0 right-0 p-10 opacity-5">
                  <ShieldCheck size={160} />
               </div>
               <div className="space-y-8 relative z-10">
                  <div className="flex items-center gap-5">
-                    <div className="w-16 h-16 rounded-2xl bg-brand-blue/10 flex items-center justify-center text-brand-blue shadow-inner transition-transform group-hover:scale-110">
+                    <div className="w-16 h-16 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue shadow-inner transition-transform group-hover:scale-110">
                        <User size={32} />
                     </div>
                     <div>
@@ -60,16 +60,16 @@ export const AccountTab: React.FC<AccountTabProps> = ({
                  </div>
 
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="p-6 bg-slate-50 dark:bg-black/40 border border-black/5 dark:border-white/10 rounded-2xl space-y-1">
+                    <div className="p-6 bg-slate-50 dark:bg-black/40 border border-black/5 dark:border-white/10 rounded-lg space-y-1">
                        <p className="text-[8px] font-bold uppercase text-gray-400 tracking-widest italic">Mã khách hàng (UID)</p>
                        <p className="text-xs font-mono font-bold text-slate-700 dark:text-gray-300 select-all">{accountData.user.id}</p>
                     </div>
-                    <div className="p-6 bg-slate-50 dark:bg-black/40 border border-black/5 dark:border-white/10 rounded-2xl space-y-1">
+                    <div className="p-6 bg-slate-50 dark:bg-black/40 border border-black/5 dark:border-white/10 rounded-lg space-y-1">
                        <p className="text-[8px] font-bold uppercase text-gray-400 tracking-widest italic">Email đăng ký</p>
                        <p className="text-xs font-mono font-bold text-slate-700 dark:text-gray-300">{accountData.user.email}</p>
                     </div>
                     {accountData.accessTokenCaptcha && (
-                       <div className="p-6 bg-slate-50 dark:bg-black/40 border border-black/5 dark:border-white/10 rounded-2xl space-y-1 md:col-span-2">
+                       <div className="p-6 bg-slate-50 dark:bg-black/40 border border-black/5 dark:border-white/10 rounded-lg space-y-1 md:col-span-2">
                           <p className="text-[8px] font-bold uppercase text-gray-400 tracking-widest italic">Access Token Hệ thống</p>
                           <div className="flex items-center justify-between">
                              <p className="text-xs font-mono font-bold text-brand-blue truncate pr-6">{accountData.accessTokenCaptcha}</p>

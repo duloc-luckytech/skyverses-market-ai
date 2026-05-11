@@ -504,7 +504,7 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: 30, scale: 0.9 }}
               transition={{ type: 'spring', damping: 22, stiffness: 300 }}
-              className="absolute right-[3.5rem] top-0 w-[280px] rounded-2xl overflow-hidden shadow-2xl"
+              className="absolute right-[3.5rem] top-0 w-[280px] rounded-lg overflow-hidden shadow-atlas-lg"
             >
               {/* Close button */}
               <button
@@ -605,7 +605,7 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
             aria-label="Support Assistant"
             className={`group relative w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-200 ${
               isOpen
-                ? 'bg-slate-900 dark:bg-white text-white dark:text-black shadow-2xl'
+                ? 'bg-slate-900 dark:bg-white text-white dark:text-black shadow-atlas-lg'
                 : 'bg-white dark:bg-[#1a1a1e] shadow-lg hover:shadow-xl border border-black/[0.06] dark:border-white/[0.08]'
             }`}
             title="AI Support"
@@ -667,16 +667,16 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.95 }}
               transition={{ type: 'spring', damping: 26, stiffness: 300 }}
-              className="fixed bottom-6 right-[4.5rem] md:right-[4.75rem] w-[calc(100vw-5.5rem)] md:w-[420px] h-[560px] max-h-[75dvh] flex flex-col overflow-hidden z-[700] rounded-2xl shadow-[0_25px_80px_rgba(0,0,0,0.15)] dark:shadow-[0_25px_80px_rgba(0,0,0,0.5)]"
+              className="fixed bottom-6 right-[4.5rem] md:right-[4.75rem] w-[calc(100vw-5.5rem)] md:w-[420px] h-[560px] max-h-[75dvh] flex flex-col overflow-hidden z-[700] rounded-lg shadow-[0_25px_80px_rgba(0,0,0,0.15)] dark:shadow-[0_25px_80px_rgba(0,0,0,0.5)]"
             >
             {/* Glass background */}
-            <div className="absolute inset-0 bg-white/95 dark:bg-[var(--atlas-bg-panel)]/95 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06] rounded-2xl" />
+            <div className="absolute inset-0 bg-white/95 dark:bg-[var(--atlas-bg-panel)]/95 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06] rounded-lg" />
 
             {/* ─── HEADER ─── */}
             <div className="relative z-10 px-5 py-4 flex items-center justify-between shrink-0 border-b border-black/[0.04] dark:border-white/[0.04]">
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-blue/10 to-purple-500/10 border border-brand-blue/15 flex items-center justify-center p-1.5">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-blue/10 to-purple-500/10 border border-brand-blue/[0.15] flex items-center justify-center p-1.5">
                     <img src={logoUrl} alt="S" className="w-full h-full object-contain" />
                   </div>
                   {/* Online dot */}
@@ -725,7 +725,7 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
                     className={`shrink-0 px-2.5 py-1 rounded-lg text-[8px] font-semibold truncate max-w-[100px] transition-all border ${
                       s.id === activeSessionId 
                         ? 'bg-brand-blue/10 border-brand-blue/20 text-brand-blue' 
-                        : 'bg-black/[0.01] dark:bg-white/[0.02] border-black/[0.04] dark:border-white/[0.04] text-slate-400 dark:text-gray-500 hover:border-brand-blue/15'
+                        : 'bg-black/[0.01] dark:bg-white/[0.02] border-black/[0.04] dark:border-white/[0.04] text-slate-400 dark:text-gray-500 hover:border-brand-blue/[0.15]'
                     }`}>
                     {s.title.slice(0, 20)}{s.title.length > 20 ? '...' : ''}
                   </button>
@@ -747,7 +747,7 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
                     initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                     transition={{ type: 'spring', damping: 15, stiffness: 200, delay: 0.1 }}>
                     <div className="absolute inset-0 bg-brand-blue/10 blur-[20px] rounded-full animate-pulse" />
-                    <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-white/[0.04] dark:to-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center shadow-lg p-2.5">
+                    <div className="relative w-14 h-14 rounded-lg bg-gradient-to-br from-slate-50 to-slate-100 dark:from-white/[0.04] dark:to-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center shadow-lg p-2.5">
                       <img src={logoUrl} alt="Skyverses" className="w-full h-full object-contain" />
                     </div>
                   </motion.div>
@@ -809,7 +809,7 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
                     className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 overflow-hidden ${
                     msg.role === 'user' 
                       ? 'bg-slate-800 dark:bg-white/90 text-white dark:text-black'
-                      : 'bg-gradient-to-br from-brand-blue/10 to-purple-500/10 border border-brand-blue/15 p-1'
+                      : 'bg-gradient-to-br from-brand-blue/10 to-purple-500/10 border border-brand-blue/[0.15] p-1'
                   }`}>
                     {msg.role === 'user' 
                       ? (user?.picture 
@@ -824,7 +824,7 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
                     <motion.div 
                       initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                       transition={{ duration: 0.2, delay: 0.08 }}
-                      className={`px-4 py-3 rounded-2xl ${
+                      className={`px-4 py-3 rounded-lg ${
                       msg.role === 'user'
                         ? 'bg-slate-800 dark:bg-white/90 text-white dark:text-black rounded-tr-lg'
                         : 'bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] text-slate-700 dark:text-gray-200 rounded-tl-lg'
@@ -879,11 +879,11 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
                   <motion.div 
                     animate={{ scale: [1, 1.1, 1] }}
                     transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
-                    className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-blue/10 to-purple-500/10 border border-brand-blue/15 flex items-center justify-center p-1 shrink-0"
+                    className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-blue/10 to-purple-500/10 border border-brand-blue/[0.15] flex items-center justify-center p-1 shrink-0"
                   >
                     <img src={logoUrl} alt="" className="w-full h-full object-contain" />
                   </motion.div>
-                  <div className="px-4 py-3.5 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl rounded-tl-lg">
+                  <div className="px-4 py-3.5 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-lg rounded-tl-lg">
                     <div className="flex items-center gap-2">
                       <div className="flex gap-1">
                         <div className="w-1.5 h-1.5 bg-brand-blue/40 rounded-full animate-bounce" />
@@ -910,7 +910,7 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
                         transition={{ delay: 0.6 + i * 0.1 }}
                         whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                         onClick={() => { handleSendMessage(q); setSuggestedFollowUps([]); }}
-                        className="px-3 py-1.5 text-[9px] font-semibold text-brand-blue bg-brand-blue/[0.05] border border-brand-blue/15 rounded-full hover:bg-brand-blue/10 hover:border-brand-blue/25 transition-all flex items-center gap-1"
+                        className="px-3 py-1.5 text-[9px] font-semibold text-brand-blue bg-brand-blue/[0.05] border border-brand-blue/[0.15] rounded-full hover:bg-brand-blue/10 hover:border-brand-blue/25 transition-all flex items-center gap-1"
                       >
                         {q} <ChevronRight size={10} />
                       </motion.button>
@@ -973,7 +973,7 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
               )}
 
               <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
-                className="flex items-center gap-2 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl p-1.5 pl-2 focus-within:border-brand-blue/30 transition-all">
+                className="flex items-center gap-2 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-lg p-1.5 pl-2 focus-within:border-brand-blue/30 transition-all">
                 <button type="button" onClick={() => fileInputRef.current?.click()} 
                   className="w-8 h-8 rounded-xl bg-white dark:bg-white/[0.04] border border-black/[0.04] dark:border-white/[0.04] flex items-center justify-center text-slate-400 hover:text-brand-blue transition-all shrink-0 hover:scale-105 active:scale-95">
                   <Paperclip size={14} />
@@ -1032,7 +1032,7 @@ Skyverses is an AI Marketplace platform with 30+ AI applications and 50+ AI mode
               initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl p-6 w-[320px] shadow-2xl text-center space-y-4"
+              className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-lg p-6 w-[320px] shadow-atlas-lg text-center space-y-4"
             >
               <div className="w-12 h-12 mx-auto rounded-xl bg-red-500/10 flex items-center justify-center">
                 <AlertTriangle size={22} className="text-red-500" />

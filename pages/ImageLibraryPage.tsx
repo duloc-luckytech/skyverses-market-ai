@@ -222,11 +222,11 @@ const ImageLibraryPage: React.FC = () => {
       <div className="max-w-[1800px] mx-auto px-6 lg:px-12">
         <motion.div
           initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-[var(--atlas-bg-panel)] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm p-6 lg:p-8 space-y-8"
+          className="bg-white dark:bg-[var(--atlas-bg-panel)] rounded-xl border border-black/5 dark:border-white/[0.06] shadow-sm p-6 lg:p-8 space-y-8"
         >
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-brand-blue/5 border border-brand-blue/10 flex items-center justify-center text-brand-blue shadow-sm">
+              <div className="w-12 h-12 rounded-lg bg-brand-blue/5 border border-brand-blue/10 flex items-center justify-center text-brand-blue shadow-sm">
                 <ImageIcon size={24} />
               </div>
               <div className="space-y-0.5">
@@ -235,7 +235,7 @@ const ImageLibraryPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 bg-slate-50 dark:bg-white/5 p-1 rounded-xl">
+            <div className="flex items-center gap-2 bg-slate-50 dark:bg-white/[0.06] p-1 rounded-xl">
                {[Monitor, LayoutGrid, Grid, LayoutGrid, Columns].map((Icon, idx) => (
                  <button key={idx} className={`p-2.5 rounded-lg transition-all ${idx === 3 ? 'bg-white dark:bg-white/10 text-brand-blue shadow-sm' : 'text-slate-400 hover:text-brand-blue'}`}>
                     <Icon size={18} />
@@ -252,21 +252,21 @@ const ImageLibraryPage: React.FC = () => {
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Tìm kiếm trong GCS Registry..."
-                className="w-full bg-[#f4f7f9] dark:bg-black/20 border border-transparent focus:border-brand-blue/30 rounded-2xl py-5 pl-16 pr-6 text-sm font-bold outline-none transition-all"
+                className="w-full bg-[#f4f7f9] dark:bg-black/20 border border-transparent focus:border-brand-blue/30 rounded-lg py-5 pl-16 pr-6 text-sm font-bold outline-none transition-all"
               />
             </div>
 
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
-              className={`px-8 rounded-2xl font-bold uppercase text-[11px] tracking-widest transition-all shadow-lg flex items-center gap-3 ${isUploading ? 'bg-gray-200 dark:bg-white/10 text-gray-400' : 'bg-brand-blue text-white hover:brightness-110 active:scale-95 shadow-brand-blue/20'}`}
+              className={`px-8 rounded-lg font-bold uppercase text-[11px] tracking-widest transition-all shadow-lg flex items-center gap-3 ${isUploading ? 'bg-gray-200 dark:bg-white/10 text-gray-400' : 'bg-brand-blue text-white hover:brightness-110 active:scale-95 shadow-brand-blue/20'}`}
             >
               {isUploading ? <Loader2 size={18} className="animate-spin" /> : <CloudUpload size={18} />}
               <span className="hidden sm:inline">{isUploading ? 'Syncing' : 'Upload GCS'}</span>
             </button>
             <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleGCSUpload} />
 
-            <button className="w-16 bg-[#f4f7f9] dark:bg-black/20 border border-transparent hover:border-brand-blue/20 rounded-2xl flex items-center justify-center text-slate-500 transition-all">
+            <button className="w-16 bg-[#f4f7f9] dark:bg-black/20 border border-transparent hover:border-brand-blue/20 rounded-lg flex items-center justify-center text-slate-500 transition-all">
               <Filter size={22} />
             </button>
           </div>
@@ -284,7 +284,7 @@ const ImageLibraryPage: React.FC = () => {
                    <h3 className="text-xl font-bold text-slate-800 dark:text-white uppercase tracking-tight italic">
                      {label} <span className="ml-3 text-slate-300 dark:text-gray-700 font-bold">({items.length})</span>
                    </h3>
-                   <div className="h-px flex-grow bg-slate-100 dark:bg-white/5"></div>
+                   <div className="h-px flex-grow bg-slate-100 dark:bg-white/[0.06]"></div>
                 </div>
 
                 <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-8 space-y-8">
@@ -293,7 +293,7 @@ const ImageLibraryPage: React.FC = () => {
                       key={item.id}
                       layout
                       initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-                      className="break-inside-avoid relative rounded-xl overflow-hidden border-2 border-transparent bg-white dark:bg-[var(--atlas-bg-panel)] shadow-sm hover:shadow-2xl transition-all duration-500 group cursor-pointer"
+                      className="break-inside-avoid relative rounded-xl overflow-hidden border-2 border-transparent bg-white dark:bg-[var(--atlas-bg-panel)] shadow-sm hover:shadow-atlas-lg transition-all duration-500 group cursor-pointer"
                     >
                        <img src={item.url} className="w-full h-auto object-cover transition-all duration-[3s] group-hover:scale-110" alt="" />
 
@@ -321,13 +321,13 @@ const ImageLibraryPage: React.FC = () => {
                        <div className="absolute top-6 right-6 flex flex-col gap-2.5 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0 z-30">
                           <button
                             onClick={(e) => { e.stopPropagation(); window.open(item.url); }}
-                            className="p-3.5 bg-white/95 dark:bg-black/90 backdrop-blur-md rounded-2xl shadow-2xl text-slate-600 dark:text-white hover:text-brand-blue transition-all"
+                            className="p-3.5 bg-white/95 dark:bg-black/90 backdrop-blur-md rounded-lg shadow-atlas-lg text-slate-600 dark:text-white hover:text-brand-blue transition-all"
                           >
                              <Download size={18}/>
                           </button>
                           <button
                             onClick={(e) => { e.stopPropagation(); deleteAsset(item.id); }}
-                            className="p-3.5 bg-white/95 dark:bg-black/90 backdrop-blur-md rounded-2xl shadow-2xl text-slate-600 dark:text-white hover:text-red-500 transition-all"
+                            className="p-3.5 bg-white/95 dark:bg-black/90 backdrop-blur-md rounded-lg shadow-atlas-lg text-slate-600 dark:text-white hover:text-red-500 transition-all"
                           >
                              <Trash2 size={18}/>
                           </button>
@@ -381,7 +381,7 @@ const ImageLibraryPage: React.FC = () => {
             <button
               onClick={handleSynthesize}
               disabled={isGenerating || !prompt.trim()}
-              className="w-14 h-14 rounded-full bg-brand-blue text-white flex items-center justify-center shadow-2xl shadow-brand-blue/30 hover:scale-110 active:scale-95 disabled:opacity-20"
+              className="w-14 h-14 rounded-full bg-brand-blue text-white flex items-center justify-center shadow-atlas-lg shadow-brand-blue/30 hover:scale-110 active:scale-95 disabled:opacity-20"
             >
                {isGenerating ? <Loader2 className="animate-spin" size={24} /> : <Wand2 size={24} />}
             </button>

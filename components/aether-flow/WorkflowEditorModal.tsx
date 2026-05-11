@@ -58,7 +58,7 @@ const EditorContent: React.FC<{
   );
 
   return (
-    <div className="flex-grow flex flex-col relative overflow-hidden bg-[#0d0d0f]">
+    <div className="flex-grow flex flex-col relative overflow-hidden bg-[var(--atlas-bg-page)]">
       <EditorHeader template={template} nodeCount={nodes.length} onClose={onClose} />
       
       <div className="flex-grow flex flex-row relative">
@@ -82,8 +82,8 @@ const EditorContent: React.FC<{
             onlyRenderVisibleElements={true}
           >
             <Background variant={BackgroundVariant.Dots} color="#1c1c22" gap={24} size={1} />
-            <Controls position="bottom-left" className="bg-[#1a1b23] border-white/5 p-1 rounded-xl" />
-            <MiniMap position="bottom-right" className="bg-[#1a1b23] border border-white/10 rounded-2xl" nodeColor="#D4A017" maskColor="rgba(0,0,0,0.7)" />
+            <Controls position="bottom-left" className="bg-[var(--atlas-bg-panel)] border-white/[0.06] p-1 rounded-xl" />
+            <MiniMap position="bottom-right" className="bg-[var(--atlas-bg-panel)] border border-white/10 rounded-lg" nodeColor="#D4A017" maskColor="rgba(0,0,0,0.7)" />
           </ReactFlow>
 
           <EditorHUD />
@@ -112,7 +112,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({ isOpen
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 md:p-8">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/95 backdrop-blur-3xl" onClick={onClose} />
-      <motion.div initial={{ scale: 0.95, opacity: 0, y: 50 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 50 }} className="relative w-full h-full bg-[#0d0d10] border border-white/10 rounded-[2rem] overflow-hidden shadow-3xl flex flex-col">
+      <motion.div initial={{ scale: 0.95, opacity: 0, y: 50 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 50 }} className="relative w-full h-full bg-[#0d0d10] border border-white/10 rounded-xl overflow-hidden shadow-atlas-xl flex flex-col">
         <ReactFlowProvider>
           <EditorContent template={template} onClose={onClose} isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
         </ReactFlowProvider>

@@ -55,7 +55,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
               initial={{ opacity: 0, scale: 0.96, y: 10 }} 
               animate={{ opacity: 1, scale: 1, y: 0 }} 
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="relative w-full max-w-5xl aspect-video bg-white dark:bg-[var(--atlas-bg-page)] shadow-2xl dark:shadow-[0_20px_80px_rgba(0,0,0,0.4)] rounded-2xl md:rounded-3xl border border-slate-200 dark:border-white/[0.06] overflow-hidden group"
+              className="relative w-full max-w-5xl aspect-video bg-white dark:bg-[var(--atlas-bg-page)] shadow-atlas-lg dark:shadow-[0_20px_80px_rgba(0,0,0,0.4)] rounded-lg md:rounded-xl border border-slate-200 dark:border-white/[0.06] overflow-hidden group"
             >
               {/* Window chrome bar */}
               <div className="absolute top-0 left-0 right-0 h-10 bg-white/80 dark:bg-[var(--atlas-bg-panel)]/80 backdrop-blur-md z-40 flex items-center px-4 border-b border-slate-100 dark:border-white/[0.04]">
@@ -143,7 +143,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
                   )}
                   
                   <div className="relative z-10 text-center space-y-6">
-                    <div className="w-20 h-20 mx-auto rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+                    <div className="w-20 h-20 mx-auto rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center">
                       <AlertTriangle size={36} className="text-red-500" strokeWidth={1.5} />
                     </div>
                     
@@ -179,7 +179,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
                   <div className="relative z-10 flex flex-col items-center gap-8">
                     <div className="relative">
                       <div className="absolute inset-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-[40px] animate-pulse"></div>
-                      <div className="relative w-24 h-24 rounded-3xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 flex items-center justify-center">
+                      <div className="relative w-24 h-24 rounded-xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 flex items-center justify-center">
                         <Loader2 size={48} className="text-emerald-500 animate-spin" strokeWidth={1.5} />
                         <Sparkles size={18} className="absolute text-emerald-400/60 animate-pulse" />
                       </div>
@@ -192,7 +192,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
 
                       {/* #5 — Real progress bar */}
                       <div className="space-y-2">
-                        <div className="w-full h-2 bg-slate-200 dark:bg-white/5 rounded-full overflow-hidden">
+                        <div className="w-full h-2 bg-slate-200 dark:bg-white/[0.06] rounded-full overflow-hidden">
                           <motion.div 
                             className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"
                             initial={{ width: '0%' }}
@@ -228,7 +228,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
                   
-                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-none flex items-center gap-2 px-5 py-2.5 bg-white/80 dark:bg-black/60 backdrop-blur-xl rounded-full border border-slate-200 dark:border-white/10 shadow-xl">
+                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-none flex items-center gap-2 px-5 py-2.5 bg-white/80 dark:bg-black/60 backdrop-blur-xl rounded-full border border-slate-200 dark:border-white/10 shadow-atlas-lg">
                     <Zap size={12} className="text-emerald-500" />
                     <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-500 dark:text-gray-400">
                       Chọn kịch bản & nhấn "Phục chế ngay" để bắt đầu
@@ -247,7 +247,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
             >
               {/* Hero Title */}
               <div className="text-center space-y-4">
-                <div className="w-16 h-16 mx-auto bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/15 rounded-2xl flex items-center justify-center mb-6">
+                <div className="w-16 h-16 mx-auto bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/15 rounded-lg flex items-center justify-center mb-6">
                   <RefreshCw size={28} className="text-emerald-500" strokeWidth={1.5} />
                 </div>
                 <h3 className="text-2xl md:text-3xl font-bold uppercase italic tracking-tight text-slate-900 dark:text-white">
@@ -263,7 +263,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
                 {GUIDE_STEPS.map((step) => {
                   const Icon = step.icon;
                   return (
-                    <div key={step.id} className="bg-white dark:bg-white/[0.02] border border-slate-100 dark:border-white/[0.05] p-5 md:p-6 rounded-2xl flex items-start gap-4 group hover:border-emerald-500/20 transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/5">
+                    <div key={step.id} className="bg-white dark:bg-white/[0.02] border border-slate-100 dark:border-white/[0.05] p-5 md:p-6 rounded-lg flex items-start gap-4 group hover:border-emerald-500/20 transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/5">
                       <div className="flex flex-col items-center gap-2 shrink-0">
                         <div className="w-10 h-10 rounded-xl bg-emerald-500/[0.06] dark:bg-emerald-500/10 border border-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
                           <Icon size={18} />
@@ -294,7 +294,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
                     <button 
                       key={preset.id}
                       onClick={() => onApplyTemplate(preset.sampleUrl!)}
-                      className="group relative aspect-[4/3] bg-slate-100 dark:bg-white/[0.03] rounded-2xl overflow-hidden border border-slate-100 dark:border-white/[0.05] hover:border-emerald-500/30 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-emerald-500/5"
+                      className="group relative aspect-[4/3] bg-slate-100 dark:bg-white/[0.03] rounded-lg overflow-hidden border border-slate-100 dark:border-white/[0.05] hover:border-emerald-500/30 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-emerald-500/5"
                     >
                       <img 
                         src={preset.sampleUrl} 
@@ -306,7 +306,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
                         <p className="text-[8px] md:text-[9px] font-bold uppercase text-white truncate tracking-tight">{preset.label}</p>
                       </div>
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                        <div className="p-3 bg-emerald-600 rounded-xl text-white shadow-2xl shadow-emerald-600/30 scale-75 group-hover:scale-100 transition-transform duration-300">
+                        <div className="p-3 bg-emerald-600 rounded-xl text-white shadow-atlas-lg shadow-emerald-600/30 scale-75 group-hover:scale-100 transition-transform duration-300">
                           <Wand2 size={16} />
                         </div>
                       </div>
@@ -334,7 +334,7 @@ export const RestorationViewport: React.FC<Props> = ({ activeJob, onApplyTemplat
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="h-[72px] shrink-0 bg-white/90 dark:bg-[var(--atlas-bg-page)]/90 backdrop-blur-2xl border-t border-slate-100 dark:border-white/[0.04] flex items-center justify-center px-4 md:px-8 z-[80]"
           >
-            <div className="flex items-center gap-1.5 md:gap-2 bg-slate-50 dark:bg-white/[0.03] p-1.5 rounded-2xl border border-slate-100 dark:border-white/[0.06] shadow-xl">
+            <div className="flex items-center gap-1.5 md:gap-2 bg-slate-50 dark:bg-white/[0.03] p-1.5 rounded-lg border border-slate-100 dark:border-white/[0.06] shadow-atlas-lg">
               <button 
                 onClick={() => onEdit(activeJob.result!)}
                 className="flex items-center gap-2 px-4 md:px-6 py-2.5 rounded-xl text-[9px] md:text-[10px] font-bold uppercase tracking-[0.15em] text-slate-600 dark:text-white/70 hover:bg-blue-500 hover:text-white transition-all duration-200 group"

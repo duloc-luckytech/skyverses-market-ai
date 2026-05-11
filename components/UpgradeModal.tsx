@@ -35,7 +35,7 @@ const PLANS: PlanDef[] = [
     price: '$0',
     period: '',
     accent: 'border-white/10',
-    badgeClass: 'bg-white/5 text-white/50',
+    badgeClass: 'bg-white/[0.06] text-white/50',
     icon: <Layers size={18} />,
     features: [
       { text: 'Tối đa 10 cảnh / dự án', ok: true },
@@ -129,7 +129,7 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({ isOpen, onClose, fea
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 40, scale: 0.97 }}
             transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-            className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto no-scrollbar bg-[#0a0a0d] border border-white/10 rounded-t-3xl md:rounded-3xl shadow-2xl"
+            className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto no-scrollbar bg-[#0a0a0d] border border-white/10 rounded-t-3xl md:rounded-xl shadow-atlas-lg"
           >
             {/* Header */}
             <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-[#0a0a0d] border-b border-white/8">
@@ -149,7 +149,7 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({ isOpen, onClose, fea
               </div>
               <button
                 onClick={onClose}
-                className="p-1.5 hover:bg-white/8 rounded-full text-white/40 hover:text-white transition-all"
+                className="p-1.5 hover:bg-white/[0.08] rounded-full text-white/40 hover:text-white transition-all"
               >
                 <X size={18} />
               </button>
@@ -163,7 +163,7 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({ isOpen, onClose, fea
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: plan.id === 'free' ? 0 : plan.id === 'pro' ? 0.06 : 0.12 }}
-                  className={`relative flex flex-col rounded-2xl border bg-white/[0.03] p-5 gap-4 ${plan.accent} ${plan.highlight ? 'shadow-[0_0_40px_-8px_rgba(59,130,246,0.3)]' : ''}`}
+                  className={`relative flex flex-col rounded-lg border bg-white/[0.03] p-5 gap-4 ${plan.accent} ${plan.highlight ? 'shadow-[0_0_40px_-8px_rgba(59,130,246,0.3)]' : ''}`}
                 >
                   {/* PRO recommended badge */}
                   {plan.highlight && (
@@ -221,14 +221,14 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({ isOpen, onClose, fea
                           className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all
                             ${plan.highlight
                               ? 'bg-brand-blue hover:bg-brand-blue/90 text-white shadow-lg shadow-brand-blue/30'
-                              : 'border border-white/10 text-white/60 hover:bg-white/5'
+                              : 'border border-white/10 text-white/60 hover:bg-white/[0.06]'
                             }`}
                         >
                           {plan.ctaLabel}
                         </Link>
                       )
                     ) : (
-                      <div className="w-full flex items-center justify-center py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest border border-white/5 text-white/20 cursor-default">
+                      <div className="w-full flex items-center justify-center py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest border border-white/[0.06] text-white/20 cursor-default">
                         {plan.ctaLabel}
                       </div>
                     )}

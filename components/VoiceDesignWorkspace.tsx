@@ -234,7 +234,7 @@ const VoiceDesignWorkspace: React.FC = () => {
         {/* LEFT COLUMN: CONFIG (1/3) */}
         <div className="w-full lg:w-1/3 flex flex-col gap-6 overflow-y-auto no-scrollbar pr-1">
           <div className="space-y-6">
-            <div className="bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/5 rounded-2xl p-6 space-y-6 shadow-sm dark:shadow-2xl transition-colors">
+            <div className="bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.06] rounded-lg p-6 space-y-6 shadow-sm dark:shadow-atlas-lg transition-colors">
               <div className="space-y-3 relative">
                 <div className="flex justify-between items-center">
                   <label className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-[0.2em]">Mô tả giọng nói</label>
@@ -252,13 +252,13 @@ const VoiceDesignWorkspace: React.FC = () => {
                           initial={{ opacity: 0, y: 5, scale: 0.95 }}
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: 5, scale: 0.95 }}
-                          className="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl z-[100] overflow-hidden p-2"
+                          className="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-xl shadow-atlas-lg z-[100] overflow-hidden p-2"
                         >
                           {EXAMPLES.map((ex, i) => (
                             <button
                               key={i}
                               onClick={() => { setDescription(ex); setShowExamples(false); }}
-                              className="w-full text-left p-3 text-[10px] font-bold text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/5 rounded-lg transition-colors border-b border-black/5 dark:border-white/5 last:border-0"
+                              className="w-full text-left p-3 text-[10px] font-bold text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/[0.06] rounded-lg transition-colors border-b border-black/5 dark:border-white/[0.06] last:border-0"
                             >
                               {ex}
                             </button>
@@ -271,7 +271,7 @@ const VoiceDesignWorkspace: React.FC = () => {
                 <textarea 
                   value={description}
                   onChange={e => setDescription(e.target.value)}
-                  className="w-full h-32 bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5 rounded-xl p-4 text-sm font-medium focus:border-brand-blue/30 outline-none transition-all resize-none leading-relaxed text-slate-800 dark:text-white shadow-inner"
+                  className="w-full h-32 bg-white dark:bg-black/40 border border-slate-200 dark:border-white/[0.06] rounded-xl p-4 text-sm font-medium focus:border-brand-blue/30 outline-none transition-all resize-none leading-relaxed text-slate-800 dark:text-white shadow-inner"
                   placeholder="Ví dụ: Giọng nữ trẻ, ngọt ngào, ấm áp..."
                 />
               </div>
@@ -283,7 +283,7 @@ const VoiceDesignWorkspace: React.FC = () => {
                     <span className="text-[9px] font-bold text-slate-300 dark:text-gray-600 uppercase tracking-widest">{sampleText.length} chars</span>
                     <button 
                       onClick={() => setIsTextModalOpen(true)}
-                      className="p-1.5 bg-slate-100 dark:bg-white/5 rounded-lg text-slate-400 hover:text-brand-blue transition-all"
+                      className="p-1.5 bg-slate-100 dark:bg-white/[0.06] rounded-lg text-slate-400 hover:text-brand-blue transition-all"
                       title="Mở rộng khung nhập"
                     >
                       <Maximize2 size={12} />
@@ -293,13 +293,13 @@ const VoiceDesignWorkspace: React.FC = () => {
                 <textarea 
                   value={sampleText}
                   onChange={e => setSampleText(e.target.value)}
-                  className="w-full h-32 bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5 rounded-xl p-4 text-sm font-medium focus:border-brand-blue/30 outline-none transition-all resize-none leading-relaxed text-slate-800 dark:text-white shadow-inner"
+                  className="w-full h-32 bg-white dark:bg-black/40 border border-slate-200 dark:border-white/[0.06] rounded-xl p-4 text-sm font-medium focus:border-brand-blue/30 outline-none transition-all resize-none leading-relaxed text-slate-800 dark:text-white shadow-inner"
                   placeholder="Nhập văn bản mẫu..."
                 />
               </div>
 
               <div className="pt-2 space-y-4">
-                <div className="flex items-center justify-between bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-3 rounded-2xl">
+                <div className="flex items-center justify-between bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 p-3 rounded-lg">
                     <div className="flex items-center gap-2">
                       <Coins size={14} className="text-brand-blue" />
                       <span className="text-xs font-bold text-brand-blue">{credits.toLocaleString()} CR</span>
@@ -312,7 +312,7 @@ const VoiceDesignWorkspace: React.FC = () => {
                 <button 
                   onClick={handleGenerate}
                   disabled={isGenerating || !description.trim()}
-                  className="w-full py-5 bg-slate-900 dark:bg-white/10 hover:bg-black dark:hover:bg-white/20 border border-slate-800 dark:border-white/5 rounded-xl text-white font-bold uppercase tracking-[0.3em] text-[11px] transition-all flex items-center justify-center gap-3 disabled:opacity-20 shadow-xl"
+                  className="w-full py-5 bg-slate-900 dark:bg-white/10 hover:bg-black dark:hover:bg-white/20 border border-slate-800 dark:border-white/[0.06] rounded-xl text-white font-bold uppercase tracking-[0.3em] text-[11px] transition-all flex items-center justify-center gap-3 disabled:opacity-20 shadow-atlas-lg"
                 >
                   {isGenerating ? (
                     <>
@@ -352,9 +352,9 @@ const VoiceDesignWorkspace: React.FC = () => {
           >
             <motion.div 
               initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }}
-              className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-[2rem] w-full max-w-4xl flex flex-col overflow-hidden shadow-3xl"
+              className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-xl w-full max-w-4xl flex flex-col overflow-hidden shadow-atlas-xl"
             >
-              <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-slate-50 dark:bg-black/20">
+              <div className="p-8 border-b border-black/5 dark:border-white/[0.06] flex items-center justify-between bg-slate-50 dark:bg-black/20">
                  <div className="flex items-center gap-4">
                     <Maximize2 size={20} className="text-brand-blue" />
                     <h3 className="text-xl font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white">Văn bản mẫu mở rộng</h3>
@@ -370,11 +370,11 @@ const VoiceDesignWorkspace: React.FC = () => {
                    autoFocus
                  />
               </div>
-              <div className="p-8 border-t border-black/5 dark:border-white/5 flex justify-between items-center bg-slate-50 dark:bg-black/20">
+              <div className="p-8 border-t border-black/5 dark:border-white/[0.06] flex justify-between items-center bg-slate-50 dark:bg-black/20">
                  <span className="text-[10px] font-bold uppercase text-slate-400 tracking-widest">{sampleText.length} ký tự</span>
                  <button 
                    onClick={() => setIsTextModalOpen(false)}
-                   className="bg-brand-blue text-white px-10 py-4 rounded-xl text-xs font-bold uppercase tracking-widest shadow-xl hover:brightness-110 active:scale-95 transition-all"
+                   className="bg-brand-blue text-white px-10 py-4 rounded-xl text-xs font-bold uppercase tracking-widest shadow-atlas-lg hover:brightness-110 active:scale-95 transition-all"
                  >
                    Hoàn tất
                  </button>
@@ -392,9 +392,9 @@ const VoiceDesignWorkspace: React.FC = () => {
           >
              <motion.div 
                initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
-               className="max-w-md w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-12 border border-slate-200 dark:border-white/10 rounded-[2rem] text-center space-y-8 shadow-2xl transition-colors"
+               className="max-w-md w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-12 border border-slate-200 dark:border-white/10 rounded-xl text-center space-y-8 shadow-atlas-lg transition-colors"
              >
-                <div className="w-24 h-24 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-amber-500 shadow-xl dark:shadow-[0_0_40px_rgba(245,158,11,0.2)]">
+                <div className="w-24 h-24 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-amber-500 shadow-atlas-lg dark:shadow-[0_0_40px_rgba(245,158,11,0.2)]">
                    <AlertTriangle size={48} />
                 </div>
                 <div className="space-y-4">
@@ -405,7 +405,7 @@ const VoiceDesignWorkspace: React.FC = () => {
                    </p>
                 </div>
                 <div className="flex flex-col gap-4">
-                   <Link to="/credits" className="bg-[#7C7CFF] text-white py-5 rounded-2xl text-[12px] font-bold uppercase tracking-[0.4em] shadow-2xl hover:brightness-110 transition-colors text-center">Nạp thêm Credits</Link>
+                   <Link to="/credits" className="bg-[#7C7CFF] text-white py-5 rounded-lg text-[12px] font-bold uppercase tracking-[0.4em] shadow-atlas-lg hover:brightness-110 transition-colors text-center">Nạp thêm Credits</Link>
                    <button onClick={() => setShowLowCreditAlert(false)} className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white transition-colors tracking-widest underline underline-offset-8">Để sau</button>
                 </div>
              </motion.div>

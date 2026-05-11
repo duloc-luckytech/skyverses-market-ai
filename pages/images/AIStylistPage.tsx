@@ -65,16 +65,16 @@ const AIStylistPage = () => {
               >
                 Launch Stylist Studio <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="px-12 py-6 border border-slate-200 dark:border-white/10 rounded-sm text-xs font-bold uppercase tracking-[0.4em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/5 transition-all backdrop-blur-md flex items-center justify-center gap-4">
+              <button className="px-12 py-6 border border-slate-200 dark:border-white/10 rounded-sm text-xs font-bold uppercase tracking-[0.4em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/[0.06] transition-all backdrop-blur-md flex items-center justify-center gap-4">
                 View Showreel <Play size={16} fill="currentColor" />
               </button>
             </div>
           </div>
 
           <div className="lg:col-span-6 relative order-1 lg:order-2">
-             <div className="aspect-[3/4] bg-slate-100 dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/5 rounded-xl p-12 shadow-3xl relative overflow-hidden transition-colors flex flex-col justify-center items-center">
+             <div className="aspect-[3/4] bg-slate-100 dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/[0.06] rounded-xl p-12 shadow-atlas-xl relative overflow-hidden transition-colors flex flex-col justify-center items-center">
                 <div className="absolute inset-0 bg-gradient-to-tr from-brand-blue/10 to-transparent"></div>
-                <div className="relative z-10 w-full max-w-sm aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-4 border-white dark:border-white/10 rotate-3">
+                <div className="relative z-10 w-full max-w-sm aspect-[3/4] rounded-lg overflow-hidden shadow-atlas-lg border-4 border-white dark:border-white/10 rotate-3">
                    <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=800" className="w-full h-full object-cover" alt="Stylist Mockup" />
                    <div className="absolute bottom-6 left-6 right-6 p-4 bg-black/60 backdrop-blur-md border border-white/10 rounded-xl">
                       <p className="text-[10px] font-bold uppercase tracking-widest text-brand-blue mb-1">Active Synthesis</p>
@@ -82,7 +82,7 @@ const AIStylistPage = () => {
                    </div>
                 </div>
                 <div className="absolute top-10 right-10 flex flex-col gap-3">
-                   {[1,2,3].map(i => <div key={i} className="w-12 h-12 rounded-full bg-white dark:bg-white/5 border border-white/10 shadow-xl"></div>)}
+                   {[1,2,3].map(i => <div key={i} className="w-12 h-12 rounded-full bg-white dark:bg-white/[0.06] border border-white/10 shadow-atlas-lg"></div>)}
                 </div>
              </div>
           </div>
@@ -90,14 +90,14 @@ const AIStylistPage = () => {
       </section>
 
       {/* 2. CAPABILITIES GRID */}
-      <section className="py-40 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-[var(--atlas-bg-page)] transition-colors">
+      <section className="py-40 border-t border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-[var(--atlas-bg-page)] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center space-y-4 mb-24">
              <h2 className="text-4xl lg:text-6xl font-bold uppercase italic tracking-tighter">Bespoke Fashion Logic</h2>
              <p className="text-slate-400 dark:text-gray-500 uppercase text-[10px] font-bold tracking-[0.5em]">Identity Persistence // Multi-Modal Orchestration</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-200 dark:bg-white/5 border border-slate-200 dark:border-white/5 shadow-3xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-200 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.06] shadow-atlas-xl">
             {[
               { t: 'Virtual Try-On', i: <Shirt size={24}/>, d: 'Apply any outfit to your uploaded model with perfect fabric physics.' },
               { t: 'Pose Transfer', i: <UserCircle size={24}/>, d: 'Select from an industrial library of poses or upload your own reference.' },
@@ -106,7 +106,7 @@ const AIStylistPage = () => {
               { t: 'H100 Parallelism', i: <Cpu size={24}/>, d: 'Generate multiple outfit variations in seconds via high-throughput nodes.' },
               { t: 'Studio Quality', i: <MonitorPlay size={24}/>, d: 'High-fidelity 8K output ready for e-commerce and professional catalogs.' }
             ].map((f, i) => (
-              <div key={i} className="p-16 bg-white dark:bg-black space-y-8 group hover:bg-brand-blue/[0.02] transition-all duration-500 border-r border-slate-50 dark:border-white/5 last:border-r-0">
+              <div key={i} className="p-16 bg-white dark:bg-black space-y-8 group hover:bg-brand-blue/[0.02] transition-all duration-500 border-r border-slate-50 dark:border-white/[0.06] last:border-r-0">
                  <div className="w-14 h-14 border border-slate-100 dark:border-white/10 flex items-center justify-center text-slate-400 group-hover:text-brand-blue transition-colors rounded-sm shadow-sm">
                     {f.i}
                  </div>

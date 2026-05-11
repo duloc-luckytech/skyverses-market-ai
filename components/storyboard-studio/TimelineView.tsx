@@ -405,7 +405,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({
   if (scenes.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
-        <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center">
+        <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center">
           <Film size={28} className="text-slate-300 dark:text-white/35" />
         </div>
         <p className="text-[11px] font-bold uppercase tracking-widest text-slate-300 dark:text-white/45">
@@ -430,10 +430,10 @@ const TimelineView: React.FC<TimelineViewProps> = ({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="rounded-2xl border border-slate-200 dark:border-white/8 bg-white dark:bg-[var(--atlas-bg-page)] overflow-hidden shadow-sm"
+      className="rounded-lg border border-slate-200 dark:border-white/8 bg-white dark:bg-[var(--atlas-bg-page)] overflow-hidden shadow-sm"
     >
       {/* ── Transport controls ─────────────────────────────────── */}
-      <div className="flex items-center gap-3 px-4 py-2.5 border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">
+      <div className="flex items-center gap-3 px-4 py-2.5 border-b border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02]">
         {/* Play/Pause */}
         <button
           onClick={() => setIsPlaying(v => !v)}
@@ -520,7 +520,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({
               axis="x"
               values={scenes}
               onReorder={onReorder}
-              className="flex items-stretch gap-0 bg-slate-100/50 dark:bg-white/[0.015] border-b border-slate-200 dark:border-white/5"
+              className="flex items-stretch gap-0 bg-slate-100/50 dark:bg-white/[0.015] border-b border-slate-200 dark:border-white/[0.06]"
               style={{ height: TRACK_HEIGHT, width: totalWidth }}
             >
               {scenes.map((scene, i) => (
@@ -554,7 +554,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({
                 return (
                   <div
                     key={scene.id}
-                    className="flex items-center gap-1 px-2 shrink-0 border-r border-slate-200 dark:border-white/5"
+                    className="flex items-center gap-1 px-2 shrink-0 border-r border-slate-200 dark:border-white/[0.06]"
                     style={{ width: blockW }}
                   >
                     {sceneChars.length === 0 ? (
@@ -593,7 +593,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.15 }}
-            className="flex items-center gap-3 px-4 py-2 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.01]"
+            className="flex items-center gap-3 px-4 py-2 border-t border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.01]"
           >
             <ChevronRight size={12} className="text-brand-blue shrink-0" />
             <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 shrink-0">

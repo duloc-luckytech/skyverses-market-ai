@@ -158,7 +158,7 @@ const CreditUsagePage: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-page)] px-6">
         <div className="text-center space-y-8 max-w-md">
-          <div className="w-20 h-20 bg-brand-blue/10 rounded-2xl flex items-center justify-center mx-auto text-brand-blue">
+          <div className="w-20 h-20 bg-brand-blue/10 rounded-lg flex items-center justify-center mx-auto text-brand-blue">
             <Lock size={36} />
           </div>
           <div className="space-y-3">
@@ -267,7 +267,7 @@ const CreditUsagePage: React.FC = () => {
           className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-10"
         >
           {/* Current Plan */}
-          <div className="lg:col-span-4 p-6 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl flex flex-col">
+          <div className="lg:col-span-4 p-6 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-lg flex flex-col">
             <div className="flex items-center gap-2.5 mb-5">
               <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
                 <Crown size={14} className="text-amber-500" />
@@ -309,7 +309,7 @@ const CreditUsagePage: React.FC = () => {
           </div>
 
           {/* Purchase History */}
-          <div className="lg:col-span-8 p-6 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl">
+          <div className="lg:col-span-8 p-6 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-lg">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
@@ -362,7 +362,7 @@ const CreditUsagePage: React.FC = () => {
             className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-10"
           >
             {/* Breakdown */}
-            <div className="lg:col-span-7 p-6 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl">
+            <div className="lg:col-span-7 p-6 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-lg">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
@@ -404,7 +404,7 @@ const CreditUsagePage: React.FC = () => {
             {/* Quick actions */}
             <div className="lg:col-span-5 flex flex-col gap-4">
               {credits < 500 && (
-                <div className="p-5 bg-amber-500/5 border border-amber-500/15 rounded-2xl flex items-start gap-4">
+                <div className="p-5 bg-amber-500/5 border border-amber-500/15 rounded-lg flex items-start gap-4">
                   <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0 mt-0.5">
                     <AlertTriangle size={16} className="text-amber-500" />
                   </div>
@@ -417,7 +417,7 @@ const CreditUsagePage: React.FC = () => {
                   </div>
                 </div>
               )}
-              <div className="p-5 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl flex-grow flex flex-col justify-center">
+              <div className="p-5 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-lg flex-grow flex flex-col justify-center">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-9 h-9 rounded-xl bg-brand-blue/10 flex items-center justify-center">
                     <Wallet size={16} className="text-brand-blue" />
@@ -483,7 +483,7 @@ const CreditUsagePage: React.FC = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
-          className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl overflow-hidden shadow-sm"
+          className="bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-lg overflow-hidden shadow-sm"
         >
           {loading ? (
             <div className="py-24 flex flex-col items-center gap-3">
@@ -619,7 +619,7 @@ const CreditUsagePage: React.FC = () => {
 // ─── HELPER COMPONENTS ──────────────────────────────
 
 const StatCard = ({ label, value, unit, icon, color }: { label: string; value: string; unit: string; icon: React.ReactNode; color: string }) => (
-  <div className="p-5 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl group hover:border-black/[0.08] dark:hover:border-white/[0.08] transition-all">
+  <div className="p-5 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-lg group hover:border-black/[0.08] dark:hover:border-white/[0.08] transition-all">
     <div className="flex items-center justify-between mb-3">
       <div className="w-9 h-9 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform" style={{ backgroundColor: `${color}12`, color }}>
         {icon}

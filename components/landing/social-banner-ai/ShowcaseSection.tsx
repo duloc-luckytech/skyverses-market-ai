@@ -226,7 +226,7 @@ const BannerCard: React.FC<{
               initial={{ opacity: 0, scale: 0.6 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.05, type: 'spring', stiffness: 400, damping: 20 }}
-              className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center"
+              className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white/[0.15] backdrop-blur-sm flex items-center justify-center"
             >
               <ZoomIn size={12} className="text-white" />
             </motion.div>
@@ -383,7 +383,7 @@ export const ShowcaseSection: React.FC = () => {
                 Mỗi banner được tạo từ prompt chi tiết — đúng kích thước, đúng nền tảng, sẵn sàng đăng ngay
               </p>
             </div>
-            <div className="flex items-center gap-1.5 text-[10px] font-semibold text-brand-blue bg-brand-blue/[0.08] border border-brand-blue/15 px-3 py-1.5 rounded-full whitespace-nowrap shrink-0">
+            <div className="flex items-center gap-1.5 text-[10px] font-semibold text-brand-blue bg-brand-blue/[0.08] border border-brand-blue/[0.15] px-3 py-1.5 rounded-full whitespace-nowrap shrink-0">
               <Sparkles size={11} />
               100% AI Generated
             </div>

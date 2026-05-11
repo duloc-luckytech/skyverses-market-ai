@@ -180,10 +180,10 @@ const UseCasesPage = () => {
         >
           {STATS.map((s, i) => (
             <motion.div key={i} variants={fadeUp} custom={i}
-              className="rounded-lg border border-white/5 bg-white/[0.02] p-5 text-center"
+              className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-5 text-center"
             >
               <div className="text-3xl font-bold bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent mb-1">{s.value}</div>
-              <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">{s.label}</div>
+              <div className="text-[10px] font-semibold text-white/50 uppercase tracking-widest">{s.label}</div>
             </motion.div>
           ))}
         </motion.div>
@@ -202,24 +202,24 @@ const UseCasesPage = () => {
                 initial={{ opacity: 0, y: 40 }}
                 animate={cardInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="group relative rounded-xl border border-white/5 bg-white/[0.02] overflow-hidden hover:border-white/10 transition-all duration-500"
+                className="group relative rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden hover:border-white/10 transition-all duration-500"
               >
                 {/* Top gradient line */}
                 <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${cat.gradient} opacity-0 group-hover:opacity-60 transition-opacity`} />
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
                   {/* Left: Info */}
-                  <div className="lg:col-span-4 p-8 lg:p-10 flex flex-col justify-between border-r border-white/5">
+                  <div className="lg:col-span-4 p-8 lg:p-10 flex flex-col justify-between border-r border-white/[0.06]">
                     <div>
                       <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${cat.gradient} flex items-center justify-center text-white mb-5 shadow-lg`}>
                         {cat.icon}
                       </div>
                       <h3 className="text-2xl font-bold mb-1">{cat.title}</h3>
-                      <p className="text-sm text-gray-500 mb-6">{cat.subtitle}</p>
+                      <p className="text-sm text-white/50 mb-6">{cat.subtitle}</p>
 
                       <div className="flex flex-wrap gap-2 mb-6">
                         {cat.tools.map((tool, i) => (
-                          <span key={i} className="px-3 py-1 rounded-lg text-[11px] font-semibold bg-white/5 text-gray-400 border border-white/5">
+                          <span key={i} className="px-3 py-1 rounded-lg text-[11px] font-semibold bg-white/[0.06] text-white/60 border border-white/[0.06]">
                             {tool}
                           </span>
                         ))}
@@ -237,11 +237,11 @@ const UseCasesPage = () => {
                   <div className="lg:col-span-8 p-8 lg:p-10">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {cat.cases.map((c, i) => (
-                        <div key={i} className="flex gap-3 p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all group/item">
+                        <div key={i} className="flex gap-3 p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-white/10 transition-all group/item">
                           <div className={`w-6 h-6 rounded-full bg-gradient-to-br ${cat.gradient} flex items-center justify-center flex-shrink-0 mt-0.5`}>
                             <Star size={10} className="text-white" />
                           </div>
-                          <p className="text-sm text-gray-400 group-hover/item:text-gray-300 leading-relaxed transition-colors">{c}</p>
+                          <p className="text-sm text-white/60 group-hover/item:text-white/70 leading-relaxed transition-colors">{c}</p>
                         </div>
                       ))}
                     </div>
@@ -263,12 +263,12 @@ const UseCasesPage = () => {
               <h2 className="text-3xl md:text-5xl font-bold mb-6">
                 Don't See Your Industry?
               </h2>
-              <p className="text-gray-400 max-w-xl mx-auto mb-10">
+              <p className="text-white/60 max-w-xl mx-auto mb-10">
                 Skyverses AI tools are universal. Whatever you create, our platform adapts to your workflow.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link to="/apps"
-                  className="bg-white text-black px-10 py-4 rounded-lg font-bold text-sm flex items-center gap-3 hover:scale-105 transition-all shadow-xl"
+                  className="bg-white text-black px-10 py-4 rounded-lg font-bold text-sm flex items-center gap-3 hover:scale-105 transition-all shadow-atlas-lg"
                 >
                   Explore All Tools <ArrowRight size={18} />
                 </Link>

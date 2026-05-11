@@ -935,7 +935,7 @@ const PodcastVoiceWorkspace: React.FC<Props> = ({ onClose }) => {
         </aside>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-[510] border-t border-black/[0.06] bg-white/95 px-4 py-3 shadow-2xl backdrop-blur dark:border-white/[0.08] dark:bg-[#111722]/95 lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-[510] border-t border-black/[0.06] bg-white/95 px-4 py-3 shadow-atlas-lg backdrop-blur dark:border-white/[0.08] dark:bg-[#111722]/95 lg:hidden">
         <div className="mb-2 flex rounded-lg border border-slate-200 bg-slate-100 p-1 dark:border-white/[0.08] dark:bg-white/[0.04]">
           <button
             type="button"

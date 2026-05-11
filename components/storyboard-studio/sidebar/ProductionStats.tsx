@@ -73,7 +73,7 @@ export const ProductionStats: React.FC<ProductionStatsProps> = ({
             <Crown size={9} /> PRO
           </div>
         ) : (
-          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[8px] font-bold uppercase tracking-wider text-white/30">
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/[0.06] border border-white/10 text-[8px] font-bold uppercase tracking-wider text-white/30">
             <Zap size={9} /> Free
           </div>
         )}
@@ -115,7 +115,7 @@ export const ProductionStats: React.FC<ProductionStatsProps> = ({
               {quotaUsed}/{FREE_SCENE_LIMIT}
             </p>
           </div>
-          <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+          <div className="h-1 w-full bg-white/[0.06] rounded-full overflow-hidden">
             <motion.div
               className={`h-full rounded-full ${quotaUsed >= FREE_SCENE_LIMIT ? 'bg-red-500' : 'bg-gradient-to-r from-brand-blue to-purple-500'}`}
               initial={{ width: '0%' }}

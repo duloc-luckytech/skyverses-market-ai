@@ -38,7 +38,7 @@ const VideoResultCard: React.FC<{
 
   return (
     <motion.div layout initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-      className="group relative bg-white dark:bg-white/[0.02] border border-slate-200/80 dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:border-indigo-500/20 transition-all"
+      className="group relative bg-white dark:bg-white/[0.02] border border-slate-200/80 dark:border-white/[0.08] rounded-lg overflow-hidden shadow-sm hover:shadow-lg hover:border-indigo-500/20 transition-all"
     >
       <div className="aspect-video bg-black relative overflow-hidden cursor-pointer" onClick={togglePlay}>
         {task.status === 'processing' ? (
@@ -117,7 +117,7 @@ const LinkExtractorModal: React.FC<{
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
           <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-            className="relative w-full max-w-lg bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl">
+            className="relative w-full max-w-lg bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.06] rounded-lg overflow-hidden shadow-atlas-lg">
             <div className="p-6 border-b border-slate-100 dark:border-white/[0.08] flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-500">
@@ -128,7 +128,7 @@ const LinkExtractorModal: React.FC<{
                   <p className="text-[10px] text-slate-400 dark:text-slate-500">TikTok, Facebook, Instagram, YouTube...</p>
                 </div>
               </div>
-              <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded-lg hover:bg-black/5 dark:hover:bg-white/5">
+              <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded-lg hover:bg-black/[0.06] dark:hover:bg-white/[0.06]">
                 <X size={18} />
               </button>
             </div>
@@ -310,7 +310,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
       {/* ─── HEADER ─── */}
       <header className="h-14 border-b border-slate-200/80 dark:border-white/[0.08] flex items-center justify-between px-4 lg:px-6 shrink-0 z-50 bg-white/90 dark:bg-[var(--atlas-bg-panel)]/90 backdrop-blur-lg">
         <div className="flex items-center gap-3">
-          <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors rounded-lg hover:bg-black/5 dark:hover:bg-white/5">
+          <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors rounded-lg hover:bg-black/[0.06] dark:hover:bg-white/[0.06]">
             <ChevronLeft size={18} />
           </button>
           <div className="flex items-center gap-2">
@@ -354,7 +354,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
 
         {/* ─── MOBILE FAB ─── */}
         <button onClick={() => setIsMobileExpanded(true)}
-          className="lg:hidden fixed bottom-6 left-4 z-[130] w-12 h-12 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full shadow-2xl flex items-center justify-center text-white active:scale-95 transition-transform">
+          className="lg:hidden fixed bottom-6 left-4 z-[130] w-12 h-12 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full shadow-atlas-lg flex items-center justify-center text-white active:scale-95 transition-transform">
           <Menu size={20} />
         </button>
 
@@ -468,7 +468,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
                       <AnimatePresence>
                         {showModelMenu && (
                           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
-                            className="absolute bottom-full mb-1 w-full bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.06] rounded-xl shadow-xl p-1.5 z-[110] max-h-48 overflow-y-auto no-scrollbar">
+                            className="absolute bottom-full mb-1 w-full bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.06] rounded-xl shadow-atlas-lg p-1.5 z-[110] max-h-48 overflow-y-auto no-scrollbar">
                             {v.availableModels.map(m => (
                               <button key={m._id} onClick={() => { v.setSelectedModel(m); setShowModelMenu(false); }}
                                 className={`w-full p-2.5 flex flex-col items-start rounded-lg transition-all text-left ${v.selectedModel?._id === m._id
@@ -518,7 +518,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
           <div className="shrink-0 border-t border-slate-200/80 dark:border-white/[0.08] bg-white/80 dark:bg-[var(--atlas-bg-panel)]/80 backdrop-blur-lg px-4 py-3 space-y-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <button onClick={() => setShowQualityModal(true)} className="p-1 text-slate-400 dark:text-slate-500 hover:text-indigo-400 transition-colors rounded-md hover:bg-black/5 dark:hover:bg-white/5">
+                <button onClick={() => setShowQualityModal(true)} className="p-1 text-slate-400 dark:text-slate-500 hover:text-indigo-400 transition-colors rounded-md hover:bg-black/[0.06] dark:hover:bg-white/[0.06]">
                   <Info size={12} />
                 </button>
                 <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">{credits.toLocaleString()} CR</span>
@@ -601,7 +601,7 @@ const VideoAnimateWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
             <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }}
-              className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.06] rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl">
+              className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.06] rounded-lg w-full max-w-xl overflow-hidden shadow-atlas-lg">
               <div className="p-6 border-b border-slate-100 dark:border-white/[0.08] flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-500"><Info size={18} /></div>

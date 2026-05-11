@@ -64,16 +64,16 @@ const RealEstateAI: React.FC = () => {
               >
                 Khởi chạy Studio <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="px-12 py-6 border border-slate-200 dark:border-white/10 rounded-sm text-xs font-bold uppercase tracking-[0.4em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/5 transition-all backdrop-blur-md flex items-center justify-center gap-4">
+              <button className="px-12 py-6 border border-slate-200 dark:border-white/10 rounded-sm text-xs font-bold uppercase tracking-[0.4em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/[0.06] transition-all backdrop-blur-md flex items-center justify-center gap-4">
                 Xem Showreel <Play size={16} fill="currentColor" />
               </button>
             </div>
           </div>
 
           <div className="lg:col-span-6 relative order-1 lg:order-2">
-             <div className="aspect-[4/3] bg-slate-50 dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/5 rounded-xl p-4 shadow-3xl relative overflow-hidden transition-colors flex flex-col justify-center items-center group">
+             <div className="aspect-[4/3] bg-slate-50 dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/[0.06] rounded-xl p-4 shadow-atlas-xl relative overflow-hidden transition-colors flex flex-col justify-center items-center group">
                 <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/10 to-transparent"></div>
-                <div className="relative z-10 w-full h-full rounded-2xl overflow-hidden shadow-2xl border border-white dark:border-white/10">
+                <div className="relative z-10 w-full h-full rounded-lg overflow-hidden shadow-atlas-lg border border-white dark:border-white/10">
                    <div className="absolute inset-0 grid grid-cols-2">
                       <img src="https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&q=80&w=800" className="w-full h-full object-cover grayscale opacity-40 blur-sm" alt="Before" />
                       <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=800" className="w-full h-full object-cover" alt="After" />
@@ -90,14 +90,14 @@ const RealEstateAI: React.FC = () => {
       </section>
 
       {/* 2. CAPABILITIES GRID */}
-      <section className="py-40 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-[var(--atlas-bg-page)] transition-colors">
+      <section className="py-40 border-t border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-[var(--atlas-bg-page)] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center space-y-4 mb-24">
              <h2 className="text-4xl lg:text-6xl font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white transition-colors">Giải pháp cho Realtors & Designers</h2>
              <p className="text-slate-400 dark:text-gray-500 uppercase text-[10px] font-bold tracking-[0.5em]">Identity Persistence // Multi-Modal Architecture</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-200 dark:bg-white/5 border border-slate-200 dark:border-white/5 shadow-3xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-200 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.06] shadow-atlas-xl">
             {[
               { t: 'Virtual Staging', i: <Home size={24}/>, d: 'Tự động thêm nội thất vào các căn hộ trống một cách tự nhiên và thẩm mỹ.' },
               { t: 'Interior Renovation', i: <Palette size={24}/>, d: 'Cải tạo toàn bộ phong cách nội thất từ ảnh chụp hiện trạng thô sơ.' },
@@ -106,7 +106,7 @@ const RealEstateAI: React.FC = () => {
               { t: '8K Render Depth', i: <Maximize2 size={24}/>, d: 'Kết xuất hình ảnh chất lượng siêu cao, sẵn sàng cho in ấn banner quảng cáo.' },
               { t: 'VPC Privacy', i: <ShieldCheck size={24}/>, d: 'Dữ liệu bất động sản của bạn được bảo mật tuyệt đối trong môi trường private.' }
             ].map((f, i) => (
-              <div key={i} className="p-16 bg-white dark:bg-black space-y-8 group hover:bg-purple-500/[0.02] transition-all duration-500 border-r border-slate-50 dark:border-white/5 last:border-r-0">
+              <div key={i} className="p-16 bg-white dark:bg-black space-y-8 group hover:bg-purple-500/[0.02] transition-all duration-500 border-r border-slate-50 dark:border-white/[0.06] last:border-r-0">
                  <div className="w-14 h-14 border border-slate-100 dark:border-white/10 flex items-center justify-center text-slate-400 group-hover:text-purple-600 transition-colors rounded-sm shadow-sm">
                     {f.i}
                  </div>

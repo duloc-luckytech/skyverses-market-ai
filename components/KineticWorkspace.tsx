@@ -194,11 +194,11 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[var(--atlas-bg-page)] text-black dark:text-white font-sans overflow-hidden relative selection:bg-yellow-500/30 transition-colors duration-500">
       
       {/* 1. CONTROL TERMINAL (LEFT) */}
-      <aside className="w-full lg:w-[380px] h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-[var(--atlas-bg-page)] dark:bg-[var(--atlas-bg-page)] z-[100] shadow-2xl overflow-hidden transition-colors">
+      <aside className="w-full lg:w-[380px] h-full flex flex-col border-r border-black/5 dark:border-white/[0.06] bg-[var(--atlas-bg-page)] dark:bg-[var(--atlas-bg-page)] z-[100] shadow-atlas-lg overflow-hidden transition-colors">
          <div className="p-8 space-y-10 overflow-y-auto no-scrollbar flex-grow">
             <header className="flex justify-between items-center">
                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 bg-yellow-500 flex items-center justify-center rounded-sm shadow-xl text-black">
+                  <div className="w-9 h-9 bg-yellow-500 flex items-center justify-center rounded-sm shadow-atlas-lg text-black">
                      <Crown size={18} />
                   </div>
                   <div className="space-y-0.5">
@@ -225,11 +225,11 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             </section>
 
             {/* QUICK CONFIG */}
-            <section className="space-y-6 pt-6 border-t border-black/5 dark:border-white/5">
+            <section className="space-y-6 pt-6 border-t border-black/5 dark:border-white/[0.06]">
                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-3">
                      <label className="text-[8px] font-bold uppercase text-gray-400">Resolution</label>
-                     <select value={resolution} onChange={(e) => setResolution(e.target.value as any)} className="w-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 p-2 text-[9px] font-bold uppercase outline-none">
+                     <select value={resolution} onChange={(e) => setResolution(e.target.value as any)} className="w-full bg-black/[0.06] dark:bg-white/[0.06] border border-black/5 dark:border-white/10 p-2 text-[9px] font-bold uppercase outline-none">
                         <option value="720p">720p</option>
                         <option value="1080p">1080p</option>
                      </select>
@@ -261,18 +261,18 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             </section>
 
             {/* KEYFRAMES */}
-            <section className="space-y-4 pt-6 border-t border-black/5 dark:border-white/5">
+            <section className="space-y-4 pt-6 border-t border-black/5 dark:border-white/[0.06]">
                <label className="text-[9px] font-bold uppercase text-gray-400 dark:text-gray-500 tracking-[0.3em]">{t('studio.frames')}</label>
-               <div onClick={() => firstInputRef.current?.click()} className={`aspect-video border-2 border-dashed flex items-center justify-center cursor-pointer rounded-sm overflow-hidden ${firstFrame ? 'border-yellow-500' : 'border-black/10 dark:border-white/5'}`}>
+               <div onClick={() => firstInputRef.current?.click()} className={`aspect-video border-2 border-dashed flex items-center justify-center cursor-pointer rounded-sm overflow-hidden ${firstFrame ? 'border-yellow-500' : 'border-black/10 dark:border-white/[0.06]'}`}>
                   {firstFrame ? <img src={firstFrame} className="w-full h-full object-cover" /> : <Upload size={18} className="text-gray-300" />}
                   <input type="file" ref={firstInputRef} className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'FIRST')} />
                </div>
                <div className="grid grid-cols-2 gap-2">
-                  <div onClick={() => lastInputRef.current?.click()} className="aspect-square border border-dashed border-black/10 dark:border-white/5 flex items-center justify-center cursor-pointer">
+                  <div onClick={() => lastInputRef.current?.click()} className="aspect-square border border-dashed border-black/10 dark:border-white/[0.06] flex items-center justify-center cursor-pointer">
                     {lastFrame ? <img src={lastFrame} className="w-full h-full object-cover" /> : <Repeat size={14} className="text-gray-300" />}
                     <input type="file" ref={lastInputRef} className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'LAST')} />
                   </div>
-                  <div onClick={() => styleInputRef.current?.click()} className="aspect-square border border-dashed border-black/10 dark:border-white/5 flex items-center justify-center cursor-pointer">
+                  <div onClick={() => styleInputRef.current?.click()} className="aspect-square border border-dashed border-black/10 dark:border-white/[0.06] flex items-center justify-center cursor-pointer">
                     {styleRef ? <img src={styleRef} className="w-full h-full object-cover" /> : <Palette size={14} className="text-gray-300" />}
                     <input type="file" ref={styleInputRef} className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'STYLE')} />
                   </div>
@@ -280,14 +280,14 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             </section>
 
             {/* TRAJECTORY SELECTOR */}
-            <section className="space-y-4 pt-6 border-t border-black/5 dark:border-white/5">
+            <section className="space-y-4 pt-6 border-t border-black/5 dark:border-white/[0.06]">
                <label className="text-[9px] font-bold uppercase text-gray-400 dark:text-gray-500 tracking-[0.3em]">Trajectory</label>
                <div className="grid grid-cols-1 gap-2">
                   {TRAJECTORIES.map(tr => (
                     <button 
                       key={tr.id}
                       onClick={() => setActiveTrajectory(tr)}
-                      className={`p-3 border text-left flex justify-between items-center transition-all rounded-sm ${activeTrajectory.id === tr.id ? 'border-yellow-500 bg-yellow-500/5' : 'border-black/5 dark:border-white/5 opacity-60'}`}
+                      className={`p-3 border text-left flex justify-between items-center transition-all rounded-sm ${activeTrajectory.id === tr.id ? 'border-yellow-500 bg-yellow-500/5' : 'border-black/5 dark:border-white/[0.06] opacity-60'}`}
                     >
                        <div>
                           <p className="text-[10px] font-bold uppercase">{tr.name}</p>
@@ -300,7 +300,7 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             </section>
 
             {/* RECENT JOBS */}
-            <section className="space-y-4 pt-6 border-t border-black/5 dark:border-white/5">
+            <section className="space-y-4 pt-6 border-t border-black/5 dark:border-white/[0.06]">
                <label className="text-[9px] font-bold uppercase text-gray-400 dark:text-gray-500 tracking-[0.4em] flex items-center justify-between">
                   <span>{t('studio.recent')}</span>
                   {processingCount > 0 && <span className="text-yellow-600 animate-pulse">{processingCount} active</span>}
@@ -313,7 +313,7 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                       <button 
                         key={task.id} 
                         onClick={() => setActiveTaskId(task.id)}
-                        className={`w-full p-3 border flex items-center gap-3 transition-all rounded-sm ${activeTaskId === task.id ? 'border-yellow-500 bg-yellow-500/5' : 'border-black/5 dark:border-white/5 opacity-60'}`}
+                        className={`w-full p-3 border flex items-center gap-3 transition-all rounded-sm ${activeTaskId === task.id ? 'border-yellow-500 bg-yellow-500/5' : 'border-black/5 dark:border-white/[0.06] opacity-60'}`}
                       >
                          <div className="w-8 h-8 bg-black rounded-sm overflow-hidden flex items-center justify-center shrink-0">
                             {task.status === 'processing' ? <Loader2 size={12} className="animate-spin text-yellow-500" /> : task.videoUrl ? <Film size={12} className="text-white" /> : <AlertCircle size={12} className="text-red-500" />}
@@ -333,7 +333,7 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             </section>
          </div>
 
-         <div className="h-20 border-t border-black/5 dark:border-white/5 p-5 bg-gray-50 dark:bg-black mt-auto flex flex-col gap-1 shrink-0">
+         <div className="h-20 border-t border-black/5 dark:border-white/[0.06] p-5 bg-gray-50 dark:bg-black mt-auto flex flex-col gap-1 shrink-0">
             <div className="flex-grow overflow-hidden font-mono text-[8px] text-gray-400">
                {logs.map((log, i) => <p key={i}>{log}</p>)}
             </div>
@@ -355,7 +355,7 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                {activeTask ? (
                   <motion.div 
                     key={activeTask.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                    className={`relative w-full max-w-5xl bg-black rounded-sm overflow-hidden shadow-2xl ${aspectRatio === '16:9' ? 'aspect-video' : 'max-w-sm aspect-[9/16]'}`}
+                    className={`relative w-full max-w-5xl bg-black rounded-sm overflow-hidden shadow-atlas-lg ${aspectRatio === '16:9' ? 'aspect-video' : 'max-w-sm aspect-[9/16]'}`}
                   >
                      {activeTask.status === 'processing' ? (
                         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-3xl space-y-6">
@@ -382,10 +382,10 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
                      {activeTask.status === 'completed' && (
                         <div className="absolute top-6 right-6 flex flex-col gap-3">
-                           <button className="p-3 bg-black/80 backdrop-blur-xl border border-white/10 rounded-full text-white hover:bg-yellow-500 hover:text-black transition-all shadow-2xl">
+                           <button className="p-3 bg-black/80 backdrop-blur-xl border border-white/10 rounded-full text-white hover:bg-yellow-500 hover:text-black transition-all shadow-atlas-lg">
                               <Share2 size={16} />
                            </button>
-                           <a href={activeTask.videoUrl!} download className="p-3 bg-white text-black rounded-full shadow-2xl hover:scale-110 transition-all">
+                           <a href={activeTask.videoUrl!} download className="p-3 bg-white text-black rounded-full shadow-atlas-lg hover:scale-110 transition-all">
                               <Download size={16} />
                            </a>
                         </div>
@@ -401,7 +401,7 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
          </div>
 
          {/* PRODUCTION HUD (BOTTOM) */}
-         <div className="h-32 border-t border-black/5 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-page)] px-8 lg:px-12 flex items-center justify-between z-40 transition-colors">
+         <div className="h-32 border-t border-black/5 dark:border-white/[0.06] bg-white dark:bg-[var(--atlas-bg-page)] px-8 lg:px-12 flex items-center justify-between z-40 transition-colors">
             <div className="flex items-center gap-10">
                <div className="hidden md:flex flex-col gap-2">
                   <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Master Output</span>
@@ -427,7 +427,7 @@ const KineticWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                <button 
                  onClick={handleSynthesize}
                  disabled={!firstFrame || processingCount > 0}
-                 className={`group h-16 px-12 lg:px-24 flex items-center justify-center gap-3 transition-all relative overflow-hidden rounded-sm shadow-2xl ${firstFrame ? 'bg-yellow-500 text-black hover:scale-105 active:scale-95' : 'bg-black/5 dark:bg-white/5 text-gray-400'}`}
+                 className={`group h-16 px-12 lg:px-24 flex items-center justify-center gap-3 transition-all relative overflow-hidden rounded-sm shadow-atlas-lg ${firstFrame ? 'bg-yellow-500 text-black hover:scale-105 active:scale-95' : 'bg-black/[0.06] dark:bg-white/[0.06] text-gray-400'}`}
                >
                   <Zap size={18} className={processingCount > 0 ? 'animate-pulse' : ''} fill="currentColor" />
                   <span className="text-[10px] font-bold uppercase tracking-[0.4em]">{t('studio.render')}</span>

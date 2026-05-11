@@ -22,7 +22,7 @@ const DemoInterface: React.FC<DemoInterfaceProps> = ({ type }) => {
       return <AetherFlowInterface />;
     default:
       return (
-        <div className="flex flex-col items-center justify-center h-full text-gray-500 gap-4 opacity-40 italic">
+        <div className="flex flex-col items-center justify-center h-full text-white/30 gap-4 opacity-40 italic">
           <AlertCircle size={48} />
           <p className="text-sm font-bold uppercase tracking-[0.4em]">Node_Protocol_Not_Supported</p>
         </div>

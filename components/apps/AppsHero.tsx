@@ -14,7 +14,7 @@ export const AppsHero: React.FC = () => {
         <motion.div 
           initial={{ opacity: 0, y: 20 }} 
           animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25 rounded-full"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/[0.15] dark:border-brand-blue/25 rounded-full"
         >
           <Blocks size={14} className="text-brand-blue" />
           <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-brand-blue">App Ecosystem</span>

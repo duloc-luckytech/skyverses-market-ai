@@ -36,13 +36,13 @@ interface StudioSidebarProps {
 export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
   const labelStyle = "text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest mb-3 block px-1";
   const inputBg = "bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-transparent focus:border-brand-blue/30 rounded-xl transition-all outline-none text-slate-900 dark:text-white text-sm shadow-inner";
-  const selectStyle = "w-full bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/5 p-2.5 rounded-lg text-[10px] font-bold uppercase outline-none appearance-none focus:border-brand-blue transition-all cursor-pointer text-slate-900 dark:text-white shadow-inner";
+  const selectStyle = "w-full bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.06] p-2.5 rounded-lg text-[10px] font-bold uppercase outline-none appearance-none focus:border-brand-blue transition-all cursor-pointer text-slate-900 dark:text-white shadow-inner";
 
   const isInputValid = props.songName.trim().length >= 5 && props.description.trim().length > 0 && (props.isInstrumental || props.lyrics.trim().length > 0);
 
   return (
     <aside 
-      className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[400px] bg-white dark:bg-[var(--atlas-bg-panel)] border-t lg:border-t-0 lg:border-r border-black/5 dark:border-white/5 flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-2xl transition-all duration-500 ease-in-out ${props.isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-16 lg:h-full lg:rounded-none'}`}
+      className={`fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[400px] bg-white dark:bg-[var(--atlas-bg-panel)] border-t lg:border-t-0 lg:border-r border-black/5 dark:border-white/[0.06] flex flex-col z-[150] lg:z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-atlas-lg transition-all duration-500 ease-in-out ${props.isMobileExpanded ? 'h-[92dvh] rounded-t-[2.5rem]' : 'h-16 lg:h-full lg:rounded-none'}`}
     >
       {/* Mobile Handle Bar */}
       <div 
@@ -62,7 +62,7 @@ export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
       </div>
 
       {/* Header (Desktop Only) */}
-      <div className="hidden lg:flex h-16 lg:h-20 items-center px-6 border-b border-black/5 dark:border-white/5 shrink-0">
+      <div className="hidden lg:flex h-16 lg:h-20 items-center px-6 border-b border-black/5 dark:border-white/[0.06] shrink-0">
         <button onClick={props.onClose} className="p-2 -ml-2 text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white transition-colors mr-2">
           <ChevronLeft size={24} />
         </button>
@@ -111,7 +111,7 @@ export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
           />
         </div>
 
-        <div className="flex items-center justify-between py-4 px-1 border-t border-black/5 dark:border-white/5">
+        <div className="flex items-center justify-between py-4 px-1 border-t border-black/5 dark:border-white/[0.06]">
           <span className="text-xs font-bold uppercase text-slate-600 dark:text-gray-300 tracking-wider italic">Nhạc không lời</span>
           <button 
             onClick={() => props.setIsInstrumental(!props.isInstrumental)}
@@ -175,7 +175,7 @@ export const StudioSidebar: React.FC<StudioSidebarProps> = (props) => {
         <button 
           onClick={props.onGenerate}
           disabled={props.isGenerating || !isInputValid}
-          className="w-full py-5 bg-gradient-to-r from-brand-blue to-[#8a3ffc] text-white rounded-xl text-xs font-bold uppercase tracking-[0.4em] shadow-xl hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-4 group disabled:opacity-30 relative overflow-hidden"
+          className="w-full py-5 bg-gradient-to-r from-brand-blue to-[#8a3ffc] text-white rounded-xl text-xs font-bold uppercase tracking-[0.4em] shadow-atlas-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-4 group disabled:opacity-30 relative overflow-hidden"
         >
           <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
           {props.isGenerating ? <Loader2 className="animate-spin" size={20} /> : <Zap size={18} fill="currentColor" />}

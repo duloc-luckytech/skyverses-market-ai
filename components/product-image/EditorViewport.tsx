@@ -61,12 +61,12 @@ export const EditorViewport: React.FC<EditorViewportProps> = ({
       <AnimatePresence>
         {isCropping && !isGenerating && (
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="absolute top-20 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center gap-2.5 w-full max-w-4xl pointer-events-none px-4">
-            <div className="bg-white/95 dark:bg-[var(--atlas-bg-panel)]/95 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.06] rounded-xl p-1 flex items-center gap-0.5 pointer-events-auto shadow-xl overflow-x-auto no-scrollbar max-w-full">
+            <div className="bg-white/95 dark:bg-[var(--atlas-bg-panel)]/95 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.06] rounded-xl p-1 flex items-center gap-0.5 pointer-events-auto shadow-atlas-lg overflow-x-auto no-scrollbar max-w-full">
               {ratioPresets.map(r => (
-                <button key={r.label} onClick={() => handleRatioSelect(r.value)} className={`px-4 py-2 text-[10px] font-bold uppercase rounded-lg transition-all whitespace-nowrap ${cropRatio === r.value ? 'bg-brand-blue text-white shadow-md' : 'text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'}`}>{r.label}</button>
+                <button key={r.label} onClick={() => handleRatioSelect(r.value)} className={`px-4 py-2 text-[10px] font-bold uppercase rounded-lg transition-all whitespace-nowrap ${cropRatio === r.value ? 'bg-brand-blue text-white shadow-md' : 'text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]'}`}>{r.label}</button>
               ))}
             </div>
-            <div className="bg-white/95 dark:bg-[var(--atlas-bg-panel)]/95 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.06] rounded-xl p-2.5 flex items-center gap-6 pointer-events-auto shadow-xl">
+            <div className="bg-white/95 dark:bg-[var(--atlas-bg-panel)]/95 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.06] rounded-xl p-2.5 flex items-center gap-6 pointer-events-auto shadow-atlas-lg">
                <div className="flex items-center gap-3 pr-5 border-r border-slate-200 dark:border-white/[0.06]">
                   <span className="text-[12px] font-bold text-slate-700 dark:text-white/80">
                      {imageRef.current ? Math.round((cropBox.w / 100) * imageRef.current.naturalWidth) : 0} × {imageRef.current ? Math.round((cropBox.h / 100) * imageRef.current.naturalHeight) : 0}
@@ -83,7 +83,7 @@ export const EditorViewport: React.FC<EditorViewportProps> = ({
 
       {/* Workspace Area */}
       <div className="flex-grow flex items-center justify-center p-4 pr-16 md:p-12 lg:pr-24 pb-32 lg:pb-12 overflow-auto no-scrollbar relative">
-         <div className="relative shadow-2xl dark:shadow-[0_20px_60px_rgba(0,0,0,0.4)] transition-transform duration-300 flex items-center justify-center" style={{ transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoom / 100})` }}>
+         <div className="relative shadow-atlas-lg dark:shadow-[0_20px_60px_rgba(0,0,0,0.4)] transition-transform duration-300 flex items-center justify-center" style={{ transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoom / 100})` }}>
             {result ? (
                <div ref={containerRef as any} className="relative inline-block bg-white dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/[0.06] rounded-lg transition-all overflow-hidden">
                   <img ref={imageRef as any} src={result} className={`max-w-[75vw] max-h-[70vh] object-contain pointer-events-none select-none ${visibleLayers.includes('bg') ? 'opacity-100' : 'opacity-0'}`} alt="Workspace" />
@@ -160,8 +160,8 @@ export const EditorViewport: React.FC<EditorViewportProps> = ({
                   </div>
                </motion.div>
             ) : (
-               <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center gap-6 p-10 md:p-20 rounded-2xl border-2 border-dashed border-slate-200 dark:border-white/[0.06] bg-white dark:bg-[var(--atlas-bg-panel)]/50 cursor-pointer group hover:border-brand-blue/30 transition-all" onClick={onUploadClick}>
-                  <div className="w-20 h-20 md:w-28 md:h-28 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/[0.06] rounded-2xl flex items-center justify-center text-slate-300 dark:text-white/15 group-hover:text-brand-blue group-hover:border-brand-blue/20 transition-all shadow-inner">
+               <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center gap-6 p-10 md:p-20 rounded-lg border-2 border-dashed border-slate-200 dark:border-white/[0.06] bg-white dark:bg-[var(--atlas-bg-panel)]/50 cursor-pointer group hover:border-brand-blue/30 transition-all" onClick={onUploadClick}>
+                  <div className="w-20 h-20 md:w-28 md:h-28 bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.06] rounded-lg flex items-center justify-center text-slate-300 dark:text-white/15 group-hover:text-brand-blue group-hover:border-brand-blue/20 transition-all shadow-inner">
                     <ImageUp strokeWidth={1} className="w-10 h-10 md:w-14 md:h-14" />
                   </div>
                   <div className="text-center space-y-2">

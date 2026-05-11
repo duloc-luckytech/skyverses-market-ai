@@ -127,7 +127,7 @@ const Lightbox: React.FC<{
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.2 }}
         src={item.imageUrl}
-        className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl"
+        className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-atlas-lg"
         alt=""
         onClick={e => e.stopPropagation()}
       />
@@ -479,7 +479,7 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 10 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="relative w-full h-full max-w-[1400px] max-h-[95vh] bg-white dark:bg-[var(--atlas-bg-page)] border border-black/10 dark:border-white/[0.06] flex flex-col md:rounded-2xl overflow-hidden z-10 shadow-2xl"
+        className="relative w-full h-full max-w-[1400px] max-h-[95vh] bg-white dark:bg-[var(--atlas-bg-page)] border border-black/10 dark:border-white/[0.06] flex flex-col md:rounded-lg overflow-hidden z-10 shadow-atlas-lg"
       >
         {/* ─── HEADER ─── */}
         <header className="px-5 py-4 md:px-8 md:py-5 border-b border-black/[0.06] dark:border-white/[0.04] bg-white/80 dark:bg-[var(--atlas-bg-page)]/80 backdrop-blur-xl shrink-0">
@@ -501,7 +501,7 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
               {/* Bulk mode toggle */}
               <button
                 onClick={() => { setIsBulkMode(!isBulkMode); setBulkSelected([]); }}
-                className={`p-2 rounded-lg transition-all ${isBulkMode ? 'bg-red-500/10 text-red-500' : 'text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'}`}
+                className={`p-2 rounded-lg transition-all ${isBulkMode ? 'bg-red-500/10 text-red-500' : 'text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]'}`}
                 title="Chế độ chọn hàng loạt"
               >
                 <CheckSquare size={16} />
@@ -715,7 +715,7 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
             ) : (
               /* Empty state */
               <div className="h-full flex flex-col items-center justify-center text-center gap-6">
-                <div className="w-24 h-24 rounded-3xl bg-slate-100 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.04] flex items-center justify-center">
+                <div className="w-24 h-24 rounded-xl bg-slate-100 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.04] flex items-center justify-center">
                   <ImageIcon size={40} strokeWidth={1} className="text-slate-300 dark:text-slate-600" />
                 </div>
                 <div className="space-y-2">

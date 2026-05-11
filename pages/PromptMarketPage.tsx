@@ -78,6 +78,15 @@ function localize(val: string | LocalizedString | Record<string, string> | undef
   return (val as Record<string, string>)[lang] || val.en || '';
 }
 
+function shufflePromptSets(items: PromptSet[]): PromptSet[] {
+  const shuffled = [...items];
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 // ─── Collapsible Filter Section ───────────────────────────────────────────
 
 function FilterSection({
@@ -833,7 +842,7 @@ const PromptMarketPage: React.FC = () => {
     const loadFeatured = async () => {
       setFeaturedLoading(true);
       const res = await promptMarketApi.getFeatured(8);
-      setFeaturedSets(res.data ?? []);
+      setFeaturedSets(shufflePromptSets(res.data ?? []));
       setFeaturedLoading(false);
     };
     const loadStats = async () => {

@@ -114,7 +114,7 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="flex items-center gap-1 text-xs px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-white/60 hover:text-white/90 transition-colors"
+      className="flex items-center gap-1 text-xs px-2 py-1 rounded bg-white/[0.06] hover:bg-white/10 text-white/60 hover:text-white/90 transition-colors"
       title="Copy to clipboard"
     >
       {copied ? (
@@ -214,7 +214,7 @@ function PurchaseCard({
   return (
     <motion.div
       layout
-      className="rounded-2xl border border-white/10 bg-white/[0.03] overflow-hidden"
+      className="rounded-lg border border-white/10 bg-white/[0.03] overflow-hidden"
     >
       {/* Card header / clickable row */}
       <button
@@ -231,7 +231,7 @@ function PurchaseCard({
           <p className="text-sm font-semibold text-white truncate">{title}</p>
           <div className="flex items-center gap-2 mt-0.5 flex-wrap">
             {category && (
-              <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/8 text-white/50">
+              <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/[0.08] text-white/50">
                 {category}
               </span>
             )}
@@ -366,7 +366,7 @@ export default function MyPromptPurchasesPage() {
     return (
       <div className="min-h-screen bg-black/95 flex flex-col items-center justify-center px-4 py-12">
         <div className="max-w-sm w-full text-center space-y-6">
-          <div className="w-16 h-16 rounded-2xl bg-[#7036F0]/20 flex items-center justify-center mx-auto">
+          <div className="w-16 h-16 rounded-lg bg-[#7036F0]/20 flex items-center justify-center mx-auto">
             <ShoppingBag className="w-8 h-8 text-[#7036F0]" />
           </div>
           <div>
@@ -457,7 +457,7 @@ export default function MyPromptPurchasesPage() {
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col items-center justify-center py-24 gap-5 text-center"
           >
-            <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center">
+            <div className="w-16 h-16 rounded-lg bg-white/[0.06] flex items-center justify-center">
               <Package className="w-8 h-8 text-white/20" />
             </div>
             <div>
@@ -502,7 +502,7 @@ export default function MyPromptPurchasesPage() {
             <button
               disabled={page <= 1 || loading}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="px-4 py-2 rounded-lg text-sm text-white/60 hover:text-white bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 rounded-lg text-sm text-white/60 hover:text-white bg-white/[0.06] hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               Previous
             </button>
@@ -514,7 +514,7 @@ export default function MyPromptPurchasesPage() {
             <button
               disabled={page >= totalPages || loading}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="px-4 py-2 rounded-lg text-sm text-white/60 hover:text-white bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 rounded-lg text-sm text-white/60 hover:text-white bg-white/[0.06] hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               Next
             </button>

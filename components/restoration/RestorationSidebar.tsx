@@ -92,7 +92,7 @@ export const RestorationSidebar: React.FC<Props> = ({ jobs, activeJobId, onSelec
         {/* Empty State */}
         {jobs.length === 0 && (
           <div className="py-16 md:py-24 flex flex-col items-center justify-center gap-4 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.06] flex items-center justify-center">
+            <div className="w-16 h-16 rounded-lg bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.06] flex items-center justify-center">
               <ImageIcon size={24} strokeWidth={1.5} className="text-slate-200 dark:text-white/10" />
             </div>
             <div className="hidden md:block space-y-1.5">

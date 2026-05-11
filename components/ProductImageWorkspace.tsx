@@ -215,7 +215,7 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
             )}
 
             {/* Asset Rail - Right side */}
-            <div className="absolute right-0 top-0 bottom-0 w-16 md:w-20 lg:w-24 bg-white/60 dark:bg-[var(--atlas-bg-page)]/60 backdrop-blur-xl border-l border-slate-100 dark:border-white/5 z-50 flex flex-col items-center py-4 gap-2 md:gap-3 overflow-y-auto no-scrollbar">
+            <div className="absolute right-0 top-0 bottom-0 w-16 md:w-20 lg:w-24 bg-white/60 dark:bg-[var(--atlas-bg-page)]/60 backdrop-blur-xl border-l border-slate-100 dark:border-white/[0.06] z-50 flex flex-col items-center py-4 gap-2 md:gap-3 overflow-y-auto no-scrollbar">
               <div className="text-[7px] md:text-[8px] font-bold uppercase text-slate-400 dark:text-white/30 tracking-widest flex flex-col items-center gap-1 mb-1 text-center shrink-0">
                 <Layers size={12} /> Versions
               </div>
@@ -279,9 +279,9 @@ const ProductImageWorkspace: React.FC<ProductImageWorkspaceProps> = ({
               <motion.div
                 initial={{ scale: 0.95, y: 20 }}
                 animate={{ scale: 1, y: 0 }}
-                className="max-w-sm w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-8 md:p-10 border border-slate-200 dark:border-white/[0.06] rounded-2xl text-center space-y-6 shadow-2xl transition-colors"
+                className="max-w-sm w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-8 md:p-10 border border-slate-200 dark:border-white/[0.06] rounded-lg text-center space-y-6 shadow-atlas-lg transition-colors"
               >
-                <div className="w-16 h-16 md:w-20 md:h-20 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center mx-auto text-amber-500">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-center justify-center mx-auto text-amber-500">
                   <Coins size={32} className="md:w-10 md:h-10" />
                 </div>
                 <div className="space-y-2">

@@ -87,7 +87,7 @@ const SlideGeneratingOverlay: React.FC<Props> = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
-          className="absolute inset-0 z-[200] bg-slate-950/96 backdrop-blur-lg flex flex-col items-center justify-center p-8 overflow-hidden"
+          className="absolute inset-0 z-[200] bg-[#0A0A0A]/95 backdrop-blur-lg flex flex-col items-center justify-center p-8 overflow-hidden"
         >
           {/* ── Floating particles background ── */}
           {PARTICLES.map(p => (

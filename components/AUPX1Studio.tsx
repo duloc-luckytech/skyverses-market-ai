@@ -240,8 +240,8 @@ const AUPX1Studio = () => {
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[var(--atlas-bg-page)] overflow-hidden text-black dark:text-white font-mono selection:bg-brand-blue/30">
 
-      <div className="w-full lg:w-[340px] shrink-0 flex flex-col bg-[#f9f9fb] dark:bg-[var(--atlas-bg-page)] border-r border-black/5 dark:border-white/5 overflow-y-auto no-scrollbar relative z-20">
-         <div className="p-8 border-b border-black/5 dark:border-white/5 space-y-2 bg-gradient-to-b from-brand-blue/10 to-transparent">
+      <div className="w-full lg:w-[340px] shrink-0 flex flex-col bg-[#f9f9fb] dark:bg-[var(--atlas-bg-page)] border-r border-black/5 dark:border-white/[0.06] overflow-y-auto no-scrollbar relative z-20">
+         <div className="p-8 border-b border-black/5 dark:border-white/[0.06] space-y-2 bg-gradient-to-b from-brand-blue/10 to-transparent">
             <h3 className="text-[11px] font-bold uppercase text-brand-blue tracking-[0.4em] flex items-center gap-3">
                <Workflow className="w-4 h-4" /> AUP-X1_Studio
             </h3>
@@ -263,7 +263,7 @@ const AUPX1Studio = () => {
                     <button
                       key={d.id}
                       onClick={() => !isBusy && setActiveDomain(d.id as Domain)}
-                      className={`flex items-center gap-3 p-3 border transition-all rounded-sm ${activeDomain === d.id ? 'bg-brand-blue border-brand-blue text-white shadow-lg' : 'bg-white dark:bg-white/[0.02] border-black/5 dark:border-white/5 text-gray-400'}`}
+                      className={`flex items-center gap-3 p-3 border transition-all rounded-sm ${activeDomain === d.id ? 'bg-brand-blue border-brand-blue text-white shadow-lg' : 'bg-white dark:bg-white/[0.02] border-black/5 dark:border-white/[0.06] text-gray-400'}`}
                     >
                       {d.icon}
                       <span className="text-[8px] font-bold">{d.id.split('_')[0]}</span>
@@ -285,7 +285,7 @@ const AUPX1Studio = () => {
                  <button
                    key={s.id}
                    onClick={() => !isBusy && setActiveStage(s.id as PipelineStage)}
-                   className={`w-full flex items-center justify-between p-4 border transition-all rounded-sm group ${activeStage === s.id ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white' : 'bg-transparent border-black/5 dark:border-white/5 text-gray-400'}`}
+                   className={`w-full flex items-center justify-between p-4 border transition-all rounded-sm group ${activeStage === s.id ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white' : 'bg-transparent border-black/5 dark:border-white/[0.06] text-gray-400'}`}
                  >
                    <div className="flex items-center gap-3">
                       <span className="text-gray-400 group-hover:text-brand-blue">{s.icon}</span>
@@ -297,7 +297,7 @@ const AUPX1Studio = () => {
             </div>
          </div>
 
-         <div className="p-8 border-t border-black/5 dark:border-white/5">
+         <div className="p-8 border-t border-black/5 dark:border-white/[0.06]">
             <div className="p-4 bg-brand-blue/5 border border-brand-blue/20 space-y-3 rounded-sm">
                <div className="flex items-center gap-2 text-brand-blue">
                   <ShieldCheck size={14} />
@@ -312,7 +312,7 @@ const AUPX1Studio = () => {
         <div className="flex-grow overflow-y-auto p-12 no-scrollbar flex flex-col items-center justify-center">
            <AnimatePresence mode="wait">
               {activeStage === 'ADAPTER_RENDER' ? (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full max-w-4xl aspect-video bg-black rounded shadow-2xl relative overflow-hidden">
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full max-w-4xl aspect-video bg-black rounded shadow-atlas-lg relative overflow-hidden">
                    {finalRender ? (
                       <video src={finalRender} autoPlay loop muted className="w-full h-full object-cover" />
                    ) : (
@@ -323,7 +323,7 @@ const AUPX1Studio = () => {
                    )}
                 </motion.div>
               ) : activeStage === 'ID_CORE' ? (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full max-w-md aspect-[3/4] bg-black rounded shadow-2xl relative overflow-hidden">
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full max-w-md aspect-[3/4] bg-black rounded shadow-atlas-lg relative overflow-hidden">
                    {uca.img ? (
                       <img src={uca.img} className="w-full h-full object-cover" alt="ID" />
                    ) : (
@@ -342,7 +342,7 @@ const AUPX1Studio = () => {
            </AnimatePresence>
         </div>
 
-        <div className="h-32 border-t border-black/10 dark:border-white/5 bg-[var(--atlas-bg-panel-hover)] dark:bg-black p-6 flex items-center justify-between z-10 shadow-2xl">
+        <div className="h-32 border-t border-black/10 dark:border-white/[0.06] bg-[var(--atlas-bg-panel-hover)] dark:bg-black p-6 flex items-center justify-between z-10 shadow-atlas-lg">
            <div className="flex gap-4">
               {activeStage === 'ID_CORE' && <button onClick={runIdentity} disabled={isBusy} className="bg-brand-blue text-white px-10 py-4 text-[10px] font-bold uppercase tracking-widest">Initialize ID</button>}
               {activeStage === 'ASSET_SYSTEM' && <button onClick={runAssetSystem} disabled={isBusy} className="bg-brand-blue text-white px-10 py-4 text-[10px] font-bold uppercase tracking-widest">Orchestrate Assets</button>}
@@ -361,8 +361,8 @@ const AUPX1Studio = () => {
         </div>
       </div>
 
-      <aside className="hidden xl:flex w-[320px] shrink-0 flex-col bg-[#fdfdfd] dark:bg-[var(--atlas-bg-page)] border-l border-black/10 dark:border-white/5 overflow-hidden">
-         <div className="h-16 border-b border-black/10 dark:border-white/5 flex items-center px-8 shrink-0">
+      <aside className="hidden xl:flex w-[320px] shrink-0 flex-col bg-[#fdfdfd] dark:bg-[var(--atlas-bg-page)] border-l border-black/10 dark:border-white/[0.06] overflow-hidden">
+         <div className="h-16 border-b border-black/10 dark:border-white/[0.06] flex items-center px-8 shrink-0">
             <h3 className="text-[10px] font-bold uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
                <Activity className="w-4 h-4 text-brand-blue" /> Studio_Logs
             </h3>

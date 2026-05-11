@@ -74,13 +74,13 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
         <div className="flex h-16">
           <button 
             onClick={() => setActiveTab('RESULTS')}
-            className={`flex-1 flex items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] transition-all relative ${activeTab === 'RESULTS' ? 'bg-indigo-600 text-white' : 'text-slate-500 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/[0.02]'}`}
+            className={`flex-1 flex items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] transition-all relative ${activeTab === 'RESULTS' ? 'bg-indigo-600 text-white' : 'text-slate-500 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-white hover:bg-black/[0.06] dark:hover:bg-white/[0.02]'}`}
           >
             <LayoutGrid size={14} /> XEM KẾT QUẢ {results.length > 0 && `(${results.length})`}
           </button>
           <button 
             onClick={() => setActiveTab('TEMPLATES')}
-            className={`flex-1 flex items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] transition-all relative ${activeTab === 'TEMPLATES' ? 'bg-indigo-600 text-white' : 'text-slate-500 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/[0.02]'}`}
+            className={`flex-1 flex items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] transition-all relative ${activeTab === 'TEMPLATES' ? 'bg-indigo-600 text-white' : 'text-slate-500 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-white hover:bg-black/[0.06] dark:hover:bg-white/[0.02]'}`}
           >
             <Sparkles size={14} /> THƯ VIỆN QUY TRÌNH
           </button>
@@ -121,7 +121,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
                         <div className="absolute bottom-6 left-6 right-6 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
                           <div className="flex flex-col">
                              <span className="text-[8px] font-bold text-indigo-400 uppercase tracking-widest mb-1">DỮ LIỆU HOÀN TẤT</span>
-                             <span className="text-[10px] font-bold text-zinc-100 uppercase italic">{res.timestamp}</span>
+                             <span className="text-[10px] font-bold text-white/90 uppercase italic">{res.timestamp}</span>
                           </div>
                           <div className="flex gap-2">
                             <button onClick={() => triggerDownload(res.url, `res_${res.id}.png`)} className="p-3 bg-white/10 backdrop-blur-md hover:bg-indigo-600 rounded-none transition-all text-white border border-white/10"><Download size={18} /></button>
@@ -132,7 +132,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
                   </div>
 
                   {/* Integrated Clear Button at end of scroll */}
-                  <div className="flex justify-center pt-8 border-t border-black/5 dark:border-white/5">
+                  <div className="flex justify-center pt-8 border-t border-black/5 dark:border-white/[0.06]">
                     <button 
                       onClick={onClear} 
                       className="flex items-center gap-3 px-8 py-3 bg-red-500/10 text-red-600 dark:text-red-500/80 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all shadow-sm italic"
@@ -160,7 +160,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
                 <div className="flex gap-3 w-full sm:w-auto">
                   <button 
                     onClick={() => setIsImportModalOpen(true)}
-                    className="flex-1 sm:flex-none px-8 py-4 bg-slate-200 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 rounded-none text-[10px] font-bold uppercase tracking-widest hover:bg-indigo-600 hover:text-white dark:hover:bg-white dark:hover:text-black transition-all flex items-center justify-center gap-3 group border border-black/5 dark:border-white/5"
+                    className="flex-1 sm:flex-none px-8 py-4 bg-slate-200 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 rounded-none text-[10px] font-bold uppercase tracking-widest hover:bg-indigo-600 hover:text-white dark:hover:bg-white dark:hover:text-black transition-all flex items-center justify-center gap-3 group border border-black/5 dark:border-white/[0.06]"
                   >
                     <FileJson size={16} /> NHẬP FILE JSON
                   </button>

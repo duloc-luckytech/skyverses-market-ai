@@ -52,7 +52,7 @@ export const EventHistory: React.FC<EventHistoryProps> = ({ results, activeId, o
                       ? 'border-brand-blue shadow-lg shadow-brand-blue/10 scale-[1.02]' 
                       : isPinned
                         ? 'border-red-400/40 opacity-90 hover:opacity-100'
-                        : 'border-black/[0.04] dark:border-white/[0.06] opacity-50 hover:opacity-100 hover:border-slate-300 dark:hover:border-white/15'
+                        : 'border-black/[0.04] dark:border-white/[0.06] opacity-50 hover:opacity-100 hover:border-slate-300 dark:hover:border-white/[0.15]'
                   }`}
                 >
                   {res.status === 'processing' ? (

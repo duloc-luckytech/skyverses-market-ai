@@ -14,7 +14,7 @@ export const DurationSelector: React.FC<DurationSelectorProps> = ({ value, onCli
       </p>
       <button 
         onClick={onClick} 
-        className="w-full py-2 border rounded-sm text-[8px] font-bold uppercase transition-all bg-white dark:bg-[var(--atlas-bg-panel)] border-slate-200 dark:border-white/5 text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-blue"
+        className="w-full py-2 border rounded-sm text-[8px] font-bold uppercase transition-all bg-white dark:bg-[var(--atlas-bg-panel)] border-slate-200 dark:border-white/[0.06] text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-blue"
       >
         {value}
       </button>

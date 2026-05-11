@@ -19,22 +19,22 @@
   --atlas-indigo-hover: #B8963F;
   --atlas-deep: #8B7635;
 
-  /* Surfaces (light) */
-  --atlas-bg-page: #FFFFFF;
-  --atlas-bg-panel: #FFFFFF;
-  --atlas-bg-panel-hover: #F5F5F7;
-  --atlas-bg-card: #FAF7F8;
-  --atlas-bg-soft: #FBF8F0;
+  /* Surfaces — default dark */
+  --atlas-bg-page: #0A0A0A;
+  --atlas-bg-panel: #111111;
+  --atlas-bg-panel-hover: #1A1A1A;
+  --atlas-bg-card: #111111;
+  --atlas-bg-soft: rgba(201, 168, 76, 0.06);
 
-  /* Text (light) */
-  --atlas-text-primary: #0A0A0A;
-  --atlas-text-secondary: rgba(10, 10, 10, 0.6);
-  --atlas-text-muted: rgba(10, 10, 10, 0.45);
+  /* Text — default dark */
+  --atlas-text-primary: #FFFFFF;
+  --atlas-text-secondary: rgba(255, 255, 255, 0.7);
+  --atlas-text-muted: rgba(255, 255, 255, 0.5);
 
-  /* Borders */
-  --atlas-border: #E5E7EB;
-  --atlas-border-soft: #E8DDB8;
-  --atlas-border-strong: rgba(10, 10, 10, 0.12);
+  /* Borders — default dark */
+  --atlas-border: rgba(255, 255, 255, 0.10);
+  --atlas-border-soft: rgba(201, 168, 76, 0.30);
+  --atlas-border-strong: rgba(255, 255, 255, 0.18);
 
   /* Accent */
   --atlas-orange: #C9A84C;
@@ -56,20 +56,20 @@
   --atlas-spring: cubic-bezier(.34, 1.56, .64, 1);
 }
 
-html.dark {
-  --atlas-bg-page: #0A0A0A;
-  --atlas-bg-panel: #111111;
-  --atlas-bg-panel-hover: #1A1A1A;
-  --atlas-bg-card: #111111;
-  --atlas-bg-soft: rgba(201, 168, 76, 0.06);
+html:not(.dark) {
+  --atlas-bg-page: #FFFFFF;
+  --atlas-bg-panel: #FFFFFF;
+  --atlas-bg-panel-hover: #F5F5F7;
+  --atlas-bg-card: #FAF7F8;
+  --atlas-bg-soft: #FBF8F0;
 
-  --atlas-text-primary: #FFFFFF;
-  --atlas-text-secondary: rgba(255, 255, 255, 0.7);
-  --atlas-text-muted: rgba(255, 255, 255, 0.5);
+  --atlas-text-primary: #0A0A0A;
+  --atlas-text-secondary: rgba(10, 10, 10, 0.6);
+  --atlas-text-muted: rgba(10, 10, 10, 0.45);
 
-  --atlas-border: rgba(255, 255, 255, 0.10);
-  --atlas-border-soft: rgba(201, 168, 76, 0.30);
-  --atlas-border-strong: rgba(255, 255, 255, 0.18);
+  --atlas-border: #E5E7EB;
+  --atlas-border-soft: #E8DDB8;
+  --atlas-border-strong: rgba(10, 10, 10, 0.12);
 }
 
 /* ═══ Base body ═══ */

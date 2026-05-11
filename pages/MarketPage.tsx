@@ -633,7 +633,7 @@ const MarketPage = () => {
               <h2 className="text-xl md:text-2xl font-bold tracking-tight">
                 {t('landing.search.results_for')} <span className="text-[#C9A84C]">"{query}"</span>
               </h2>
-              <button onClick={resetSearch} className="ml-auto flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors">
+              <button onClick={resetSearch} className="ml-auto flex items-center gap-1.5 text-sm text-white/50 hover:text-gray-900 transition-colors">
                 <X size={14} /> {t('landing.search.clear')}
               </button>
             </div>
@@ -643,8 +643,8 @@ const MarketPage = () => {
               </div>
             ) : filteredSolutions.length === 0 ? (
               <div className="text-center py-24">
-                <SearchX size={56} className="mx-auto text-gray-300 mb-4" />
-                <p className="text-base text-gray-500">{t('landing.search.no_results')}</p>
+                <SearchX size={56} className="mx-auto text-white/70 mb-4" />
+                <p className="text-base text-white/50">{t('landing.search.no_results')}</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
@@ -752,7 +752,7 @@ const MarketPage = () => {
                     </button>
                     <button
                       onClick={() => navigate('/markets')}
-                      className="inline-flex items-center gap-2.5 bg-transparent text-[#ebf4fb] px-8 py-3.5 rounded-lg text-sm font-semibold border border-[#ebf4fb]/20 hover:border-[#ebf4fb]/40 hover:bg-white/5 transition-all duration-200 hover:-translate-y-0.5"
+                      className="inline-flex items-center gap-2.5 bg-transparent text-[#ebf4fb] px-8 py-3.5 rounded-lg text-sm font-semibold border border-[#ebf4fb]/20 hover:border-[#ebf4fb]/40 hover:bg-white/[0.06] transition-all duration-200 hover:-translate-y-0.5"
                     >
                       {t('landing.hero.cta2')}
                     </button>
@@ -2294,7 +2294,7 @@ const MarketPage = () => {
                           {block.title?.[currentLang] || block.title?.en}
                         </h3>
                         {block.subtitle && (
-                          <p className="mt-2 text-sm md:text-base text-gray-500">
+                          <p className="mt-2 text-sm md:text-base text-white/50">
                             {block.subtitle[currentLang] || block.subtitle.en}
                           </p>
                         )}

@@ -75,12 +75,12 @@ const Product7Comic = () => {
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <button 
                 onClick={() => setIsStudioOpen(true)}
-                className="bg-[#FFE135] text-black px-10 py-5 rounded-xl font-bold uppercase tracking-widest text-sm shadow-xl shadow-yellow-500/10 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3"
+                className="bg-[#FFE135] text-black px-10 py-5 rounded-xl font-bold uppercase tracking-widest text-sm shadow-atlas-lg shadow-yellow-500/10 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3"
               >
                 Start Creating Comics <ArrowRight size={18} />
               </button>
               <button 
-                className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 px-10 py-5 rounded-xl font-bold uppercase tracking-widest text-sm hover:bg-slate-50 dark:hover:bg-white/10 transition-all flex items-center justify-center gap-3"
+                className="bg-white dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 px-10 py-5 rounded-xl font-bold uppercase tracking-widest text-sm hover:bg-slate-50 dark:hover:bg-white/10 transition-all flex items-center justify-center gap-3"
               >
                 View Demo <Play size={18} fill="currentColor" />
               </button>
@@ -94,7 +94,7 @@ const Product7Comic = () => {
             className="relative"
           >
             {/* Mockup of Comic Panels */}
-            <div className="grid grid-cols-2 grid-rows-2 gap-4 aspect-[4/5] bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-2xl border border-slate-100 dark:border-white/5 relative rotate-2 hover:rotate-0 transition-transform duration-700">
+            <div className="grid grid-cols-2 grid-rows-2 gap-4 aspect-[4/5] bg-white dark:bg-slate-900 p-6 rounded-lg shadow-atlas-lg border border-slate-100 dark:border-white/[0.06] relative rotate-2 hover:rotate-0 transition-transform duration-700">
               <div className="col-span-2 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden relative group">
                 <img src="https://images.unsplash.com/photo-1578632738981-63806a624da5?auto=format&fit=crop&q=80&w=800" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="Comic Panel" />
                 <div className="absolute inset-0 bg-black/20" />
@@ -106,10 +106,10 @@ const Product7Comic = () => {
                  <img src="https://images.unsplash.com/photo-1588497859490-85d1c17db96d?auto=format&fit=crop&q=80&w=800" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="Comic Panel" />
               </div>
               {/* Floating UI Elements */}
-              <div className="absolute -top-6 -right-6 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-2xl border border-slate-100 dark:border-white/10 animate-bounce transition-all">
+              <div className="absolute -top-6 -right-6 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-atlas-lg border border-slate-100 dark:border-white/10 animate-bounce transition-all">
                 <MousePointer2 className="text-[#FFE135]" />
               </div>
-              <div className="absolute -bottom-6 -left-6 bg-[#FFE135] text-black p-4 rounded-xl shadow-2xl font-bold text-xs uppercase tracking-widest">
+              <div className="absolute -bottom-6 -left-6 bg-[#FFE135] text-black p-4 rounded-xl shadow-atlas-lg font-bold text-xs uppercase tracking-widest">
                 Identity Locked
               </div>
             </div>
@@ -134,7 +134,7 @@ const Product7Comic = () => {
               /* Fixed: Clapperboard is now imported from lucide-react */
               { name: 'Animation & Art Studios', icon: <Clapperboard /> }
             ].map((audience, i) => (
-              <div key={i} className="p-8 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-2xl flex flex-col items-center text-center gap-6 hover:bg-[#FFE135] hover:text-black transition-all group">
+              <div key={i} className="p-8 bg-slate-50 dark:bg-white/[0.06] border border-slate-100 dark:border-white/[0.06] rounded-lg flex flex-col items-center text-center gap-6 hover:bg-[#FFE135] hover:text-black transition-all group">
                 <div className="w-12 h-12 rounded-xl bg-white dark:bg-white/10 flex items-center justify-center text-slate-400 group-hover:text-black transition-colors shadow-sm">
                   {audience.icon}
                 </div>
@@ -148,7 +148,7 @@ const Product7Comic = () => {
       {/* 3. KEY FEATURES */}
       <section className="px-6 lg:px-12 py-32">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-200 dark:bg-white/10 rounded-3xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-2xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-200 dark:bg-white/10 rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-atlas-lg">
             {[
               /* Fixed: AlignLeft is now imported from lucide-react */
               { title: 'Story-to-Panel Generation', icon: <AlignLeft />, desc: 'Turn scripts or scene descriptions into structured comic panels.' },
@@ -194,7 +194,7 @@ const Product7Comic = () => {
               'Export final comic pages'
             ].map((step, i) => (
               <div key={i} className="relative space-y-8">
-                <div className="w-16 h-16 rounded-2xl bg-[#FFE135] text-black flex items-center justify-center text-xl font-bold shadow-2xl relative z-10">
+                <div className="w-16 h-16 rounded-lg bg-[#FFE135] text-black flex items-center justify-center text-xl font-bold shadow-atlas-lg relative z-10">
                   0{i+1}
                 </div>
                 <p className="text-sm font-bold uppercase tracking-wider leading-relaxed pr-4 opacity-80">{step}</p>
@@ -229,7 +229,7 @@ const Product7Comic = () => {
             { title: 'Marketing Visual Stories', img: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=600' }
           ].map((useCase, i) => (
             <div key={i} className="group cursor-pointer space-y-6">
-              <div className="aspect-[3/4] rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 relative shadow-xl group-hover:scale-[1.02] transition-transform duration-500">
+              <div className="aspect-[3/4] rounded-lg overflow-hidden border border-slate-200 dark:border-white/10 relative shadow-atlas-lg group-hover:scale-[1.02] transition-transform duration-500">
                 <img src={useCase.img} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt={useCase.title} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
                 <div className="absolute bottom-6 left-6 right-6">
@@ -242,7 +242,7 @@ const Product7Comic = () => {
       </section>
 
       {/* 7. SOCIAL PROOF / TRUST */}
-      <section className="px-6 lg:px-12 py-32 border-y border-slate-100 dark:border-white/5">
+      <section className="px-6 lg:px-12 py-32 border-y border-slate-100 dark:border-white/[0.06]">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center gap-16">
           <div className="space-y-2 text-center lg:text-left">
             <p className="text-[#FFE135] font-bold text-xs uppercase tracking-[0.4em]">Validation</p>
@@ -272,7 +272,7 @@ const Product7Comic = () => {
           <div className="space-y-8 pt-8">
             <button 
               onClick={() => setIsStudioOpen(true)}
-              className="bg-[#FFE135] text-black px-16 py-8 rounded-2xl font-bold uppercase tracking-widest text-lg shadow-[0_20px_80px_rgba(255,225,53,0.3)] hover:scale-105 active:scale-95 transition-all inline-flex items-center gap-6"
+              className="bg-[#FFE135] text-black px-16 py-8 rounded-lg font-bold uppercase tracking-widest text-lg shadow-[0_20px_80px_rgba(255,225,53,0.3)] hover:scale-105 active:scale-95 transition-all inline-flex items-center gap-6"
             >
               Start Creating with Banana Comic Studio <ChevronRight />
             </button>
@@ -284,7 +284,7 @@ const Product7Comic = () => {
       </section>
 
       {/* Footer Minimal */}
-      <footer className="px-6 lg:px-12 py-12 border-t border-slate-100 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+      <footer className="px-6 lg:px-12 py-12 border-t border-slate-100 dark:border-white/[0.06] flex flex-col md:flex-row justify-between items-center gap-8 text-[10px] font-bold uppercase tracking-widest text-slate-400">
         <div className="flex items-center gap-4">
           <span className="text-[#FFE135]">© 2025 Banana Comic Studio</span>
           <span className="opacity-20">|</span>

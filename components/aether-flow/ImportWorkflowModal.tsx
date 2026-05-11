@@ -102,10 +102,10 @@ export const ImportWorkflowModal: React.FC<ImportWorkflowModalProps> = ({ isOpen
         initial={{ scale: 0.95, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0, y: 20 }}
-        className="relative w-full max-w-2xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/10 dark:border-white/5 rounded-[2rem] overflow-hidden shadow-3xl flex flex-col transition-colors duration-500 max-h-[90vh]"
+        className="relative w-full max-w-2xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/10 dark:border-white/[0.06] rounded-xl overflow-hidden shadow-atlas-xl flex flex-col transition-colors duration-500 max-h-[90vh]"
       >
         {/* Header */}
-        <div className="p-6 border-b border-black/5 dark:border-white/5 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/20">
+        <div className="p-6 border-b border-black/5 dark:border-white/[0.06] flex items-center justify-between shrink-0 bg-slate-50 dark:bg-black/20">
           <div className="flex items-center gap-3">
              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
                 <FileJson size={20} />
@@ -129,7 +129,7 @@ export const ImportWorkflowModal: React.FC<ImportWorkflowModalProps> = ({ isOpen
                   value={jsonText}
                   onChange={(e) => { setJsonText(e.target.value); setError(null); }}
                   placeholder='{"1": {"inputs": {...}, "class_type": "...", ...}'
-                  className="w-full h-48 bg-slate-50 dark:bg-black/40 border border-black/5 dark:border-white/5 rounded-2xl p-5 text-xs font-mono text-indigo-600 dark:text-indigo-300 outline-none focus:border-indigo-500/50 transition-all resize-none shadow-inner scrollbar-hide"
+                  className="w-full h-48 bg-slate-50 dark:bg-black/40 border border-black/5 dark:border-white/[0.06] rounded-lg p-5 text-xs font-mono text-indigo-600 dark:text-indigo-300 outline-none focus:border-indigo-500/50 transition-all resize-none shadow-inner scrollbar-hide"
                 />
               </div>
            </div>
@@ -162,8 +162,8 @@ export const ImportWorkflowModal: React.FC<ImportWorkflowModalProps> = ({ isOpen
                   ) : (
                     <div className="space-y-4">
                        {detectedNodes.map((node) => (
-                         <div key={node.id} className="bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/5 rounded-2xl overflow-hidden shadow-sm">
-                            <div className="px-5 py-3 bg-black/5 dark:bg-black/20 border-b border-black/5 dark:border-white/5 flex items-center justify-between">
+                         <div key={node.id} className="bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/[0.06] rounded-lg overflow-hidden shadow-sm">
+                            <div className="px-5 py-3 bg-black/[0.06] dark:bg-black/20 border-b border-black/5 dark:border-white/[0.06] flex items-center justify-between">
                                <div className="flex items-center gap-3">
                                   <span className="text-[11px] font-bold text-indigo-500 dark:text-indigo-400 italic">Node {node.id}: {node.title}</span>
                                </div>
@@ -195,9 +195,9 @@ export const ImportWorkflowModal: React.FC<ImportWorkflowModalProps> = ({ isOpen
            </AnimatePresence>
 
            <div className="flex items-center gap-4">
-              <div className="h-px flex-grow bg-black/5 dark:bg-white/5"></div>
+              <div className="h-px flex-grow bg-black/[0.06] dark:bg-white/[0.06]"></div>
               <span className="text-[9px] font-bold uppercase text-slate-400 dark:text-gray-600 tracking-widest italic">Hoặc sử dụng tệp tin</span>
-              <div className="h-px flex-grow bg-black/5 dark:bg-white/5"></div>
+              <div className="h-px flex-grow bg-black/[0.06] dark:bg-white/[0.06]"></div>
            </div>
 
            <button 
@@ -211,11 +211,11 @@ export const ImportWorkflowModal: React.FC<ImportWorkflowModalProps> = ({ isOpen
         </div>
 
         {/* Footer */}
-        <div className="p-8 border-t border-black/5 dark:border-white/5 bg-slate-50 dark:bg-black/40 grid grid-cols-2 gap-4 shrink-0">
+        <div className="p-8 border-t border-black/5 dark:border-white/[0.06] bg-slate-50 dark:bg-black/40 grid grid-cols-2 gap-4 shrink-0">
            <button 
              onClick={handleAnalyze}
              disabled={isAnalyzing || !jsonText.trim()}
-             className="flex items-center justify-center gap-3 py-4 bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-gray-300 transition-all disabled:opacity-30 shadow-sm"
+             className="flex items-center justify-center gap-3 py-4 bg-white dark:bg-white/[0.06] border border-black/5 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-gray-300 transition-all disabled:opacity-30 shadow-sm"
            >
               {isAnalyzing ? <Loader2 className="animate-spin" size={16}/> : <Search size={16} />} 
               Analyze Workflow

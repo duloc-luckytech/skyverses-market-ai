@@ -74,7 +74,7 @@ export const PromptPurchaseModal: React.FC<Props> = ({
 
         {/* Modal card */}
         <motion.div
-          className="relative w-full max-w-md bg-[#0a0a0f] border border-white/10 rounded-lg p-6 shadow-2xl"
+          className="relative w-full max-w-md bg-[#0a0a0f] border border-white/10 rounded-lg p-6 shadow-atlas-lg"
           initial={{ opacity: 0, scale: 0.95, y: 16 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 16 }}
@@ -100,7 +100,7 @@ export const PromptPurchaseModal: React.FC<Props> = ({
           </div>
 
           {/* Prompt set info */}
-          <div className="bg-white/5 border border-white/8 rounded-xl p-4 mb-4 space-y-3">
+          <div className="bg-white/[0.06] border border-white/8 rounded-xl p-4 mb-4 space-y-3">
             {/* Title */}
             <div>
               <p className="text-xs text-white/40 uppercase tracking-wider font-mono mb-0.5">
@@ -111,7 +111,7 @@ export const PromptPurchaseModal: React.FC<Props> = ({
               </p>
             </div>
 
-            <div className="h-px bg-white/8" />
+            <div className="h-px bg-white/[0.08]" />
 
             {/* Seller */}
             <div className="flex items-center gap-2">
@@ -131,7 +131,7 @@ export const PromptPurchaseModal: React.FC<Props> = ({
           </div>
 
           {/* Payment summary */}
-          <div className="bg-white/5 border border-white/8 rounded-xl p-4 mb-4 space-y-2.5">
+          <div className="bg-white/[0.06] border border-white/8 rounded-xl p-4 mb-4 space-y-2.5">
             {/* Price */}
             <div className="flex items-center justify-between">
               <span className="text-sm text-white/60 font-sans">{t('price')}</span>
@@ -154,7 +154,7 @@ export const PromptPurchaseModal: React.FC<Props> = ({
               </div>
             </div>
 
-            <div className="h-px bg-white/8" />
+            <div className="h-px bg-white/[0.08]" />
 
             {/* Balance after */}
             <div className="flex items-center justify-between">

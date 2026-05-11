@@ -146,7 +146,7 @@ export const SceneCardHeader: React.FC<SceneCardHeaderProps> = ({
               {/* Arrow */}
               <div className="absolute -top-1 right-3 w-2 h-2 rotate-45 bg-[#1e0a0a] border-l border-t border-rose-500/30" />
               {/* Content */}
-              <div className="bg-[#1e0a0a] border border-rose-500/30 rounded-xl px-3 py-2.5 shadow-2xl shadow-rose-900/30">
+              <div className="bg-[#1e0a0a] border border-rose-500/30 rounded-xl px-3 py-2.5 shadow-atlas-lg shadow-rose-900/30">
                 <div className="flex items-start gap-2">
                   <AlertCircle size={11} className="text-rose-400 mt-0.5 shrink-0" />
                   <div className="min-w-0">

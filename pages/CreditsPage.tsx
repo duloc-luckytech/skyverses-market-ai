@@ -246,7 +246,7 @@ const CreditsPage = () => {
                     onMouseLeave={() => setHoveredPack(null)}
                     className={`relative flex flex-col rounded-xl border overflow-hidden transition-all duration-500 ${
                       isHighlight 
-                        ? 'shadow-xl z-10 lg:scale-[1.03]' 
+                        ? 'shadow-atlas-lg z-10 lg:scale-[1.03]'
                         : 'shadow-sm hover:shadow-lg'
                     } bg-white dark:bg-[var(--atlas-bg-page)]`}
                     style={{ 
@@ -350,7 +350,7 @@ const CreditsPage = () => {
                                   <Check size={11} style={{ color: accent }} strokeWidth={3} />
                                 </div>
                               ) : (
-                                <div className="w-5 h-5 rounded-md bg-slate-100 dark:bg-white/5 flex items-center justify-center shrink-0 mt-0.5">
+                                <div className="w-5 h-5 rounded-md bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center shrink-0 mt-0.5">
                                   <X size={11} className="text-slate-300 dark:text-gray-600" strokeWidth={3} />
                                 </div>
                               )}

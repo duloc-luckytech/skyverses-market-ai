@@ -7,7 +7,7 @@ interface EditorBottomBarProps {
 }
 
 export const EditorBottomBar: React.FC<EditorBottomBarProps> = ({ onClose }) => (
-  <div className="h-16 md:h-20 border-t border-white/5 bg-black/40 backdrop-blur-xl shrink-0 flex items-center justify-between px-10 z-50">
+  <div className="h-16 md:h-20 border-t border-white/[0.06] bg-black/40 backdrop-blur-xl shrink-0 flex items-center justify-between px-10 z-50">
     <div className="flex items-center gap-8">
       <div className="flex items-center gap-3 opacity-40">
          <Database size={16} className="text-indigo-400" />

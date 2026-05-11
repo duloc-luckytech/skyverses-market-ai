@@ -463,7 +463,7 @@ const Fullscreen: React.FC<{ url: string; onClose: () => void }> = ({ url, onClo
       initial={{ scale: 0.88, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
       exit={{ scale: 0.92, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-      className="max-w-full max-h-[90vh] rounded-2xl shadow-2xl object-contain"
+      className="max-w-full max-h-[90vh] rounded-lg shadow-atlas-lg object-contain"
       onClick={e => e.stopPropagation()}
     />
     <button onClick={onClose}

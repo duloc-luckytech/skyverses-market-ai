@@ -14,7 +14,7 @@ const PolicyCard = ({ number, title, icon, content, isAlert = false }: any) => (
     className={`p-8 border rounded-xl space-y-6 transition-all shadow-sm ${
       isAlert 
       ? 'border-red-500/20 bg-red-50 dark:bg-[var(--atlas-bg-panel)]' 
-      : 'border-slate-200 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-panel)]'
+      : 'border-slate-200 dark:border-white/[0.06] bg-white dark:bg-[var(--atlas-bg-panel)]'
     }`}
   >
     <div className="flex justify-between items-start">
@@ -127,7 +127,7 @@ const PolicyPage = () => {
         </section>
 
         {/* Updates Section */}
-        <section className="bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/5 p-12 rounded-xl shadow-2xl relative overflow-hidden group">
+        <section className="bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.06] p-12 rounded-xl shadow-atlas-lg relative overflow-hidden group">
            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:rotate-12 transition-transform duration-700">
               <RefreshCcw size={120} className="text-slate-900 dark:text-white" />
            </div>

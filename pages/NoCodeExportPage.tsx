@@ -14,7 +14,7 @@ const FEATURES = [
     icon: <Globe size={22} />,
     title: 'Paste URL & Export',
     desc: 'Chỉ cần dán URL website bất kỳ — hệ thống tự động crawl, parse và xuất thành source code sạch.',
-    color: 'text-brand-blue', bg: 'bg-brand-blue/10 border-brand-blue/15',
+    color: 'text-brand-blue', bg: 'bg-brand-blue/10 border-brand-blue/[0.15]',
   },
   {
     icon: <Code2 size={22} />,
@@ -91,7 +91,7 @@ const NoCodeExportPage: React.FC = () => {
             >
               {/* Badge */}
               <div className="flex items-center gap-3">
-                <span className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/15 dark:border-brand-blue/25 rounded-full">
+                <span className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue/8 dark:bg-brand-blue/15 border border-brand-blue/[0.15] dark:border-brand-blue/25 rounded-full">
                   <Sparkles size={12} className="text-brand-blue" />
                   <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-brand-blue">New Product</span>
                 </span>
@@ -128,7 +128,7 @@ const NoCodeExportPage: React.FC = () => {
                   href={PRODUCT_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group inline-flex items-center gap-3 bg-brand-blue text-white px-8 py-4 rounded-2xl text-sm font-bold hover:brightness-110 active:scale-[0.97] transition-all shadow-xl shadow-brand-blue/20"
+                  className="group inline-flex items-center gap-3 bg-brand-blue text-white px-8 py-4 rounded-lg text-sm font-bold hover:brightness-110 active:scale-[0.97] transition-all shadow-xl shadow-brand-blue/20"
                 >
                   <Rocket size={18} />
                   Try NoCodeExport
@@ -136,7 +136,7 @@ const NoCodeExportPage: React.FC = () => {
                 </a>
                 <a
                   href="#how-it-works"
-                  className="inline-flex items-center gap-2 px-8 py-4 border border-black/[0.08] dark:border-white/[0.08] text-slate-600 dark:text-gray-400 hover:text-brand-blue hover:border-brand-blue/30 rounded-2xl text-sm font-bold transition-all"
+                  className="inline-flex items-center gap-2 px-8 py-4 border border-black/[0.08] dark:border-white/[0.08] text-slate-600 dark:text-gray-400 hover:text-brand-blue hover:border-brand-blue/30 rounded-lg text-sm font-bold transition-all"
                 >
                   Cách hoạt động
                   <ArrowRight size={14} />
@@ -165,7 +165,7 @@ const NoCodeExportPage: React.FC = () => {
               transition={{ duration: 0.7, delay: 0.2 }}
               className="relative"
             >
-              <div className="relative rounded-2xl overflow-hidden border border-black/[0.06] dark:border-white/[0.06] shadow-2xl shadow-black/10 dark:shadow-black/40">
+              <div className="relative rounded-lg overflow-hidden border border-black/[0.06] dark:border-white/[0.06] shadow-atlas-lg shadow-black/10 dark:shadow-black/40">
                 {/* Browser chrome */}
                 <div className="bg-slate-100 dark:bg-[var(--atlas-bg-panel)] px-4 py-3 flex items-center gap-2 border-b border-black/[0.04] dark:border-white/[0.04]">
                   <div className="flex gap-1.5">
@@ -174,7 +174,7 @@ const NoCodeExportPage: React.FC = () => {
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
                   </div>
                   <div className="flex-1 flex justify-center">
-                    <div className="px-4 py-1 bg-white dark:bg-white/5 rounded-lg text-[10px] text-slate-400 dark:text-gray-500 font-medium">
+                    <div className="px-4 py-1 bg-white dark:bg-white/[0.06] rounded-lg text-[10px] text-slate-400 dark:text-gray-500 font-medium">
                       nocodexport.figma.site
                     </div>
                   </div>
@@ -230,7 +230,7 @@ const NoCodeExportPage: React.FC = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-blue/8 border border-brand-blue/15 rounded-full text-[9px] font-bold uppercase tracking-[0.3em] text-brand-blue mb-4">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-blue/8 border border-brand-blue/[0.15] rounded-full text-[9px] font-bold uppercase tracking-[0.3em] text-brand-blue mb-4">
               <Terminal size={10} /> Cách hoạt động
             </span>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
@@ -248,7 +248,7 @@ const NoCodeExportPage: React.FC = () => {
                 transition={{ delay: idx * 0.1, duration: 0.5 }}
                 className="relative group"
               >
-                <div className="p-6 rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] hover:border-brand-blue/20 hover:shadow-xl hover:shadow-brand-blue/5 transition-all h-full">
+                <div className="p-6 rounded-lg bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] hover:border-brand-blue/20 hover:shadow-xl hover:shadow-brand-blue/5 transition-all h-full">
                   {/* Step number */}
                   <span className="text-[48px] font-bold text-slate-100 dark:text-white/[0.03] leading-none absolute top-4 right-5 select-none">{item.step}</span>
                   
@@ -302,7 +302,7 @@ const NoCodeExportPage: React.FC = () => {
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ delay: idx * 0.08, duration: 0.5, type: 'spring', stiffness: 120 }}
                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="group p-6 rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] hover:border-brand-blue/20 dark:hover:border-brand-blue/15 hover:shadow-xl hover:shadow-brand-blue/5 transition-all duration-300"
+                className="group p-6 rounded-lg bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] hover:border-brand-blue/20 dark:hover:border-brand-blue/[0.15] hover:shadow-xl hover:shadow-brand-blue/5 transition-all duration-300"
               >
                 <div className={`w-12 h-12 rounded-xl ${f.bg} border ${f.color} flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
                   {f.icon}
@@ -340,7 +340,7 @@ const NoCodeExportPage: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.06 }}
-                className="flex items-start gap-3.5 p-5 rounded-xl bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] hover:border-brand-blue/15 transition-all group"
+                className="flex items-start gap-3.5 p-5 rounded-xl bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] hover:border-brand-blue/[0.15] transition-all group"
               >
                 <div className="w-8 h-8 rounded-lg bg-brand-blue/10 text-brand-blue flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
                   <CheckCircle size={14} />
@@ -397,7 +397,7 @@ const NoCodeExportPage: React.FC = () => {
                     href={PRODUCT_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group inline-flex items-center gap-3 bg-brand-blue text-white px-10 py-5 rounded-2xl text-sm font-bold hover:brightness-110 transition-all active:scale-95 shadow-xl shadow-brand-blue/20"
+                    className="group inline-flex items-center gap-3 bg-brand-blue text-white px-10 py-5 rounded-lg text-sm font-bold hover:brightness-110 transition-all active:scale-95 shadow-xl shadow-brand-blue/20"
                   >
                     <ExternalLink size={18} />
                     Try NoCodeExport
@@ -405,7 +405,7 @@ const NoCodeExportPage: React.FC = () => {
                   </a>
                   <a
                     href="/booking"
-                    className="inline-flex items-center gap-2 px-8 py-4 border border-white/10 text-white/60 hover:text-white hover:border-white/20 rounded-2xl text-sm font-bold transition-all"
+                    className="inline-flex items-center gap-2 px-8 py-4 border border-white/10 text-white/60 hover:text-white hover:border-white/20 rounded-lg text-sm font-bold transition-all"
                   >
                     Liên hệ tư vấn
                     <ArrowRight size={14} />

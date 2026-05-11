@@ -13,7 +13,7 @@ import { skytokenApi } from '../apis/skytoken';
 import SkyTokenPurchaseModal from '../components/skytoken/SkyTokenPurchaseModal';
 import type { SkyTokenPackage, SkyTokenTransaction, SkyTokenWithdrawal } from '../types';
 
-const CARD = 'bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl';
+const CARD = 'bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-lg';
 const SKT_PER_VND = 1000; // 1 SKT = 1,000 VND
 const MIN_WITHDRAW = 50;
 

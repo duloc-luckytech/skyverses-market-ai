@@ -219,10 +219,10 @@ export const ConfirmUploadModal: React.FC<ConfirmUploadModalProps> = ({ file, on
       
       <motion.div 
         initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-        className="relative w-full max-w-7xl h-[90vh] bg-[#121214] border border-white/5 rounded-[2.5rem] overflow-hidden flex flex-col shadow-3xl"
+        className="relative w-full max-w-7xl h-[90vh] bg-[#121214] border border-white/[0.06] rounded-xl overflow-hidden flex flex-col shadow-atlas-xl"
       >
         {/* Header */}
-        <div className="h-16 px-8 flex items-center justify-between border-b border-white/5 shrink-0 bg-black/20">
+        <div className="h-16 px-8 flex items-center justify-between border-b border-white/[0.06] shrink-0 bg-black/20">
           <div className="flex items-center gap-3">
              <div className="p-2 bg-brand-blue/10 rounded-lg text-brand-blue">
                 <Box size={18} />
@@ -231,17 +231,17 @@ export const ConfirmUploadModal: React.FC<ConfirmUploadModalProps> = ({ file, on
                 <h2 className="text-sm font-bold uppercase tracking-widest text-white italic">Xác nhận tải lên mô hình 3D</h2>
                 <p className="text-[7px] font-bold text-brand-blue uppercase tracking-[0.4em]">Công cụ quản lý tài sản 3D chuyên nghiệp</p>
              </div>
-             <HelpCircle size={16} className="text-gray-500 ml-4" />
+             <HelpCircle size={16} className="text-white/50 ml-4" />
           </div>
-          <button onClick={onClose} className="p-2 text-gray-400 hover:text-white transition-colors"><X size={24}/></button>
+          <button onClick={onClose} className="p-2 text-white/60 hover:text-white transition-colors"><X size={24}/></button>
         </div>
 
         <div className="flex-grow flex overflow-hidden">
           {/* Left Panel: Examples */}
-          <div className="w-[320px] border-r border-white/5 bg-black/20 p-8 overflow-y-auto no-scrollbar space-y-8 shrink-0">
+          <div className="w-[320px] border-r border-white/[0.06] bg-black/20 p-8 overflow-y-auto no-scrollbar space-y-8 shrink-0">
              <div className="space-y-3">
                 <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-brand-blue italic">Hướng dẫn góc nhìn</p>
-                <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">
+                <p className="text-[9px] font-bold text-white/50 uppercase tracking-widest">
                   Đảm bảo góc nhìn bao quát được các chi tiết hình học quan trọng để tối ưu hóa việc hiển thị và xử lý tài sản.
                 </p>
              </div>
@@ -264,8 +264,8 @@ export const ConfirmUploadModal: React.FC<ConfirmUploadModalProps> = ({ file, on
                 ))}
              </div>
              
-             <div className="pt-8 border-t border-white/5 space-y-4">
-                <p className="text-[8px] font-bold text-gray-600 uppercase tracking-widest italic leading-relaxed">
+             <div className="pt-8 border-t border-white/[0.06] space-y-4">
+                <p className="text-[8px] font-bold text-white/40 uppercase tracking-widest italic leading-relaxed">
                   "Sản xuất tài sản 3D chất lượng cao. Quy trình sáng tạo và quản lý thông minh."
                 </p>
              </div>
@@ -282,7 +282,7 @@ export const ConfirmUploadModal: React.FC<ConfirmUploadModalProps> = ({ file, on
              
              {error && (
                <div className="absolute inset-0 z-50 flex flex-col items-center justify-center p-8 text-center bg-black">
-                 <div className="p-8 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-500 space-y-4">
+                 <div className="p-8 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500 space-y-4">
                    <AlertCircle className="mx-auto" size={48} />
                    <p className="text-sm font-bold uppercase tracking-widest">{error}</p>
                    <button onClick={onClose} className="px-6 py-2 bg-red-600 text-white rounded-lg text-xs font-bold uppercase">Thử lại</button>
@@ -304,31 +304,31 @@ export const ConfirmUploadModal: React.FC<ConfirmUploadModalProps> = ({ file, on
                 </div>
              </div>
 
-             <div className="absolute bottom-10 right-10 bg-black/60 backdrop-blur-xl border border-white/10 p-5 rounded-2xl flex items-center gap-8 shadow-2xl">
+             <div className="absolute bottom-10 right-10 bg-black/60 backdrop-blur-xl border border-white/10 p-5 rounded-lg flex items-center gap-8 shadow-atlas-lg">
                 <div className="flex items-center gap-3">
-                   <span className="text-[9px] font-bold uppercase text-gray-500 tracking-[0.2em]">Tọa độ xoay</span>
+                   <span className="text-[9px] font-bold uppercase text-white/50 tracking-[0.2em]">Tọa độ xoay</span>
                    <span className="text-[11px] font-mono font-bold text-white whitespace-nowrap">{Math.round(uiRotation.x)}°, {Math.round(uiRotation.y)}°</span>
                 </div>
                 <div className="h-5 w-px bg-white/10"></div>
                 <div className="flex items-center gap-3">
-                   <span className="text-[9px] font-bold uppercase text-gray-400 tracking-[0.2em]">Tỷ lệ</span>
+                   <span className="text-[9px] font-bold uppercase text-white/60 tracking-[0.2em]">Tỷ lệ</span>
                    <span className="text-[11px] font-mono font-bold text-white whitespace-nowrap">x{uiZoom.toFixed(2)}</span>
                 </div>
              </div>
 
-             <div className="absolute top-10 right-10 px-6 py-2.5 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold uppercase text-gray-400 tracking-widest italic shadow-xl">
+             <div className="absolute top-10 right-10 px-6 py-2.5 bg-white/[0.06] border border-white/10 rounded-xl text-[10px] font-bold uppercase text-white/60 tracking-widest italic shadow-atlas-lg">
                {file ? file.name : "Vật_thể_chưa_định_danh.glb"}
              </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="h-24 px-10 border-t border-white/5 flex items-center justify-between bg-black/20 shrink-0">
+        <div className="h-24 px-10 border-t border-white/[0.06] flex items-center justify-between bg-black/20 shrink-0">
            <div className="flex items-center gap-10">
               <div className="flex items-center gap-6">
                  <div className="space-y-0.5">
                     <p className="text-[11px] font-bold uppercase text-white tracking-widest italic">Duy trì UV gốc</p>
-                    <p className="text-[9px] text-gray-500 uppercase tracking-widest italic opacity-60">Bảo toàn sơ đồ kết cấu nguyên bản của mô hình</p>
+                    <p className="text-[9px] text-white/50 uppercase tracking-widest italic opacity-60">Bảo toàn sơ đồ kết cấu nguyên bản của mô hình</p>
                  </div>
                  <button 
                    onClick={() => setUseOriginalUV(!useOriginalUV)}
@@ -340,11 +340,11 @@ export const ConfirmUploadModal: React.FC<ConfirmUploadModalProps> = ({ file, on
            </div>
 
            <div className="flex items-center gap-8">
-             <button onClick={onClose} className="px-10 py-4 text-[11px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors">Hủy bỏ</button>
+             <button onClick={onClose} className="px-10 py-4 text-[11px] font-bold uppercase tracking-widest text-white/50 hover:text-white transition-colors">Hủy bỏ</button>
              <button 
                onClick={handleInternalConfirm}
                disabled={loading || !!error}
-               className="px-20 py-4 bg-brand-blue text-white rounded-full font-bold uppercase text-xs tracking-[0.4em] hover:brightness-110 active:scale-95 transition-all shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-4"
+               className="px-20 py-4 bg-brand-blue text-white rounded-full font-bold uppercase text-xs tracking-[0.4em] hover:brightness-110 active:scale-95 transition-all shadow-atlas-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-4"
              >
                 <ShieldCheck size={18} />
                 Xác nhận tải lên

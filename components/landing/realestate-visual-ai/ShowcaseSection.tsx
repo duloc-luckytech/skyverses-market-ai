@@ -260,7 +260,7 @@ const RECard: React.FC<{
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.04, type: 'spring', stiffness: 400, damping: 22 }}
-              className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/15 backdrop-blur flex items-center justify-center"
+              className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/[0.15] backdrop-blur flex items-center justify-center"
             >
               <Maximize2 size={12} className="text-white" />
             </motion.div>

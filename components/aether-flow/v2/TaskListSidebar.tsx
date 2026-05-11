@@ -66,9 +66,9 @@ export const TaskListSidebar: React.FC<{ isOpen: boolean; onClose: () => void }>
       initial={{ x: '100%' }}
       animate={{ x: 0 }}
       exit={{ x: '100%' }}
-      className="w-[400px] h-full bg-white dark:bg-[var(--atlas-bg-panel)] border-l border-black/5 dark:border-white/5 flex flex-col shrink-0 z-[150] shadow-2xl transition-colors"
+      className="w-[400px] h-full bg-white dark:bg-[var(--atlas-bg-panel)] border-l border-black/5 dark:border-white/[0.06] flex flex-col shrink-0 z-[150] shadow-atlas-lg transition-colors"
     >
-      <div className="p-6 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-slate-50 dark:bg-black/20">
+      <div className="p-6 border-b border-black/5 dark:border-white/[0.06] flex items-center justify-between bg-slate-50 dark:bg-black/20">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-500">
             <LayoutGrid size={18} />
@@ -80,7 +80,7 @@ export const TaskListSidebar: React.FC<{ isOpen: boolean; onClose: () => void }>
         </button>
       </div>
 
-      <div className="p-4 bg-slate-100 dark:bg-white/[0.02] border-b border-black/5 dark:border-white/5">
+      <div className="p-4 bg-slate-100 dark:bg-white/[0.02] border-b border-black/5 dark:border-white/[0.06]">
         <p className="text-[10px] font-bold text-gray-500 dark:text-zinc-500 italic uppercase tracking-tight">
           Tips: Preview node output image not in task list.
         </p>
@@ -88,7 +88,7 @@ export const TaskListSidebar: React.FC<{ isOpen: boolean; onClose: () => void }>
 
       <div className="flex-grow overflow-y-auto no-scrollbar p-5 space-y-6">
         {MOCK_TASKS.map((task) => (
-          <div key={task.id} className="p-5 bg-white dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/10 rounded-2xl space-y-4 hover:border-indigo-500/30 transition-all shadow-sm">
+          <div key={task.id} className="p-5 bg-white dark:bg-[var(--atlas-bg-page)] border border-black/5 dark:border-white/10 rounded-lg space-y-4 hover:border-indigo-500/30 transition-all shadow-sm">
             <div className="flex justify-between items-start">
                <div className="flex flex-wrap items-center gap-2">
                   <span className="px-2 py-0.5 bg-cyan-500/10 border border-cyan-500/20 text-cyan-600 dark:text-cyan-400 text-[8px] font-bold uppercase rounded-sm flex items-center gap-1">
@@ -116,7 +116,7 @@ export const TaskListSidebar: React.FC<{ isOpen: boolean; onClose: () => void }>
             {task.duration && (
               <div className="space-y-3 pt-2">
                  <div className="flex items-center gap-4">
-                    <button className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-700 dark:text-white">
+                    <button className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center text-slate-700 dark:text-white">
                       <Play size={14} fill="currentColor" className="ml-0.5" />
                     </button>
                     <div className="flex-grow h-1 bg-slate-200 dark:bg-white/10 rounded-full relative">
@@ -136,7 +136,7 @@ export const TaskListSidebar: React.FC<{ isOpen: boolean; onClose: () => void }>
               </div>
             )}
 
-            <div className="flex items-center justify-between pt-2 border-t border-black/5 dark:border-white/5">
+            <div className="flex items-center justify-between pt-2 border-t border-black/5 dark:border-white/[0.06]">
                <div className="flex gap-4">
                   <button className="flex items-center gap-1.5 text-[9px] font-bold text-gray-500 hover:text-indigo-500 uppercase transition-all">
                     <Share2 size={12} /> Share

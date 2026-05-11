@@ -114,7 +114,7 @@ const ReferralPage: React.FC = () => {
         {/* ═══════════════════════════════ */}
         <section className="text-center space-y-8 max-w-3xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 bg-brand-blue/8 border border-brand-blue/15 rounded-full text-brand-blue text-[10px] font-semibold uppercase tracking-widest">
+            className="inline-flex items-center gap-2 px-4 py-1.5 bg-brand-blue/8 border border-brand-blue/[0.15] rounded-full text-brand-blue text-[10px] font-semibold uppercase tracking-widest">
             <Sparkles size={12} fill="currentColor" /> Referral Program
           </motion.div>
 
@@ -132,7 +132,7 @@ const ReferralPage: React.FC = () => {
           {/* ─── REFERRAL LINK BOX ─── */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
             className="max-w-2xl mx-auto">
-            <div className="flex flex-col sm:flex-row bg-white dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl p-1.5 gap-1.5 shadow-xl shadow-brand-blue/5 focus-within:border-brand-blue/30 transition-all">
+            <div className="flex flex-col sm:flex-row bg-white dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-lg p-1.5 gap-1.5 shadow-xl shadow-brand-blue/5 focus-within:border-brand-blue/30 transition-all">
               <div className="flex-grow flex items-center px-4 py-3 sm:py-0 min-w-0 overflow-hidden">
                 {isAuthenticated ? (
                   <span className="text-sm font-mono text-slate-600 dark:text-slate-300 truncate select-all">{referralLink}</span>
@@ -176,7 +176,7 @@ const ReferralPage: React.FC = () => {
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
             className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {statCards.map((card, i) => (
-              <div key={i} className="relative bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-2xl p-6 hover:shadow-lg hover:border-brand-blue/15 transition-all duration-500 group overflow-hidden">
+              <div key={i} className="relative bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-lg p-6 hover:shadow-lg hover:border-brand-blue/[0.15] transition-all duration-500 group overflow-hidden">
                 <div className={`absolute top-0 right-0 w-24 h-24 ${card.bg} rounded-full blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 -translate-y-6 translate-x-6`} />
                 <div className="relative z-10">
                   <div className={`w-10 h-10 rounded-xl ${card.bg} flex items-center justify-center mb-3`}>
@@ -194,7 +194,7 @@ const ReferralPage: React.FC = () => {
         {/* COMING SOON — 5% COMMISSION */}
         {/* ═══════════════════════════════ */}
         <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
-          className="relative overflow-hidden bg-gradient-to-br from-[#0c0e18] via-[#0e1225] to-[#120c20] text-white rounded-3xl p-8 md:p-12 border border-white/[0.06]">
+          className="relative overflow-hidden bg-gradient-to-br from-[#0c0e18] via-[#0e1225] to-[#120c20] text-white rounded-xl p-8 md:p-12 border border-white/[0.06]">
           {/* Glow effects */}
           <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-amber-500/10 rounded-full blur-[100px] pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-purple-500/10 rounded-full blur-[80px] pointer-events-none" />
@@ -206,7 +206,7 @@ const ReferralPage: React.FC = () => {
                   <Rocket size={12} className="text-amber-400" />
                   <span className="text-[9px] font-bold uppercase tracking-widest text-amber-400">Coming Soon</span>
                 </div>
-                <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-full">
+                <div className="flex items-center gap-1.5 px-3 py-1 bg-white/[0.06] border border-white/10 rounded-full">
                   <Lock size={10} className="text-white/40" />
                   <span className="text-[9px] font-medium uppercase tracking-widest text-white/40">Q2 2026</span>
                 </div>
@@ -228,7 +228,7 @@ const ReferralPage: React.FC = () => {
                   { icon: <TrendingUp size={12} />, text: 'Thu nhập thụ động vĩnh viễn' },
                   { icon: <Users size={12} />, text: 'Không giới hạn referral' },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/[0.06] rounded-lg">
+                  <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.06] border border-white/[0.06] rounded-lg">
                     <span className="text-amber-400">{item.icon}</span>
                     <span className="text-[10px] font-medium text-white/60">{item.text}</span>
                   </div>
@@ -238,7 +238,7 @@ const ReferralPage: React.FC = () => {
 
             {/* Visual */}
             <div className="shrink-0 hidden lg:flex flex-col items-center gap-4">
-              <div className="w-32 h-32 rounded-3xl bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/20 flex items-center justify-center relative">
+              <div className="w-32 h-32 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/20 flex items-center justify-center relative">
                 <Crown size={48} className="text-amber-400" />
                 <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/30">
                   <span className="text-[11px] font-bold text-white">5%</span>
@@ -252,12 +252,12 @@ const ReferralPage: React.FC = () => {
           <div className="relative z-10 mt-8 pt-6 border-t border-white/[0.06]">
             <p className="text-[10px] font-semibold text-white/30 uppercase tracking-widest mb-3">Ví dụ minh họa</p>
             <div className="flex flex-wrap gap-3 md:gap-6 items-center">
-              <div className="flex items-center gap-2 px-4 py-2.5 bg-white/5 rounded-xl border border-white/[0.06]">
+              <div className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.06] rounded-xl border border-white/[0.06]">
                 <Users size={14} className="text-brand-blue" />
                 <span className="text-sm font-medium text-white/70">10 bạn bè</span>
               </div>
               <ArrowRight size={14} className="text-white/20 hidden md:block" />
-              <div className="flex items-center gap-2 px-4 py-2.5 bg-white/5 rounded-xl border border-white/[0.06]">
+              <div className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.06] rounded-xl border border-white/[0.06]">
                 <Coins size={14} className="text-amber-400" />
                 <span className="text-sm font-medium text-white/70">Mỗi người nạp 100,000 CR</span>
               </div>
@@ -285,7 +285,7 @@ const ReferralPage: React.FC = () => {
               { step: '02', emoji: '✨', title: 'Bạn bè đăng ký', desc: 'Bạn bè click link, đăng ký tài khoản Skyverses và xác thực thành công.' },
               { step: '03', emoji: '🎁', title: 'Nhận thưởng', desc: 'Cả hai tự động nhận Credits miễn phí vào tài khoản. Bắt đầu sáng tạo!' },
             ].map((item, i) => (
-              <div key={i} className="relative bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-2xl p-7 hover:shadow-lg hover:border-brand-blue/15 transition-all duration-500 group">
+              <div key={i} className="relative bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-lg p-7 hover:shadow-lg hover:border-brand-blue/[0.15] transition-all duration-500 group">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-xl bg-brand-blue/8 flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500">
                     {item.emoji}
@@ -313,7 +313,7 @@ const ReferralPage: React.FC = () => {
         {/* ═══════════════════════════════ */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* YOU GET */}
-          <div className="bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-2xl p-8 space-y-6 hover:shadow-lg transition-all">
+          <div className="bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-lg p-8 space-y-6 hover:shadow-lg transition-all">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-brand-blue/10 flex items-center justify-center text-brand-blue">
                 <Zap size={20} fill="currentColor" />
@@ -338,7 +338,7 @@ const ReferralPage: React.FC = () => {
           </div>
 
           {/* FRIEND GETS */}
-          <div className="bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-2xl p-8 space-y-6 hover:shadow-lg transition-all">
+          <div className="bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-lg p-8 space-y-6 hover:shadow-lg transition-all">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
                 <Gift size={20} />
@@ -372,7 +372,7 @@ const ReferralPage: React.FC = () => {
               <Users size={18} className="text-brand-blue" />
               Lịch sử giới thiệu
             </h3>
-            <div className="bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-2xl overflow-hidden">
+            <div className="bg-white dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-lg overflow-hidden">
               <div className="divide-y divide-black/[0.04] dark:divide-white/[0.04]">
                 {stats.history.map((item, i) => (
                   <div key={i} className="flex items-center justify-between px-6 py-4 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-colors">
@@ -404,7 +404,7 @@ const ReferralPage: React.FC = () => {
         {/* ═══════════════════════════════ */}
         {/* NOTES */}
         {/* ═══════════════════════════════ */}
-        <section className="bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-2xl p-8 space-y-4">
+        <section className="bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] rounded-lg p-8 space-y-4">
           <h3 className="text-sm font-bold text-slate-600 dark:text-slate-300 flex items-center gap-2">
             <Shield size={14} className="text-brand-blue" /> Lưu ý
           </h3>

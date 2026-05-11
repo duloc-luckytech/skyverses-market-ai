@@ -173,7 +173,7 @@ const ExplorerDetailModal: React.FC<ExplorerDetailModalProps> = ({ item, onClose
                         initial={{ opacity: 0, scale: 1.05 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                        className="relative rounded-2xl overflow-hidden"
+                        className="relative rounded-lg overflow-hidden"
                         style={{ boxShadow: '0 8px 40px rgba(201,168,76,0.12), 0 0 0 1px rgba(201,168,76,0.15)' }}
                       >
                         <img
@@ -271,7 +271,7 @@ const ExplorerDetailModal: React.FC<ExplorerDetailModalProps> = ({ item, onClose
                         initial={{ opacity: 0, scale: 1.02 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.5 }}
-                        className="relative rounded-2xl overflow-hidden"
+                        className="relative rounded-lg overflow-hidden"
                         style={{ boxShadow: '0 8px 40px rgba(201,168,76,0.15), 0 0 0 1px rgba(201,168,76,0.1)' }}
                       >
                         <img src={item.mediaUrl} alt={item.title} className="w-full aspect-[4/3] object-cover" />
@@ -442,7 +442,7 @@ const ExplorerDetailModal: React.FC<ExplorerDetailModalProps> = ({ item, onClose
               initial={{ opacity: 0, scale: 1.05 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1.05 }}
-              className="fixed inset-0 z-[1200] bg-[#141519] overflow-hidden"
+              className="fixed inset-0 z-[1200] bg-[var(--atlas-bg-panel)] overflow-hidden"
             >
               <Art3DWorkspace 
                 onClose={() => setIsStudioOpen(false)} 

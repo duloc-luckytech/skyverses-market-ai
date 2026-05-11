@@ -23,8 +23,8 @@ export const MusicResultCard: React.FC<MusicResultCardProps> = ({
   const isDone = status === 'done';
 
   return (
-    <div className={`bg-white dark:bg-[var(--atlas-bg-panel)] border-2 rounded-3xl p-6 space-y-6 transition-all duration-500 group shadow-xl relative overflow-hidden ${
-      isDone ? 'border-brand-blue/20 dark:border-brand-blue/30' : 'border-black/5 dark:border-white/5'
+    <div className={`bg-white dark:bg-[var(--atlas-bg-panel)] border-2 rounded-xl p-6 space-y-6 transition-all duration-500 group shadow-atlas-lg relative overflow-hidden ${
+      isDone ? 'border-brand-blue/20 dark:border-brand-blue/30' : 'border-black/5 dark:border-white/[0.06]'
     } ${status === 'error' ? 'opacity-60' : ''}`}>
       
       {/* Background Decorative Icon */}
@@ -32,7 +32,7 @@ export const MusicResultCard: React.FC<MusicResultCardProps> = ({
         <Music size={140} strokeWidth={1} className="text-slate-900 dark:text-white" />
       </div>
       
-      <div className="aspect-square bg-slate-50 dark:bg-black/40 rounded-2xl flex items-center justify-center text-brand-blue/20 group-hover:text-brand-blue transition-colors shadow-inner overflow-hidden relative border border-black/5 dark:border-transparent">
+      <div className="aspect-square bg-slate-50 dark:bg-black/40 rounded-lg flex items-center justify-center text-brand-blue/20 group-hover:text-brand-blue transition-colors shadow-inner overflow-hidden relative border border-black/5 dark:border-transparent">
         {status === 'processing' ? (
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="w-12 h-12 text-brand-blue animate-spin" />
@@ -62,7 +62,7 @@ export const MusicResultCard: React.FC<MusicResultCardProps> = ({
             )}
             
             {/* Play Button Overlay - Highlighted for 'done' status */}
-            <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 z-20 ${isDone ? 'bg-black/5' : 'bg-black/20 opacity-0 group-hover:opacity-100'}`}>
+            <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 z-20 ${isDone ? 'bg-black/[0.06]' : 'bg-black/20 opacity-0 group-hover:opacity-100'}`}>
               
               {/* Pulse effect for done status */}
               {isDone && !isActive && (
@@ -75,7 +75,7 @@ export const MusicResultCard: React.FC<MusicResultCardProps> = ({
 
               <button 
                 onClick={onPlay}
-                className={`relative w-16 h-16 rounded-full flex items-center justify-center shadow-2xl transition-all duration-500 ${
+                className={`relative w-16 h-16 rounded-full flex items-center justify-center shadow-atlas-lg transition-all duration-500 ${
                   isDone 
                   ? 'bg-brand-blue text-white scale-100 shadow-[0_0_25px_rgba(212,160,23,0.6)] hover:scale-110' 
                   : 'bg-white/20 text-white scale-90'
@@ -103,11 +103,11 @@ export const MusicResultCard: React.FC<MusicResultCardProps> = ({
         <p className="text-[10px] text-slate-500 dark:text-gray-500 font-bold uppercase truncate leading-relaxed">"{desc}"</p>
       </div>
       
-      <div className="flex justify-between items-center pt-4 border-t border-black/5 dark:border-white/5 relative z-10">
+      <div className="flex justify-between items-center pt-4 border-t border-black/5 dark:border-white/[0.06] relative z-10">
         <div className="flex gap-2">
           <button 
             onClick={onDelete}
-            className="p-3 bg-slate-100 dark:bg-white/5 hover:bg-red-500/20 text-slate-400 hover:text-red-500 rounded-xl transition-all shadow-sm"
+            className="p-3 bg-slate-100 dark:bg-white/[0.06] hover:bg-red-500/20 text-slate-400 hover:text-red-500 rounded-xl transition-all shadow-sm"
             title="Xoá bản ghi"
           >
             <Trash2 size={18}/>
@@ -115,7 +115,7 @@ export const MusicResultCard: React.FC<MusicResultCardProps> = ({
           <button 
             onClick={onRecreate}
             disabled={status === 'processing'}
-            className="p-3 bg-slate-100 dark:bg-white/5 hover:bg-brand-blue/20 text-slate-400 hover:text-brand-blue rounded-xl transition-all shadow-sm disabled:opacity-20"
+            className="p-3 bg-slate-100 dark:bg-white/[0.06] hover:bg-brand-blue/20 text-slate-400 hover:text-brand-blue rounded-xl transition-all shadow-sm disabled:opacity-20"
             title="Tạo lại (AI)"
           >
             <RefreshCw size={18}/>
@@ -127,8 +127,8 @@ export const MusicResultCard: React.FC<MusicResultCardProps> = ({
           disabled={!isDone}
           className={`px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all shadow-sm flex items-center gap-2 ${
             isDone 
-            ? 'bg-brand-blue/10 dark:bg-white/5 hover:bg-brand-blue text-brand-blue dark:text-gray-400 hover:text-white' 
-            : 'bg-slate-100 dark:bg-white/5 text-slate-300 dark:text-white/20 cursor-not-allowed'
+            ? 'bg-brand-blue/10 dark:bg-white/[0.06] hover:bg-brand-blue text-brand-blue dark:text-gray-400 hover:text-white' 
+            : 'bg-slate-100 dark:bg-white/[0.06] text-slate-300 dark:text-white/20 cursor-not-allowed'
           }`}
         >
           <Download size={14}/> Tải xuống

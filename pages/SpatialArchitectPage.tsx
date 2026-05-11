@@ -123,7 +123,7 @@ const HoloCard3D: React.FC<{ item: typeof SHOWCASE_3D[0]; index: number }> = ({ 
       style={{ rotateX: springX, rotateY: springY, transformStyle: 'preserve-3d' }}
       className="group cursor-pointer"
     >
-      <div className="relative bg-[#0a0f0a] border border-emerald-500/10 rounded-2xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.5)] hover:shadow-[0_30px_80px_rgba(16,185,129,0.15)] hover:border-emerald-500/30 transition-all duration-700">
+      <div className="relative bg-[#0a0f0a] border border-emerald-500/10 rounded-lg overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.5)] hover:shadow-[0_30px_80px_rgba(16,185,129,0.15)] hover:border-emerald-500/30 transition-all duration-700">
         {/* Scanline overlay */}
         <div className="absolute inset-0 z-30 pointer-events-none opacity-20"
           style={{ background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(16,185,129,0.03) 2px, rgba(16,185,129,0.03) 4px)' }} />
@@ -293,7 +293,7 @@ const SpatialArchitectPage: React.FC = () => {
               <motion.div key={model.id}
                 initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
                 transition={{ delay: i * 0.15, ease: [0.22, 1, 0.36, 1] as const }}
-                className="group relative bg-[#0a0f0a] border border-emerald-500/[0.08] rounded-2xl overflow-hidden hover:border-emerald-500/25 transition-all duration-700">
+                className="group relative bg-[#0a0f0a] border border-emerald-500/[0.08] rounded-lg overflow-hidden hover:border-emerald-500/25 transition-all duration-700">
                 {/* HUD corner accents */}
                 <div className="absolute top-0 left-0 w-8 h-px bg-emerald-500/30 z-20" />
                 <div className="absolute top-0 left-0 h-8 w-px bg-emerald-500/30 z-20" />
@@ -377,7 +377,7 @@ const SpatialArchitectPage: React.FC = () => {
               <motion.div key={i}
                 initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
                 transition={{ delay: i * 0.1, ease: [0.22, 1, 0.36, 1] as const }}
-                className="group p-8 bg-[#0a0f0a] border border-emerald-500/[0.06] rounded-2xl hover:border-emerald-500/20 transition-all duration-500 relative overflow-hidden">
+                className="group p-8 bg-[#0a0f0a] border border-emerald-500/[0.06] rounded-lg hover:border-emerald-500/20 transition-all duration-500 relative overflow-hidden">
                 {/* Corner accents */}
                 <div className="absolute top-0 left-0 w-6 h-px bg-emerald-500/20" />
                 <div className="absolute top-0 left-0 h-6 w-px bg-emerald-500/20" />
@@ -469,7 +469,7 @@ const SpatialArchitectPage: React.FC = () => {
         <div className="max-w-3xl mx-auto space-y-10 relative z-10 px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="space-y-6">
-            <div className="w-20 h-20 rounded-2xl bg-emerald-500/[0.08] border border-emerald-500/20 flex items-center justify-center mx-auto text-emerald-400">
+            <div className="w-20 h-20 rounded-lg bg-emerald-500/[0.08] border border-emerald-500/20 flex items-center justify-center mx-auto text-emerald-400">
               <Box size={32} />
             </div>
             <h2 className="text-5xl md:text-7xl font-bold tracking-tight leading-[0.9]">

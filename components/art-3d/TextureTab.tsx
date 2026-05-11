@@ -34,14 +34,14 @@ export const TextureTab: React.FC<TextureTabProps> = ({ variants }) => {
   const SectionHeader = ({ id, label, icon, isActive }: { id: SectionType, label: string, icon: React.ReactNode, isActive: boolean }) => (
     <button
       onClick={() => setActiveSection(isActive ? 'MAIN' : id)}
-      className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${
+      className={`w-full flex items-center justify-between p-4 rounded-lg border transition-all ${
         isActive 
         ? 'bg-[#1c1c1f] border-brand-blue/30 text-white' 
-        : 'bg-[#1c1c1f] border-white/5 text-gray-400 hover:border-white/10'
+        : 'bg-[#1c1c1f] border-white/[0.06] text-white/60 hover:border-white/10'
       }`}
     >
       <div className="flex items-center gap-3">
-        <div className={isActive ? 'text-brand-blue' : 'text-gray-500'}>
+        <div className={isActive ? 'text-brand-blue' : 'text-white/50'}>
           {icon}
         </div>
         <span className="text-xs font-bold uppercase tracking-widest">{label}</span>
@@ -70,29 +70,29 @@ export const TextureTab: React.FC<TextureTabProps> = ({ variants }) => {
           >
             <div className="flex items-center gap-3 px-1">
                <div className="flex flex-col gap-0.5">
-                  <div className="w-4 h-0.5 bg-gray-400"></div>
-                  <div className="w-4 h-0.5 bg-gray-400"></div>
-                  <div className="w-4 h-0.5 bg-gray-400"></div>
+                  <div className="w-4 h-0.5 bg-white/40"></div>
+                  <div className="w-4 h-0.5 bg-white/40"></div>
+                  <div className="w-4 h-0.5 bg-white/40"></div>
                </div>
                <h3 className="text-[13px] font-bold uppercase tracking-tight text-white">3D Model Texture Generator</h3>
             </div>
 
-            <div className="bg-[#1c1c1f] border border-brand-blue/30 rounded-[2.5rem] p-4 space-y-6">
+            <div className="bg-[#1c1c1f] border border-brand-blue/30 rounded-xl p-4 space-y-6">
               {/* Internal Tabs */}
-              <div className="flex justify-center items-center gap-8 py-2 border-b border-white/5">
-                <button onClick={() => setGenMode('IMAGE')} className={`transition-colors ${genMode === 'IMAGE' ? 'text-white' : 'text-gray-600'}`}><ImageIcon size={20}/></button>
-                <button onClick={() => setGenMode('MESH')} className={`transition-colors ${genMode === 'MESH' ? 'text-white' : 'text-gray-600'}`}><Box size={20}/></button>
-                <button onClick={() => setGenMode('TEXT')} className={`transition-colors ${genMode === 'TEXT' ? 'text-white' : 'text-gray-600'}`}><Edit3 size={20}/></button>
+              <div className="flex justify-center items-center gap-8 py-2 border-b border-white/[0.06]">
+                <button onClick={() => setGenMode('IMAGE')} className={`transition-colors ${genMode === 'IMAGE' ? 'text-white' : 'text-white/40'}`}><ImageIcon size={20}/></button>
+                <button onClick={() => setGenMode('MESH')} className={`transition-colors ${genMode === 'MESH' ? 'text-white' : 'text-white/40'}`}><Box size={20}/></button>
+                <button onClick={() => setGenMode('TEXT')} className={`transition-colors ${genMode === 'TEXT' ? 'text-white' : 'text-white/40'}`}><Edit3 size={20}/></button>
               </div>
 
               {/* Preview Image */}
-              <div className="aspect-square rounded-3xl overflow-hidden relative bg-black group">
+              <div className="aspect-square rounded-xl overflow-hidden relative bg-black group">
                 <img 
                   src="https://ai-cdn.gommo.net/ai/images/c1df07a5156c5710/f0b1a03f4f135b9d.png" 
                   className="w-full h-full object-cover opacity-80" 
                   alt="Texture Preview" 
                 />
-                <button className="absolute top-4 right-4 p-2.5 bg-black/60 backdrop-blur-md rounded-full text-white/40 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100 shadow-xl">
+                <button className="absolute top-4 right-4 p-2.5 bg-black/60 backdrop-blur-md rounded-full text-white/40 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100 shadow-atlas-lg">
                   <Trash2 size={18} />
                 </button>
               </div>
@@ -101,14 +101,14 @@ export const TextureTab: React.FC<TextureTabProps> = ({ variants }) => {
             <div className="space-y-4">
               <div className="flex items-center justify-between px-1">
                 <span className="text-[13px] font-bold text-white">Create Your Own Texture Style</span>
-                <HelpCircle size={16} className="text-gray-600" />
+                <HelpCircle size={16} className="text-white/40" />
               </div>
-              <button className="w-full p-4 bg-[#1c1c1f] border border-white/5 rounded-2xl flex items-center justify-between group hover:border-brand-blue/30 transition-all">
+              <button className="w-full p-4 bg-[#1c1c1f] border border-white/[0.06] rounded-lg flex items-center justify-between group hover:border-brand-blue/30 transition-all">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center text-[10px] font-bold text-gray-700">N/A</div>
-                  <span className="text-sm font-bold text-gray-400 group-hover:text-white">None</span>
+                  <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center text-[10px] font-bold text-white/30">N/A</div>
+                  <span className="text-sm font-bold text-white/60 group-hover:text-white">None</span>
                 </div>
-                <ChevronRight size={18} className="text-gray-600" />
+                <ChevronRight size={18} className="text-white/40" />
               </button>
             </div>
 
@@ -116,7 +116,7 @@ export const TextureTab: React.FC<TextureTabProps> = ({ variants }) => {
               <div className="flex items-center gap-2">
                 <Crown size={16} className="text-yellow-500" fill="currentColor" />
                 <span className="text-[13px] font-bold text-white">4K Texture</span>
-                <HelpCircle size={16} className="text-gray-600" />
+                <HelpCircle size={16} className="text-white/40" />
               </div>
               <button 
                 onClick={() => setFourKEnabled(!fourKEnabled)}
@@ -141,27 +141,27 @@ export const TextureTab: React.FC<TextureTabProps> = ({ variants }) => {
                <h3 className="text-[13px] font-bold uppercase tracking-tight text-white">Magic Brush</h3>
             </div>
             
-            <div className="flex bg-black/40 p-1.5 rounded-2xl border border-white/5">
-              <button onClick={() => setBrushMode('GEN')} className={`flex-grow py-2.5 text-[11px] font-bold uppercase rounded-xl transition-all ${brushMode === 'GEN' ? 'bg-[#3b3d45] text-white shadow-lg' : 'text-gray-500 hover:text-white'}`}>Gen Mode</button>
-              <button onClick={() => setBrushMode('PAINT')} className={`flex-grow py-2.5 text-[11px] font-bold uppercase rounded-xl transition-all ${brushMode === 'PAINT' ? 'bg-[#3b3d45] text-white shadow-lg' : 'text-gray-500 hover:text-white'}`}>Paint Mode</button>
+            <div className="flex bg-black/40 p-1.5 rounded-lg border border-white/[0.06]">
+              <button onClick={() => setBrushMode('GEN')} className={`flex-grow py-2.5 text-[11px] font-bold uppercase rounded-xl transition-all ${brushMode === 'GEN' ? 'bg-[#3b3d45] text-white shadow-lg' : 'text-white/50 hover:text-white'}`}>Gen Mode</button>
+              <button onClick={() => setBrushMode('PAINT')} className={`flex-grow py-2.5 text-[11px] font-bold uppercase rounded-xl transition-all ${brushMode === 'PAINT' ? 'bg-[#3b3d45] text-white shadow-lg' : 'text-white/50 hover:text-white'}`}>Paint Mode</button>
             </div>
 
             <div className="space-y-4">
               <div className="relative">
                 <textarea 
-                  className="w-full h-48 bg-[#1c1c1f] border border-white/5 rounded-[2rem] p-6 text-sm text-white placeholder:text-gray-600 outline-none focus:border-brand-blue/30 transition-all resize-none"
+                  className="w-full h-48 bg-[#1c1c1f] border border-white/[0.06] rounded-xl p-6 text-sm text-white placeholder:text-white/40 outline-none focus:border-brand-blue/30 transition-all resize-none"
                   placeholder="Describe the new texture from the current view"
                 />
-                <span className="absolute bottom-6 right-6 text-[10px] font-bold text-gray-600">0/1000</span>
+                <span className="absolute bottom-6 right-6 text-[10px] font-bold text-white/40">0/1000</span>
               </div>
 
               <div className="space-y-4 px-1 pt-2">
                  <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
                        <span className="text-[13px] font-bold text-white">Creativity Strength</span>
-                       <HelpCircle size={14} className="text-gray-600" />
+                       <HelpCircle size={14} className="text-white/40" />
                     </div>
-                    <div className="px-5 py-2 bg-white/5 border border-white/10 rounded-xl">
+                    <div className="px-5 py-2 bg-white/[0.06] border border-white/10 rounded-xl">
                       <span className="text-xs font-bold text-white">{creativity.toFixed(1)}</span>
                     </div>
                  </div>
@@ -173,11 +173,11 @@ export const TextureTab: React.FC<TextureTabProps> = ({ variants }) => {
               </div>
             </div>
 
-            <button className="w-full py-5 bg-[#3b3d45] border border-white/5 rounded-full flex items-center justify-center gap-3 shadow-xl active:scale-[0.98] transition-all">
-              <span className="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 italic">Generate Preview</span>
-              <div className="flex items-center gap-2 px-3 py-1 bg-black/40 rounded-full border border-white/5">
-                <Zap size={12} className="text-gray-500" fill="currentColor" />
-                <span className="text-[11px] font-bold italic text-gray-500">5</span>
+            <button className="w-full py-5 bg-[#3b3d45] border border-white/[0.06] rounded-full flex items-center justify-center gap-3 shadow-atlas-lg active:scale-[0.98] transition-all">
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-white/50 italic">Generate Preview</span>
+              <div className="flex items-center gap-2 px-3 py-1 bg-black/40 rounded-full border border-white/[0.06]">
+                <Zap size={12} className="text-white/50" fill="currentColor" />
+                <span className="text-[11px] font-bold italic text-white/50">5</span>
               </div>
             </button>
           </motion.div>
@@ -193,7 +193,7 @@ export const TextureTab: React.FC<TextureTabProps> = ({ variants }) => {
                <h3 className="text-[13px] font-bold uppercase tracking-tight text-white">Texture Upscale</h3>
             </div>
 
-            <div className="aspect-square rounded-3xl overflow-hidden relative border border-white/5 bg-black">
+            <div className="aspect-square rounded-xl overflow-hidden relative border border-white/[0.06] bg-black">
                <img 
                  src="https://ai-cdn.gommo.net/ai/images/c1df07a5156c5710/f0b1a03f4f135b9d.png" 
                  className="w-full h-full object-cover" 
@@ -204,23 +204,23 @@ export const TextureTab: React.FC<TextureTabProps> = ({ variants }) => {
                </div>
             </div>
 
-            <p className="text-[12px] text-gray-500 font-bold text-center leading-relaxed px-4">
+            <p className="text-[12px] text-white/50 font-bold text-center leading-relaxed px-4">
               Intelligently boosts texture resolution while preserving original style and detail
             </p>
 
             <div className="space-y-4">
                <div className="relative">
-                 <button className="w-full py-5 bg-[#3b3d45] border border-white/5 rounded-full flex items-center justify-center gap-3 shadow-xl active:scale-[0.98] transition-all">
+                 <button className="w-full py-5 bg-[#3b3d45] border border-white/[0.06] rounded-full flex items-center justify-center gap-3 shadow-atlas-lg active:scale-[0.98] transition-all">
                    <div className="flex items-center gap-2 text-white">
                       <Crown size={14} fill="currentColor" className="text-yellow-500" />
                       <span className="text-xs font-bold uppercase tracking-[0.2em] italic">Upscale Now</span>
                    </div>
-                   <div className="flex items-center gap-2 px-3 py-1 bg-black/40 rounded-full border border-white/5">
-                     <Zap size={12} className="text-gray-500" fill="currentColor" />
-                     <span className="text-[11px] font-bold italic text-gray-500">10</span>
+                   <div className="flex items-center gap-2 px-3 py-1 bg-black/40 rounded-full border border-white/[0.06]">
+                     <Zap size={12} className="text-white/50" fill="currentColor" />
+                     <span className="text-[11px] font-bold italic text-white/50">10</span>
                    </div>
                  </button>
-                 <div className="absolute -top-3 -right-2 bg-pink-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase italic shadow-xl">Free 0/1</div>
+                 <div className="absolute -top-3 -right-2 bg-pink-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase italic shadow-atlas-lg">Free 0/1</div>
                </div>
             </div>
           </motion.div>
@@ -236,7 +236,7 @@ export const TextureTab: React.FC<TextureTabProps> = ({ variants }) => {
                <h3 className="text-[13px] font-bold uppercase tracking-tight text-white">PBR Generator</h3>
             </div>
 
-            <div className="aspect-square rounded-3xl overflow-hidden relative border border-white/5 bg-black">
+            <div className="aspect-square rounded-xl overflow-hidden relative border border-white/[0.06] bg-black">
                <img 
                  src="https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&q=80&w=800" 
                  className="w-full h-full object-cover" 
@@ -245,15 +245,15 @@ export const TextureTab: React.FC<TextureTabProps> = ({ variants }) => {
                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(255,255,255,0.1)_0%,_transparent_100%)]"></div>
             </div>
 
-            <p className="text-[12px] text-gray-500 font-bold text-center leading-relaxed px-4">
+            <p className="text-[12px] text-white/50 font-bold text-center leading-relaxed px-4">
               Create PBR materials with physically accurate reflectance properties for authentic surface rendering
             </p>
 
-            <button className="w-full py-5 bg-[#3b3d45] border border-white/5 rounded-full flex items-center justify-center gap-3 shadow-xl active:scale-[0.98] transition-all">
-              <span className="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 italic">Generate PBR</span>
-              <div className="flex items-center gap-2 px-3 py-1 bg-black/40 rounded-full border border-white/5">
-                <Zap size={12} className="text-gray-500" fill="currentColor" />
-                <span className="text-[11px] font-bold italic text-gray-500">5</span>
+            <button className="w-full py-5 bg-[#3b3d45] border border-white/[0.06] rounded-full flex items-center justify-center gap-3 shadow-atlas-lg active:scale-[0.98] transition-all">
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-white/50 italic">Generate PBR</span>
+              <div className="flex items-center gap-2 px-3 py-1 bg-black/40 rounded-full border border-white/[0.06]">
+                <Zap size={12} className="text-white/50" fill="currentColor" />
+                <span className="text-[11px] font-bold italic text-white/50">5</span>
               </div>
             </button>
           </motion.div>
@@ -261,7 +261,7 @@ export const TextureTab: React.FC<TextureTabProps> = ({ variants }) => {
       </AnimatePresence>
 
       {/* FOOTER ACCORDIONS */}
-      <div className="mt-auto space-y-3 pt-6 border-t border-white/5">
+      <div className="mt-auto space-y-3 pt-6 border-t border-white/[0.06]">
         <SectionHeader 
           id="BRUSH" 
           label="Magic Brush" 

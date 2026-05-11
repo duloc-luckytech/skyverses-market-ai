@@ -16,7 +16,7 @@ export const ResourceControl: React.FC<ResourceControlProps> = ({
   onSettingsClick
 }) => {
   return (
-    <div className="flex items-center gap-6 pr-6 border-r border-black/5 dark:border-white/5 shrink-0">
+    <div className="flex items-center gap-6 pr-6 border-r border-black/5 dark:border-white/[0.06] shrink-0">
       <div className="flex flex-col items-end">
         <div className="flex items-center gap-1.5 mb-1">
           <span className="text-[7px] font-bold uppercase text-slate-400 dark:text-gray-600 tracking-[0.2em] leading-none">
@@ -39,7 +39,7 @@ export const ResourceControl: React.FC<ResourceControlProps> = ({
           </div>
           <button 
             onClick={onSettingsClick}
-            className="p-1.5 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-md hover:text-brand-blue transition-all shadow-sm active:scale-95"
+            className="p-1.5 bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 rounded-md hover:text-brand-blue transition-all shadow-sm active:scale-95"
             title="Configure Resource Node"
           >
             <Settings2 size={14} />

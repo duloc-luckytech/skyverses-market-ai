@@ -111,24 +111,24 @@ export const CaptchaPaymentModal: React.FC<CaptchaPaymentModalProps> = ({
       <motion.div 
         initial={{ scale: 0.95, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
-        className="relative w-full max-w-4xl bg-white dark:bg-[var(--atlas-bg-page)] rounded-[2.5rem] border border-black/10 dark:border-white/10 shadow-3xl overflow-hidden flex flex-col md:flex-row transition-all duration-500"
+        className="relative w-full max-w-4xl bg-white dark:bg-[var(--atlas-bg-page)] rounded-xl border border-black/10 dark:border-white/10 shadow-atlas-xl overflow-hidden flex flex-col md:flex-row transition-all duration-500"
       >
         {/* Left Column: Summary */}
-        <div className="w-full md:w-[320px] bg-slate-50 dark:bg-black/40 p-10 border-b md:border-b-0 md:border-r border-black/5 dark:border-white/5 flex flex-col shrink-0">
+        <div className="w-full md:w-[320px] bg-slate-50 dark:bg-black/40 p-10 border-b md:border-b-0 md:border-r border-black/5 dark:border-white/[0.06] flex flex-col shrink-0">
            <div className="space-y-10">
               <div className="flex items-center gap-3">
-                 <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-xl">
+                 <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-atlas-lg">
                     <Zap size={20} fill="currentColor" />
                  </div>
                  <h2 className="text-xl font-bold uppercase italic tracking-tighter">Uplink Payment</h2>
               </div>
 
-              <div className="p-6 bg-white dark:bg-black/20 border border-black/5 dark:border-white/10 rounded-2xl space-y-4">
+              <div className="p-6 bg-white dark:bg-black/20 border border-black/5 dark:border-white/10 rounded-lg space-y-4">
                  <div className="space-y-1">
                     <p className="text-[10px] font-bold uppercase text-slate-400">Gói nâng cấp</p>
                     <h3 className="text-lg font-bold text-indigo-600 uppercase italic">{paymentData.plan.name}</h3>
                  </div>
-                 <div className="pt-3 border-t border-black/5 dark:border-white/5 flex justify-between items-center">
+                 <div className="pt-3 border-t border-black/5 dark:border-white/[0.06] flex justify-between items-center">
                     <span className="text-[10px] font-bold uppercase text-gray-400">Hạn ngạch</span>
                     <span className="text-sm font-bold text-slate-900 dark:text-white italic">{paymentData.plan.quota.toLocaleString()} Tokens</span>
                  </div>
@@ -170,7 +170,7 @@ export const CaptchaPaymentModal: React.FC<CaptchaPaymentModalProps> = ({
            <AnimatePresence mode="wait">
               {status === 'SUCCESS' ? (
                  <motion.div key="success" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center text-center h-full space-y-6">
-                    <div className="w-24 h-24 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-2xl">
+                    <div className="w-24 h-24 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-atlas-lg">
                        <BadgeCheck size={56} strokeWidth={2.5} />
                     </div>
                     <div className="space-y-2">
@@ -182,7 +182,7 @@ export const CaptchaPaymentModal: React.FC<CaptchaPaymentModalProps> = ({
                  <motion.div key="payment" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-10">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
                        {/* QR AREA */}
-                       <div className="relative group p-6 bg-white border border-black/10 rounded-[2rem] shadow-2xl overflow-hidden transition-all hover:scale-[1.02] max-w-[240px] mx-auto lg:mx-0">
+                       <div className="relative group p-6 bg-white border border-black/10 rounded-xl shadow-atlas-lg overflow-hidden transition-all hover:scale-[1.02] max-w-[240px] mx-auto lg:mx-0">
                           {status === 'VERIFYING' && (
                              <div className="absolute inset-0 z-10 bg-white/90 dark:bg-black/90 backdrop-blur-md flex flex-col items-center justify-center gap-3">
                                 <Loader2 size={32} className="text-indigo-600 animate-spin" />
@@ -202,7 +202,7 @@ export const CaptchaPaymentModal: React.FC<CaptchaPaymentModalProps> = ({
 
                        {/* INFO AREA */}
                        <div className="space-y-6">
-                          <div className="p-6 bg-slate-50 dark:bg-white/[0.03] border border-black/5 dark:border-white/10 rounded-2xl space-y-4">
+                          <div className="p-6 bg-slate-50 dark:bg-white/[0.03] border border-black/5 dark:border-white/10 rounded-lg space-y-4">
                              <div className="flex items-center gap-3 mb-2">
                                 <Landmark size={18} className="text-slate-400" />
                                 <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{paymentData.bank.bankName}</span>
@@ -213,7 +213,7 @@ export const CaptchaPaymentModal: React.FC<CaptchaPaymentModalProps> = ({
                              </div>
                           </div>
 
-                          <div className="p-6 border border-orange-500/20 bg-orange-500/5 rounded-2xl space-y-2 relative group hover:bg-orange-500/10 transition-all">
+                          <div className="p-6 border border-orange-500/20 bg-orange-500/5 rounded-lg space-y-2 relative group hover:bg-orange-500/10 transition-all">
                              <div className="flex items-center justify-between">
                                 <span className="text-[10px] font-bold uppercase text-orange-500 flex items-center gap-2">
                                    <Info size={14} /> Nội dung chuyển khoản
@@ -231,7 +231,7 @@ export const CaptchaPaymentModal: React.FC<CaptchaPaymentModalProps> = ({
                        <button 
                          onClick={handleConfirmPaid}
                          disabled={status === 'VERIFYING'}
-                         className="w-full py-6 bg-indigo-600 text-white rounded-2xl text-[12px] font-bold uppercase tracking-[0.4em] shadow-2xl shadow-indigo-600/20 hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-4 relative overflow-hidden group"
+                         className="w-full py-6 bg-indigo-600 text-white rounded-lg text-[12px] font-bold uppercase tracking-[0.4em] shadow-atlas-lg shadow-indigo-600/20 hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-4 relative overflow-hidden group"
                        >
                           <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                           {status === 'VERIFYING' ? (

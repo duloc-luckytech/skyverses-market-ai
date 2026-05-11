@@ -29,11 +29,11 @@ const ToolIcon = ({ icon, active, onClick, tooltip, disabled = false }: any) => 
   <button 
     onClick={onClick} 
     disabled={disabled}
-    className={`p-2 md:p-2.5 rounded-xl transition-all relative group ${disabled ? 'opacity-20 cursor-not-allowed' : active ? 'bg-brand-blue/10 text-brand-blue' : 'text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'}`}
+    className={`p-2 md:p-2.5 rounded-xl transition-all relative group ${disabled ? 'opacity-20 cursor-not-allowed' : active ? 'bg-brand-blue/10 text-brand-blue' : 'text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]'}`}
   >
     {icon}
     {!disabled && (
-      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 px-3 py-1.5 bg-slate-900 dark:bg-slate-800 text-[9px] font-bold uppercase whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none z-50 rounded-lg shadow-2xl text-white hidden md:block tracking-wider">
+      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 px-3 py-1.5 bg-slate-900 dark:bg-slate-800 text-[9px] font-bold uppercase whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none z-50 rounded-lg shadow-atlas-lg text-white hidden md:block tracking-wider">
         {tooltip}
       </div>
     )}
@@ -48,7 +48,7 @@ export const EditorHeader: React.FC<EditorHeaderProps> = ({
   return (
     <div className="flex flex-col shrink-0 z-[120] transition-colors">
       {/* Top Navigation Bar */}
-      <div className="h-14 md:h-16 bg-white dark:bg-[var(--atlas-bg-page)] border-b border-slate-100 dark:border-white/5 flex items-center justify-between px-4 md:px-6">
+      <div className="h-14 md:h-16 bg-white dark:bg-[var(--atlas-bg-page)] border-b border-slate-100 dark:border-white/[0.06] flex items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-3">
           <button 
             onClick={onClose}
@@ -73,7 +73,7 @@ export const EditorHeader: React.FC<EditorHeaderProps> = ({
         </div>
 
         <div className="flex items-center gap-2 md:gap-3">
-          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/[0.06] rounded-xl transition-colors shrink-0">
+          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 dark:bg-white/[0.06] border border-slate-100 dark:border-white/[0.06] rounded-xl transition-colors shrink-0">
             <Wallet size={12} className="text-amber-500" />
             <span className="text-[10px] md:text-xs font-bold text-slate-700 dark:text-white">{(credits || 0).toLocaleString()}</span>
           </div>
@@ -108,7 +108,7 @@ export const EditorHeader: React.FC<EditorHeaderProps> = ({
           <ToolIcon active={activeTool === 'eraser'} onClick={() => setActiveTool('eraser')} icon={<Eraser size={15} />} tooltip="Tẩy mask" disabled={isActionsDisabled} />
           
           {(activeTool === 'pen' || activeTool === 'eraser') && (
-            <div className="flex items-center gap-3 px-3 py-1.5 bg-white dark:bg-white/5 border border-slate-100 dark:border-white/[0.06] rounded-xl ml-2">
+            <div className="flex items-center gap-3 px-3 py-1.5 bg-white dark:bg-white/[0.06] border border-slate-100 dark:border-white/[0.06] rounded-xl ml-2">
                <input type="range" min="1" max="100" value={brushSize} onChange={(e) => setBrushSize(parseInt(e.target.value))} className="w-16 md:w-20 h-1 bg-slate-200 dark:bg-white/10 appearance-none rounded-full accent-brand-blue" />
                <span className="text-[10px] font-bold min-w-[20px] text-slate-500 dark:text-white/40">{brushSize}</span>
             </div>

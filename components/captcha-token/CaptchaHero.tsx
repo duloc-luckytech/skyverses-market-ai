@@ -20,7 +20,7 @@ export const CaptchaHero: React.FC<CaptchaHeroProps> = ({ activeTab, setActiveTa
   return (
     <section className="relative overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0c0e1a] via-[#0e1028] to-[#130a22] rounded-[2.5rem]" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0c0e1a] via-[#0e1028] to-[#130a22] rounded-xl" />
       <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 left-[20%] w-[400px] h-[300px] bg-purple-500/8 rounded-full blur-[100px] pointer-events-none" />
@@ -99,7 +99,7 @@ export const CaptchaHero: React.FC<CaptchaHeroProps> = ({ activeTab, setActiveTa
             >
               <button
                 onClick={() => document.getElementById('pricing-matrix')?.scrollIntoView({ behavior: 'smooth' })}
-                className="group relative inline-flex items-center gap-2 bg-indigo-500 text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-indigo-400 transition-all active:scale-95 shadow-xl shadow-indigo-500/20"
+                className="group relative inline-flex items-center gap-2 bg-indigo-500 text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-indigo-400 transition-all active:scale-95 shadow-atlas-lg shadow-indigo-500/20"
               >
                 Xem bảng giá
                 <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
@@ -123,7 +123,7 @@ export const CaptchaHero: React.FC<CaptchaHeroProps> = ({ activeTab, setActiveTa
             {/* Code snippet visual */}
             <div className="relative">
               <div className="absolute inset-0 bg-indigo-500/10 blur-[60px] rounded-full scale-75 pointer-events-none" />
-              <div className="relative bg-[#0d1117] border border-white/[0.06] rounded-2xl p-6 shadow-2xl font-mono text-sm">
+              <div className="relative bg-[var(--atlas-bg-page)] border border-white/[0.06] rounded-lg p-6 shadow-atlas-lg font-mono text-sm">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-3 h-3 rounded-full bg-red-500/60" />
                   <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
@@ -140,7 +140,7 @@ export const CaptchaHero: React.FC<CaptchaHeroProps> = ({ activeTab, setActiveTa
                   <div className="pl-8"><span className="text-white/40">{'}'}</span></div>
                   <div className="pl-4"><span className="text-white/40">{'}'}</span></div>
                   <div><span className="text-white/40">)</span></div>
-                  <div className="mt-2"><span className="text-gray-500">// ✅ Token solved in ~3s</span></div>
+                  <div className="mt-2"><span className="text-white/30">// ✅ Token solved in ~3s</span></div>
                   <div><span className="text-purple-400">const</span> <span className="text-cyan-300">{'{ token }'}</span> <span className="text-white/40">=</span> <span className="text-purple-400">await</span> <span className="text-cyan-300">response</span><span className="text-white/40">.</span><span className="text-yellow-300">json</span><span className="text-white/40">()</span></div>
                 </div>
                 {/* Glow line */}
@@ -163,7 +163,7 @@ export const CaptchaHero: React.FC<CaptchaHeroProps> = ({ activeTab, setActiveTa
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="mt-12 flex items-center gap-2 p-1 bg-white/[0.03] border border-white/[0.06] rounded-2xl w-fit"
+          className="mt-12 flex items-center gap-2 p-1 bg-white/[0.03] border border-white/[0.06] rounded-lg w-fit"
         >
           {tabs.map(tab => (
             <button

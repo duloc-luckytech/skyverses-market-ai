@@ -50,7 +50,7 @@ const ModelDetailModal: React.FC<{ model: AIModel; onClose: () => void }> = ({ m
       />
       <motion.div 
         initial={{ scale: 0.97, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.97, opacity: 0, y: 10 }}
-        className="relative w-full max-w-4xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-lg overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
+        className="relative w-full max-w-4xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-lg overflow-hidden shadow-atlas-lg flex flex-col max-h-[90vh]"
       >
         {/* Header */}
         <div className="px-6 py-5 border-b border-black/[0.04] dark:border-white/[0.08] flex items-center justify-between shrink-0">
@@ -132,7 +132,7 @@ const ModelDetailModal: React.FC<{ model: AIModel; onClose: () => void }> = ({ m
                 </div>
               </div>
 
-              <div className="p-4 border border-brand-blue/15 bg-brand-blue/[0.03] rounded-xl flex gap-3 items-start">
+              <div className="p-4 border border-brand-blue/[0.15] bg-brand-blue/[0.03] rounded-xl flex gap-3 items-start">
                 <ShieldCheck className="text-brand-blue shrink-0 mt-0.5" size={16} />
                 <p className="text-[12px] text-slate-500 dark:text-gray-400 leading-relaxed">
                   Model đã được kiểm định về độ ổn định và an toàn cho sản xuất.

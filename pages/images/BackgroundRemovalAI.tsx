@@ -67,14 +67,14 @@ const BackgroundRemovalAI = () => {
               >
                 Mở Studio Xóa Nền <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="px-12 py-6 border border-slate-200 dark:border-white/10 rounded-sm text-[12px] font-bold uppercase tracking-[0.4em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/10 transition-all bg-white/5 dark:bg-white/5 backdrop-blur-md flex items-center justify-center gap-4">
+              <button className="px-12 py-6 border border-slate-200 dark:border-white/10 rounded-sm text-[12px] font-bold uppercase tracking-[0.4em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/10 transition-all bg-white/[0.06] dark:bg-white/[0.06] backdrop-blur-md flex items-center justify-center gap-4">
                 Xem Tài liệu <Play size={16} fill="currentColor" />
               </button>
             </div>
           </div>
 
           <div className="lg:col-span-7 relative order-1 lg:order-2">
-             <div className="aspect-[16/10] bg-slate-50 dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/5 rounded-sm p-4 shadow-3xl overflow-hidden group transition-colors">
+             <div className="aspect-[16/10] bg-slate-50 dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/[0.06] rounded-sm p-4 shadow-atlas-xl overflow-hidden group transition-colors">
                 <div className="relative w-full h-full bg-white dark:bg-black rounded-sm border border-brand-blue/10 overflow-hidden flex items-center justify-center transition-colors">
                    <div className="absolute inset-0 grid grid-cols-2">
                       <img 
@@ -102,16 +102,16 @@ const BackgroundRemovalAI = () => {
       </section>
 
       {/* 2. SPEC SECTION */}
-      <section className="py-40 bg-slate-50 dark:bg-[var(--atlas-bg-page)] border-y border-slate-200 dark:border-white/5 transition-colors">
+      <section className="py-40 bg-slate-50 dark:bg-[var(--atlas-bg-page)] border-y border-slate-200 dark:border-white/[0.06] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200 dark:bg-white/5 border border-slate-200 dark:border-white/5 shadow-3xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.06] shadow-atlas-xl">
              {[
                { t: 'Neural Segmentation', i: <Scissors />, d: 'Phân tách chủ thể và nền bằng mô hình học sâu hiện đại nhất.' },
                { t: 'High-Res Export', i: <Maximize2 />, d: 'Hỗ trợ xuất ảnh PNG không nền chất lượng 4K-8K siêu sắc nét.' },
                { t: 'Industrial Speed', i: <Zap />, d: 'Xử lý hình ảnh trong chưa đầy 2 giây nhờ hạ tầng H100.' },
                { t: 'Batch Processing', i: <Layers />, d: 'Tách nền hàng loạt hàng trăm ảnh phục vụ TMĐT và thiết kế.' }
              ].map((f, i) => (
-               <div key={i} className="p-16 bg-white dark:bg-black space-y-8 group hover:bg-brand-blue/[0.02] transition-all duration-500 border-r border-slate-50 dark:border-white/5 last:border-r-0">
+               <div key={i} className="p-16 bg-white dark:bg-black space-y-8 group hover:bg-brand-blue/[0.02] transition-all duration-500 border-r border-slate-50 dark:border-white/[0.06] last:border-r-0">
                   <div className="w-14 h-14 border border-slate-100 dark:border-white/10 flex items-center justify-center text-slate-400 group-hover:text-brand-blue transition-colors rounded-sm shadow-sm">
                      {React.cloneElement(f.i as React.ReactElement<any>, { size: 24 })}
                   </div>

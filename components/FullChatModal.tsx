@@ -242,7 +242,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
               
               {/* Logo + Model */}
               <div className="flex items-center gap-2.5 px-3 py-1.5 hover:bg-black/[0.03] dark:hover:bg-white/[0.03] rounded-lg transition-all cursor-pointer group">
-                 <div className="w-6 h-6 rounded-md bg-gradient-to-br from-brand-blue/10 to-purple-500/10 border border-brand-blue/15 flex items-center justify-center p-0.5">
+                 <div className="w-6 h-6 rounded-md bg-gradient-to-br from-brand-blue/10 to-purple-500/10 border border-brand-blue/[0.15] flex items-center justify-center p-0.5">
                    <img src={logoUrl} alt="" className="w-full h-full object-contain" />
                  </div>
                  <span className="text-[12px] font-bold text-slate-600 dark:text-gray-300 group-hover:text-slate-900 dark:group-hover:text-white">Claude Sonnet 4.5</span>
@@ -288,7 +288,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }} className="flex-grow flex flex-col items-center justify-center space-y-8 mt-10 md:mt-20">
                 <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', damping: 15, stiffness: 200, delay: 0.1 }} className="relative">
                   <div className="absolute inset-0 bg-brand-blue/10 blur-[30px] rounded-full animate-pulse" />
-                  <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-white/[0.04] dark:to-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center shadow-lg p-3">
+                  <div className="relative w-16 h-16 rounded-lg bg-gradient-to-br from-slate-50 to-slate-100 dark:from-white/[0.04] dark:to-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center shadow-lg p-3">
                     <img src={logoUrl} className="w-full h-full object-contain" alt="" />
                   </div>
                 </motion.div>
@@ -305,7 +305,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
                       whileHover={{ scale: 1.02, x: 4 }} whileTap={{ scale: 0.98 }}
                       key={i}
                       onClick={() => onSendMessage(s.text)}
-                      className="p-4 border border-black/[0.04] dark:border-white/[0.08] bg-black/[0.01] dark:bg-white/[0.02] hover:border-brand-blue/20 hover:bg-brand-blue/[0.03] rounded-2xl text-left transition-all group flex items-center gap-3"
+                      className="p-4 border border-black/[0.04] dark:border-white/[0.08] bg-black/[0.01] dark:bg-white/[0.02] hover:border-brand-blue/20 hover:bg-brand-blue/[0.03] rounded-lg text-left transition-all group flex items-center gap-3"
                     >
                       <span className="text-lg shrink-0">{s.emoji}</span>
                       <p className="text-[12px] font-semibold text-slate-500 dark:text-gray-400 group-hover:text-slate-900 dark:group-hover:text-white leading-relaxed flex-1">{s.text}</p>
@@ -344,7 +344,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
                       className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 overflow-hidden ${
                       msg.role === 'user' 
                         ? 'bg-slate-800 dark:bg-white/90 text-white dark:text-black'
-                        : 'bg-gradient-to-br from-brand-blue/10 to-purple-500/10 border border-brand-blue/15 p-1.5'
+                        : 'bg-gradient-to-br from-brand-blue/10 to-purple-500/10 border border-brand-blue/[0.15] p-1.5'
                     }`}>
                       {msg.role === 'user' 
                         ? (user?.picture 
@@ -366,7 +366,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
                       {/* Bubble */}
                       <motion.div 
                         initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.2, delay: 0.08 }}
-                        className={`px-5 py-4 rounded-2xl ${
+                        className={`px-5 py-4 rounded-lg ${
                         msg.role === 'user'
                           ? 'bg-slate-800 dark:bg-white/90 text-white dark:text-black rounded-tr-lg'
                           : 'bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.08] text-slate-700 dark:text-gray-200 rounded-tl-lg'
@@ -416,13 +416,13 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
                   >
                     <motion.div 
                       animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
-                      className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-blue/10 to-purple-500/10 border border-brand-blue/15 flex items-center justify-center p-1.5 shrink-0"
+                      className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-blue/10 to-purple-500/10 border border-brand-blue/[0.15] flex items-center justify-center p-1.5 shrink-0"
                     >
                       <img src={logoUrl} alt="" className="w-full h-full object-contain" />
                     </motion.div>
                     <div>
                       <p className="text-[10px] font-semibold text-brand-blue/60 mb-1.5 ml-1">Skyverses AI</p>
-                      <div className="px-5 py-4 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.08] rounded-2xl rounded-tl-lg">
+                      <div className="px-5 py-4 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.08] rounded-lg rounded-tl-lg">
                         <div className="flex items-center gap-2.5">
                           <div className="flex gap-1">
                             <div className="w-2 h-2 bg-brand-blue/40 rounded-full animate-bounce" />
@@ -462,7 +462,7 @@ const FullChatModal: React.FC<FullChatModalProps> = ({
 
              {/* Input pill — synced design with mini chat */}
              <form onSubmit={(e) => { e.preventDefault(); handleSend(); }}
-               className="flex items-center gap-2.5 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl p-2 pl-3 focus-within:border-brand-blue/30 transition-all shadow-lg">
+               className="flex items-center gap-2.5 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-lg p-2 pl-3 focus-within:border-brand-blue/30 transition-all shadow-lg">
                 <button type="button"
                   onClick={() => fileInputRef.current?.click()}
                   className="w-10 h-10 rounded-xl bg-white dark:bg-white/[0.04] border border-black/[0.04] dark:border-white/[0.08] flex items-center justify-center text-slate-400 hover:text-brand-blue transition-all shrink-0 hover:scale-105 active:scale-95"

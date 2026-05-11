@@ -43,7 +43,7 @@ const AvatarLipsyncAI = () => {
       <div className="fixed top-24 right-12 z-[100] hidden md:block">
          <button 
            onClick={() => setIsStudioOpen(true)}
-           className="bg-white/80 dark:bg-white/5 backdrop-blur-md border border-slate-200 dark:border-white/10 px-6 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-white/10 transition-all flex items-center gap-3 shadow-sm dark:shadow-none"
+           className="bg-white/80 dark:bg-white/[0.06] backdrop-blur-md border border-slate-200 dark:border-white/10 px-6 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-white/10 transition-all flex items-center gap-3 shadow-sm dark:shadow-none"
          >
             <Sparkles size={14} className="text-purple-600 dark:text-purple-400" />
             <span className="text-slate-700 dark:text-white">Tạo video avatar nói với giọng của bạn</span>
@@ -82,7 +82,7 @@ const AvatarLipsyncAI = () => {
               >
                 Create Avatar Video <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="px-12 py-6 border border-slate-200 dark:border-white/10 rounded-sm text-xs font-bold uppercase tracking-[0.4em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/10 transition-all bg-white/50 dark:bg-white/5 backdrop-blur-md flex items-center justify-center gap-4">
+              <button className="px-12 py-6 border border-slate-200 dark:border-white/10 rounded-sm text-xs font-bold uppercase tracking-[0.4em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/10 transition-all bg-white/50 dark:bg-white/[0.06] backdrop-blur-md flex items-center justify-center gap-4">
                 Watch Demo <Play size={16} fill="currentColor" />
               </button>
             </div>
@@ -93,9 +93,9 @@ const AvatarLipsyncAI = () => {
             className="lg:col-span-6"
           >
             {/* STUDIO PREVIEW MOCKUP */}
-            <div className="relative aspect-video bg-white dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/10 rounded-xl p-4 shadow-3xl overflow-hidden group">
+            <div className="relative aspect-video bg-white dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/10 rounded-xl p-4 shadow-atlas-xl overflow-hidden group">
                <div className="absolute inset-0 bg-gradient-to-tr from-violet-500/5 to-transparent"></div>
-               <div className="h-full w-full bg-black rounded-lg border border-slate-200 dark:border-white/5 overflow-hidden relative">
+               <div className="h-full w-full bg-black rounded-lg border border-slate-200 dark:border-white/[0.06] overflow-hidden relative">
                   <video 
                     src="https://framerusercontent.com/assets/U4v4W7xT3tL0N8I.mp4" 
                     autoPlay loop muted 
@@ -115,7 +115,7 @@ const AvatarLipsyncAI = () => {
                         <h3 className="text-2xl font-bold italic uppercase text-white tracking-tighter">Presenter_042</h3>
                      </div>
                      <div className="flex gap-2">
-                        <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/40"><Mic size={16}/></div>
+                        <div className="w-10 h-10 rounded-full bg-white/[0.06] flex items-center justify-center text-white/40"><Mic size={16}/></div>
                         <div className="w-10 h-10 rounded-full bg-violet-600 flex items-center justify-center text-white"><Download size={16}/></div>
                      </div>
                   </div>
@@ -126,7 +126,7 @@ const AvatarLipsyncAI = () => {
       </section>
 
       {/* --- 2. HOW IT WORKS --- */}
-      <section className="py-40 border-y border-slate-200 dark:border-white/5 relative bg-slate-50 dark:bg-[var(--atlas-bg-page)] transition-colors">
+      <section className="py-40 border-y border-slate-200 dark:border-white/[0.06] relative bg-slate-50 dark:bg-[var(--atlas-bg-page)] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center space-y-4 mb-24">
              <h2 className="text-4xl lg:text-6xl font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white">Instant Production Flow</h2>
@@ -139,7 +139,7 @@ const AvatarLipsyncAI = () => {
               { step: '02', title: 'Add Audio Input', desc: 'Upload a voice file, record directly in-browser, or generate speech via high-end TTS.', icon: <Mic /> },
               { step: '03', title: 'Generate & Ship', desc: 'AI synchronizes facial movement and speech automatically to create your video.', icon: <Zap /> }
             ].map((s, i) => (
-              <div key={i} className="p-12 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-sm relative group overflow-hidden hover:border-violet-500/30 transition-all shadow-sm dark:shadow-2xl">
+              <div key={i} className="p-12 bg-white dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 rounded-sm relative group overflow-hidden hover:border-violet-500/30 transition-all shadow-sm dark:shadow-atlas-lg">
                 <div className="absolute -top-10 -right-10 text-[140px] font-bold text-slate-900/[0.02] dark:text-white/[0.02] italic group-hover:text-violet-500/[0.05] transition-colors">{s.step}</div>
                 <div className="w-16 h-16 bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-600 dark:text-violet-400 mb-10 rounded-sm group-hover:scale-110 transition-transform">
                    {React.cloneElement(s.icon as React.ReactElement<any>, { size: 32 })}
@@ -155,7 +155,7 @@ const AvatarLipsyncAI = () => {
       {/* --- 3. CORE FEATURES --- */}
       <section className="py-40 bg-white dark:bg-black transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200 dark:bg-white/5 border border-slate-200 dark:border-white/5 shadow-xl dark:shadow-3xl">
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.06] shadow-atlas-lg dark:shadow-atlas-xl">
               {[
                 { t: 'Accurate AI Lipsync', i: <MessageSquare />, d: 'Pixel-perfect mouth synchronization with any audio frequency.' },
                 { t: 'Multi-Audio Input', i: <Volume2 />, d: 'Support for Upload, Live Recording, and Pro-grade TTS.' },
@@ -166,7 +166,7 @@ const AvatarLipsyncAI = () => {
                 { t: 'Global Languages', i: <Globe />, d: 'Speak any language fluently with automated phonetic mapping.' },
                 { t: 'VPC Security', i: <ShieldCheck />, d: 'Proprietary models are VPC-isolated for enterprise-grade privacy.' }
               ].map((f, i) => (
-                <div key={i} className="p-12 bg-white dark:bg-[var(--atlas-bg-page)] space-y-6 hover:bg-violet-500/[0.02] transition-all duration-500 border-r border-slate-50 dark:border-white/5 last:border-r-0">
+                <div key={i} className="p-12 bg-white dark:bg-[var(--atlas-bg-page)] space-y-6 hover:bg-violet-500/[0.02] transition-all duration-500 border-r border-slate-50 dark:border-white/[0.06] last:border-r-0">
                    <div className="text-violet-600 dark:text-violet-400 opacity-60 group-hover:opacity-100 transition-colors">
                       {React.cloneElement(f.i as React.ReactElement<any>, { size: 24 })}
                    </div>
@@ -181,7 +181,7 @@ const AvatarLipsyncAI = () => {
       </section>
 
       {/* --- 4. USE CASES --- */}
-      <section className="py-40 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-[var(--atlas-bg-page)] relative overflow-hidden transition-colors">
+      <section className="py-40 border-t border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-[var(--atlas-bg-page)] relative overflow-hidden transition-colors">
          <div className="max-w-7xl mx-auto px-6 lg:px-12 space-y-24 relative z-10">
             <div className="flex flex-col md:flex-row justify-between items-end gap-8">
               <div className="space-y-4">
@@ -199,7 +199,7 @@ const AvatarLipsyncAI = () => {
                 { t: 'Corporate Training', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=800' },
                 { t: 'Interactive Storytelling', img: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800' }
               ].map((item, i) => (
-                <div key={i} className="group relative overflow-hidden aspect-[4/5] border border-slate-200 dark:border-white/5 rounded-sm shadow-xl hover:border-violet-500/40 transition-all cursor-pointer bg-slate-200 dark:bg-black">
+                <div key={i} className="group relative overflow-hidden aspect-[4/5] border border-slate-200 dark:border-white/[0.06] rounded-sm shadow-atlas-lg hover:border-violet-500/40 transition-all cursor-pointer bg-slate-200 dark:bg-black">
                    <img src={item.img} className="w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 dark:group-hover:opacity-60 transition-all duration-700 group-hover:scale-105" alt={item.t} />
                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent p-10 flex flex-col justify-end">
                       <h4 className="text-3xl font-bold uppercase italic tracking-tighter text-white translate-y-4 group-hover:translate-y-0 transition-transform">{item.t}</h4>
@@ -221,7 +221,7 @@ const AvatarLipsyncAI = () => {
                  { t: 'Hyper-Speed Output', d: 'Go from script to final video in minutes, enabling high-frequency social delivery.' },
                  { t: 'Technical Mastery', d: 'Built on proprietary acoustic mapping tech for the most realistic mouth sync available.' }
                ].map((item, i) => (
-                  <div key={i} className="flex gap-8 items-start border-b border-slate-100 dark:border-white/5 pb-10 group">
+                  <div key={i} className="flex gap-8 items-start border-b border-slate-100 dark:border-white/[0.06] pb-10 group">
                      <span className="text-4xl font-bold italic text-violet-600/20 dark:text-violet-500/20 group-hover:text-violet-600 dark:group-hover:text-violet-500 transition-colors leading-none">0{i+1}</span>
                      <div className="space-y-2">
                         <h4 className="text-2xl font-bold uppercase italic text-slate-800 dark:text-white">{item.t}</h4>
@@ -234,7 +234,7 @@ const AvatarLipsyncAI = () => {
       </section>
 
       {/* --- 6. FINAL CTA --- */}
-      <section className="py-60 text-center relative overflow-hidden bg-slate-50 dark:bg-black border-t border-slate-200 dark:border-white/5 transition-colors">
+      <section className="py-60 text-center relative overflow-hidden bg-slate-50 dark:bg-black border-t border-slate-200 dark:border-white/[0.06] transition-colors">
         <div className="absolute inset-0 z-0 opacity-5 flex flex-wrap gap-4 p-8 pointer-events-none text-[220px] font-bold text-violet-600 dark:text-violet-500 leading-none tracking-tighter select-none italic">
           SYNC SYNC SYNC SYNC
         </div>
@@ -253,7 +253,7 @@ const AvatarLipsyncAI = () => {
       </section>
 
       {/* --- 7. FOOTER --- */}
-      <footer className="py-20 border-t border-slate-100 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-page)] transition-colors duration-500">
+      <footer className="py-20 border-t border-slate-100 dark:border-white/[0.06] bg-white dark:bg-[var(--atlas-bg-page)] transition-colors duration-500">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-12 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">
            <div className="flex flex-col items-center md:items-start gap-4">
               <div className="flex items-center gap-4">

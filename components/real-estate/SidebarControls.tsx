@@ -108,7 +108,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({ s, fileInputRe
           </div>
         </div>
 
-        <div className="space-y-2 pt-4 border-t border-slate-100 dark:border-white/5">
+        <div className="space-y-2 pt-4 border-t border-slate-100 dark:border-white/[0.06]">
           <label className={labelStyle}><Maximize2 size={12}/> TỶ LỆ KHUNG HÌNH</label>
           <div className="relative">
             <select value={s.aspectRatio} onChange={e => s.setAspectRatio(e.target.value)} className={selectStyle}>

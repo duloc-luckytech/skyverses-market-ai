@@ -447,7 +447,7 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 8 }}
-                  className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-xl overflow-hidden p-1.5 z-[130]"
+                  className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.08] dark:border-white/[0.08] rounded-xl shadow-atlas-lg overflow-hidden p-1.5 z-[130]"
                 >
                   <button
                     onClick={() => fileInputRef.current?.click()}
@@ -559,7 +559,7 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className={`relative group aspect-square bg-white dark:bg-white/[0.02] rounded-2xl border overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 ${
+                    className={`relative group aspect-square bg-white dark:bg-white/[0.02] rounded-lg border overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 ${
                       isWebp
                         ? 'cursor-not-allowed grayscale border-black/[0.06] dark:border-white/[0.04]'
                         : 'hover:border-emerald-500/30 cursor-pointer border-black/[0.06] dark:border-white/[0.06]'
@@ -690,7 +690,7 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
             {/* Add card */}
             <motion.div
               onClick={() => !isAddDisabled && setShowAddMenu(!showAddMenu)}
-              className={`relative aspect-square border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-3 transition-all group ${
+              className={`relative aspect-square border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-3 transition-all group ${
                 !isAddDisabled
                 ? 'bg-white dark:bg-white/[0.01] border-black/[0.08] dark:border-white/[0.06] cursor-pointer hover:border-emerald-500/30 hover:bg-emerald-500/[0.02]'
                 : 'bg-slate-50 dark:bg-white/[0.01] border-black/[0.04] dark:border-white/[0.03] cursor-not-allowed opacity-40'
@@ -765,7 +765,7 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
             </div>
 
             <div className="flex-grow relative overflow-hidden bg-slate-100 dark:bg-[var(--atlas-bg-page)] flex items-center justify-center p-4 md:p-10">
-              <div className="relative w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl">
+              <div className="relative w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden shadow-atlas-lg">
                 <img src={comparisonJob.original} className="absolute inset-0 w-full h-full object-contain select-none" alt="Original" />
 
                 <div
@@ -834,7 +834,7 @@ const UpscaleWorkspace: React.FC<UpscaleWorkspaceProps> = ({ onClose, initialIma
             <motion.div
               initial={{ scale: 0.95, y: 10 }}
               animate={{ scale: 1, y: 0 }}
-              className="max-w-sm w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-8 border border-black/[0.06] dark:border-white/[0.08] rounded-2xl text-center space-y-6 shadow-2xl"
+              className="max-w-sm w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-8 border border-black/[0.06] dark:border-white/[0.08] rounded-lg text-center space-y-6 shadow-atlas-lg"
             >
               <div className="w-16 h-16 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-amber-500">
                 <Coins size={28} />

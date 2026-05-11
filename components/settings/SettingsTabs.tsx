@@ -285,7 +285,7 @@ export const ComputeTab = ({ logic }: any) => {
             <span className="text-xs font-bold text-slate-600 dark:text-slate-300">Video Quota</span>
             <span className={`text-xs font-bold ${usedPercent > 80 ? 'text-red-500' : usedPercent > 50 ? 'text-amber-500' : 'text-emerald-500'}`}>{Math.round(usedPercent)}%</span>
           </div>
-          <div className="h-2 w-full bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
+          <div className="h-2 w-full bg-slate-100 dark:bg-white/[0.06] rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${usedPercent}%` }}

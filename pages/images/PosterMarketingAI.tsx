@@ -68,22 +68,22 @@ const PosterMarketingAI = () => {
               >
                 Create Poster Now <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="px-12 py-6 border border-slate-200 dark:border-white/10 rounded-sm text-[12px] font-bold uppercase tracking-[0.4em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/10 transition-all bg-white/5 dark:bg-white/5 backdrop-blur-md flex items-center justify-center gap-4">
+              <button className="px-12 py-6 border border-slate-200 dark:border-white/10 rounded-sm text-[12px] font-bold uppercase tracking-[0.4em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/10 transition-all bg-white/[0.06] dark:bg-white/[0.06] backdrop-blur-md flex items-center justify-center gap-4">
                 See Examples <Play size={16} fill="currentColor" />
               </button>
             </div>
           </div>
 
           <div className="lg:col-span-7 relative">
-             <div className="aspect-[16/10] bg-white dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/5 rounded-sm p-4 shadow-3xl overflow-hidden group transition-colors">
+             <div className="aspect-[16/10] bg-white dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/[0.06] rounded-sm p-4 shadow-atlas-xl overflow-hidden group transition-colors">
                 <div className="flex h-full gap-4">
-                   <div className="w-1/4 h-full border-r border-slate-100 dark:border-white/5 pr-4 space-y-4 opacity-40 group-hover:opacity-100 transition-opacity hidden md:block">
+                   <div className="w-1/4 h-full border-r border-slate-100 dark:border-white/[0.06] pr-4 space-y-4 opacity-40 group-hover:opacity-100 transition-opacity hidden md:block">
                       <div className="h-4 w-full bg-slate-100 dark:bg-white/10 rounded-sm"></div>
-                      <div className="h-20 w-full bg-slate-50 dark:bg-white/5 rounded-sm"></div>
+                      <div className="h-20 w-full bg-slate-50 dark:bg-white/[0.06] rounded-sm"></div>
                       <div className="space-y-2 pt-4">
                          <div className="h-2 w-1/2 bg-slate-100 dark:bg-white/10 rounded-sm"></div>
-                         <div className="h-8 w-full bg-slate-50 dark:bg-white/5 rounded-sm"></div>
-                         <div className="h-8 w-full bg-slate-50 dark:bg-white/5 rounded-sm"></div>
+                         <div className="h-8 w-full bg-slate-50 dark:bg-white/[0.06] rounded-sm"></div>
+                         <div className="h-8 w-full bg-slate-50 dark:bg-white/[0.06] rounded-sm"></div>
                       </div>
                    </div>
                    <div className="flex-grow bg-slate-50 dark:bg-black rounded-sm border border-brand-blue/10 dark:border-brand-blue/20 relative overflow-hidden flex items-center justify-center transition-colors">
@@ -98,7 +98,7 @@ const PosterMarketingAI = () => {
                 </div>
              </div>
              {/* Floating UI */}
-             <div className="absolute -bottom-10 -left-10 bg-white dark:bg-[var(--atlas-bg-page)] p-6 rounded-sm shadow-3xl border border-slate-100 dark:border-white/10 animate-bounce transition-colors">
+             <div className="absolute -bottom-10 -left-10 bg-white dark:bg-[var(--atlas-bg-page)] p-6 rounded-sm shadow-atlas-xl border border-slate-100 dark:border-white/10 animate-bounce transition-colors">
                 <div className="flex items-center gap-4">
                    <div className="p-3 bg-brand-blue/10 rounded-full text-brand-blue"><Maximize2 size={20}/></div>
                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-800 dark:text-white">Enhanced to 8K Quality</span>
@@ -109,7 +109,7 @@ const PosterMarketingAI = () => {
       </section>
 
       {/* 2. HOW IT WORKS */}
-      <section className="py-40 bg-slate-50 dark:bg-[var(--atlas-bg-page)] border-y border-slate-200 dark:border-white/5 transition-colors">
+      <section className="py-40 bg-slate-50 dark:bg-[var(--atlas-bg-page)] border-y border-slate-200 dark:border-white/[0.06] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center space-y-4 mb-24">
              <h2 className="text-4xl lg:text-6xl font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white">Instant Production Path</h2>
@@ -122,7 +122,7 @@ const PosterMarketingAI = () => {
               { s: '02', t: 'Customize Style', d: 'Choose category, style, size, and AI model. Lock your visual DNA with reference images.', i: <Palette /> },
               { s: '03', t: 'Generate & Download', d: 'AI creates a ready-to-use marketing poster in high-resolution, optimized for your target.', i: <Download /> }
             ].map((step, i) => (
-              <div key={i} className="p-12 bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 rounded-sm relative group hover:border-brand-blue/30 transition-all shadow-sm">
+              <div key={i} className="p-12 bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.06] rounded-sm relative group hover:border-brand-blue/30 transition-all shadow-sm">
                 <div className="absolute top-4 right-8 text-5xl font-bold italic text-brand-blue/10 dark:text-brand-blue/10 group-hover:text-brand-blue/30 transition-colors">{step.s}</div>
                 <div className="w-16 h-16 bg-brand-blue/5 dark:bg-brand-blue/10 flex items-center justify-center text-brand-blue mb-10 rounded-sm group-hover:scale-110 transition-transform">
                    {React.cloneElement(step.i as React.ReactElement<any>, { size: 28 })}
@@ -138,7 +138,7 @@ const PosterMarketingAI = () => {
       {/* 3. KEY FEATURES */}
       <section className="py-40 bg-white dark:bg-[var(--atlas-bg-page)] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200 dark:bg-white/5 border border-slate-200 dark:border-white/5 shadow-3xl transition-colors">
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.06] shadow-atlas-xl transition-colors">
               {[
                 { t: 'AI Poster Gen', i: <Zap />, d: 'Instant synthesis of marketing visuals based on sales intent.' },
                 { t: 'Template Matrix', i: <Layout />, d: 'Category-based logic for events, products, food, and more.' },
@@ -149,7 +149,7 @@ const PosterMarketingAI = () => {
                 { t: 'Fast Iteration', i: <Activity />, d: 'Generate 4 variations in parallel to find the perfect look.' },
                 { t: 'VPC Isolation', i: <ShieldCheck />, d: 'Enterprise security for proprietary marketing assets.' }
               ].map((f, i) => (
-                <div key={i} className="p-12 bg-white dark:bg-[var(--atlas-bg-page)] space-y-6 hover:bg-brand-blue/[0.02] dark:hover:bg-brand-blue/[0.02] transition-all duration-500 border-r border-slate-50 dark:border-white/5 last:border-r-0">
+                <div key={i} className="p-12 bg-white dark:bg-[var(--atlas-bg-page)] space-y-6 hover:bg-brand-blue/[0.02] dark:hover:bg-brand-blue/[0.02] transition-all duration-500 border-r border-slate-50 dark:border-white/[0.06] last:border-r-0">
                    <div className="w-12 h-12 border border-slate-100 dark:border-white/10 flex items-center justify-center text-slate-400 group-hover:text-brand-blue transition-colors rounded-sm shadow-sm dark:shadow-none">
                       {React.cloneElement(f.i as React.ReactElement<any>, { size: 20 })}
                    </div>
@@ -164,7 +164,7 @@ const PosterMarketingAI = () => {
       </section>
 
       {/* 4. USE CASES */}
-      <section className="py-40 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.01] transition-colors">
+      <section className="py-40 border-t border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.01] transition-colors">
          <div className="max-w-7xl mx-auto px-6 lg:px-12">
            <div className="flex justify-between items-end mb-24">
               <div className="space-y-4">
@@ -181,7 +181,7 @@ const PosterMarketingAI = () => {
                 { t: 'Social Campaigns', d: 'Instagram, Pinterest, and TikTok ads.', img: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&q=80&w=800' },
                 { t: 'Local Business', d: 'Neighborhood marketing and service ads.', img: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=800' }
               ].map((item, i) => (
-                <div key={i} className="group relative overflow-hidden aspect-[4/5] border border-slate-100 dark:border-white/5 rounded-sm bg-slate-200 dark:bg-black transition-colors">
+                <div key={i} className="group relative overflow-hidden aspect-[4/5] border border-slate-100 dark:border-white/[0.06] rounded-sm bg-slate-200 dark:bg-black transition-colors">
                    <img src={item.img} className="w-full h-full object-cover grayscale opacity-60 dark:opacity-30 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000 group-hover:scale-105" alt={item.t} />
                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent p-10 flex flex-col justify-end">
                       <div className="space-y-4 translate-y-4 group-hover:translate-y-0 transition-transform">
@@ -196,7 +196,7 @@ const PosterMarketingAI = () => {
       </section>
 
       {/* 5. COMPARISON */}
-      <section className="py-40 border-t border-slate-100 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-page)] transition-colors">
+      <section className="py-40 border-t border-slate-100 dark:border-white/[0.06] bg-white dark:bg-[var(--atlas-bg-page)] transition-colors">
         <div className="max-w-4xl mx-auto px-6 lg:px-12 space-y-24">
            <h2 className="text-4xl lg:text-6xl font-bold uppercase tracking-tighter italic text-center text-slate-900 dark:text-white">Why Poster AI?</h2>
            <div className="grid gap-12">
@@ -206,7 +206,7 @@ const PosterMarketingAI = () => {
                 { t: 'Consistent Branding', d: 'DNA Locking ensures your mascot and colors stay identical across all variations.' },
                 { t: 'Optimized Layouts', d: 'AI understands focal points and visual hierarchy for maximum sales impact.' }
               ].map((item, i) => (
-                <div key={i} className="flex gap-8 items-start border-b border-slate-100 dark:border-white/5 pb-12 group">
+                <div key={i} className="flex gap-8 items-start border-b border-slate-100 dark:border-white/[0.06] pb-12 group">
                    <span className="text-4xl font-bold italic text-brand-blue/20 dark:text-brand-blue/20 group-hover:text-brand-blue transition-colors leading-none">0{i+1}</span>
                    <div className="space-y-3 text-slate-800 dark:text-gray-300">
                       <h4 className="text-2xl font-bold uppercase italic tracking-tight">{item.t}</h4>
@@ -219,7 +219,7 @@ const PosterMarketingAI = () => {
       </section>
 
       {/* 6. FINAL CTA */}
-      <section className="py-60 text-center relative overflow-hidden bg-slate-50 dark:bg-black border-t border-slate-200 dark:border-white/5 transition-colors">
+      <section className="py-60 text-center relative overflow-hidden bg-slate-50 dark:bg-black border-t border-slate-200 dark:border-white/[0.06] transition-colors">
         <div className="absolute inset-0 z-0 opacity-5 dark:opacity-10 flex flex-wrap gap-4 p-8 pointer-events-none text-[220px] font-bold text-brand-blue leading-none tracking-tighter select-none italic">
           POSTER POSTER POSTER POSTER
         </div>
@@ -238,7 +238,7 @@ const PosterMarketingAI = () => {
       </section>
 
       {/* 7. FOOTER */}
-      <footer className="py-20 border-t border-slate-200 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-page)] transition-colors">
+      <footer className="py-20 border-t border-slate-200 dark:border-white/[0.06] bg-white dark:bg-[var(--atlas-bg-page)] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-12 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">
            <div className="flex flex-col items-center md:items-start gap-4">
               <div className="flex items-center gap-4">

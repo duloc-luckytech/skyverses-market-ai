@@ -53,10 +53,10 @@ const VoiceDesignAI: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 100 }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="relative w-full h-full bg-white dark:bg-[var(--atlas-bg-page)] z-10 flex flex-col shadow-2xl"
+              className="relative w-full h-full bg-white dark:bg-[var(--atlas-bg-page)] z-10 flex flex-col shadow-atlas-lg"
             >
               {/* Toolbar Top */}
-              <div className="flex items-center justify-between p-4 md:px-8 border-b border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-black/40 shrink-0">
+              <div className="flex items-center justify-between p-4 md:px-8 border-b border-slate-200 dark:border-white/[0.06] bg-slate-50/50 dark:bg-black/40 shrink-0">
                 <div className="flex items-center gap-4">
                   <div className="w-8 h-8 bg-[#7C7CFF]/10 rounded-lg flex items-center justify-center text-[#7C7CFF]">
                     <Sparkles size={18} />
@@ -73,7 +73,7 @@ const VoiceDesignAI: React.FC = () => {
                    </div>
                    <button 
                      onClick={() => setIsModalOpen(false)}
-                     className="p-2.5 text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-all rounded-full"
+                     className="p-2.5 text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-all rounded-full"
                    >
                      <X size={28} />
                    </button>
@@ -122,7 +122,7 @@ const VoiceDesignAI: React.FC = () => {
               >
                 Create Your First Voice <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="px-12 py-6 border border-slate-200 dark:border-white/10 rounded-sm text-xs font-bold uppercase tracking-[0.4em] text-slate-600 dark:text-[#E6E8EE] hover:bg-slate-50 dark:hover:bg-white hover:text-black dark:hover:text-black transition-all bg-white/50 dark:bg-white/5 backdrop-blur-md flex items-center justify-center gap-4 shadow-sm">
+              <button className="px-12 py-6 border border-slate-200 dark:border-white/10 rounded-sm text-xs font-bold uppercase tracking-[0.4em] text-slate-600 dark:text-[#E6E8EE] hover:bg-slate-50 dark:hover:bg-white hover:text-black dark:hover:text-black transition-all bg-white/50 dark:bg-white/[0.06] backdrop-blur-md flex items-center justify-center gap-4 shadow-sm">
                 Watch Demo <Play size={16} fill="currentColor" />
               </button>
             </div>
@@ -133,7 +133,7 @@ const VoiceDesignAI: React.FC = () => {
             className="lg:col-span-7 h-[600px] relative group"
           >
              {/* Thumbnail/Preview của Workspace */}
-             <div className="w-full h-full rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/40 relative shadow-2xl transition-colors">
+             <div className="w-full h-full rounded-lg overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/40 relative shadow-atlas-lg transition-colors">
                 <img 
                   src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&q=80&w=1600" 
                   className="w-full h-full object-cover opacity-20 grayscale group-hover:scale-105 transition-all duration-1000"
@@ -145,7 +145,7 @@ const VoiceDesignAI: React.FC = () => {
                    </div>
                    <button 
                      onClick={() => setIsModalOpen(true)}
-                     className="px-8 py-3 bg-white/80 dark:bg-white/5 backdrop-blur-md border border-slate-200 dark:border-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-slate-900 dark:hover:bg-white hover:text-white dark:hover:text-black transition-all shadow-sm"
+                     className="px-8 py-3 bg-white/80 dark:bg-white/[0.06] backdrop-blur-md border border-slate-200 dark:border-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-slate-900 dark:hover:bg-white hover:text-white dark:hover:text-black transition-all shadow-sm"
                    >
                      Launch Studio Terminal
                    </button>
@@ -156,7 +156,7 @@ const VoiceDesignAI: React.FC = () => {
       </section>
 
       {/* 2. HOW IT WORKS (3 STEPS) */}
-      <section className="py-40 border-y border-slate-200 dark:border-white/5 relative bg-slate-50 dark:bg-[var(--atlas-bg-panel)] transition-colors">
+      <section className="py-40 border-y border-slate-200 dark:border-white/[0.06] relative bg-slate-50 dark:bg-[var(--atlas-bg-panel)] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center space-y-4 mb-24">
              <h2 className="text-4xl lg:text-6xl font-bold uppercase italic tracking-tighter">The Design Flow</h2>
@@ -169,7 +169,7 @@ const VoiceDesignAI: React.FC = () => {
               { s: 'Step 2', t: 'Generate Samples', d: 'AI generates 3–5 unique variations instantly. Each with high-fidelity spectral clarity.', i: <Zap size={32} /> },
               { s: 'Step 3', t: 'Save & Reuse', d: 'Store your unique voice DNA in your library. Deploy in videos, games, or apps.', i: <CheckCircle2 size={32} /> }
             ].map((step, i) => (
-              <div key={i} className="p-12 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-sm relative group hover:border-[#7C7CFF]/30 transition-all shadow-sm hover:shadow-xl">
+              <div key={i} className="p-12 bg-white dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 rounded-sm relative group hover:border-[#7C7CFF]/30 transition-all shadow-sm hover:shadow-xl">
                 <div className="absolute top-4 right-8 text-5xl font-bold italic text-[#7C7CFF]/5 dark:text-[#7C7CFF]/10 group-hover:text-[#7C7CFF]/20 transition-colors">{step.s}</div>
                 <div className="text-[#7C7CFF] mb-10 group-hover:scale-110 transition-transform">
                    {step.i}
@@ -185,7 +185,7 @@ const VoiceDesignAI: React.FC = () => {
       {/* 3. CORE FEATURES */}
       <section className="py-40 bg-white dark:bg-[var(--atlas-bg-panel)] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-200 dark:bg-white/5 border border-slate-200 dark:border-white/5 shadow-2xl overflow-hidden rounded-xl">
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-200 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.06] shadow-atlas-lg overflow-hidden rounded-xl">
               {[
                 { t: 'Text-to-Voice Design', i: <Wand2 />, d: 'Create high-fidelity voices from natural language descriptions.' },
                 { t: 'Multiple Variations', i: <Layers />, d: 'Generate different tones and spectral weights from a single prompt.' },
@@ -194,8 +194,8 @@ const VoiceDesignAI: React.FC = () => {
                 { t: 'Fast Generation', i: <Activity />, d: 'Neural inference processed in seconds via high-throughput nodes.' },
                 { t: 'No Training Required', i: <Zap />, d: 'Instant synthesis with zero recordings or file uploads needed.' }
               ].map((f, i) => (
-                <div key={i} className="p-16 bg-white dark:bg-[var(--atlas-bg-panel)] space-y-8 group hover:bg-[#7C7CFF]/[0.02] transition-all duration-500 border-r border-slate-100 dark:border-white/5 last:border-r-0">
-                   <div className="w-12 h-12 border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-400 group-hover:text-[#7C7CFF] group-hover:border-[#7C7CFF] transition-all rounded-sm shadow-sm dark:shadow-xl">
+                <div key={i} className="p-16 bg-white dark:bg-[var(--atlas-bg-panel)] space-y-8 group hover:bg-[#7C7CFF]/[0.02] transition-all duration-500 border-r border-slate-100 dark:border-white/[0.06] last:border-r-0">
+                   <div className="w-12 h-12 border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-400 group-hover:text-[#7C7CFF] group-hover:border-[#7C7CFF] transition-all rounded-sm shadow-sm dark:shadow-atlas-lg">
                       {React.cloneElement(f.i as React.ReactElement<any>, { size: 24 })}
                    </div>
                    <div className="space-y-3">
@@ -209,13 +209,13 @@ const VoiceDesignAI: React.FC = () => {
       </section>
 
       {/* 4. INTERACTIVE UI SHOWCASE */}
-      <section className="py-40 border-t border-slate-200 dark:border-white/5 relative bg-slate-50 dark:bg-transparent transition-colors">
+      <section className="py-40 border-t border-slate-200 dark:border-white/[0.06] relative bg-slate-50 dark:bg-transparent transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 space-y-24">
            <div className="text-center space-y-4">
               <h2 className="text-4xl lg:text-7xl font-bold uppercase italic tracking-tighter text-slate-800 dark:text-slate-100">Pro Studio UI</h2>
               <p className="text-slate-400 dark:text-[#9AA0B2] uppercase text-[10px] font-bold tracking-[0.5em]">The tool of choice for digital architects.</p>
            </div>
-           <div className="relative h-[800px] shadow-[0_0_150px_rgba(124,124,255,0.1)] rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10">
+           <div className="relative h-[800px] shadow-[0_0_150px_rgba(124,124,255,0.1)] rounded-lg overflow-hidden border border-slate-200 dark:border-white/10">
               <VoiceDesignWorkspace />
            </div>
         </div>
@@ -237,7 +237,7 @@ const VoiceDesignAI: React.FC = () => {
                 { t: 'AI Assistants', i: <Bot /> },
                 { t: 'News & M.C.', i: <Newspaper /> }
               ].map((item, i) => (
-                <div key={i} className="flex flex-col items-center gap-6 p-8 border border-slate-100 dark:border-white/5 rounded-2xl bg-slate-50 dark:bg-white/[0.02] hover:bg-[#7C7CFF]/10 dark:hover:bg-[#7C7CFF]/10 transition-all cursor-default group shadow-sm">
+                <div key={i} className="flex flex-col items-center gap-6 p-8 border border-slate-100 dark:border-white/[0.06] rounded-lg bg-slate-50 dark:bg-white/[0.02] hover:bg-[#7C7CFF]/10 dark:hover:bg-[#7C7CFF]/10 transition-all cursor-default group shadow-sm">
                    <div className="text-slate-400 dark:text-gray-500 group-hover:text-[#7C7CFF] transition-colors">{item.i}</div>
                    <span className="text-[11px] font-bold uppercase tracking-widest text-center text-slate-600 dark:text-white">{item.t}</span>
                 </div>
@@ -247,7 +247,7 @@ const VoiceDesignAI: React.FC = () => {
       </section>
 
       {/* 6. SOCIAL PROOF */}
-      <section className="py-40 bg-slate-50 dark:bg-[var(--atlas-bg-panel)] text-center border-y border-slate-200 dark:border-white/5 transition-colors">
+      <section className="py-40 bg-slate-50 dark:bg-[var(--atlas-bg-panel)] text-center border-y border-slate-200 dark:border-white/[0.06] transition-colors">
          <div className="max-w-4xl mx-auto space-y-12">
             <p className="text-slate-400 dark:text-[#9AA0B2] uppercase text-[12px] font-bold tracking-[0.6em]">Trusted by 10,000+ creators</p>
             <div className="flex flex-wrap justify-center gap-16 opacity-30 dark:opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-700">
@@ -275,13 +275,13 @@ const VoiceDesignAI: React.FC = () => {
                 { name: 'Pro Plan', price: '$49', desc: 'The choice for daily creators.', features: ['Unlimited voice design', 'Commercial license', 'High-fidelity export'], popular: true },
                 { name: 'Studio Plan', price: '$199', desc: 'Enterprise industrial scale.', features: ['Team orchestration', 'API access node', 'Priority H100 inference'] }
               ].map((plan) => (
-                <div key={plan.name} className={`p-12 bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border transition-all rounded-sm flex flex-col justify-between group ${plan.popular ? 'border-[#7C7CFF] shadow-[0_30px_90px_rgba(124,124,255,0.1)] scale-105 z-20' : 'border-slate-200 dark:border-white/5 opacity-80 hover:opacity-100 shadow-sm'}`}>
+                <div key={plan.name} className={`p-12 bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border transition-all rounded-sm flex flex-col justify-between group ${plan.popular ? 'border-[#7C7CFF] shadow-[0_30px_90px_rgba(124,124,255,0.1)] scale-105 z-20' : 'border-slate-200 dark:border-white/[0.06] opacity-80 hover:opacity-100 shadow-sm'}`}>
                    <div className="space-y-10 text-left">
                       <div className="space-y-2">
                          <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-400 dark:text-gray-500">{plan.name}</span>
                          <h4 className="text-5xl font-bold italic text-slate-900 dark:text-slate-100">{plan.price}</h4>
                       </div>
-                      <div className="space-y-4 pt-8 border-t border-slate-200 dark:border-white/5">
+                      <div className="space-y-4 pt-8 border-t border-slate-200 dark:border-white/[0.06]">
                          {plan.features.map(f => (
                             <div key={f} className="flex items-center gap-3">
                                <CheckCircle2 size={16} className="text-[#7C7CFF]" />
@@ -292,7 +292,7 @@ const VoiceDesignAI: React.FC = () => {
                    </div>
                    <button 
                     onClick={() => setIsModalOpen(true)}
-                    className={`mt-16 py-6 w-full text-[11px] font-bold uppercase tracking-[0.3em] transition-all rounded-sm ${plan.popular ? 'bg-[#7C7CFF] text-white shadow-xl' : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-white hover:bg-slate-900 dark:hover:bg-white hover:text-white dark:hover:text-black border border-slate-200 dark:border-white/10 shadow-sm'}`}>
+                    className={`mt-16 py-6 w-full text-[11px] font-bold uppercase tracking-[0.3em] transition-all rounded-sm ${plan.popular ? 'bg-[#7C7CFF] text-white shadow-atlas-lg' : 'bg-white/50 dark:bg-white/[0.06] text-slate-600 dark:text-white hover:bg-slate-900 dark:hover:bg-white hover:text-white dark:hover:text-black border border-slate-200 dark:border-white/10 shadow-sm'}`}>
                       Initialize Plan
                    </button>
                 </div>
@@ -311,7 +311,7 @@ const VoiceDesignAI: React.FC = () => {
            <div className="flex flex-col sm:flex-row items-center justify-center gap-10 pt-10">
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="bg-black text-white px-20 py-8 rounded-sm text-sm font-bold uppercase tracking-widest hover:scale-105 transition-all shadow-2xl"
+              className="bg-black text-white px-20 py-8 rounded-sm text-sm font-bold uppercase tracking-widest hover:scale-105 transition-all shadow-atlas-lg"
             >
               Create Voice Now
             </button>
@@ -323,7 +323,7 @@ const VoiceDesignAI: React.FC = () => {
       </section>
 
       {/* 9. FOOTER */}
-      <footer className="py-20 border-t border-slate-200 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-panel)] text-slate-500 dark:text-[#9AA0B2] transition-colors">
+      <footer className="py-20 border-t border-slate-200 dark:border-white/[0.06] bg-white dark:bg-[var(--atlas-bg-panel)] text-slate-500 dark:text-[#9AA0B2] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-12 text-[10px] font-bold uppercase tracking-widest">
            <div className="flex flex-col items-center md:items-start gap-4">
               <div className="flex items-center gap-4 text-slate-900 dark:text-slate-100">

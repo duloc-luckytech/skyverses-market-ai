@@ -88,7 +88,7 @@ const SlideExportModal: React.FC<Props> = ({ isOpen, onClose, slides, initialFor
             exit={{ opacity: 0, y: 20, scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             onClick={e => e.stopPropagation()}
-            className="w-full max-w-sm bg-white dark:bg-[var(--atlas-bg-panel)] rounded-2xl shadow-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden"
+            className="w-full max-w-sm bg-white dark:bg-[var(--atlas-bg-panel)] rounded-lg shadow-atlas-lg border border-black/[0.06] dark:border-white/[0.06] overflow-hidden"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-black/[0.05] dark:border-white/[0.08]">

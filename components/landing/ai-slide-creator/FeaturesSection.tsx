@@ -82,7 +82,7 @@ export const FeaturesSection: React.FC = () => (
           return (
             <HoverCard
               key={f.title}
-              className={`overflow-hidden bg-white dark:bg-[#111] ${f.featured ? 'md:col-span-1 ring-1 ring-brand-blue/20' : ''}`}
+              className={`overflow-hidden bg-white dark:bg-[var(--atlas-bg-panel)] ${f.featured ? 'md:col-span-1 ring-1 ring-brand-blue/20' : ''}`}
             >
               {/* Thumbnail image (CDN) */}
               {f.thumbUrl ? (

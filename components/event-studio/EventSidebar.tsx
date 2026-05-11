@@ -203,7 +203,7 @@ export const EventSidebar: React.FC<EventSidebarProps> = ({
         ) : (
           <button
             onClick={onClothingUpload}
-            className="w-full p-2.5 rounded-lg border border-dashed border-brand-blue/15 bg-brand-blue/[0.03] text-brand-blue text-[9px] font-semibold hover:bg-brand-blue/[0.06] transition-all flex items-center justify-center gap-2"
+            className="w-full p-2.5 rounded-lg border border-dashed border-brand-blue/[0.15] bg-brand-blue/[0.03] text-brand-blue text-[9px] font-semibold hover:bg-brand-blue/[0.06] transition-all flex items-center justify-center gap-2"
           >
             <Shirt size={11} /> Thêm trang phục tham khảo (tùy chọn)
           </button>
@@ -362,7 +362,7 @@ export const EventSidebar: React.FC<EventSidebarProps> = ({
                 <History size={9} /> {promptHistory.length}
               </button>
               {showHistory && promptHistory.length > 0 && (
-                <div className="absolute right-0 top-full mt-1 w-56 max-h-40 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-xl z-50 overflow-y-auto no-scrollbar">
+                <div className="absolute right-0 top-full mt-1 w-56 max-h-40 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-xl shadow-atlas-lg z-50 overflow-y-auto no-scrollbar">
                   {promptHistory.map((h, i) => (
                     <button
                       key={i}

@@ -103,7 +103,7 @@ const GameArchitectInterface = () => {
   return (
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[var(--atlas-bg-page)] overflow-hidden text-black dark:text-white font-mono relative">
 
-      <div className="w-full lg:w-[380px] shrink-0 flex flex-col bg-gray-50 dark:bg-[var(--atlas-bg-page)] border-r border-black/10 dark:border-white/5 overflow-y-auto no-scrollbar p-8 space-y-10">
+      <div className="w-full lg:w-[380px] shrink-0 flex flex-col bg-gray-50 dark:bg-[var(--atlas-bg-page)] border-r border-black/10 dark:border-white/[0.06] overflow-y-auto no-scrollbar p-8 space-y-10">
         <div className="space-y-8">
            <label className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-600 tracking-[0.4em] flex items-center gap-3">
               <Settings2 className="w-4 h-4 text-emerald-500" /> Geometry_Matrix
@@ -112,7 +112,7 @@ const GameArchitectInterface = () => {
            <div className="space-y-8">
               <div className="space-y-2">
                  <span className="text-[8px] font-bold uppercase text-gray-500 tracking-widest px-1">Engine_Pipeline</span>
-                 <select value={genre} onChange={(e) => setGenre(e.target.value)} className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 text-[10px] font-bold uppercase outline-none focus:border-emerald-500 transition-all rounded-sm">
+                 <select value={genre} onChange={(e) => setGenre(e.target.value)} className="w-full bg-black/[0.06] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 p-4 text-[10px] font-bold uppercase outline-none focus:border-emerald-500 transition-all rounded-sm">
                     <option>3D_Cinematic_Voxel</option>
                     <option>Photorealistic_Env</option>
                     <option>Stylized_Low_Poly</option>
@@ -131,7 +131,7 @@ const GameArchitectInterface = () => {
            </div>
         </div>
 
-        <div className="space-y-8 pt-8 border-t border-black/10 dark:border-white/5">
+        <div className="space-y-8 pt-8 border-t border-black/10 dark:border-white/[0.06]">
            <label className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-700 tracking-[0.4em] flex items-center gap-3">
               <HistoryIcon className="w-4 h-4 text-emerald-500" /> Voxel_Vault
            </label>
@@ -163,7 +163,7 @@ const GameArchitectInterface = () => {
         <div className="flex-grow flex flex-col items-center justify-center p-8 lg:p-12 relative overflow-y-auto no-scrollbar">
            <div className="w-full max-w-5xl h-full flex flex-col gap-10">
 
-              <div className="h-2/3 bg-slate-50 dark:bg-black border border-black/5 dark:border-white/5 relative overflow-hidden flex items-center justify-center shadow-2xl rounded-sm">
+              <div className="h-2/3 bg-slate-50 dark:bg-black border border-black/5 dark:border-white/[0.06] relative overflow-hidden flex items-center justify-center shadow-atlas-lg rounded-sm">
                  <AnimatePresence mode="wait">
                     {isGenerating ? (
                       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center gap-12">
@@ -173,7 +173,7 @@ const GameArchitectInterface = () => {
                          </div>
                          <div className="text-center space-y-3">
                             <p className="text-[14px] font-bold uppercase tracking-[1em] text-emerald-500 animate-pulse">Orchestrating_3D_Lattice</p>
-                            <div className="h-0.5 w-64 bg-white/5 rounded-full overflow-hidden">
+                            <div className="h-0.5 w-64 bg-white/[0.06] rounded-full overflow-hidden">
                                <motion.div initial={{ x: '-100%' }} animate={{ x: '100%' }} transition={{ repeat: Infinity, duration: 1.5 }} className="h-full bg-emerald-500" />
                             </div>
                          </div>
@@ -192,8 +192,8 @@ const GameArchitectInterface = () => {
                          </div>
 
                          <div className="absolute top-8 right-8 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
-                            <button className="p-4 bg-white text-black rounded-full shadow-2xl hover:scale-110 transition-transform"><Download size={20}/></button>
-                            <button className="p-4 bg-emerald-500 text-black rounded-full shadow-2xl hover:scale-110 transition-transform"><Share2 size={20}/></button>
+                            <button className="p-4 bg-white text-black rounded-full shadow-atlas-lg hover:scale-110 transition-transform"><Download size={20}/></button>
+                            <button className="p-4 bg-emerald-500 text-black rounded-full shadow-atlas-lg hover:scale-110 transition-transform"><Share2 size={20}/></button>
                          </div>
                       </motion.div>
                     ) : (
@@ -215,7 +215,7 @@ const GameArchitectInterface = () => {
                  </div>
               </div>
 
-              <div className="h-1/3 border border-black/10 dark:border-white/5 bg-slate-50 dark:bg-white/[0.01] p-10 overflow-y-auto custom-scrollbar relative shadow-inner">
+              <div className="h-1/3 border border-black/10 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.01] p-10 overflow-y-auto custom-scrollbar relative shadow-inner">
                  <div className="absolute top-4 right-4"><Code2 size={16} className="text-emerald-500 opacity-20" /></div>
                  {logicSummary ? (
                    <div className="space-y-8 animate-in fade-in duration-500">
@@ -235,7 +235,7 @@ const GameArchitectInterface = () => {
         </div>
 
         {/* INPUT HUD */}
-        <div className="h-40 border-t border-black/10 dark:border-white/5 bg-[var(--atlas-bg-panel-hover)] dark:bg-black p-8 flex items-center gap-10 shrink-0 relative z-30 shadow-[0_-20px_60px_rgba(0,0,0,0.05)]">
+        <div className="h-40 border-t border-black/10 dark:border-white/[0.06] bg-[var(--atlas-bg-panel-hover)] dark:bg-black p-8 flex items-center gap-10 shrink-0 relative z-30 shadow-[0_-20px_60px_rgba(0,0,0,0.05)]">
            <div className="flex-grow flex flex-col gap-3">
               <label className="text-[9px] font-bold uppercase text-gray-400 flex items-center gap-2">
                  <Target size={12} className="text-emerald-500" /> Project_Directive
@@ -243,7 +243,7 @@ const GameArchitectInterface = () => {
               <input
                 value={projectTitle}
                 onChange={(e) => setProjectTitle(e.target.value.toUpperCase())}
-                className="w-full bg-black/5 dark:bg-white/[0.03] border border-black/5 dark:border-white/10 p-5 text-[22px] font-bold text-emerald-500 outline-none focus:border-emerald-500/40 tracking-widest italic rounded-sm transition-all"
+                className="w-full bg-black/[0.06] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 p-5 text-[22px] font-bold text-emerald-500 outline-none focus:border-emerald-500/40 tracking-widest italic rounded-sm transition-all"
                 placeholder="NARRATIVE_IDENTIFIER..."
               />
            </div>

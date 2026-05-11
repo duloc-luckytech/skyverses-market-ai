@@ -308,7 +308,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
           fixed lg:relative bottom-0 lg:top-0 left-0 w-full lg:w-[340px] xl:w-[360px]
           bg-white dark:bg-[var(--atlas-bg-panel)] border-t lg:border-t-0 lg:border-r border-slate-200/80 dark:border-white/[0.08]
           flex flex-col z-[150] lg:z-50 transition-all duration-300
-          ${isMobileExpanded ? 'h-[92dvh] rounded-t-2xl shadow-2xl' : 'h-32 lg:h-full lg:rounded-none'}
+          ${isMobileExpanded ? 'h-[92dvh] rounded-t-2xl shadow-atlas-lg' : 'h-32 lg:h-full lg:rounded-none'}
         `}>
 
           {/* Mobile Quick Bar */}
@@ -339,7 +339,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
           {/* Desktop Header */}
           <header className="hidden lg:flex h-14 border-b border-slate-200/80 dark:border-white/[0.08] bg-white/90 dark:bg-[var(--atlas-bg-panel)]/90 backdrop-blur-lg items-center justify-between px-4 shrink-0">
             <div className="flex items-center gap-2.5">
-              <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors rounded-lg hover:bg-black/5 dark:hover:bg-white/5">
+              <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors rounded-lg hover:bg-black/[0.06] dark:hover:bg-white/[0.06]">
                 <ChevronLeft size={18} />
               </button>
               <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center text-white">
@@ -412,7 +412,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
               </button>
               {disabledReason && (
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover/genbtn:opacity-100 pointer-events-none transition-all z-[160]">
-                  <div className="bg-slate-800 text-white text-[8px] font-semibold px-2.5 py-1 rounded-lg shadow-xl whitespace-nowrap border border-white/10">
+                  <div className="bg-slate-800 text-white text-[8px] font-semibold px-2.5 py-1 rounded-lg shadow-atlas-lg whitespace-nowrap border border-white/10">
                     {disabledReason}
                   </div>
                 </div>
@@ -567,7 +567,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
               <X size={20} />
             </button>
             <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
-              className="w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+              className="w-full max-w-5xl aspect-video bg-black rounded-lg overflow-hidden shadow-atlas-lg border border-white/10">
               <video src={fullscreenVideo.url} autoPlay controls className="w-full h-full object-contain" />
             </motion.div>
           </motion.div>
@@ -606,7 +606,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[1100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
             <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }}
-              className="relative w-full max-w-sm bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl">
+              className="relative w-full max-w-sm bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/[0.06] rounded-lg overflow-hidden shadow-atlas-lg">
               {/* Header */}
               <div className="p-5 border-b border-slate-100 dark:border-white/[0.08] flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -618,7 +618,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
                     <p className="text-[10px] text-slate-400">Nhân vật {api.slots.length + 1}/{MAX_CHARACTERS} {pendingAssets.length > 1 ? `• Còn ${pendingAssets.length} ảnh` : ''}</p>
                   </div>
                 </div>
-                <button onClick={handleCancelAddCharacter} className="p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded-lg hover:bg-black/5 dark:hover:bg-white/5">
+                <button onClick={handleCancelAddCharacter} className="p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded-lg hover:bg-black/[0.06] dark:hover:bg-white/[0.06]">
                   <X size={18} />
                 </button>
               </div>
@@ -652,7 +652,7 @@ const CharacterSyncWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) 
               {/* Actions */}
               <div className="p-5 border-t border-slate-100 dark:border-white/[0.08] flex gap-3">
                 <button onClick={handleCancelAddCharacter}
-                  className="flex-1 py-3 border border-slate-200 dark:border-white/[0.06] rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-white/5 transition-all">
+                  className="flex-1 py-3 border border-slate-200 dark:border-white/[0.06] rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-white/[0.06] transition-all">
                   Hủy
                 </button>
                 <button onClick={handleConfirmAddCharacter}

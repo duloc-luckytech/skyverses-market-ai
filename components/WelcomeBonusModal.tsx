@@ -61,7 +61,7 @@ const WelcomeBonusModal: React.FC = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.85, y: 40 }}
             transition={{ duration: 0.5, type: 'spring', stiffness: 200, damping: 25 }}
-            className="relative w-full max-w-md overflow-hidden rounded-[2rem] shadow-2xl"
+            className="relative w-full max-w-md overflow-hidden rounded-xl shadow-atlas-lg"
           >
             {/* Close button */}
             <button
@@ -176,7 +176,7 @@ const WelcomeBonusModal: React.FC = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={handleSignUp}
-                className="group w-full relative inline-flex items-center justify-center gap-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white py-4 rounded-2xl text-sm font-bold shadow-xl shadow-amber-500/20 hover:shadow-2xl hover:shadow-amber-500/30 transition-all duration-300 overflow-hidden"
+                className="group w-full relative inline-flex items-center justify-center gap-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white py-4 rounded-lg text-sm font-bold shadow-atlas-lg shadow-amber-500/20 hover:shadow-atlas-lg hover:shadow-amber-500/30 transition-all duration-300 overflow-hidden"
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-orange-500 to-amber-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <span className="relative z-10 flex items-center gap-2">

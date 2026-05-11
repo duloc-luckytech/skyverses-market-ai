@@ -1,4 +1,4 @@
-# APIs — `apis/` (frontend → skyverses-backend)
+# APIs — `apis/` (23 files, frontend → skyverses-backend)
 
 Base URL từ `apis/config.ts` (env-driven, fallback localhost).
 
@@ -24,6 +24,7 @@ Base URL từ `apis/config.ts` (env-driven, fallback localhost).
 | `provider-tokens.ts` | `providerTokensApi`, `ProviderToken` | OAuth provider tokens |
 | `product-submission.ts` | `productSubmissionApi` | "Submit your AI tool" form |
 | `deploy.ts` | `deployApi`, `DeployLog` | deploy logs viewer |
+| `promo-banners.ts` | `promoBannersApi` | promo banner CRUD (admin) |
 | `skytoken.ts` | `skytokenApi` | SKT balance, packages, purchase QR, history, claim welcome, withdraw request/cancel/list |
 | `prompt-market.ts` | `promptMarketApi` | browse/search prompts, purchase, seller CRUD, earnings, reviews, related, wishlist, seller profile, follow, trackView |
 

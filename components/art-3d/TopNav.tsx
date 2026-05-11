@@ -20,17 +20,17 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
   ];
 
   return (
-    <nav className="h-16 bg-[#141519] border-b border-white/5 flex items-center justify-between px-6 shrink-0 z-[100] relative">
+    <nav className="h-16 bg-[var(--atlas-bg-panel)] border-b border-white/[0.06] flex items-center justify-between px-6 shrink-0 z-[100] relative">
       <div className="flex items-center gap-2">
         <button 
           onClick={() => setActiveTab('Generate')}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-tight transition-all mr-6 active:scale-95 shadow-xl ${activeTab === 'Generate' ? 'bg-yellow-500 text-black' : 'bg-white text-black hover:bg-slate-200'}`}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-tight transition-all mr-6 active:scale-95 shadow-atlas-lg ${activeTab === 'Generate' ? 'bg-yellow-500 text-black' : 'bg-white text-black hover:bg-white/80'}`}
         >
           <Sparkles size={16} />
           Generate Model
         </button>
 
-        <div className="flex items-center gap-1 bg-black/20 p-1 rounded-full border border-white/5">
+        <div className="flex items-center gap-1 bg-black/20 p-1 rounded-full border border-white/[0.06]">
           {navTabs.map((tab) => (
             <div 
               key={tab.id} 
@@ -43,7 +43,7 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
                 className={`flex items-center gap-2.5 px-5 py-2.5 rounded-full text-xs font-bold transition-all ${
                   activeTab === tab.id 
                   ? 'bg-[#3b3d45] text-white shadow-lg' 
-                  : 'text-gray-500 hover:text-white hover:bg-white/5'
+                  : 'text-white/50 hover:text-white hover:bg-white/[0.06]'
                 }`}
               >
                 {tab.icon}
@@ -58,7 +58,7 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute top-full left-0 mt-4 w-72 bg-[#1c1c1f] border border-white/10 rounded-[2rem] overflow-hidden shadow-3xl z-[200] pointer-events-none"
+                    className="absolute top-full left-0 mt-4 w-72 bg-[#1c1c1f] border border-white/10 rounded-xl overflow-hidden shadow-atlas-xl z-[200] pointer-events-none"
                   >
                     <div className="aspect-video bg-black overflow-hidden relative">
                        <img 
@@ -73,13 +73,13 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
                           <Box size={14} className="text-brand-blue" />
                           Tổng quan (Overview)
                        </h4>
-                       <p className="text-[11px] text-gray-400 font-bold leading-relaxed uppercase tracking-tight">
+                       <p className="text-[11px] text-white/60 font-bold leading-relaxed uppercase tracking-tight">
                           Xem thông tin và chi tiết mô hình 3D của bạn để chuẩn bị cho các bước hậu kỳ tiếp theo.
                        </p>
                     </div>
-                    <div className="px-6 py-3 bg-black/20 border-t border-white/5 flex items-center gap-2">
+                    <div className="px-6 py-3 bg-black/20 border-t border-white/[0.06] flex items-center gap-2">
                        <div className="w-1 h-1 rounded-full bg-brand-blue"></div>
-                       <span className="text-[8px] font-bold uppercase text-gray-600 tracking-[0.3em]">Module_Node: v3.1</span>
+                       <span className="text-[8px] font-bold uppercase text-white/40 tracking-[0.3em]">Module_Node: v3.1</span>
                     </div>
                   </motion.div>
                 )}
@@ -90,7 +90,7 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute top-full left-0 mt-4 w-72 bg-[#1c1c1f] border border-white/10 rounded-[2rem] overflow-hidden shadow-3xl z-[200] pointer-events-none"
+                    className="absolute top-full left-0 mt-4 w-72 bg-[#1c1c1f] border border-white/10 rounded-xl overflow-hidden shadow-atlas-xl z-[200] pointer-events-none"
                   >
                     <div className="aspect-video bg-black overflow-hidden relative">
                        <img 
@@ -105,13 +105,13 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
                           <Puzzle size={14} className="text-brand-blue" />
                           Phân tách (Segmentation)
                        </h4>
-                       <p className="text-[11px] text-gray-400 font-bold leading-relaxed uppercase tracking-tight">
+                       <p className="text-[11px] text-white/60 font-bold leading-relaxed uppercase tracking-tight">
                           Tách mô hình của bạn thành các phần có thể chỉnh sửa độc lập để tối ưu hóa vật liệu và diễn hoạt.
                        </p>
                     </div>
-                    <div className="px-6 py-3 bg-black/20 border-t border-white/5 flex items-center gap-2">
+                    <div className="px-6 py-3 bg-black/20 border-t border-white/[0.06] flex items-center gap-2">
                        <div className="w-1 h-1 rounded-full bg-brand-blue"></div>
-                       <span className="text-[8px] font-bold uppercase text-gray-600 tracking-[0.3em]">Module_Node: v3.1</span>
+                       <span className="text-[8px] font-bold uppercase text-white/40 tracking-[0.3em]">Module_Node: v3.1</span>
                     </div>
                   </motion.div>
                 )}
@@ -122,7 +122,7 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute top-full left-0 mt-4 w-72 bg-[#1c1c1f] border border-white/10 rounded-[2rem] overflow-hidden shadow-3xl z-[200] pointer-events-none"
+                    className="absolute top-full left-0 mt-4 w-72 bg-[#1c1c1f] border border-white/10 rounded-xl overflow-hidden shadow-atlas-xl z-[200] pointer-events-none"
                   >
                     <div className="aspect-video bg-black overflow-hidden relative">
                        <img 
@@ -137,13 +137,13 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
                           <Grid3X3 size={14} className="text-brand-blue" />
                           Lưới bề mặt (Retopology)
                        </h4>
-                       <p className="text-[11px] text-gray-400 font-bold leading-relaxed uppercase tracking-tight">
+                       <p className="text-[11px] text-white/60 font-bold leading-relaxed uppercase tracking-tight">
                           Tái cấu trúc (Remesh) với hệ thống đa giác Quad/Triangle sạch, tối ưu hóa cho việc diễn hoạt và render chất lượng cao.
                        </p>
                     </div>
-                    <div className="px-6 py-3 bg-black/20 border-t border-white/5 flex items-center gap-2">
+                    <div className="px-6 py-3 bg-black/20 border-t border-white/[0.06] flex items-center gap-2">
                        <div className="w-1 h-1 rounded-full bg-brand-blue"></div>
-                       <span className="text-[8px] font-bold uppercase text-gray-600 tracking-[0.3em]">Module_Node: v3.1</span>
+                       <span className="text-[8px] font-bold uppercase text-white/40 tracking-[0.3em]">Module_Node: v3.1</span>
                     </div>
                   </motion.div>
                 )}
@@ -154,7 +154,7 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute top-full left-0 mt-4 w-72 bg-[#1c1c1f] border border-white/10 rounded-[2rem] overflow-hidden shadow-3xl z-[200] pointer-events-none"
+                    className="absolute top-full left-0 mt-4 w-72 bg-[#1c1c1f] border border-white/10 rounded-xl overflow-hidden shadow-atlas-xl z-[200] pointer-events-none"
                   >
                     <div className="aspect-video bg-black overflow-hidden relative">
                        <img 
@@ -169,13 +169,13 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
                           <GanttChartSquare size={14} className="text-brand-blue" />
                           Vật liệu & Kết cấu (Texture)
                        </h4>
-                       <p className="text-[11px] text-gray-400 font-bold leading-relaxed uppercase tracking-tight">
+                       <p className="text-[11px] text-white/60 font-bold leading-relaxed uppercase tracking-tight">
                           Áp dụng hệ thống PBR (Physically Based Rendering) tự động, tạo ra các lớp vật liệu chân thực từ kim loại, nhựa đến vải vóc.
                        </p>
                     </div>
-                    <div className="px-6 py-3 bg-black/20 border-t border-white/5 flex items-center gap-2">
+                    <div className="px-6 py-3 bg-black/20 border-t border-white/[0.06] flex items-center gap-2">
                        <div className="w-1 h-1 rounded-full bg-brand-blue"></div>
-                       <span className="text-[8px] font-bold uppercase text-gray-600 tracking-[0.3em]">Module_Node: v3.1</span>
+                       <span className="text-[8px] font-bold uppercase text-white/40 tracking-[0.3em]">Module_Node: v3.1</span>
                     </div>
                   </motion.div>
                 )}
@@ -186,7 +186,7 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute top-full left-0 mt-4 w-72 bg-[#1c1c1f] border border-white/10 rounded-[2rem] overflow-hidden shadow-3xl z-[200] pointer-events-none"
+                    className="absolute top-full left-0 mt-4 w-72 bg-[#1c1c1f] border border-white/10 rounded-xl overflow-hidden shadow-atlas-xl z-[200] pointer-events-none"
                   >
                     <div className="aspect-video bg-black overflow-hidden relative">
                        <img 
@@ -201,13 +201,13 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
                           <Accessibility size={14} className="text-brand-blue" />
                           Khung xương (Rigging)
                        </h4>
-                       <p className="text-[11px] text-gray-400 font-bold leading-relaxed uppercase tracking-tight">
+                       <p className="text-[11px] text-white/60 font-bold leading-relaxed uppercase tracking-tight">
                           Tự động tạo bộ khung xương và gán trọng số bề mặt, sẵn sàng cho việc diễn hoạt trong các engine Game & Phim.
                        </p>
                     </div>
-                    <div className="px-6 py-3 bg-black/20 border-t border-white/5 flex items-center gap-2">
+                    <div className="px-6 py-3 bg-black/20 border-t border-white/[0.06] flex items-center gap-2">
                        <div className="w-1 h-1 rounded-full bg-brand-blue"></div>
-                       <span className="text-[8px] font-bold uppercase text-gray-600 tracking-[0.3em]">Module_Node: v3.1</span>
+                       <span className="text-[8px] font-bold uppercase text-white/40 tracking-[0.3em]">Module_Node: v3.1</span>
                     </div>
                   </motion.div>
                 )}
@@ -218,7 +218,7 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, setActiveTab, onClose
       </div>
 
       <div className="flex items-center gap-4">
-        <button onClick={onClose} className="p-2 text-gray-400 hover:text-red-500 transition-colors">
+        <button onClick={onClose} className="p-2 text-white/60 hover:text-red-500 transition-colors">
           <X size={24} />
         </button>
       </div>

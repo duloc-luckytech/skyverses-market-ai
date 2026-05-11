@@ -44,8 +44,8 @@ export const V2EditorCanvas: React.FC<V2EditorCanvasProps> = ({
         onlyRenderVisibleElements={true}
       >
         <Background variant={BackgroundVariant.Lines} color="#8881" gap={40} size={1} />
-        <Controls position="bottom-left" className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/5 p-1 rounded-none shadow-lg" />
-        <MiniMap position="bottom-right" className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/10 rounded-none shadow-2xl" nodeColor="#D4B85A" maskColor="rgba(0,0,0,0.1)" />
+        <Controls position="bottom-left" className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/[0.06] p-1 rounded-none shadow-lg" />
+        <MiniMap position="bottom-right" className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/10 rounded-none shadow-atlas-lg" nodeColor="#D4B85A" maskColor="rgba(0,0,0,0.1)" />
       </ReactFlow>
 
       <ViewportToolbar />

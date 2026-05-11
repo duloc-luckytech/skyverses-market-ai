@@ -69,7 +69,7 @@ class ErrorBoundary extends React.Component<
           <div className="relative z-10 flex flex-col items-center text-center max-w-md px-8">
             {/* Icon */}
             <div
-              className="w-16 h-16 rounded-2xl flex items-center justify-center mb-8"
+              className="w-16 h-16 rounded-lg flex items-center justify-center mb-8"
               style={{
                 background: this.state.isChunkError
                   ? 'rgba(245,158,11,0.1)'
@@ -112,7 +112,7 @@ class ErrorBoundary extends React.Component<
               </button>
               <button
                 onClick={this.handleGoHome}
-                className="inline-flex items-center gap-2.5 px-6 py-3 bg-white/5 text-white/60 border border-white/10 rounded-xl text-sm font-bold hover:bg-white/10 hover:text-white transition-all duration-200"
+                className="inline-flex items-center gap-2.5 px-6 py-3 bg-white/[0.06] text-white/60 border border-white/10 rounded-xl text-sm font-bold hover:bg-white/10 hover:text-white transition-all duration-200"
               >
                 <Home size={14} />
                 Trang chủ

@@ -12,7 +12,7 @@ interface PricingMatrixProps {
 
 export const PricingMatrix: React.FC<PricingMatrixProps> = ({ plans, loading, onSelectPlan, isCreatingPayment }) => {
   return (
-    <section className="mt-32 border-t border-black/5 dark:border-white/5 pt-20">
+    <section className="mt-32 border-t border-black/5 dark:border-white/[0.06] pt-20">
        <div className="text-center space-y-4 mb-20">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-indigo-600 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-[0.4em] italic mb-2">
              < Zap size={12} fill="currentColor" /> Biểu phí dịch vụ
@@ -32,10 +32,10 @@ export const PricingMatrix: React.FC<PricingMatrixProps> = ({ plans, loading, on
               const isPopular = plan.code.includes('pro') || idx === 2;
 
               return (
-                <div key={plan.code} className={`p-10 lg:p-14 bg-white dark:bg-[var(--atlas-bg-panel)] border-2 rounded-[2.5rem] flex flex-col justify-between transition-all duration-500 group relative overflow-hidden shadow-sm ${isPopular ? 'border-indigo-600 shadow-2xl scale-105 z-10' : 'border-black/5 dark:border-white/5 opacity-80 hover:opacity-100 hover:border-black/10'}`}>
+                <div key={plan.code} className={`p-10 lg:p-14 bg-white dark:bg-[var(--atlas-bg-panel)] border-2 rounded-xl flex flex-col justify-between transition-all duration-500 group relative overflow-hidden shadow-sm ${isPopular ? 'border-indigo-600 shadow-atlas-lg scale-105 z-10' : 'border-black/5 dark:border-white/[0.06] opacity-80 hover:opacity-100 hover:border-black/10'}`}>
                    
                    {isPopular && (
-                      <div className="absolute top-0 right-0 bg-indigo-600 text-white px-8 py-2 text-[8px] font-bold uppercase tracking-widest rounded-bl-2xl shadow-xl italic z-20">ĐƯỢC ĐỀ XUẤT</div>
+                      <div className="absolute top-0 right-0 bg-indigo-600 text-white px-8 py-2 text-[8px] font-bold uppercase tracking-widest rounded-bl-2xl shadow-atlas-lg italic z-20">ĐƯỢC ĐỀ XUẤT</div>
                    )}
 
                    <div className="space-y-10 text-left relative z-10">
@@ -52,7 +52,7 @@ export const PricingMatrix: React.FC<PricingMatrixProps> = ({ plans, loading, on
                          <h4 className="text-3xl lg:text-4xl font-bold italic tracking-tighter text-slate-900 dark:text-white leading-none">{plan.name}</h4>
                       </div>
 
-                      <div className="py-8 border-y border-black/5 dark:border-white/5 space-y-6">
+                      <div className="py-8 border-y border-black/5 dark:border-white/[0.06] space-y-6">
                          <div className="flex justify-between items-center">
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Token</span>
                             <span className="text-2xl font-bold italic text-indigo-600">{plan.quota.toLocaleString()}</span>
@@ -74,7 +74,7 @@ export const PricingMatrix: React.FC<PricingMatrixProps> = ({ plans, loading, on
                          <button 
                            onClick={() => !plan.isFree && onSelectPlan(plan.code)}
                            disabled={plan.isFree || isCreatingPayment}
-                           className={`w-full py-5 rounded-2xl text-[11px] font-bold uppercase tracking-[0.4em] transition-all shadow-xl active:scale-[0.95] relative overflow-hidden group/btn ${isPopular ? 'bg-indigo-600 text-white shadow-indigo-600/20' : 'bg-slate-100 dark:bg-white/5 text-gray-500 border border-black/5 dark:border-white/10 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black'}`}
+                           className={`w-full py-5 rounded-lg text-[11px] font-bold uppercase tracking-[0.4em] transition-all shadow-atlas-lg active:scale-[0.95] relative overflow-hidden group/btn ${isPopular ? 'bg-indigo-600 text-white shadow-indigo-600/20' : 'bg-slate-100 dark:bg-white/[0.06] text-gray-500 border border-black/5 dark:border-white/10 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black'}`}
                          >
                             <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700"></div>
                             <span className="relative z-10 flex items-center justify-center gap-2">

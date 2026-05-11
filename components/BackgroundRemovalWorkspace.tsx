@@ -135,7 +135,7 @@ const BackgroundRemovalWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
     <div className="h-full w-full flex flex-col bg-[var(--atlas-bg-page)] dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500 relative">
       
       {/* HEADER */}
-      <header className="h-16 md:h-20 border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-8 bg-white/80 dark:bg-[var(--atlas-bg-panel)]/80 backdrop-blur-xl z-[100] shrink-0">
+      <header className="h-16 md:h-20 border-b border-slate-200 dark:border-white/[0.06] flex items-center justify-between px-8 bg-white/80 dark:bg-[var(--atlas-bg-panel)]/80 backdrop-blur-xl z-[100] shrink-0">
         <div className="flex items-center gap-4">
            {/* Fixed: ChevronLeft icon used from missing import */}
            <button onClick={onClose} className="p-2 -ml-2 text-slate-400 hover:text-brand-blue transition-colors">
@@ -153,12 +153,12 @@ const BackgroundRemovalWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
            <button 
              onClick={runAllJobs}
              disabled={isProcessing || jobs.filter(j => j.status === 'PENDING').length === 0}
-             className="px-6 py-2.5 bg-slate-900 dark:bg-white/5 border border-slate-800 dark:border-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest text-white flex items-center gap-3 hover:bg-brand-blue transition-all shadow-xl disabled:opacity-30 disabled:grayscale"
+             className="px-6 py-2.5 bg-slate-900 dark:bg-white/[0.06] border border-slate-800 dark:border-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest text-white flex items-center gap-3 hover:bg-brand-blue transition-all shadow-atlas-lg disabled:opacity-30 disabled:grayscale"
            >
               <Sparkles size={14} className="text-brand-blue" />
               Xóa nền ảnh tự động với AI
            </button>
-           <div className="h-8 w-px bg-black/5 dark:bg-white/10"></div>
+           <div className="h-8 w-px bg-black/[0.06] dark:bg-white/10"></div>
            <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
               <X size={24} />
            </button>
@@ -172,7 +172,7 @@ const BackgroundRemovalWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
             {/* 1. UPLOAD ZONE */}
             <div 
               onClick={() => fileInputRef.current?.click()}
-              className="relative w-full aspect-[21/9] border-4 border-dashed border-slate-200 dark:border-white/5 rounded-[3rem] flex flex-col items-center justify-center gap-8 cursor-pointer hover:border-brand-blue/40 hover:bg-brand-blue/[0.02] transition-all group overflow-hidden bg-white dark:bg-[var(--atlas-bg-panel)] shadow-2xl"
+              className="relative w-full aspect-[21/9] border-4 border-dashed border-slate-200 dark:border-white/[0.06] rounded-xl flex flex-col items-center justify-center gap-8 cursor-pointer hover:border-brand-blue/40 hover:bg-brand-blue/[0.02] transition-all group overflow-hidden bg-white dark:bg-[var(--atlas-bg-panel)] shadow-atlas-lg"
             >
                <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
                
@@ -183,7 +183,7 @@ const BackgroundRemovalWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                  </div>
                ) : (
                  <>
-                   <div className="w-24 h-24 bg-slate-100 dark:bg-white/5 rounded-[2.5rem] flex items-center justify-center text-slate-300 dark:text-gray-700 group-hover:scale-110 group-hover:text-brand-blue transition-all shadow-inner">
+                   <div className="w-24 h-24 bg-slate-100 dark:bg-white/[0.06] rounded-xl flex items-center justify-center text-slate-300 dark:text-gray-700 group-hover:scale-110 group-hover:text-brand-blue transition-all shadow-inner">
                       <Layers size={48} />
                    </div>
                    <div className="space-y-3 text-center">
@@ -196,7 +196,7 @@ const BackgroundRemovalWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                       <button className="px-10 py-5 bg-brand-blue text-white rounded-xl text-[11px] font-bold uppercase tracking-widest shadow-xl shadow-brand-blue/20 flex items-center gap-3">
                          <Upload size={16} /> Tải ảnh lên
                       </button>
-                      <button className="px-10 py-5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-[11px] font-bold uppercase tracking-widest text-slate-600 dark:text-gray-300 flex items-center gap-3">
+                      <button className="px-10 py-5 bg-slate-50 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 rounded-xl text-[11px] font-bold uppercase tracking-widest text-slate-600 dark:text-gray-300 flex items-center gap-3">
                          <Files size={16} /> Chọn từ Album
                       </button>
                    </div>
@@ -221,7 +221,7 @@ const BackgroundRemovalWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                   <button 
                     onClick={handleDownloadAllDone}
                     disabled={doneCount === 0}
-                    className="px-8 py-3 bg-rose-600 text-white rounded-xl text-[11px] font-bold uppercase tracking-widest shadow-xl shadow-rose-600/20 flex items-center gap-3 hover:brightness-110 active:scale-95 transition-all disabled:opacity-30 disabled:grayscale"
+                    className="px-8 py-3 bg-rose-600 text-white rounded-xl text-[11px] font-bold uppercase tracking-widest shadow-atlas-lg shadow-rose-600/20 flex items-center gap-3 hover:brightness-110 active:scale-95 transition-all disabled:opacity-30 disabled:grayscale"
                   >
                     <Download size={16} /> Tải tất cả ({doneCount})
                   </button>
@@ -236,7 +236,7 @@ const BackgroundRemovalWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="group relative bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/10 rounded-[2.5rem] overflow-hidden shadow-xl hover:shadow-2xl hover:border-brand-blue/30 transition-all"
+                        className="group relative bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/10 rounded-xl overflow-hidden shadow-atlas-lg hover:shadow-atlas-lg hover:border-brand-blue/30 transition-all"
                       >
                          <div className="aspect-video relative overflow-hidden flex bg-slate-100 dark:bg-black">
                             {/* Compare view */}
@@ -273,9 +273,9 @@ const BackgroundRemovalWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                             {/* Actions on hover */}
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 z-20">
                                {job.status === 'DONE' && (
-                                 <button className="p-3 bg-white text-black rounded-full shadow-2xl hover:scale-110 transition-transform"><Maximize2 size={16}/></button>
+                                 <button className="p-3 bg-white text-black rounded-full shadow-atlas-lg hover:scale-110 transition-transform"><Maximize2 size={16}/></button>
                                )}
-                               <button onClick={() => removeJob(job.id)} className="p-3 bg-white text-red-500 rounded-full shadow-2xl hover:scale-110 transition-transform"><Trash2 size={16}/></button>
+                               <button onClick={() => removeJob(job.id)} className="p-3 bg-white text-red-500 rounded-full shadow-atlas-lg hover:scale-110 transition-transform"><Trash2 size={16}/></button>
                             </div>
                          </div>
 
@@ -292,7 +292,7 @@ const BackgroundRemovalWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                             <button 
                               disabled={job.status !== 'DONE'}
                               onClick={() => job.result && triggerDownload(job.result, `no_bg_${job.id}.png`)}
-                              className={`w-full py-4 rounded-xl text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${job.status === 'DONE' ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/20 hover:scale-[1.02] active:scale-98' : 'bg-slate-100 dark:bg-white/5 text-slate-300 dark:text-gray-700 cursor-not-allowed grayscale'}`}
+                              className={`w-full py-4 rounded-xl text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${job.status === 'DONE' ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/20 hover:scale-[1.02] active:scale-98' : 'bg-slate-100 dark:bg-white/[0.06] text-slate-300 dark:text-gray-700 cursor-not-allowed grayscale'}`}
                             >
                                <Download size={14} /> Tải PNG
                             </button>
@@ -313,7 +313,7 @@ const BackgroundRemovalWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
       </main>
 
       {/* STATUS FOOTER */}
-      <footer className="h-14 border-t border-slate-200 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-page)] px-10 flex items-center justify-between shrink-0 z-[100] transition-colors">
+      <footer className="h-14 border-t border-slate-200 dark:border-white/[0.06] bg-white dark:bg-[var(--atlas-bg-page)] px-10 flex items-center justify-between shrink-0 z-[100] transition-colors">
          <div className="flex items-center gap-10">
             <div className="flex items-center gap-3">
                <ShieldCheck size={16} className="text-emerald-500" />
@@ -336,7 +336,7 @@ const BackgroundRemovalWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
         {/* Fixed: Added missing showLowCreditAlert state usage */}
         {showLowCreditAlert && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
-             <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="max-w-md w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-12 border border-slate-200 dark:border-white/10 rounded-[2rem] text-center space-y-8 shadow-3xl">
+             <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="max-w-md w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-12 border border-slate-200 dark:border-white/10 rounded-xl text-center space-y-8 shadow-atlas-xl">
                 {/* Fixed: Added missing AlertTriangle icon */}
                 <div className="w-20 h-20 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-amber-500"><AlertTriangle size={40} /></div>
                 <div className="space-y-4">
@@ -345,7 +345,7 @@ const BackgroundRemovalWorkspace: React.FC<{ onClose: () => void }> = ({ onClose
                 </div>
                 <div className="flex flex-col gap-4">
                    {/* Fixed: Added missing Link component */}
-                   <Link to="/credits" className="bg-brand-blue text-white py-5 rounded-full text-xs font-bold uppercase tracking-widest shadow-xl hover:scale-105 transition-all text-center">Nạp thêm Credits</Link>
+                   <Link to="/credits" className="bg-brand-blue text-white py-5 rounded-full text-xs font-bold uppercase tracking-widest shadow-atlas-lg hover:scale-105 transition-all text-center">Nạp thêm Credits</Link>
                    {/* Fixed: Added missing setShowLowCreditAlert state setter */}
                    <button onClick={() => setShowLowCreditAlert(false)} className="text-[10px] font-bold uppercase text-slate-400 hover:text-brand-blue transition-colors tracking-widest underline underline-offset-8 decoration-white/20">Bỏ qua</button>
                 </div>

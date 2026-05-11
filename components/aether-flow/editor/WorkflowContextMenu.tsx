@@ -28,7 +28,7 @@ const MenuItem = ({ label, icon, shortcut, hasSubmenu, onClick, isDanger = false
       e.stopPropagation();
       onClick?.();
     }}
-    className={`w-full flex items-center justify-between px-3 py-2 text-[12px] font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/10 group ${isDanger ? 'text-red-500' : 'text-slate-700 dark:text-gray-200'}`}
+    className={`w-full flex items-center justify-between px-3 py-2 text-[12px] font-medium transition-colors hover:bg-black/[0.06] dark:hover:bg-white/10 group ${isDanger ? 'text-red-500' : 'text-slate-700 dark:text-gray-200'}`}
   >
     <div className="flex items-center gap-3">
       {icon && <span className="text-slate-400 group-hover:text-indigo-600 transition-colors">{icon}</span>}
@@ -41,7 +41,7 @@ const MenuItem = ({ label, icon, shortcut, hasSubmenu, onClick, isDanger = false
   </button>
 );
 
-const Separator = () => <div className="h-px bg-black/5 dark:bg-white/5 my-1" />;
+const Separator = () => <div className="h-px bg-black/[0.06] dark:bg-white/[0.06] my-1" />;
 
 export const WorkflowContextMenu: React.FC<WorkflowContextMenuProps> = ({ x, y, onClose, onAddNode, onAddGroup }) => {
   return (
@@ -50,7 +50,7 @@ export const WorkflowContextMenu: React.FC<WorkflowContextMenuProps> = ({ x, y, 
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       style={{ top: y, left: x }}
-      className="fixed z-[600] w-64 bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-[#444] rounded-lg shadow-2xl py-1.5 overflow-hidden backdrop-blur-md"
+      className="fixed z-[600] w-64 bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-[#444] rounded-lg shadow-atlas-lg py-1.5 overflow-hidden backdrop-blur-md"
     >
       <MenuItem label="Bản đồ quy trình" icon={<MapIcon size={14} />} shortcut="(Shift+m)" />
       <MenuItem label="Dọn dẹp bộ nhớ đồ họa" icon={<Rocket size={14} />} shortcut="(Shift+r)" />

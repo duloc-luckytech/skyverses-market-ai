@@ -344,7 +344,7 @@ const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({ isOpen, onClo
       
       <motion.div initial={{ scale: 0.96, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="relative w-full max-w-2xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-none md:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-full md:h-auto md:max-h-[90vh]">
+        className="relative w-full max-w-2xl bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-none md:rounded-lg shadow-atlas-lg overflow-hidden flex flex-col h-full md:h-auto md:max-h-[90vh]">
         
         {/* Header */}
         <div className="px-5 md:px-6 py-4 border-b border-black/[0.04] dark:border-white/[0.08] flex items-center justify-between shrink-0">
@@ -383,7 +383,7 @@ const CreditPurchaseModal: React.FC<CreditPurchaseModalProps> = ({ isOpen, onClo
             <React.Fragment key={item.s}>
               <div className={`flex items-center gap-2 ${step >= item.s ? 'opacity-100' : 'opacity-30'}`}>
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                  (step > item.s || (item.s === 2 && status === 'SUCCESS')) ? 'bg-emerald-500 text-white' : step === item.s ? 'bg-brand-blue text-white' : 'bg-slate-100 dark:bg-white/5 text-slate-400'
+                  (step > item.s || (item.s === 2 && status === 'SUCCESS')) ? 'bg-emerald-500 text-white' : step === item.s ? 'bg-brand-blue text-white' : 'bg-slate-100 dark:bg-white/[0.06] text-slate-400'
                 }`}>
                   {(step > item.s || (item.s === 2 && status === 'SUCCESS')) ? <Check size={12} strokeWidth={3} /> : item.s}
                 </div>

@@ -56,7 +56,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
             <h4 className="text-lg font-bold uppercase italic tracking-tighter text-white leading-tight drop-shadow-md">
               {tmpl.name}
             </h4>
-            <p className="text-[9px] text-zinc-300 font-bold uppercase tracking-widest line-clamp-1 italic drop-shadow-sm">
+            <p className="text-[9px] text-white/70 font-bold uppercase tracking-widest line-clamp-1 italic drop-shadow-sm">
               {tmpl.desc || 'HỆ THỐNG HOẠT ĐỘNG BÌNH THƯỜNG'}
             </p>
           </div>
@@ -65,7 +65,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
           <div className="flex gap-1 pt-2 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0">
             <button 
               onClick={() => onSelect(tmpl)}
-              className={`flex-grow py-3 text-[10px] font-bold uppercase tracking-widest transition-all rounded-none shadow-xl ${
+              className={`flex-grow py-3 text-[10px] font-bold uppercase tracking-widest transition-all rounded-none shadow-atlas-lg ${
                 isActive 
                   ? 'bg-indigo-600 text-white' 
                   : 'bg-white text-black hover:bg-indigo-600 hover:text-white'
@@ -75,7 +75,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
             </button>
             <button 
               onClick={() => onOpenVisualEditorV2(tmpl)}
-              className="px-4 py-3 bg-zinc-900/90 backdrop-blur-md text-white border border-white/10 rounded-none hover:bg-indigo-600 transition-all shadow-xl"
+              className="px-4 py-3 bg-zinc-900/90 backdrop-blur-md text-white border border-white/10 rounded-none hover:bg-indigo-600 transition-all shadow-atlas-lg"
               title="Mở sơ đồ node"
             >
               <LayoutGrid size={14} />

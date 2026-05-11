@@ -63,9 +63,9 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose, o
       <motion.div 
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="relative w-full max-w-4xl bg-white dark:bg-[var(--atlas-bg-page)] rounded-[2.5rem] overflow-hidden shadow-3xl flex flex-col max-h-[85vh]"
+        className="relative w-full max-w-4xl bg-white dark:bg-[var(--atlas-bg-page)] rounded-xl overflow-hidden shadow-atlas-xl flex flex-col max-h-[85vh]"
       >
-        <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-center justify-between shrink-0">
+        <div className="p-8 border-b border-black/5 dark:border-white/[0.06] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
              <div className="p-2.5 bg-brand-blue/10 rounded-xl text-brand-blue">
                 <Wand2 size={24} />
@@ -86,11 +86,11 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose, o
                 <div 
                   key={tmpl.id}
                   onClick={() => onApply(tmpl)}
-                  className="group bg-slate-50 dark:bg-white/[0.02] border border-black/5 dark:border-white/5 rounded-3xl p-6 hover:border-brand-blue transition-all cursor-pointer shadow-sm hover:shadow-2xl"
+                  className="group bg-slate-50 dark:bg-white/[0.02] border border-black/5 dark:border-white/[0.06] rounded-xl p-6 hover:border-brand-blue transition-all cursor-pointer shadow-sm hover:shadow-atlas-lg"
                 >
                    <div className="flex gap-4 mb-6">
                       {tmpl.actors.map((a, i) => (
-                        <div key={i} className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-white dark:border-white/10 shadow-lg">
+                        <div key={i} className="w-16 h-16 rounded-lg overflow-hidden border-2 border-white dark:border-white/10 shadow-lg">
                            <img src={a.url} className="w-full h-full object-cover" />
                         </div>
                       ))}
@@ -100,7 +100,7 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose, o
                          <h4 className="text-lg font-bold uppercase tracking-tight italic text-slate-900 dark:text-white">{tmpl.name}</h4>
                          <p className="text-xs text-gray-500 font-medium leading-relaxed">{tmpl.desc}</p>
                       </div>
-                      <div className="p-4 bg-white dark:bg-black rounded-xl border border-black/5 dark:border-white/5">
+                      <div className="p-4 bg-white dark:bg-black rounded-xl border border-black/5 dark:border-white/[0.06]">
                          <p className="text-[10px] font-bold text-slate-400 dark:text-gray-600 uppercase mb-2">Prompt mẫu:</p>
                          <p className="text-[11px] font-bold italic text-slate-700 dark:text-gray-300 line-clamp-2">"{tmpl.prompt}"</p>
                       </div>

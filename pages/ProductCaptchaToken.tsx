@@ -152,7 +152,7 @@ const ProductCaptchaToken = () => {
               viewport={{ once: true, margin: '-40px' }}
               transition={{ delay: idx * 0.08, duration: 0.5, type: 'spring', stiffness: 120 }}
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="group p-6 rounded-2xl bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] hover:border-indigo-500/20 dark:hover:border-indigo-500/15 hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300"
+              className="group p-6 rounded-lg bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] hover:border-indigo-500/20 dark:hover:border-indigo-500/15 hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300"
             >
               <div className={`w-12 h-12 rounded-xl ${f.bg} border ${f.color} flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
                 {f.icon}
@@ -213,14 +213,14 @@ const ProductCaptchaToken = () => {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                 <button
                   onClick={() => document.getElementById('pricing-matrix')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="group inline-flex items-center gap-3 bg-indigo-500 text-white px-8 py-4 rounded-2xl text-sm font-bold hover:bg-indigo-400 transition-all active:scale-95 shadow-xl shadow-indigo-500/20"
+                  className="group inline-flex items-center gap-3 bg-indigo-500 text-white px-8 py-4 rounded-lg text-sm font-bold hover:bg-indigo-400 transition-all active:scale-95 shadow-atlas-lg shadow-indigo-500/20"
                 >
                   Mua Token ngay
                   <Zap size={16} fill="currentColor" className="group-hover:rotate-12 transition-transform" />
                 </button>
                 <a
                   href="/booking"
-                  className="inline-flex items-center gap-2 px-8 py-4 border border-white/10 text-white/60 hover:text-white hover:border-white/20 rounded-2xl text-sm font-bold transition-all"
+                  className="inline-flex items-center gap-2 px-8 py-4 border border-white/10 text-white/60 hover:text-white hover:border-white/20 rounded-lg text-sm font-bold transition-all"
                 >
                   Tư vấn giải pháp API
                   <ArrowRight size={14} />

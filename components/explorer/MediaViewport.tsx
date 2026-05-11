@@ -38,11 +38,11 @@ const MediaViewport: React.FC<MediaViewportProps> = ({ mediaUrl, thumbnailUrl, t
           className="relative w-full h-full max-w-5xl max-h-full flex items-center justify-center"
         >
           {is3D ? (
-            <div className="w-full h-full md:rounded-2xl overflow-hidden shadow-lg border border-black/[0.04] dark:border-white/[0.04] bg-white dark:bg-[var(--atlas-bg-page)]">
+            <div className="w-full h-full md:rounded-lg overflow-hidden shadow-lg border border-black/[0.04] dark:border-white/[0.04] bg-white dark:bg-[var(--atlas-bg-page)]">
               <ThreeDPreview modelUrl={mainUrl} />
             </div>
           ) : isVideo ? (
-            <div className="relative w-full h-full md:rounded-2xl overflow-hidden shadow-lg border border-black/[0.04] dark:border-white/[0.04] bg-black group/vid">
+            <div className="relative w-full h-full md:rounded-lg overflow-hidden shadow-lg border border-black/[0.04] dark:border-white/[0.04] bg-black group/vid">
               <video 
                 src={mainUrl} autoPlay={isPlaying} loop muted={isMuted} playsInline
                 className="w-full h-full object-contain"
@@ -61,7 +61,7 @@ const MediaViewport: React.FC<MediaViewportProps> = ({ mediaUrl, thumbnailUrl, t
           ) : (
             <img 
               src={mainUrl} 
-              className="w-full h-full md:w-auto md:h-auto max-w-full max-h-full object-contain md:shadow-lg md:rounded-2xl border border-black/[0.04] dark:border-white/[0.04] bg-white dark:bg-[var(--atlas-bg-page)]" 
+              className="w-full h-full md:w-auto md:h-auto max-w-full max-h-full object-contain md:shadow-lg md:rounded-lg border border-black/[0.04] dark:border-white/[0.04] bg-white dark:bg-[var(--atlas-bg-page)]" 
               alt={title} 
             />
           )}

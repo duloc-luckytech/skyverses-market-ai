@@ -78,7 +78,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
       {/* Mobile toggle */}
       <button
         onClick={() => props.setIsMobileExpanded(true)}
-        className="lg:hidden fixed bottom-6 left-4 z-[130] w-12 h-12 bg-gradient-to-r from-rose-500 to-fuchsia-500 rounded-full shadow-2xl flex items-center justify-center text-white active:scale-95 transition-transform"
+        className="lg:hidden fixed bottom-6 left-4 z-[130] w-12 h-12 bg-gradient-to-r from-rose-500 to-fuchsia-500 rounded-full shadow-atlas-lg flex items-center justify-center text-white active:scale-95 transition-transform"
       >
         <Menu size={20} />
       </button>
@@ -237,7 +237,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
               </button>
               {props.generateTooltip && (
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover/btn:opacity-100 pointer-events-none transition-all z-50">
-                  <div className="bg-slate-900 dark:bg-white text-white dark:text-black px-3 py-1.5 rounded-lg text-[9px] font-semibold whitespace-nowrap shadow-xl">
+                  <div className="bg-slate-900 dark:bg-white text-white dark:text-black px-3 py-1.5 rounded-lg text-[9px] font-semibold whitespace-nowrap shadow-atlas-lg">
                     {props.generateTooltip}
                   </div>
                 </div>

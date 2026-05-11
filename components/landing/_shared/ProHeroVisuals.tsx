@@ -48,7 +48,7 @@ export const FloatingBadge: React.FC<FloatingBadgeProps> = ({
     initial={{ opacity: 0, scale: 0.7, y: 8 }}
     animate={{ opacity: 1, scale: 1, y: 0 }}
     transition={{ delay, type: 'spring', stiffness: 280, damping: 22 }}
-    className={`bg-white dark:bg-[#111] border border-black/[0.06] dark:border-white/[0.06] rounded-xl px-3 py-2 shadow-lg flex items-center gap-2.5 backdrop-blur-sm ${className ?? ''}`}
+    className={`bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/[0.06] dark:border-white/[0.06] rounded-xl px-3 py-2 shadow-lg flex items-center gap-2.5 backdrop-blur-sm ${className ?? ''}`}
   >
     {icon && (
       <div className="shrink-0 w-7 h-7 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue">

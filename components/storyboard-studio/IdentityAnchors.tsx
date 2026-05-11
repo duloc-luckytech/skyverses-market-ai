@@ -16,7 +16,7 @@ export const IdentityAnchors: React.FC<IdentityAnchorsProps> = ({
   assets, openAssetModal, onViewAsset, removeAsset, handleReGenerateAsset 
 }) => {
   return (
-    <div className="p-8 bg-slate-50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/5 rounded-[2rem] space-y-8 w-full shadow-xl dark:shadow-2xl transition-colors duration-500">
+    <div className="p-8 bg-slate-50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/[0.06] rounded-xl space-y-8 w-full shadow-atlas-lg dark:shadow-atlas-lg transition-colors duration-500">
        <header className="flex items-center justify-between px-2">
           <div className="flex items-center gap-3">
             <Layers size={18} className="text-emerald-500" />
@@ -34,7 +34,7 @@ export const IdentityAnchors: React.FC<IdentityAnchorsProps> = ({
           {assets.length === 0 && (
             <div 
               onClick={() => openAssetModal()}
-              className="w-[300px] shrink-0 snap-start bg-slate-100 dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 rounded-[1.5rem] p-4 flex flex-col gap-4 group transition-all shadow-xl relative cursor-pointer hover:border-brand-blue/30"
+              className="w-[300px] shrink-0 snap-start bg-slate-100 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.06] rounded-[1.5rem] p-4 flex flex-col gap-4 group transition-all shadow-atlas-lg relative cursor-pointer hover:border-brand-blue/30"
             >
               <div className="aspect-[3/4] bg-slate-200 dark:bg-black rounded-[1rem] overflow-hidden relative border border-slate-300 dark:border-white/10 flex items-center justify-center transition-colors">
                  <div className="w-16 h-16 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform"><Plus size={32} /></div>
@@ -47,8 +47,8 @@ export const IdentityAnchors: React.FC<IdentityAnchorsProps> = ({
           )}
 
           {assets.map((asset) => (
-            <div key={asset.id} className={`w-[300px] shrink-0 snap-start bg-slate-100 dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 rounded-[1.5rem] p-4 flex flex-col gap-4 group transition-all shadow-xl relative cursor-pointer hover:border-brand-blue/30`}>
-               <div onClick={() => asset.url && onViewAsset(asset)} className="aspect-[3/4] bg-slate-200 dark:bg-black rounded-[1rem] overflow-hidden relative border border-slate-300 dark:border-white/5 transition-colors">
+            <div key={asset.id} className={`w-[300px] shrink-0 snap-start bg-slate-100 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.06] rounded-[1.5rem] p-4 flex flex-col gap-4 group transition-all shadow-atlas-lg relative cursor-pointer hover:border-brand-blue/30`}>
+               <div onClick={() => asset.url && onViewAsset(asset)} className="aspect-[3/4] bg-slate-200 dark:bg-black rounded-[1rem] overflow-hidden relative border border-slate-300 dark:border-white/[0.06] transition-colors">
                   {asset.url ? <img src={asset.url} className="w-full h-full object-cover" alt={asset.name} /> : <div className="absolute inset-0 flex flex-col items-center justify-center opacity-40">{asset.type === 'CHARACTER' ? <User size={64} className="text-slate-400 dark:text-gray-400" /> : <MapPin size={64} className="text-slate-400 dark:text-gray-400" />}</div>}
                   
                   {asset.status === 'processing' && (
@@ -74,7 +74,7 @@ export const IdentityAnchors: React.FC<IdentityAnchorsProps> = ({
                   <h4 className="text-sm font-bold uppercase italic tracking-tighter text-slate-800 dark:text-white">{asset.name}</h4>
                   <p className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">{asset.type}</p>
                </div>
-               <div className="grid grid-cols-1 gap-2 pt-2 border-t border-slate-200 dark:border-white/5">
+               <div className="grid grid-cols-1 gap-2 pt-2 border-t border-slate-200 dark:border-white/[0.06]">
                   <button 
                     onClick={(e) => { e.stopPropagation(); handleReGenerateAsset(asset.id); }} 
                     disabled={asset.status === 'processing'} 

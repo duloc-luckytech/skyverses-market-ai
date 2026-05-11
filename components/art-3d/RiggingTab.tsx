@@ -16,7 +16,7 @@ export const RiggingTab: React.FC<RiggingTabProps> = ({ variants }) => (
   >
     <div className="flex-grow flex flex-col space-y-8">
       {/* Visual Preview Section */}
-      <div className="w-full aspect-square relative flex items-center justify-center overflow-hidden rounded-[2rem] bg-black/20 border border-white/5 group">
+      <div className="w-full aspect-square relative flex items-center justify-center overflow-hidden rounded-xl bg-black/20 border border-white/[0.06] group">
         <div className="absolute inset-0 bg-gradient-to-b from-pink-500/5 to-transparent blur-3xl opacity-20"></div>
         <img 
           src="https://ai-cdn.gommo.net/ai/images/c1df07a5156c5710/8eb944108243aa97.png" 
@@ -26,13 +26,13 @@ export const RiggingTab: React.FC<RiggingTabProps> = ({ variants }) => (
         
         {/* Mock Animation Label in image */}
         <div className="absolute top-1/2 right-10 -translate-y-12 z-20 space-y-2">
-            <div className="px-8 py-2 bg-[#5e5ce6] text-white text-[10px] font-bold rounded-lg shadow-xl uppercase tracking-widest">
+            <div className="px-8 py-2 bg-[#5e5ce6] text-white text-[10px] font-bold rounded-lg shadow-atlas-lg uppercase tracking-widest">
                 Animation
             </div>
             <div className="grid grid-cols-2 gap-1.5 p-2 bg-black/40 backdrop-blur-md rounded-xl border border-white/10">
                 {[1, 2, 3, 4].map(i => (
                     <div key={i} className="w-8 h-8 rounded-md bg-black/60 border border-white/10 flex items-center justify-center">
-                        <div className="w-4 h-6 bg-gray-400/20 rounded-full"></div>
+                        <div className="w-4 h-6 bg-white/[0.06] rounded-full"></div>
                     </div>
                 ))}
             </div>
@@ -40,23 +40,23 @@ export const RiggingTab: React.FC<RiggingTabProps> = ({ variants }) => (
       </div>
       
       <div className="text-center space-y-3 px-2">
-        <p className="text-[13px] text-gray-400 font-bold leading-relaxed tracking-tight">
+        <p className="text-[13px] text-white/60 font-bold leading-relaxed tracking-tight">
           Instantly auto-rig any model and generate ready-to-use animations.
         </p>
       </div>
     </div>
 
     {/* Bottom Controls */}
-    <div className="mt-auto space-y-6 pt-6 border-t border-white/5 pb-4">
-      <button className="w-full flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-600 hover:text-pink-400 transition-colors group">
+    <div className="mt-auto space-y-6 pt-6 border-t border-white/[0.06] pb-4">
+      <button className="w-full flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 hover:text-pink-400 transition-colors group">
         v2.0-20250506 <ChevronUp size={12} className="group-hover:-translate-y-1 transition-transform" />
       </button>
 
-      <button className="w-full py-4 px-6 bg-[#1c1d22] border border-white/5 rounded-full flex items-center justify-center gap-3 group hover:bg-[#25272d] transition-all shadow-xl active:scale-[0.98]">
-        <span className="text-xs font-bold uppercase tracking-widest text-gray-400 italic">Auto Rig</span>
-        <div className="flex items-center gap-2 px-3 py-1 bg-black/40 rounded-full border border-white/5">
-          <Zap size={12} className="text-gray-500" fill="currentColor" />
-          <span className="text-[11px] font-bold italic text-gray-500">20</span>
+      <button className="w-full py-4 px-6 bg-[#1c1d22] border border-white/[0.06] rounded-full flex items-center justify-center gap-3 group hover:bg-[#25272d] transition-all shadow-atlas-lg active:scale-[0.98]">
+        <span className="text-xs font-bold uppercase tracking-widest text-white/60 italic">Auto Rig</span>
+        <div className="flex items-center gap-2 px-3 py-1 bg-black/40 rounded-full border border-white/[0.06]">
+          <Zap size={12} className="text-white/50" fill="currentColor" />
+          <span className="text-[11px] font-bold italic text-white/50">20</span>
         </div>
       </button>
     </div>

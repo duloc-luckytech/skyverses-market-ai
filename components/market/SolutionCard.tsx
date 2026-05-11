@@ -50,7 +50,7 @@ const SolutionCardComponent: React.FC<SolutionCardProps> = ({
           {onQuickView && (
             <button
               onClick={(e) => { e.stopPropagation(); onQuickView(e, sol); }}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white/15 hover:bg-white/25 backdrop-blur-lg border border-white/20 hover:border-white/40 rounded-full transition-all duration-300 shadow-2xl scale-90 group-hover:scale-100 translate-y-2 group-hover:translate-y-0"
+              className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.15] hover:bg-white/25 backdrop-blur-lg border border-white/20 hover:border-white/40 rounded-full transition-all duration-300 shadow-atlas-lg scale-90 group-hover:scale-100 translate-y-2 group-hover:translate-y-0"
               style={{ transitionDelay: '50ms' }}
               aria-label="Quick view"
             >
@@ -74,14 +74,14 @@ const SolutionCardComponent: React.FC<SolutionCardProps> = ({
         {/* Favorite bookmark */}
         <button
           onClick={(e) => onToggleFavorite(e, sol.id)}
-          className={`absolute top-2 right-2 md:top-4 md:right-4 p-1.5 md:p-2.5 bg-black/40 backdrop-blur-md rounded-full border transition-all z-30 ${isFavorited ? 'text-white border-atlas-purple/60 bg-atlas-purple/80' : 'text-white/60 border-white/15 hover:text-white hover:border-white/30'}`}
+          className={`absolute top-2 right-2 md:top-4 md:right-4 p-1.5 md:p-2.5 bg-black/40 backdrop-blur-md rounded-full border transition-all z-30 ${isFavorited ? 'text-white border-atlas-purple/60 bg-atlas-purple/80' : 'text-white/60 border-white/[0.15] hover:text-white hover:border-white/30'}`}
         >
           <Bookmark fill="currentColor" className="w-3.5 h-3.5 md:w-[18px] md:h-[18px]" />
         </button>
 
         {/* Category badge */}
         <div className="absolute top-2 left-2 md:top-4 md:left-4">
-          <span className="bg-black/70 backdrop-blur-md text-white border border-white/15 px-1.5 md:px-3 py-0.5 md:py-1 text-[7px] md:text-[10px] font-semibold uppercase tracking-widest rounded">{sol.category[currentLang]}</span>
+          <span className="bg-black/70 backdrop-blur-md text-white border border-white/[0.15] px-1.5 md:px-3 py-0.5 md:py-1 text-[7px] md:text-[10px] font-semibold uppercase tracking-widest rounded">{sol.category[currentLang]}</span>
         </div>
       </div>
 

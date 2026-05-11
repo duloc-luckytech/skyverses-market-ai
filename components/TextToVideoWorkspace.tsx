@@ -121,16 +121,16 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
   };
 
   return (
-    <div className={`flex flex-col lg:flex-row h-full w-full font-sans overflow-hidden relative transition-colors duration-700 ${tier === 'ULTRA' ? 'bg-[#050505] text-white' : 'bg-white text-black dark:bg-[var(--atlas-bg-page)] dark:text-white'}`}>
+    <div className={`flex flex-col lg:flex-row h-full w-full font-sans overflow-hidden relative transition-colors duration-700 ${tier === 'ULTRA' ? 'bg-[var(--atlas-bg-page)] text-white' : 'bg-white text-black dark:bg-[var(--atlas-bg-page)] dark:text-white'}`}>
 
       {/* 1. STUDIO SIDEBAR */}
-      <aside className={`w-full lg:w-[450px] shrink-0 h-full flex flex-col border-r z-[60] overflow-y-auto no-scrollbar shadow-2xl transition-all duration-700 ${tier === 'ULTRA' ? 'bg-[var(--atlas-bg-page)] border-white/5 shadow-yellow-500/5' : 'bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-page)] border-black/5 dark:border-white/5'}`}>
+      <aside className={`w-full lg:w-[450px] shrink-0 h-full flex flex-col border-r z-[60] overflow-y-auto no-scrollbar shadow-atlas-lg transition-all duration-700 ${tier === 'ULTRA' ? 'bg-[var(--atlas-bg-page)] border-white/[0.06] shadow-yellow-500/5' : 'bg-[var(--atlas-bg-panel-hover)] dark:bg-[var(--atlas-bg-page)] border-black/5 dark:border-white/[0.06]'}`}>
         <div className="p-8 lg:p-10 space-y-10 pb-40">
 
           {/* TIER SWITCHER */}
           <div className="flex flex-col gap-4">
              <div className="flex items-center gap-4">
-                <div className={`w-12 h-12 flex items-center justify-center rounded-sm text-white shadow-xl transition-all duration-700 ${tier === 'ULTRA' ? 'bg-yellow-500 shadow-yellow-500/20' : 'bg-brand-blue shadow-brand-blue/20'}`}>
+                <div className={`w-12 h-12 flex items-center justify-center rounded-sm text-white shadow-atlas-lg transition-all duration-700 ${tier === 'ULTRA' ? 'bg-yellow-500 shadow-yellow-500/20' : 'bg-brand-blue shadow-brand-blue/20'}`}>
                    {tier === 'ULTRA' ? <Crown size={24} /> : <Rocket size={24} />}
                 </div>
                 <div className="space-y-0.5">
@@ -139,7 +139,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                 </div>
              </div>
 
-             <div className="flex bg-black/5 dark:bg-white/5 p-1.5 rounded-sm border border-black/5 dark:border-white/10">
+             <div className="flex bg-black/[0.06] dark:bg-white/[0.06] p-1.5 rounded-sm border border-black/5 dark:border-white/10">
                 <button
                   onClick={() => { setTier('PRO'); setResolution('720p'); }}
                   className={`flex-grow flex items-center justify-center gap-2 py-3 text-[9px] font-bold uppercase transition-all rounded-sm ${tier === 'PRO' ? 'bg-white dark:bg-black text-brand-blue shadow-lg' : 'text-gray-400 hover:text-black dark:hover:text-white'}`}
@@ -156,7 +156,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
           </div>
 
           {/* TABS */}
-          <div className="flex bg-black/5 dark:bg-white/5 p-1 rounded-sm">
+          <div className="flex bg-black/[0.06] dark:bg-white/[0.06] p-1 rounded-sm">
              {['DIRECTIVES', 'ASSETS', 'TECHNICAL'].map(tab => (
                <button
                  key={tab}
@@ -233,14 +233,14 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                         <div className="grid grid-cols-2 gap-2">
                            <button
                              onClick={() => setResolution('720p')}
-                             className={`py-3 text-[10px] font-bold uppercase border rounded-sm transition-all ${resolution === '720p' ? 'bg-black dark:bg-white text-white dark:text-black border-transparent shadow-xl' : 'border-black/5 dark:border-white/10 text-gray-400'}`}
+                             className={`py-3 text-[10px] font-bold uppercase border rounded-sm transition-all ${resolution === '720p' ? 'bg-black dark:bg-white text-white dark:text-black border-transparent shadow-atlas-lg' : 'border-black/5 dark:border-white/10 text-gray-400'}`}
                            >
                               720p Fast
                            </button>
                            <button
                              disabled={tier === 'PRO'}
                              onClick={() => setResolution('1080p')}
-                             className={`py-3 text-[10px] font-bold uppercase border rounded-sm transition-all flex items-center justify-center gap-2 ${resolution === '1080p' ? 'bg-yellow-500 text-black border-transparent shadow-xl' : 'border-black/5 dark:border-white/10 text-gray-400'} ${tier === 'PRO' ? 'opacity-20 cursor-not-allowed' : ''}`}
+                             className={`py-3 text-[10px] font-bold uppercase border rounded-sm transition-all flex items-center justify-center gap-2 ${resolution === '1080p' ? 'bg-yellow-500 text-black border-transparent shadow-atlas-lg' : 'border-black/5 dark:border-white/10 text-gray-400'} ${tier === 'PRO' ? 'opacity-20 cursor-not-allowed' : ''}`}
                            >
                               1080p {tier === 'ULTRA' && <Crown size={10} />}
                            </button>
@@ -281,7 +281,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
       <main className="flex-grow flex flex-col bg-gray-50 dark:bg-[var(--atlas-bg-page)] relative overflow-hidden transition-colors">
 
         {/* HUD HEADER */}
-        <div className="h-16 border-b border-black/5 dark:border-white/5 flex items-center justify-between px-8 bg-white/50 dark:bg-black/50 backdrop-blur-md z-30">
+        <div className="h-16 border-b border-black/5 dark:border-white/[0.06] flex items-center justify-between px-8 bg-white/50 dark:bg-black/50 backdrop-blur-md z-30">
           <div className="flex items-center gap-6">
             <span className={`text-[10px] font-bold uppercase tracking-[0.4em] mono italic ${tier === 'ULTRA' ? 'text-yellow-500' : 'text-brand-blue'}`}>VEO_DIRECTOR_{tier}</span>
             <div className="h-4 w-px bg-black/10 dark:border-white/10"></div>
@@ -328,7 +328,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                 </div>
               </motion.div>
             ) : (
-              <motion.div key="result" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className={`relative group w-full shadow-[0_50px_100px_rgba(0,0,0,0.5)] border border-white/5 bg-black rounded-sm overflow-hidden ${aspectRatio === '16:9' ? 'max-w-6xl aspect-video' : 'max-w-md aspect-[9/16]'}`}>
+              <motion.div key="result" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className={`relative group w-full shadow-[0_50px_100px_rgba(0,0,0,0.5)] border border-white/[0.06] bg-black rounded-sm overflow-hidden ${aspectRatio === '16:9' ? 'max-w-6xl aspect-video' : 'max-w-md aspect-[9/16]'}`}>
                 <video key={resultVideo} src={resultVideo!} autoPlay loop muted className="w-full h-full object-cover" />
 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
@@ -356,8 +356,8 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                 </div>
 
                 <div className="absolute top-8 right-8 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
-                  <button className="p-4 bg-black/60 backdrop-blur-xl border border-white/10 rounded-full text-white hover:bg-brand-blue transition-all shadow-2xl"><Share2 size={20} /></button>
-                  <a href={resultVideo!} download className="p-4 bg-white text-black rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all"><Download size={20} /></a>
+                  <button className="p-4 bg-black/60 backdrop-blur-xl border border-white/10 rounded-full text-white hover:bg-brand-blue transition-all shadow-atlas-lg"><Share2 size={20} /></button>
+                  <a href={resultVideo!} download className="p-4 bg-white text-black rounded-full shadow-atlas-lg hover:scale-110 active:scale-95 transition-all"><Download size={20} /></a>
                 </div>
               </motion.div>
             )}
@@ -365,7 +365,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
         </div>
 
         {/* HUD FOOTER: ACTIONS */}
-        <div className={`h-40 border-t p-8 lg:px-12 flex items-center justify-between z-40 transition-all duration-700 shadow-2xl shrink-0 ${tier === 'ULTRA' ? 'bg-[#080808] border-white/5' : 'bg-white dark:bg-[var(--atlas-bg-page)] border-black/5 dark:border-white/10'}`}>
+        <div className={`h-40 border-t p-8 lg:px-12 flex items-center justify-between z-40 transition-all duration-700 shadow-atlas-lg shrink-0 ${tier === 'ULTRA' ? 'bg-[#080808] border-white/[0.06]' : 'bg-white dark:bg-[var(--atlas-bg-page)] border-black/5 dark:border-white/10'}`}>
            <div className="flex items-center gap-12">
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-gray-400">
@@ -385,7 +385,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                          </div>
                       </button>
                    ))}
-                   {history.length === 0 && Array.from({length: 4}).map((_, i) => <div key={i} className="w-16 h-16 rounded-sm border border-black/5 dark:border-white/5 bg-black/[0.02]" />)}
+                   {history.length === 0 && Array.from({length: 4}).map((_, i) => <div key={i} className="w-16 h-16 rounded-sm border border-black/5 dark:border-white/[0.06] bg-black/[0.02]" />)}
                 </div>
               </div>
            </div>
@@ -394,7 +394,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
               {resultVideo && tier === 'ULTRA' && (
                  <button
                    disabled={isExtending || isGenerating}
-                   className="h-24 px-12 lg:px-20 flex flex-col items-center justify-center gap-2 transition-all rounded-sm border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black group shadow-xl"
+                   className="h-24 px-12 lg:px-20 flex flex-col items-center justify-center gap-2 transition-all rounded-sm border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black group shadow-atlas-lg"
                  >
                     <FastForward size={24} className={isExtending ? 'animate-pulse' : 'group-hover:translate-x-1 transition-transform'} />
                     <span className="text-[9px] font-bold uppercase tracking-[0.4em]">Extend +7s</span>
@@ -404,7 +404,7 @@ const TextToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose }) =>
               <button
                 onClick={handleSynthesize}
                 disabled={isGenerating || !prompt.trim()}
-                className={`h-24 px-20 lg:px-48 flex flex-col items-center justify-center gap-2 transition-all rounded-sm relative overflow-hidden group shadow-2xl ${prompt.trim() ? (tier === 'ULTRA' ? 'bg-yellow-500 text-black hover:scale-105' : 'bg-brand-blue text-white hover:scale-105') : 'bg-gray-100 dark:bg-white/5 text-gray-300 dark:text-gray-800'}`}
+                className={`h-24 px-20 lg:px-48 flex flex-col items-center justify-center gap-2 transition-all rounded-sm relative overflow-hidden group shadow-atlas-lg ${prompt.trim() ? (tier === 'ULTRA' ? 'bg-yellow-500 text-black hover:scale-105' : 'bg-brand-blue text-white hover:scale-105') : 'bg-gray-100 dark:bg-white/[0.06] text-gray-300 dark:text-gray-800'}`}
               >
                  <Zap className={`w-8 h-8 ${isGenerating ? 'animate-pulse' : 'group-hover:rotate-12 transition-transform'}`} fill="currentColor" />
                  <span className="text-[10px] font-bold uppercase tracking-[0.5em]">{isGenerating ? 'Synthesizing' : 'Initiate Synthesis'}</span>

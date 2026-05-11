@@ -64,7 +64,7 @@ const SolutionDetail = () => {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-6">
         <Loader2 className="w-12 h-12 text-brand-blue animate-spin" />
-        <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-gray-500 animate-pulse">Syncing Node Manifest...</span>
+        <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/50 animate-pulse">Syncing Node Manifest...</span>
       </div>
     );
   }
@@ -98,14 +98,14 @@ const SolutionDetail = () => {
       />
 
       <div className="max-w-[1600px] mx-auto px-6 lg:px-12 py-12">
-        <Link to="/market" className="inline-flex items-center gap-2 text-[10px] mono text-gray-500 hover:text-white mb-12 uppercase tracking-widest group">
+        <Link to="/market" className="inline-flex items-center gap-2 text-[10px] mono text-white/50 hover:text-white mb-12 uppercase tracking-widest group">
           <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Back to Repository
         </Link>
 
         {/* Hero Section with Gallery */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-32 items-start text-white">
           <div className="lg:col-span-8 space-y-6">
-            <div className="relative aspect-[16/9] border border-white/10 bg-white/5 group overflow-hidden shadow-2xl">
+            <div className="relative aspect-[16/9] border border-white/10 bg-white/[0.06] group overflow-hidden shadow-atlas-lg">
               <img 
                 src={activeImage} 
                 alt={solution.name[lang]} 
@@ -165,7 +165,7 @@ const SolutionDetail = () => {
           <div className="lg:col-span-4 space-y-12">
             <div className="space-y-6">
               <div className="flex items-center gap-4">
-                <span className="px-3 py-1 border border-white/20 rounded-sm text-[9px] font-bold mono text-gray-400 uppercase tracking-[0.2em]">{solution.category[lang]}</span>
+                <span className="px-3 py-1 border border-white/20 rounded-sm text-[9px] font-bold mono text-white/60 uppercase tracking-[0.2em]">{solution.category[lang]}</span>
                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                 <span className="text-[9px] font-bold mono text-green-500 uppercase tracking-[0.2em]">Operational</span>
               </div>
@@ -177,8 +177,8 @@ const SolutionDetail = () => {
 
             <div className="grid grid-cols-1 gap-px bg-white/10 border border-white/10">
               {specs.map((spec) => (
-                <div key={spec.label} className="bg-black p-5 flex justify-between items-center group hover:bg-white/5 transition-colors">
-                  <span className="mono text-[10px] text-gray-500 uppercase group-hover:text-gray-300 transition-colors">{spec.label}</span>
+                <div key={spec.label} className="bg-black p-5 flex justify-between items-center group hover:bg-white/[0.06] transition-colors">
+                  <span className="mono text-[10px] text-white/50 uppercase group-hover:text-white/70 transition-colors">{spec.label}</span>
                   <span className="mono text-[11px] font-bold text-white">{spec.value}</span>
                 </div>
               ))}
@@ -189,7 +189,7 @@ const SolutionDetail = () => {
                   <ShieldCheck className="w-5 h-5" />
                   <span className="text-[11px] font-bold uppercase tracking-widest">Enterprise_Encryption_Active</span>
                </div>
-               <p className="text-xs text-gray-400 leading-relaxed font-medium">
+               <p className="text-xs text-white/60 leading-relaxed font-medium">
                  All data generated within this node is encrypted via AES-256. Authentication is managed via secure Google SSO protocol.
                </p>
             </div>
@@ -204,7 +204,7 @@ const SolutionDetail = () => {
                  <Terminal className="w-12 h-12 text-brand-blue" />
                  <h2 className="text-5xl font-bold uppercase tracking-tighter leading-none">System <br /> Logic Gate.</h2>
               </div>
-              <p className="text-gray-500 mono text-xs leading-loose uppercase tracking-widest">
+              <p className="text-white/50 mono text-xs leading-loose uppercase tracking-widest">
                 Comprehensive technical overview of {solution.id}. 
                 High-performance compute requirements applicable.
               </p>
@@ -221,7 +221,7 @@ const SolutionDetail = () => {
                     </div>
                     <div className="space-y-4">
                       <h4 className="text-xl font-bold uppercase group-hover:text-black">{title}</h4>
-                      <p className="text-gray-500 group-hover:text-black/80 text-sm mono leading-relaxed">
+                      <p className="text-white/50 group-hover:text-black/80 text-sm mono leading-relaxed">
                         {desc || ''}
                       </p>
                     </div>

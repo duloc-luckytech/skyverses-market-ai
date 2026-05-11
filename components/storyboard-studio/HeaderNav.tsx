@@ -18,7 +18,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ activeTab, setActiveTab, o
   return (
     <>
       {/* Desktop Header */}
-      <div className="hidden lg:flex h-14 border-b border-white/5 items-center justify-between px-6 shrink-0 bg-black/40 backdrop-blur-md z-[160]">
+      <div className="hidden lg:flex h-14 border-b border-white/[0.06] items-center justify-between px-6 shrink-0 bg-black/40 backdrop-blur-md z-[160]">
         <div className="flex items-center gap-4">
           {/* Project name breadcrumb */}
           {projectName && (
@@ -31,24 +31,24 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ activeTab, setActiveTab, o
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-1.5 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === tab.id ? 'bg-brand-blue text-white shadow-lg' : 'text-gray-500 hover:text-white'}`}
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === tab.id ? 'bg-brand-blue text-white shadow-lg' : 'text-white/50 hover:text-white'}`}
             >
               {React.cloneElement(tab.icon as React.ReactElement<LucideProps>, { size: 14 })} {tab.label}
             </button>
           ))}
         </div>
-        <button onClick={onClose} className="p-2 text-gray-500 hover:text-white transition-colors">
+        <button onClick={onClose} className="p-2 text-white/50 hover:text-white transition-colors">
           <X size={20} />
         </button>
       </div>
 
       {/* Mobile Top Header */}
-      <div className="lg:hidden h-14 border-b border-white/5 flex items-center justify-between px-6 shrink-0 bg-black/40 backdrop-blur-md z-[160]">
+      <div className="lg:hidden h-14 border-b border-white/[0.06] flex items-center justify-between px-6 shrink-0 bg-black/40 backdrop-blur-md z-[160]">
         <div className="flex items-center gap-2">
           <LayoutPanelLeft size={16} className="text-brand-blue" />
           <span className="text-[10px] font-bold uppercase tracking-widest italic">Studio Pro</span>
         </div>
-        <button onClick={onClose} className="p-2 text-gray-400">
+        <button onClick={onClose} className="p-2 text-white/60">
           <X size={24} />
         </button>
       </div>
@@ -59,7 +59,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ activeTab, setActiveTab, o
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex flex-col items-center gap-1 transition-all ${activeTab === tab.id ? 'text-brand-blue scale-110' : 'text-gray-500'}`}
+            className={`flex flex-col items-center gap-1 transition-all ${activeTab === tab.id ? 'text-brand-blue scale-110' : 'text-white/50'}`}
           >
             {tab.icon}
             <span className="text-[9px] font-bold uppercase tracking-tighter">{tab.label}</span>

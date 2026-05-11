@@ -137,7 +137,7 @@ const StoryboardStudioWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         onClick={() => setIsMobileExpanded(true)}
         aria-label="Mở thanh kịch bản"
         aria-expanded={isMobileExpanded}
-        className="lg:hidden fixed bottom-6 left-4 z-[130] w-12 h-12 bg-brand-blue rounded-full shadow-2xl flex items-center justify-center text-white active:scale-95 transition-transform"
+        className="lg:hidden fixed bottom-6 left-4 z-[130] w-12 h-12 bg-brand-blue rounded-full shadow-atlas-lg flex items-center justify-center text-white active:scale-95 transition-transform"
       >
         <Menu size={20} />
       </button>

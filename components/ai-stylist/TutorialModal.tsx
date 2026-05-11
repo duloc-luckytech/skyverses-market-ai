@@ -62,7 +62,7 @@ export const TutorialModal: React.FC<TutorialModalProps> = ({ isOpen, onClose })
       <motion.div 
         initial={{ scale: 0.9, y: 20, opacity: 0 }}
         animate={{ scale: 1, y: 0, opacity: 1 }}
-        className="relative w-full max-w-5xl bg-white dark:bg-[var(--atlas-bg-page)] rounded-[2.5rem] overflow-hidden shadow-3xl flex flex-col md:flex-row h-auto max-h-[90vh]"
+        className="relative w-full max-w-5xl bg-white dark:bg-[var(--atlas-bg-page)] rounded-xl overflow-hidden shadow-atlas-xl flex flex-col md:flex-row h-auto max-h-[90vh]"
       >
         {/* Visual Panel */}
         <div className="w-full md:w-1/2 relative bg-slate-100 dark:bg-black overflow-hidden aspect-video md:aspect-auto">
@@ -92,7 +92,7 @@ export const TutorialModal: React.FC<TutorialModalProps> = ({ isOpen, onClose })
         <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-between space-y-12">
           <div className="space-y-8">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-slate-100 dark:bg-white/5 rounded-2xl">
+              <div className="p-3 bg-slate-100 dark:bg-white/[0.06] rounded-lg">
                 {step.icon}
               </div>
               <h3 className="text-[11px] font-bold uppercase tracking-[0.4em] text-brand-blue italic">Step 0{currentStep + 1}</h3>
@@ -106,12 +106,12 @@ export const TutorialModal: React.FC<TutorialModalProps> = ({ isOpen, onClose })
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-6 pt-10 border-t border-black/5 dark:border-white/5">
+          <div className="flex items-center justify-between gap-6 pt-10 border-t border-black/5 dark:border-white/[0.06]">
             <div className="flex gap-4">
               <button 
                 onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
                 disabled={currentStep === 0}
-                className="p-4 bg-slate-100 dark:bg-white/5 rounded-full text-slate-400 hover:text-brand-blue transition-colors disabled:opacity-20"
+                className="p-4 bg-slate-100 dark:bg-white/[0.06] rounded-full text-slate-400 hover:text-brand-blue transition-colors disabled:opacity-20"
               >
                 <ChevronLeft size={20} />
               </button>
@@ -120,7 +120,7 @@ export const TutorialModal: React.FC<TutorialModalProps> = ({ isOpen, onClose })
                   if (currentStep === STEPS.length - 1) onClose();
                   else setCurrentStep(currentStep + 1);
                 }}
-                className="p-4 bg-slate-900 dark:bg-white text-white dark:text-black rounded-full hover:scale-105 transition-all shadow-xl"
+                className="p-4 bg-slate-900 dark:bg-white text-white dark:text-black rounded-full hover:scale-105 transition-all shadow-atlas-lg"
               >
                 {currentStep === STEPS.length - 1 ? <CheckCircle2 size={20} /> : <ChevronRight size={20} />}
               </button>

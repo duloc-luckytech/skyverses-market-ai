@@ -127,7 +127,7 @@ const CommandPalette: React.FC = () => {
             transition={{ type: 'spring', damping: 30, stiffness: 400 }}
             className="fixed top-[12vh] left-1/2 -translate-x-1/2 w-full max-w-2xl z-[501] px-4"
           >
-            <div className="bg-white dark:bg-[var(--atlas-bg-page)] rounded-2xl shadow-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden">
+            <div className="bg-white dark:bg-[var(--atlas-bg-page)] rounded-lg shadow-atlas-lg border border-black/[0.06] dark:border-white/[0.06] overflow-hidden">
               
               {/* Search input */}
               <div className="flex items-center gap-3 px-5 h-16 border-b border-black/[0.04] dark:border-white/[0.04]">
@@ -146,7 +146,7 @@ const CommandPalette: React.FC = () => {
                     <X size={14} />
                   </button>
                 )}
-                <button onClick={close} className="px-2 py-1 bg-slate-100 dark:bg-white/5 text-slate-400 text-[10px] font-bold rounded-md">
+                <button onClick={close} className="px-2 py-1 bg-slate-100 dark:bg-white/[0.06] text-slate-400 text-[10px] font-bold rounded-md">
                   ESC
                 </button>
               </div>
@@ -208,7 +208,7 @@ const CommandPalette: React.FC = () => {
                         }`}
                       >
                         <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
-                          primary === 'ALL' ? 'bg-brand-blue text-white' : 'bg-slate-100 dark:bg-white/5 text-slate-400'
+                          primary === 'ALL' ? 'bg-brand-blue text-white' : 'bg-slate-100 dark:bg-white/[0.06] text-slate-400'
                         }`}>
                           <Sparkles size={16} />
                         </div>
@@ -227,7 +227,7 @@ const CommandPalette: React.FC = () => {
                           }`}
                         >
                           <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-                            primary === cat.code ? 'bg-brand-blue text-white' : 'bg-slate-100 dark:bg-white/5 text-slate-400 group-hover:text-brand-blue'
+                            primary === cat.code ? 'bg-brand-blue text-white' : 'bg-slate-100 dark:bg-white/[0.06] text-slate-400 group-hover:text-brand-blue'
                           }`}>
                             {getIcon(cat.code)}
                           </div>
@@ -248,8 +248,8 @@ const CommandPalette: React.FC = () => {
               {/* Footer */}
               <div className="px-5 py-3 border-t border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between">
                 <div className="flex items-center gap-4 text-[10px] font-medium text-slate-300 dark:text-gray-600">
-                  <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 bg-slate-100 dark:bg-white/5 rounded text-[9px] font-bold">↵</kbd> Tìm</span>
-                  <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 bg-slate-100 dark:bg-white/5 rounded text-[9px] font-bold">ESC</kbd> Đóng</span>
+                  <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 bg-slate-100 dark:bg-white/[0.06] rounded text-[9px] font-bold">↵</kbd> Tìm</span>
+                  <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 bg-slate-100 dark:bg-white/[0.06] rounded text-[9px] font-bold">ESC</kbd> Đóng</span>
                 </div>
                 <span className="text-[9px] font-bold text-slate-300 dark:text-gray-700 uppercase tracking-wider">Skyverses Search</span>
               </div>

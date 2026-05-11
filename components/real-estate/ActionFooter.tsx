@@ -36,7 +36,7 @@ export const ActionFooter: React.FC<ActionFooterProps> = ({
       <button 
         onClick={onGenerate}
         disabled={isGenerating || !hasSource || !hasEnoughCredits}
-        className={`w-full py-5 rounded-2xl font-bold uppercase text-xs tracking-[0.4em] shadow-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-4 group relative overflow-hidden ${hasSource && hasEnoughCredits ? 'bg-purple-600 text-white hover:brightness-110 shadow-purple-600/20' : 'bg-slate-200 dark:bg-gray-800 text-slate-400 dark:text-gray-600 cursor-not-allowed grayscale'}`}
+        className={`w-full py-5 rounded-lg font-bold uppercase text-xs tracking-[0.4em] shadow-atlas-lg transition-all active:scale-[0.98] flex items-center justify-center gap-4 group relative overflow-hidden ${hasSource && hasEnoughCredits ? 'bg-purple-600 text-white hover:brightness-110 shadow-purple-600/20' : 'bg-slate-200 dark:bg-gray-800 text-slate-400 dark:text-gray-600 cursor-not-allowed grayscale'}`}
       >
         <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
         {isGenerating ? <Loader2 className="animate-spin" size={20}/> : <Zap size={18} fill="currentColor" />}

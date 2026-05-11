@@ -105,7 +105,7 @@ const RestoreCard: React.FC<{ item: RestoreItem; onExpand: (item: RestoreItem) =
       onMouseLeave={() => setHover(false)}
     >
       {/* Before/After side-by-side */}
-      <div className={`relative w-full overflow-hidden bg-slate-100 dark:bg-[#111] ${item.size === 'hero' ? 'h-60 md:h-80' : 'h-44'}`}>
+      <div className={`relative w-full overflow-hidden bg-slate-100 dark:bg-[var(--atlas-bg-panel)] ${item.size === 'hero' ? 'h-60 md:h-80' : 'h-44'}`}>
         <div className="absolute inset-0 grid grid-cols-2">
           {/* Before */}
           <div className="relative overflow-hidden">
@@ -146,7 +146,7 @@ const RestoreCard: React.FC<{ item: RestoreItem; onExpand: (item: RestoreItem) =
       </div>
 
       {/* Info */}
-      <div className="p-3 bg-white dark:bg-[#0c0c0e]">
+      <div className="p-3 bg-white dark:bg-[var(--atlas-bg-page)]">
         <div className="flex items-center justify-between mb-1">
           <span
             className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
@@ -179,7 +179,7 @@ const Lightbox: React.FC<{ item: RestoreItem | null; onClose: () => void }> = ({
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="relative max-w-4xl w-full bg-white dark:bg-[#0c0c0e] rounded-xl overflow-hidden"
+          className="relative max-w-4xl w-full bg-white dark:bg-[var(--atlas-bg-page)] rounded-xl overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           <button

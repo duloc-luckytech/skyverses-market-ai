@@ -26,7 +26,7 @@ const DeleteConfirm: React.FC<{ onConfirm: () => void; onCancel: () => void }> =
     animate={{ opacity: 1, scale: 1, y: 0 }}
     exit={{ opacity: 0, scale: 0.9, y: 4 }}
     transition={{ duration: 0.12 }}
-    className="absolute bottom-full right-0 mb-1.5 w-52 bg-white dark:bg-[var(--atlas-bg-panel)] border border-rose-200 dark:border-rose-500/20 rounded-2xl shadow-2xl z-50 p-3 space-y-2.5"
+    className="absolute bottom-full right-0 mb-1.5 w-52 bg-white dark:bg-[var(--atlas-bg-panel)] border border-rose-200 dark:border-rose-500/20 rounded-lg shadow-atlas-lg z-50 p-3 space-y-2.5"
     onClick={e => e.stopPropagation()}
   >
     <div className="flex items-start gap-2">
@@ -41,7 +41,7 @@ const DeleteConfirm: React.FC<{ onConfirm: () => void; onCancel: () => void }> =
     <div className="flex gap-1.5">
       <button
         onClick={onCancel}
-        className="flex-1 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wider border border-slate-200 dark:border-white/10 text-slate-500 dark:text-white/40 hover:bg-slate-50 dark:hover:bg-white/5 transition-all"
+        className="flex-1 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wider border border-slate-200 dark:border-white/10 text-slate-500 dark:text-white/40 hover:bg-slate-50 dark:hover:bg-white/[0.06] transition-all"
       >
         Hủy
       </button>
@@ -143,7 +143,7 @@ export const SceneHoverActions: React.FC<SceneHoverActionsProps> = ({
       ))}
 
       {/* Divider */}
-      <div className="w-px h-4 bg-slate-200 dark:bg-white/8 mx-0.5 shrink-0" />
+      <div className="w-px h-4 bg-slate-200 dark:bg-white/[0.08] mx-0.5 shrink-0" />
 
       {/* Download button — chỉ hiện khi có media */}
       {onDownload && (
@@ -175,7 +175,7 @@ export const SceneHoverActions: React.FC<SceneHoverActionsProps> = ({
       )}
 
       {/* Divider */}
-      <div className="w-px h-4 bg-slate-200 dark:bg-white/8 mx-0.5 shrink-0" />
+      <div className="w-px h-4 bg-slate-200 dark:bg-white/[0.08] mx-0.5 shrink-0" />
 
       {/* More (⋮) dropdown */}
       <div ref={moreRef} className="relative">
@@ -190,7 +190,7 @@ export const SceneHoverActions: React.FC<SceneHoverActionsProps> = ({
           title="Thêm"
           aria-label="Mở menu thêm hành động"
           aria-expanded={moreOpen}
-          className={`flex items-center justify-center w-7 h-7 rounded-lg text-slate-400 dark:text-white/30 transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-white/8 hover:text-slate-700 dark:hover:text-white ${moreOpen ? 'bg-slate-100 dark:bg-white/8 text-slate-700 dark:text-white' : ''}`}
+          className={`flex items-center justify-center w-7 h-7 rounded-lg text-slate-400 dark:text-white/30 transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-white/[0.08] hover:text-slate-700 dark:hover:text-white ${moreOpen ? 'bg-slate-100 dark:bg-white/[0.08] text-slate-700 dark:text-white' : ''}`}
         >
           <MoreHorizontal size={13} />
         </motion.button>
@@ -202,7 +202,7 @@ export const SceneHoverActions: React.FC<SceneHoverActionsProps> = ({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.92, y: 4 }}
               transition={{ duration: 0.13 }}
-              className="absolute bottom-full right-0 mb-1.5 w-40 bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-xl shadow-xl z-50 py-1 overflow-hidden"
+              className="absolute bottom-full right-0 mb-1.5 w-40 bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-xl shadow-atlas-lg z-50 py-1 overflow-hidden"
             >
               {/* Duplicate */}
               <button
@@ -212,11 +212,11 @@ export const SceneHoverActions: React.FC<SceneHoverActionsProps> = ({
                   onDuplicate?.();
                 }}
                 aria-label="Nhân đôi cảnh này"
-                className="w-full flex items-center gap-2.5 px-3 py-2 text-[10px] font-bold text-slate-500 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-colors"
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-[10px] font-bold text-slate-500 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/[0.06] hover:text-slate-900 dark:hover:text-white transition-colors"
               >
                 <Copy size={11} /> Nhân đôi cảnh
               </button>
-              <div className="h-px bg-slate-100 dark:bg-white/5 mx-2 my-0.5" />
+              <div className="h-px bg-slate-100 dark:bg-white/[0.06] mx-2 my-0.5" />
               {/* Delete — opens inline confirm */}
               <button
                 onClick={e => {

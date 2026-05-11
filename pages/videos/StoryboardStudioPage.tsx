@@ -196,7 +196,7 @@ const StoryboardStudioPage: React.FC = () => {
               </button>
               <button
                 onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
-                className="inline-flex items-center justify-center gap-3 px-10 py-5 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold uppercase tracking-[0.3em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/5 transition-all"
+                className="inline-flex items-center justify-center gap-3 px-10 py-5 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold uppercase tracking-[0.3em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/[0.06] transition-all"
               >
                 <Play size={14} fill="currentColor" /> Xem cách hoạt động
               </button>
@@ -205,7 +205,7 @@ const StoryboardStudioPage: React.FC = () => {
             {/* Stats bar */}
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-              className="flex items-center gap-10 pt-4 border-t border-slate-100 dark:border-white/5"
+              className="flex items-center gap-10 pt-4 border-t border-slate-100 dark:border-white/[0.06]"
             >
               {[
                 { val: 'VEO 3', label: 'Video Engine' },
@@ -226,7 +226,7 @@ const StoryboardStudioPage: React.FC = () => {
             initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.1 }}
             className="order-1 lg:order-2 relative"
           >
-            <div className="relative rounded-xl overflow-hidden shadow-[0_40px_120px_rgba(0,0,0,0.2)] border border-slate-200/60 dark:border-white/5 aspect-[16/10]">
+            <div className="relative rounded-xl overflow-hidden shadow-[0_40px_120px_rgba(0,0,0,0.2)] border border-slate-200/60 dark:border-white/[0.06] aspect-[16/10]">
               <img
                 src={CDN.hero_main}
                 alt="Storyboard Studio AI — Phân cảnh kịch bản điện ảnh với AI"
@@ -235,7 +235,7 @@ const StoryboardStudioPage: React.FC = () => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
               {/* Floating badge */}
-              <div className="absolute bottom-6 left-6 flex items-center gap-3 bg-white/10 dark:bg-black/40 backdrop-blur-xl border border-white/20 rounded-2xl px-5 py-3">
+              <div className="absolute bottom-6 left-6 flex items-center gap-3 bg-white/10 dark:bg-black/40 backdrop-blur-xl border border-white/20 rounded-lg px-5 py-3">
                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 <span className="text-[10px] font-bold uppercase tracking-widest text-white">Studio Engine Active</span>
               </div>
@@ -249,7 +249,7 @@ const StoryboardStudioPage: React.FC = () => {
       {/* ══════════════════════════════════════════════════════
           §2 FEATURES GRID — 6 CDN image cards
       ══════════════════════════════════════════════════════ */}
-      <section aria-label="Tính năng" className="py-32 lg:py-40 bg-slate-50 dark:bg-[var(--atlas-bg-page)] border-y border-slate-100 dark:border-white/5 transition-colors">
+      <section aria-label="Tính năng" className="py-32 lg:py-40 bg-slate-50 dark:bg-[var(--atlas-bg-page)] border-y border-slate-100 dark:border-white/[0.06] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center space-y-4 mb-20">
             <p className="text-brand-blue text-[10px] font-bold uppercase tracking-[0.5em]">Kiến trúc sản xuất AI</p>
@@ -269,7 +269,7 @@ const StoryboardStudioPage: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.08 }}
-                className="group bg-white dark:bg-[var(--atlas-bg-panel)] rounded-2xl overflow-hidden border border-slate-100 dark:border-white/5 hover:border-brand-blue/20 hover:shadow-xl dark:hover:shadow-brand-blue/5 transition-all duration-500 flex flex-col"
+                className="group bg-white dark:bg-[var(--atlas-bg-panel)] rounded-lg overflow-hidden border border-slate-100 dark:border-white/[0.06] hover:border-brand-blue/20 hover:shadow-xl dark:hover:shadow-brand-blue/5 transition-all duration-500 flex flex-col"
               >
                 {/* CDN Image */}
                 <div className="aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-black relative">
@@ -321,7 +321,7 @@ const StoryboardStudioPage: React.FC = () => {
                 className={`group grid grid-cols-1 lg:grid-cols-2 gap-8 items-center ${i % 2 !== 0 ? 'lg:flex-row-reverse' : ''}`}
               >
                 {/* Image side */}
-                <div className={`${i % 2 !== 0 ? 'lg:order-2' : ''} relative rounded-2xl overflow-hidden aspect-[16/9] shadow-2xl border border-slate-100 dark:border-white/5`}>
+                <div className={`${i % 2 !== 0 ? 'lg:order-2' : ''} relative rounded-lg overflow-hidden aspect-[16/9] shadow-atlas-lg border border-slate-100 dark:border-white/[0.06]`}>
                   <img
                     src={CDN[step.key as keyof typeof CDN]}
                     alt={step.title}
@@ -354,7 +354,7 @@ const StoryboardStudioPage: React.FC = () => {
       {/* ══════════════════════════════════════════════════════
           §4 SCENE SHOWCASE — demo scene cards với CDN images
       ══════════════════════════════════════════════════════ */}
-      <section aria-label="Scene showcase" className="py-32 lg:py-40 bg-slate-50 dark:bg-[var(--atlas-bg-page)] border-y border-slate-100 dark:border-white/5 transition-colors">
+      <section aria-label="Scene showcase" className="py-32 lg:py-40 bg-slate-50 dark:bg-[var(--atlas-bg-page)] border-y border-slate-100 dark:border-white/[0.06] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="flex flex-col lg:flex-row justify-between items-end gap-8 mb-16">
             <div className="space-y-4">
@@ -380,7 +380,7 @@ const StoryboardStudioPage: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="group bg-white dark:bg-[var(--atlas-bg-panel)] rounded-2xl overflow-hidden border border-slate-100 dark:border-white/5 hover:border-brand-blue/20 shadow-sm hover:shadow-xl transition-all duration-500"
+                className="group bg-white dark:bg-[var(--atlas-bg-panel)] rounded-lg overflow-hidden border border-slate-100 dark:border-white/[0.06] hover:border-brand-blue/20 shadow-sm hover:shadow-xl transition-all duration-500"
               >
                 {/* Scene image */}
                 <div className="relative aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-black">
@@ -404,7 +404,7 @@ const StoryboardStudioPage: React.FC = () => {
                 <div className="p-5 space-y-3">
                   <p className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest">Prompt kịch bản</p>
                   <p className="text-sm text-slate-600 dark:text-gray-300 italic leading-relaxed line-clamp-3">"{scene.prompt}"</p>
-                  <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-white/5">
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-white/[0.06]">
                     <div className="flex items-center gap-1.5">
                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                       <span className="text-[9px] font-bold uppercase text-emerald-500 tracking-widest">AI Generated</span>
@@ -439,7 +439,7 @@ const StoryboardStudioPage: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.07 }}
-                className="group relative overflow-hidden rounded-2xl border border-slate-100 dark:border-white/5 hover:border-brand-blue/30 transition-all duration-500 cursor-pointer shadow-sm hover:shadow-2xl"
+                className="group relative overflow-hidden rounded-lg border border-slate-100 dark:border-white/[0.06] hover:border-brand-blue/30 transition-all duration-500 cursor-pointer shadow-sm hover:shadow-atlas-lg"
               >
                 <div className="aspect-[3/2] overflow-hidden bg-slate-100 dark:bg-black">
                   <img
@@ -465,7 +465,7 @@ const StoryboardStudioPage: React.FC = () => {
       {/* ══════════════════════════════════════════════════════
           §6 FINAL CTA
       ══════════════════════════════════════════════════════ */}
-      <section aria-label="Call to action" className="py-48 text-center relative overflow-hidden bg-slate-50 dark:bg-[var(--atlas-bg-page)] border-t border-slate-100 dark:border-white/5 transition-colors">
+      <section aria-label="Call to action" className="py-48 text-center relative overflow-hidden bg-slate-50 dark:bg-[var(--atlas-bg-page)] border-t border-slate-100 dark:border-white/[0.06] transition-colors">
         <div className="absolute inset-0 pointer-events-none overflow-hidden select-none flex items-center justify-center">
           <span className="text-[320px] font-bold text-slate-100 dark:text-white/[0.02] leading-none tracking-tighter italic opacity-60">
             STORY
@@ -487,7 +487,7 @@ const StoryboardStudioPage: React.FC = () => {
             <button
               id="btn-launch-studio-cta"
               onClick={() => setIsStudioOpen(true)}
-              className="group inline-flex items-center gap-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-16 py-7 rounded-2xl text-sm font-bold uppercase tracking-[0.4em] shadow-[0_30px_80px_rgba(0,0,0,0.25)] hover:scale-105 active:scale-95 transition-all"
+              className="group inline-flex items-center gap-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-16 py-7 rounded-lg text-sm font-bold uppercase tracking-[0.4em] shadow-[0_30px_80px_rgba(0,0,0,0.25)] hover:scale-105 active:scale-95 transition-all"
             >
               <Clapperboard size={20} />
               Trải nghiệm Studio ngay

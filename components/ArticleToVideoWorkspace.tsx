@@ -142,7 +142,7 @@ const ArticleToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
 
           {/* Section 3: Customize Options */}
           <Card className="space-y-8">
-            <h3 className="font-bold text-slate-700 dark:text-slate-200 border-b border-gray-100 dark:border-white/5 pb-4">{t('av.customize')}</h3>
+            <h3 className="font-bold text-slate-700 dark:text-slate-200 border-b border-gray-100 dark:border-white/[0.06] pb-4">{t('av.customize')}</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-2">
@@ -228,7 +228,7 @@ const ArticleToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
               </button>
             </div>
 
-            <div className="border-2 border-dashed border-gray-100 dark:border-white/5 rounded-xl p-10 text-center flex flex-col items-center gap-3 bg-gray-50/50 dark:bg-black/20 transition-all hover:border-blue-500/30">
+            <div className="border-2 border-dashed border-gray-100 dark:border-white/[0.06] rounded-xl p-10 text-center flex flex-col items-center gap-3 bg-gray-50/50 dark:bg-black/20 transition-all hover:border-blue-500/30">
               <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-full text-blue-500">
                 <Upload size={24} />
               </div>
@@ -237,7 +237,7 @@ const ArticleToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
               </p>
             </div>
 
-            <div className="space-y-4 pt-4 border-t border-gray-50 dark:border-white/5">
+            <div className="space-y-4 pt-4 border-t border-gray-50 dark:border-white/[0.06]">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <p className="text-sm font-bold text-slate-600 dark:text-slate-300">{t('av.toggle_only_provided')}</p>
@@ -269,7 +269,7 @@ const ArticleToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
               </div>
               <div className="flex items-center gap-4 flex-wrap">
                  <span className="text-sm font-bold text-slate-500">{t('av.library')}</span>
-                 <div className="flex bg-gray-100 dark:bg-white/5 p-1 rounded-lg">
+                 <div className="flex bg-gray-100 dark:bg-white/[0.06] p-1 rounded-lg">
                     {['All', 'Videos', 'Images', 'Audio'].map(tab => (
                       <button
                         key={tab}
@@ -291,7 +291,7 @@ const ArticleToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
 
           {/* Section 5: Audio & Advanced */}
           <div className="bg-white dark:bg-[var(--atlas-bg-page)] border border-gray-200 dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
-             <div className="p-5 border-b border-gray-50 dark:border-white/5 flex items-center justify-between gap-4">
+             <div className="p-5 border-b border-gray-50 dark:border-white/[0.06] flex items-center justify-between gap-4">
                 <h3 className="font-bold text-slate-700 dark:text-slate-200 shrink-0">{t('av.voice')}</h3>
                 <div className="flex items-center gap-3 border border-gray-200 dark:border-white/10 rounded-lg p-2 flex-grow max-w-sm bg-white dark:bg-black">
                    <button className="p-1 text-slate-900 dark:text-white"><Play size={14} fill="currentColor"/></button>
@@ -300,7 +300,7 @@ const ArticleToVideoWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
                    <ChevronDown size={14} className="text-gray-400 shrink-0" />
                 </div>
              </div>
-             <div className="p-5 border-b border-gray-50 dark:border-white/5 flex items-center justify-between gap-4">
+             <div className="p-5 border-b border-gray-50 dark:border-white/[0.06] flex items-center justify-between gap-4">
                 <h3 className="font-bold text-slate-700 dark:text-slate-200 shrink-0">{t('av.music')}</h3>
                 <div className="flex items-center gap-3 border border-gray-200 dark:border-white/10 rounded-lg p-2 flex-grow max-w-sm bg-white dark:bg-black">
                    <button className="p-1 text-slate-900 dark:text-white"><Play size={14} fill="currentColor"/></button>

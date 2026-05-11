@@ -162,7 +162,7 @@ const SkyTokenPurchaseModal: React.FC<Props> = ({ pkg, onClose, onSuccess }) => 
         initial={{ scale: 0.96, opacity: 0, y: 10 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="relative w-full max-w-lg bg-[#0a0a0f] border border-white/[0.08] rounded-none md:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-full md:h-auto md:max-h-[90vh]"
+        className="relative w-full max-w-lg bg-[#0a0a0f] border border-white/[0.08] rounded-none md:rounded-lg shadow-atlas-lg overflow-hidden flex flex-col h-full md:h-auto md:max-h-[90vh]"
       >
         {/* Header */}
         <div className="px-5 py-4 border-b border-white/[0.08] flex items-center justify-between shrink-0">

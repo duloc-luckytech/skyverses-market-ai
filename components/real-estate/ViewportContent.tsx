@@ -102,7 +102,7 @@ export const ViewportContent: React.FC<ViewportContentProps> = ({
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-white/60 dark:bg-white/[0.03] backdrop-blur-sm px-4 py-2.5"
+                    className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 dark:border-white/10 bg-white/60 dark:bg-white/[0.03] backdrop-blur-sm px-4 py-2.5"
                   >
                     {/* LEFT — Context chips */}
                     <div className="flex items-center gap-2 flex-wrap min-w-0">
@@ -197,7 +197,7 @@ export const ViewportContent: React.FC<ViewportContentProps> = ({
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.1 }}
-                      className="relative aspect-[4/3] rounded-[2rem] overflow-hidden bg-slate-200 dark:bg-zinc-900 group shadow-lg hover:shadow-2xl transition-all duration-500 border border-black/5 dark:border-white/5"
+                      className="relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-200 dark:bg-zinc-900 group shadow-lg hover:shadow-atlas-lg transition-all duration-500 border border-black/5 dark:border-white/[0.06]"
                     >
                       <img 
                         src={ex.url} 

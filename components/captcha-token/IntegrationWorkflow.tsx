@@ -149,14 +149,14 @@ export const IntegrationWorkflow: React.FC = () => {
   };
 
   return (
-    <div className="mt-20 pt-10 border-t border-black/5 dark:border-white/5 relative z-10 space-y-12">
+    <div className="mt-20 pt-10 border-t border-black/5 dark:border-white/[0.06] relative z-10 space-y-12">
       {/* COLLAPSIBLE HEADER */}
       <div 
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex flex-col md:flex-row md:items-center justify-between gap-6 cursor-pointer group bg-white dark:bg-black/20 p-6 rounded-[2.5rem] border border-black/5 dark:border-white/5 hover:border-indigo-500/30 transition-all duration-500 shadow-sm hover:shadow-xl"
+        className="flex flex-col md:flex-row md:items-center justify-between gap-6 cursor-pointer group bg-white dark:bg-black/20 p-6 rounded-xl border border-black/5 dark:border-white/[0.06] hover:border-indigo-500/30 transition-all duration-500 shadow-sm hover:shadow-xl"
       >
         <div className="flex items-center gap-6">
-          <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-inner ${isExpanded ? 'bg-indigo-600 text-white' : 'bg-indigo-600/10 text-indigo-600'}`}>
+          <div className={`w-14 h-14 rounded-lg flex items-center justify-center transition-all duration-500 shadow-inner ${isExpanded ? 'bg-indigo-600 text-white' : 'bg-indigo-600/10 text-indigo-600'}`}>
             <Network size={28} />
           </div>
           <div className="space-y-1">
@@ -197,7 +197,7 @@ export const IntegrationWorkflow: React.FC = () => {
                   <div className="grid grid-cols-1 xl:grid-cols-2 gap-10 lg:gap-16 items-start">
                     
                     {/* INPUTS PANEL */}
-                    <div className="space-y-8 bg-slate-50/50 dark:bg-white/[0.01] p-10 rounded-[2.5rem] border border-black/5 dark:border-white/5 shadow-2xl relative overflow-hidden group">
+                    <div className="space-y-8 bg-slate-50/50 dark:bg-white/[0.01] p-10 rounded-xl border border-black/5 dark:border-white/[0.06] shadow-atlas-lg relative overflow-hidden group">
                       <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform duration-[5s]">
                          <Braces size={200} />
                       </div>
@@ -232,7 +232,7 @@ export const IntegrationWorkflow: React.FC = () => {
                           <button 
                             onClick={handleRunRequest}
                             disabled={isRunning}
-                            className="w-full py-5 bg-indigo-600 text-white rounded-2xl text-[11px] font-bold uppercase tracking-[0.4em] shadow-xl shadow-indigo-600/20 hover:scale-102 active:scale-95 transition-all flex items-center justify-center gap-4 relative overflow-hidden group"
+                            className="w-full py-5 bg-indigo-600 text-white rounded-lg text-[11px] font-bold uppercase tracking-[0.4em] shadow-atlas-lg shadow-indigo-600/20 hover:scale-102 active:scale-95 transition-all flex items-center justify-center gap-4 relative overflow-hidden group"
                           >
                             <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                             {isRunning ? <Loader2 className="animate-spin" size={20} /> : <Zap size={20} fill="currentColor" />}
@@ -241,12 +241,12 @@ export const IntegrationWorkflow: React.FC = () => {
                         </div>
                       </div>
                       
-                      <div className="pt-8 border-t border-black/5 dark:border-white/5 relative z-10">
+                      <div className="pt-8 border-t border-black/5 dark:border-white/[0.06] relative z-10">
                         <div className="flex items-center gap-3 text-brand-blue mb-3">
                           <ShieldCheck size={16} />
                           <span className="text-[10px] font-bold uppercase tracking-[0.4em] italic">Security Protocol</span>
                         </div>
-                        <p className="text-[11px] text-slate-500 dark:text-gray-400 italic leading-relaxed bg-black/5 dark:bg-white/5 p-4 rounded-xl border border-black/5 dark:border-white/5">
+                        <p className="text-[11px] text-slate-500 dark:text-gray-400 italic leading-relaxed bg-black/[0.06] dark:bg-white/[0.06] p-4 rounded-xl border border-black/5 dark:border-white/[0.06]">
                           "Hệ thống thực hiện lệnh POST trực tiếp tới Endpoint của Google. Đảm bảo bạn đã whitelist IP hoặc cấu hình CORS nếu chạy từ trình duyệt."
                         </p>
                       </div>
@@ -265,14 +265,14 @@ export const IntegrationWorkflow: React.FC = () => {
                           {showResponse && (
                             <button 
                               onClick={() => setShowResponse(false)}
-                              className="px-4 py-1.5 bg-slate-100 dark:bg-white/5 hover:bg-brand-blue hover:text-white rounded-full text-[9px] font-bold uppercase tracking-widest transition-all border border-black/5 dark:border-white/10 flex items-center gap-2 shadow-sm"
+                              className="px-4 py-1.5 bg-slate-100 dark:bg-white/[0.06] hover:bg-brand-blue hover:text-white rounded-full text-[9px] font-bold uppercase tracking-widest transition-all border border-black/5 dark:border-white/10 flex items-center gap-2 shadow-sm"
                             >
                               <RefreshCw size={12} /> RESET
                             </button>
                           )}
                           <button 
                             onClick={handleCopy}
-                            className="px-4 py-1.5 bg-slate-100 dark:bg-white/5 hover:bg-brand-blue hover:text-white rounded-full text-[9px] font-bold uppercase tracking-widest flex items-center gap-2 transition-all border border-black/5 dark:border-white/10 shadow-sm"
+                            className="px-4 py-1.5 bg-slate-100 dark:bg-white/[0.06] hover:bg-brand-blue hover:text-white rounded-full text-[9px] font-bold uppercase tracking-widest flex items-center gap-2 transition-all border border-black/5 dark:border-white/10 shadow-sm"
                           >
                             {isCopied ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />} 
                             {isCopied ? 'COPIED' : 'COPY'}
@@ -280,9 +280,9 @@ export const IntegrationWorkflow: React.FC = () => {
                         </div>
                       </div>
                       
-                      <div className="relative group shadow-2xl">
+                      <div className="relative group shadow-atlas-lg">
                         <div className="absolute inset-0 bg-brand-blue/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <pre className={`p-8 bg-[var(--atlas-bg-page)] rounded-[2.5rem] border border-white/5 text-[12px] font-mono overflow-x-auto shadow-inner leading-relaxed no-scrollbar relative z-10 transition-all duration-700 ${showResponse ? 'text-emerald-400 border-emerald-500/30 ring-1 ring-emerald-500/10' : 'text-slate-300'}`}>
+                        <pre className={`p-8 bg-[var(--atlas-bg-page)] rounded-xl border border-white/[0.06] text-[12px] font-mono overflow-x-auto shadow-inner leading-relaxed no-scrollbar relative z-10 transition-all duration-700 ${showResponse ? 'text-emerald-400 border-emerald-500/30 ring-1 ring-emerald-500/10' : 'text-slate-300'}`}>
                           <code className="block whitespace-pre">
                             <AnimatePresence mode="wait">
                               {showResponse ? (
@@ -317,12 +317,12 @@ export const IntegrationWorkflow: React.FC = () => {
                         </pre>
                         
                         {/* Status Overlay */}
-                        <div className="absolute -bottom-2 -right-2 bg-indigo-600 text-white p-3 rounded-xl shadow-2xl z-20 transition-all rotate-12 flex items-center gap-2 group-hover:rotate-0">
+                        <div className="absolute -bottom-2 -right-2 bg-indigo-600 text-white p-3 rounded-xl shadow-atlas-lg z-20 transition-all rotate-12 flex items-center gap-2 group-hover:rotate-0">
                            <Code2 size={24} />
                         </div>
                       </div>
 
-                      <div className="p-6 bg-indigo-500/5 border border-indigo-500/10 rounded-2xl flex gap-4 items-start">
+                      <div className="p-6 bg-indigo-500/5 border border-indigo-500/10 rounded-lg flex gap-4 items-start">
                          <Info className="text-indigo-500 shrink-0 mt-0.5" size={16} />
                          <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-tight italic leading-relaxed">
                             "Lệnh này khởi chạy tiến trình render video tại cụm Cloud của Google. Nếu thành công, bạn sẽ nhận được một jobId để poll kết quả video cuối cùng."
@@ -338,9 +338,9 @@ export const IntegrationWorkflow: React.FC = () => {
       </AnimatePresence>
 
       {/* CONTACT/SUPPORT CARD */}
-      <div className="p-10 bg-slate-900 dark:bg-black rounded-[3rem] border border-white/10 flex flex-col items-center justify-center gap-6 shadow-3xl relative overflow-hidden group">
+      <div className="p-10 bg-slate-900 dark:bg-black rounded-xl border border-white/10 flex flex-col items-center justify-center gap-6 shadow-atlas-xl relative overflow-hidden group">
          <div className="absolute inset-0 bg-brand-blue/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
-         <button className="px-16 py-6 bg-white text-black rounded-xl text-[12px] font-bold uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-xl active:scale-95 whitespace-nowrap relative z-10 flex items-center gap-3">
+         <button className="px-16 py-6 bg-white text-black rounded-xl text-[12px] font-bold uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-atlas-lg active:scale-95 whitespace-nowrap relative z-10 flex items-center gap-3">
             LIÊN HỆ TƯ VẤN KỸ THUẬT <ExternalLink size={14} />
          </button>
          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic text-center relative z-10">

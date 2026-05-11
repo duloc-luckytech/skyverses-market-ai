@@ -67,7 +67,7 @@ const Product6Image = () => {
                 </span>
               </h1>
               
-              <p className="text-xl lg:text-3xl text-gray-400 font-medium max-w-2xl leading-tight border-l-2 border-purple-500 pl-8">
+              <p className="text-xl lg:text-3xl text-white/40 font-medium max-w-2xl leading-tight border-l-2 border-purple-500 pl-8">
                 Select character images, write one prompt, and generate AI videos where characters stay consistent across every frame.
               </p>
 
@@ -78,7 +78,7 @@ const Product6Image = () => {
                 >
                   Try Character Sync <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </button>
-                <button className="px-12 py-6 border border-white/10 rounded-sm text-xs font-bold uppercase tracking-[0.4em] hover:bg-white hover:text-black transition-all bg-white/5 backdrop-blur-md flex items-center justify-center gap-4">
+                <button className="px-12 py-6 border border-white/10 rounded-sm text-xs font-bold uppercase tracking-[0.4em] hover:bg-white hover:text-black transition-all bg-white/[0.06] backdrop-blur-md flex items-center justify-center gap-4">
                   Watch Demo <Play size={16} fill="currentColor" />
                 </button>
               </div>
@@ -91,10 +91,10 @@ const Product6Image = () => {
               className="lg:col-span-5 relative"
             >
               {/* Image to Video Mockup */}
-              <div className="relative aspect-[3/4] bg-[var(--atlas-bg-page)] border border-white/5 rounded-sm p-4 shadow-2xl overflow-hidden group">
+              <div className="relative aspect-[3/4] bg-[var(--atlas-bg-page)] border border-white/[0.06] rounded-sm p-4 shadow-atlas-lg overflow-hidden group">
                  <div className="grid grid-cols-2 gap-2 h-1/3 mb-4">
-                    <div className="bg-gray-900 rounded-sm overflow-hidden border border-white/10"><img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=400" className="w-full h-full object-cover grayscale opacity-50" alt="Ref" /></div>
-                    <div className="bg-gray-900 rounded-sm overflow-hidden border border-white/10"><img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=400" className="w-full h-full object-cover grayscale opacity-50" alt="Ref" /></div>
+                    <div className="bg-[var(--atlas-bg-page)] rounded-sm overflow-hidden border border-white/10"><img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=400" className="w-full h-full object-cover grayscale opacity-50" alt="Ref" /></div>
+                    <div className="bg-[var(--atlas-bg-page)] rounded-sm overflow-hidden border border-white/10"><img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=400" className="w-full h-full object-cover grayscale opacity-50" alt="Ref" /></div>
                  </div>
                  <div className="h-2/3 bg-black rounded-sm border border-purple-500/30 overflow-hidden relative">
                     <video src="https://framerusercontent.com/assets/U4v4W7xT3tL0N8I.mp4" autoPlay loop muted className="w-full h-full object-cover opacity-80" />
@@ -111,10 +111,10 @@ const Product6Image = () => {
         </section>
 
         {/* 2. HOW IT WORKS */}
-        <section className="py-40 border-t border-white/5">
+        <section className="py-40 border-t border-white/[0.06]">
           <div className="text-center space-y-4 mb-24">
              <h2 className="text-4xl lg:text-6xl font-bold uppercase italic tracking-tighter">The Production Path</h2>
-             <p className="text-gray-500 uppercase text-[10px] font-bold tracking-[0.5em]">Simple Workflow // Complex Architecture</p>
+             <p className="text-white/30 uppercase text-[10px] font-bold tracking-[0.5em]">Simple Workflow // Complex Architecture</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -126,14 +126,14 @@ const Product6Image = () => {
               <motion.div 
                 key={i}
                 whileHover={{ y: -10 }}
-                className="p-10 bg-white/5 border border-white/10 rounded-sm relative group overflow-hidden"
+                className="p-10 bg-white/[0.06] border border-white/10 rounded-sm relative group overflow-hidden"
               >
                 <div className="absolute -top-10 -right-10 text-[120px] font-bold text-white/[0.03] italic">{s.step}</div>
                 <div className="w-14 h-14 bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 mb-8 rounded-sm group-hover:bg-purple-500 group-hover:text-white transition-all">
                    {React.cloneElement(s.icon as React.ReactElement<any>, { size: 28 })}
                 </div>
                 <h4 className="text-2xl font-bold uppercase italic tracking-tight mb-4">{s.title}</h4>
-                <p className="text-gray-500 leading-relaxed font-bold uppercase text-xs tracking-widest leading-loose">"{s.desc}"</p>
+                <p className="text-white/30 leading-relaxed font-bold uppercase text-xs tracking-widest leading-loose">"{s.desc}"</p>
               </motion.div>
             ))}
           </div>
@@ -144,7 +144,7 @@ const Product6Image = () => {
            <div className="space-y-12">
               <div className="space-y-6">
                  <h2 className="text-5xl lg:text-7xl font-bold uppercase tracking-tighter italic leading-none">Character-First <br /><span className="text-purple-500">Video Synthesis.</span></h2>
-                 <p className="text-xl text-gray-400 font-medium">Traditional AI video creates random faces. We create your actors.</p>
+                 <p className="text-xl text-white/40 font-medium">Traditional AI video creates random faces. We create your actors.</p>
               </div>
 
               <div className="grid gap-6">
@@ -154,11 +154,11 @@ const Product6Image = () => {
                    { icon: <Palette />, title: 'Outfit & Style Persistence', desc: 'Characters wear the same clothes and maintain art-style consistency.' },
                    { icon: <Layers />, title: 'Multi-Character Scenes', desc: 'Orchestrate interaction between multiple consistent AI entities.' }
                  ].map((f, i) => (
-                    <div key={i} className="flex gap-6 p-6 bg-white/[0.02] border border-white/5 rounded-sm hover:border-purple-500/40 transition-all group">
+                    <div key={i} className="flex gap-6 p-6 bg-white/[0.02] border border-white/[0.06] rounded-sm hover:border-purple-500/40 transition-all group">
                        <div className="shrink-0 text-purple-400 group-hover:scale-110 transition-transform">{f.icon}</div>
                        <div className="space-y-1">
                           <h5 className="font-bold uppercase tracking-widest text-sm">{f.title}</h5>
-                          <p className="text-xs text-gray-500 uppercase font-bold tracking-tight">{f.desc}</p>
+                          <p className="text-xs text-white/30 uppercase font-bold tracking-tight">{f.desc}</p>
                        </div>
                     </div>
                  ))}
@@ -173,23 +173,23 @@ const Product6Image = () => {
                  </div>
                  <div className="relative z-10 flex justify-between items-start">
                     <Cpu className="w-16 h-16 text-purple-500 animate-pulse" />
-                    <span className="mono text-[10px] text-gray-600 uppercase font-bold tracking-widest italic">AUP_IDENTITY_SYNC</span>
+                    <span className="mono text-[10px] text-white/20 uppercase font-bold tracking-widest italic">AUP_IDENTITY_SYNC</span>
                  </div>
                  <div className="relative z-10 space-y-6">
                     <div className="text-[120px] font-bold leading-none tracking-tighter italic text-white group-hover:text-purple-400 transition-colors">99.9%</div>
                     <p className="text-2xl font-bold uppercase tracking-[0.2em] text-white">Parity Reliability</p>
-                    <p className="text-gray-500 text-[11px] font-bold uppercase tracking-[0.3em] italic leading-relaxed max-w-sm">"Characters remain identical across every node of the production pipeline."</p>
+                    <p className="text-white/30 text-[11px] font-bold uppercase tracking-[0.3em] italic leading-relaxed max-w-sm">"Characters remain identical across every node of the production pipeline."</p>
                  </div>
               </div>
            </div>
         </section>
 
         {/* 4. USE CASES */}
-        <section className="py-40 border-t border-white/5">
+        <section className="py-40 border-t border-white/[0.06]">
            <div className="flex justify-between items-end mb-24">
               <div className="space-y-4">
                  <h2 className="text-4xl lg:text-6xl font-bold uppercase tracking-tighter italic">Engineered for Storytellers.</h2>
-                 <p className="text-[10px] font-bold uppercase text-gray-500 tracking-[0.5em]">Global Verticals // Local Mastery</p>
+                 <p className="text-[10px] font-bold uppercase text-white/30 tracking-[0.5em]">Global Verticals // Local Mastery</p>
               </div>
               <Link to="/use-cases" className="text-xs font-bold uppercase tracking-widest text-purple-400 hover:text-white transition-colors flex items-center gap-2">Explore Cases <ArrowRight size={14}/></Link>
            </div>
@@ -203,7 +203,7 @@ const Product6Image = () => {
                 { title: 'AI Storytelling', desc: 'Author long-form visual narratives where readers never lose track of who is who.', icon: <Sparkles />, img: 'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=800' },
                 { title: 'Virtual Influencers', desc: 'Manage digital humans with absolute visual stability for social media.', icon: <UserPlusIcon />, icon2: <MonitorPlay />, img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800' }
               ].map((useCase, i) => (
-                <div key={i} className="group relative overflow-hidden aspect-[4/5] border border-white/5 rounded-sm shadow-2xl hover:border-purple-500/40 transition-all cursor-pointer bg-black">
+                <div key={i} className="group relative overflow-hidden aspect-[4/5] border border-white/[0.06] rounded-sm shadow-atlas-lg hover:border-purple-500/40 transition-all cursor-pointer bg-black">
                    <img src={useCase.img} className="w-full h-full object-cover grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-60 transition-all duration-700 group-hover:scale-105" alt={useCase.title} />
                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent p-10 flex flex-col justify-end">
                       <div className="space-y-4 translate-y-4 group-hover:translate-y-0 transition-transform">

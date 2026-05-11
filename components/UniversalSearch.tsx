@@ -83,7 +83,7 @@ const UniversalSearch = () => {
         <div className={`relative flex items-center w-full transition-all duration-300 overflow-hidden rounded-full border ${
           isOpen 
             ? 'border-brand-blue ring-1 ring-brand-blue/50 bg-white dark:bg-black' 
-            : 'border-black/10 dark:border-white/10 bg-black/5 dark:bg-black/60 group-hover:border-black/20 dark:group-hover:border-white/20'
+            : 'border-black/10 dark:border-white/10 bg-black/[0.06] dark:bg-black/60 group-hover:border-black/20 dark:group-hover:border-white/20'
         }`}>
           <Search className={`ml-5 w-4 h-4 transition-colors ${isOpen ? 'text-brand-blue' : 'text-gray-400 dark:text-gray-600'}`} />
           
@@ -108,7 +108,7 @@ const UniversalSearch = () => {
               </button>
             )}
             {!isOpen && (
-              <div className="flex items-center gap-1 px-2 py-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded text-[8px] text-gray-400 dark:text-gray-500 font-bold">
+              <div className="flex items-center gap-1 px-2 py-1 bg-black/[0.06] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 rounded text-[8px] text-gray-400 dark:text-gray-500 font-bold">
                 <span className="text-[10px]">/</span>
               </div>
             )}
@@ -118,10 +118,10 @@ const UniversalSearch = () => {
 
       {/* Results Dropdown */}
       {isOpen && (
-        <div className="absolute top-full mt-4 w-full bg-white/95 dark:bg-[var(--atlas-bg-page)]/95 backdrop-blur-2xl border border-black/10 dark:border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-2xl overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="absolute top-full mt-4 w-full bg-white/95 dark:bg-[var(--atlas-bg-page)]/95 backdrop-blur-2xl border border-black/10 dark:border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-lg overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2 duration-300">
           {results.length > 0 ? (
             <div className="py-2">
-              <div className="px-6 py-3 border-b border-black/5 dark:border-white/5 flex justify-between items-center">
+              <div className="px-6 py-3 border-b border-black/5 dark:border-white/[0.06] flex justify-between items-center">
                 <span className="text-[9px] font-bold text-gray-400 dark:text-gray-600 uppercase tracking-widest">Verified AI Systems</span>
                 <span className="text-[9px] font-bold text-brand-blue uppercase tracking-widest">{results.length} Found</span>
               </div>
@@ -132,11 +132,11 @@ const UniversalSearch = () => {
                   onMouseEnter={() => setSelectedIndex(index)}
                   className={`w-full flex items-center gap-4 px-6 py-4 text-left transition-all ${
                     selectedIndex === index 
-                      ? 'bg-black/5 dark:bg-white/5 border-l-2 border-brand-blue' 
+                      ? 'bg-black/[0.06] dark:bg-white/[0.06] border-l-2 border-brand-blue' 
                       : 'border-l-2 border-transparent'
                   }`}
                 >
-                  <div className="w-10 h-10 shrink-0 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded overflow-hidden">
+                  <div className="w-10 h-10 shrink-0 bg-black/[0.06] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 rounded overflow-hidden">
                     <img src={sol.imageUrl} className="w-full h-full object-cover grayscale opacity-50" alt="" />
                   </div>
                   <div className="flex-grow min-w-0">
@@ -151,7 +151,7 @@ const UniversalSearch = () => {
                   )}
                 </button>
               ))}
-              <div className="p-4 bg-black/[0.02] dark:bg-black/40 border-t border-black/5 dark:border-white/5 flex justify-center">
+              <div className="p-4 bg-black/[0.02] dark:bg-black/40 border-t border-black/5 dark:border-white/[0.06] flex justify-center">
                  <button onClick={() => setIsOpen(false)} className="text-[9px] font-bold text-gray-400 dark:text-gray-700 hover:text-black dark:hover:text-white uppercase tracking-widest transition-colors">Terminate Session</button>
               </div>
             </div>
@@ -171,7 +171,7 @@ const UniversalSearch = () => {
                       <button 
                         key={cmd} 
                         onClick={() => setQuery(cmd)}
-                        className="p-3 border border-black/5 dark:border-white/5 bg-black/[0.02] dark:bg-white/[0.02] text-[9px] font-bold text-gray-400 dark:text-gray-600 hover:text-brand-blue hover:border-brand-blue/30 dark:hover:border-brand-blue/30 transition-all uppercase tracking-widest"
+                        className="p-3 border border-black/5 dark:border-white/[0.06] bg-black/[0.02] dark:bg-white/[0.02] text-[9px] font-bold text-gray-400 dark:text-gray-600 hover:text-brand-blue hover:border-brand-blue/30 dark:hover:border-brand-blue/30 transition-all uppercase tracking-widest"
                       >
                         {cmd}
                       </button>

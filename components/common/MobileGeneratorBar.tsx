@@ -42,7 +42,7 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
     <div 
       className={`lg:hidden flex flex-col items-center shrink-0 cursor-pointer relative transition-all duration-500 ease-in-out ${
         isExpanded 
-          ? 'h-14 border-b border-black/5 dark:border-white/5 justify-center bg-white dark:bg-[var(--atlas-bg-panel)]' 
+          ? 'h-14 border-b border-black/5 dark:border-white/[0.06] justify-center bg-white dark:bg-[var(--atlas-bg-panel)]' 
           : 'h-[160px] justify-start bg-white/70 dark:bg-black/70 backdrop-blur-xl border-t border-black/5 dark:border-white/10 pb-10 shadow-[0_-8px_30px_rgba(0,0,0,0.1)]'
       }`}
       onClick={() => !isExpanded && setIsExpanded(true)}
@@ -56,12 +56,12 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
           <div className="flex items-center gap-2">
             <button 
               onClick={(e) => { e.stopPropagation(); onOpenLibrary(); }}
-              className="w-11 h-11 flex items-center justify-center bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-2xl text-slate-400 hover:text-brand-blue shadow-sm active:scale-90 transition-all"
+              className="w-11 h-11 flex items-center justify-center bg-white dark:bg-white/[0.06] border border-black/5 dark:border-white/10 rounded-lg text-slate-400 hover:text-brand-blue shadow-sm active:scale-90 transition-all"
             >
               <FolderOpen size={18} />
             </button>
             
-            <div className="flex-grow relative h-11 bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-2xl flex items-center px-4 shadow-inner">
+            <div className="flex-grow relative h-11 bg-white dark:bg-white/[0.06] border border-black/5 dark:border-white/10 rounded-lg flex items-center px-4 shadow-inner">
                <input 
                  value={prompt}
                  onChange={(e) => setPrompt(e.target.value)}
@@ -73,7 +73,7 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
 
             <button 
               onClick={(e) => { e.stopPropagation(); setIsExpanded(true); }}
-              className="w-11 h-11 flex items-center justify-center bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-2xl text-slate-400 hover:text-brand-blue shadow-sm active:scale-90 transition-all"
+              className="w-11 h-11 flex items-center justify-center bg-white dark:bg-white/[0.06] border border-black/5 dark:border-white/10 rounded-lg text-slate-400 hover:text-brand-blue shadow-sm active:scale-90 transition-all"
             >
               <SlidersHorizontal size={16} />
             </button>
@@ -82,7 +82,7 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
           {/* LINE 2: COMPACT STATUS & GENERATE ACTION */}
           <div className="flex items-center justify-between gap-3">
              {/* Resource Telemetry */}
-             <div className="flex items-center gap-3 bg-black/5 dark:bg-white/5 px-3 h-10 rounded-xl border border-black/5 dark:border-white/10 shadow-inner shrink-0">
+             <div className="flex items-center gap-3 bg-black/[0.06] dark:bg-white/[0.06] px-3 h-10 rounded-xl border border-black/5 dark:border-white/10 shadow-inner shrink-0">
                 <div className="flex flex-col items-start leading-none gap-0.5">
                    <span className="text-[6px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest">Ví</span>
                    <div className="flex items-center gap-1">
@@ -124,7 +124,7 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
 
                {tooltip && (
                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 opacity-0 group-hover/mobilebtn:opacity-100 pointer-events-none transition-all duration-300 translate-y-2 group-hover/mobilebtn:translate-y-0 z-[160]">
-                    <div className="bg-slate-800 dark:bg-slate-900 text-white text-[9px] font-bold uppercase tracking-widest px-3 py-2 rounded-lg shadow-2xl whitespace-nowrap border border-white/10 relative">
+                    <div className="bg-slate-800 dark:bg-slate-900 text-white text-[9px] font-bold uppercase tracking-widest px-3 py-2 rounded-lg shadow-atlas-lg whitespace-nowrap border border-white/10 relative">
                        {tooltip}
                        <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-800 dark:bg-slate-900 rotate-45 -mb-1 border-r border-b border-white/10"></div>
                     </div>
@@ -144,7 +144,7 @@ export const MobileGeneratorBar: React.FC<MobileGeneratorBarProps> = ({
           </div>
           <button 
             onClick={(e) => { e.stopPropagation(); setIsExpanded(false); }}
-            className="p-1.5 rounded-full bg-slate-100 dark:bg-white/5 text-slate-400"
+            className="p-1.5 rounded-full bg-slate-100 dark:bg-white/[0.06] text-slate-400"
           >
             <ChevronDown size={20} />
           </button>

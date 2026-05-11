@@ -17,7 +17,7 @@ export const SidebarAccordion: React.FC<SidebarAccordionProps> = ({
   title, icon, isOpen, onToggle, hasActiveItems, children 
 }) => {
   return (
-    <div className="border-b border-black/5 dark:border-white/5 overflow-hidden">
+    <div className="border-b border-black/5 dark:border-white/[0.06] overflow-hidden">
       <button 
         onClick={onToggle}
         className="w-full flex items-center justify-between py-5 px-5 hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all group"

@@ -166,11 +166,11 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
     <div className="flex flex-col lg:flex-row h-full w-full bg-white dark:bg-[var(--atlas-bg-page)] text-black dark:text-white font-sans overflow-hidden relative selection:bg-yellow-500/30 transition-colors">
 
       {/* 1. ARCHITECT TERMINAL (LEFT) */}
-      <aside className="w-full lg:w-[420px] h-full flex flex-col border-r border-black/5 dark:border-white/5 bg-[var(--atlas-bg-page)] dark:bg-[var(--atlas-bg-page)] z-[100] shadow-2xl overflow-hidden">
+      <aside className="w-full lg:w-[420px] h-full flex flex-col border-r border-black/5 dark:border-white/[0.06] bg-[var(--atlas-bg-page)] dark:bg-[var(--atlas-bg-page)] z-[100] shadow-atlas-lg overflow-hidden">
          <div className="p-8 space-y-10 overflow-y-auto no-scrollbar flex-grow">
             <header className="flex justify-between items-center">
                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-yellow-500 flex items-center justify-center rounded-sm shadow-xl text-black">
+                  <div className="w-10 h-10 bg-yellow-500 flex items-center justify-center rounded-sm shadow-atlas-lg text-black">
                      <Radio size={20} />
                   </div>
                   <div className="space-y-0.5">
@@ -197,14 +197,14 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
             </section>
 
             {/* CINEMATOGRAPHY */}
-            <section className="space-y-4 pt-6 border-t border-black/5 dark:border-white/5">
+            <section className="space-y-4 pt-6 border-t border-black/5 dark:border-white/[0.06]">
                <label className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500 tracking-[0.4em]">Cinematography</label>
                <div className="grid grid-cols-2 gap-2">
                   {SHOT_TYPES.map(shot => (
                     <button
                       key={shot.id}
                       onClick={() => setActiveShot(shot)}
-                      className={`flex items-center gap-3 p-3 border text-[10px] font-bold uppercase transition-all rounded-sm ${activeShot.id === shot.id ? 'border-yellow-500 bg-yellow-500/5 text-yellow-600' : 'border-black/5 dark:border-white/5 text-gray-400'}`}
+                      className={`flex items-center gap-3 p-3 border text-[10px] font-bold uppercase transition-all rounded-sm ${activeShot.id === shot.id ? 'border-yellow-500 bg-yellow-500/5 text-yellow-600' : 'border-black/5 dark:border-white/[0.06] text-gray-400'}`}
                     >
                        {shot.icon} {shot.name}
                     </button>
@@ -213,13 +213,13 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
             </section>
 
             {/* LIGHTING & ATMOSPHERE */}
-            <section className="space-y-6 pt-6 border-t border-black/5 dark:border-white/5">
+            <section className="space-y-6 pt-6 border-t border-black/5 dark:border-white/[0.06]">
                <div className="space-y-4">
                   <label className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500 tracking-[0.4em]">Atmospheric Logic</label>
                   <select
                     value={activeLighting.id}
                     onChange={(e) => setActiveLighting(LIGHTING_MODES.find(l => l.id === e.target.value)!)}
-                    className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 text-[11px] font-bold uppercase outline-none focus:border-yellow-500"
+                    className="w-full bg-black/[0.06] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 p-3 text-[11px] font-bold uppercase outline-none focus:border-yellow-500"
                   >
                      {LIGHTING_MODES.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
                   </select>
@@ -231,29 +231,29 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
                         <span className="flex items-center gap-2"><Wind size={10}/> Fog Density</span>
                         <span className="text-yellow-500">{fogDensity}%</span>
                      </div>
-                     <input type="range" min="0" max="100" value={fogDensity} onChange={(e) => setFogDensity(parseInt(e.target.value))} className="w-full h-1 bg-black/10 dark:bg-white/5 appearance-none rounded-full accent-yellow-500" />
+                     <input type="range" min="0" max="100" value={fogDensity} onChange={(e) => setFogDensity(parseInt(e.target.value))} className="w-full h-1 bg-black/10 dark:bg-white/[0.06] appearance-none rounded-full accent-yellow-500" />
                   </div>
                   <div className="space-y-3">
                      <div className="flex justify-between text-[9px] font-bold uppercase text-gray-400">
                         <span className="flex items-center gap-2"><Clock size={10}/> Time Scale</span>
                         <span className="text-yellow-500">{timeScale}x</span>
                      </div>
-                     <input type="range" min="0.1" max="2.0" step="0.1" value={timeScale} onChange={(e) => setTimeScale(parseFloat(e.target.value))} className="w-full h-1 bg-black/10 dark:bg-white/5 appearance-none rounded-full accent-yellow-500" />
+                     <input type="range" min="0.1" max="2.0" step="0.1" value={timeScale} onChange={(e) => setTimeScale(parseFloat(e.target.value))} className="w-full h-1 bg-black/10 dark:bg-white/[0.06] appearance-none rounded-full accent-yellow-500" />
                   </div>
                </div>
             </section>
 
             {/* REFERENCE DNA */}
-            <section className="space-y-4 pt-6 border-t border-black/5 dark:border-white/5">
+            <section className="space-y-4 pt-6 border-t border-black/5 dark:border-white/[0.06]">
                <label className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500 tracking-[0.4em]">Visual DNA</label>
-               <div onClick={() => fileInputRef.current?.click()} className={`aspect-video border-2 border-dashed flex items-center justify-center cursor-pointer rounded-sm overflow-hidden transition-all ${refImage ? 'border-yellow-500' : 'border-black/10 dark:border-white/5 hover:border-yellow-500/50'}`}>
+               <div onClick={() => fileInputRef.current?.click()} className={`aspect-video border-2 border-dashed flex items-center justify-center cursor-pointer rounded-sm overflow-hidden transition-all ${refImage ? 'border-yellow-500' : 'border-black/10 dark:border-white/[0.06] hover:border-yellow-500/50'}`}>
                   {refImage ? <img src={refImage} className="w-full h-full object-cover" /> : <Upload size={24} className="text-gray-300" />}
                   <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileUpload} />
                </div>
             </section>
          </div>
 
-         <div className="h-32 border-t border-black/5 dark:border-white/5 p-6 bg-gray-50 dark:bg-black mt-auto flex flex-col gap-2 shrink-0">
+         <div className="h-32 border-t border-black/5 dark:border-white/[0.06] p-6 bg-gray-50 dark:bg-black mt-auto flex flex-col gap-2 shrink-0">
             <span className="text-[9px] font-bold uppercase text-gray-400 italic">Production_Telemetry</span>
             <div className="flex-grow overflow-hidden font-mono text-[10px] text-gray-400">
                {logs.map((log, i) => <p key={i}>{log}</p>)}
@@ -276,7 +276,7 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
                {activeTake ? (
                   <motion.div
                     key={activeTake.id} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}
-                    className="relative w-full max-w-6xl aspect-video bg-black rounded-sm overflow-hidden shadow-[0_60px_150px_rgba(0,0,0,0.5)] border border-white/5 group"
+                    className="relative w-full max-w-6xl aspect-video bg-black rounded-sm overflow-hidden shadow-[0_60px_150px_rgba(0,0,0,0.5)] border border-white/[0.06] group"
                   >
                      {activeTake.status === 'processing' ? (
                         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-3xl space-y-10">
@@ -308,10 +308,10 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
                            </div>
 
                            <div className="absolute top-8 right-8 flex flex-col gap-4 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
-                              <button className="p-4 bg-black/80 backdrop-blur-xl border border-white/10 rounded-full text-white hover:bg-yellow-500 hover:text-black transition-all shadow-2xl">
+                              <button className="p-4 bg-black/80 backdrop-blur-xl border border-white/10 rounded-full text-white hover:bg-yellow-500 hover:text-black transition-all shadow-atlas-lg">
                                  <Share2 size={24} />
                               </button>
-                              <a href={activeTake.url!} download className="p-4 bg-white text-black rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all">
+                              <a href={activeTake.url!} download className="p-4 bg-white text-black rounded-full shadow-atlas-lg hover:scale-110 active:scale-95 transition-all">
                                  <Download size={24} />
                               </a>
                            </div>
@@ -328,7 +328,7 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
          </div>
 
          {/* PRODUCTION HUD (BOTTOM) */}
-         <div className="h-40 border-t border-black/5 dark:border-white/5 bg-white dark:bg-[var(--atlas-bg-page)] px-10 lg:px-16 flex items-center justify-between z-40 transition-colors shadow-2xl shrink-0">
+         <div className="h-40 border-t border-black/5 dark:border-white/[0.06] bg-white dark:bg-[var(--atlas-bg-page)] px-10 lg:px-16 flex items-center justify-between z-40 transition-colors shadow-atlas-lg shrink-0">
             <div className="flex items-center gap-16">
                <div className="hidden md:flex flex-col gap-4">
                   <div className="flex items-center gap-3">
@@ -339,7 +339,7 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
                      {takes.slice(0, 5).map(t => (
                         <button
                            key={t.id} onClick={() => setActiveTakeId(t.id)}
-                           className={`w-16 h-10 border-2 transition-all overflow-hidden rounded-sm relative group/take ${activeTakeId === t.id ? 'border-yellow-500 scale-105 shadow-lg' : 'border-white/5 opacity-30 hover:opacity-100'}`}
+                           className={`w-16 h-10 border-2 transition-all overflow-hidden rounded-sm relative group/take ${activeTakeId === t.id ? 'border-yellow-500 scale-105 shadow-lg' : 'border-white/[0.06] opacity-30 hover:opacity-100'}`}
                         >
                            {t.url ? <video src={t.url} className="w-full h-full object-cover" muted /> : <div className="w-full h-full bg-black flex items-center justify-center"><Loader2 size={12} className="animate-spin" /></div>}
                         </button>
@@ -352,7 +352,7 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
             <div className="flex gap-4">
                {activeTake && activeTake.status === 'completed' && (
                   <button
-                    className="h-24 px-12 border border-yellow-500 text-yellow-600 dark:text-yellow-500 flex flex-col items-center justify-center gap-2 hover:bg-yellow-500 hover:text-black transition-all rounded-sm italic group shadow-xl"
+                    className="h-24 px-12 border border-yellow-500 text-yellow-600 dark:text-yellow-500 flex flex-col items-center justify-center gap-2 hover:bg-yellow-500 hover:text-black transition-all rounded-sm italic group shadow-atlas-lg"
                   >
                      <FastForward size={28} className="group-hover:translate-x-2 transition-transform" />
                      <span className="text-[9px] font-bold uppercase tracking-widest">Extend +7s</span>
@@ -361,7 +361,7 @@ const SceneArchitectWorkspace: React.FC<{ onClose: () => void }> = ({ onClose })
                <button
                  onClick={handleSynthesize}
                  disabled={(!directive.trim() && !refImage) || processingCount > 0}
-                 className={`group h-24 px-24 lg:px-48 flex flex-col items-center justify-center gap-3 transition-all relative overflow-hidden rounded-sm shadow-[0_20px_80px_rgba(234,179,8,0.2)] ${directive.trim() || refImage ? 'bg-yellow-500 text-black hover:scale-105 active:scale-95' : 'bg-black/5 dark:bg-white/5 text-gray-400'}`}
+                 className={`group h-24 px-24 lg:px-48 flex flex-col items-center justify-center gap-3 transition-all relative overflow-hidden rounded-sm shadow-[0_20px_80px_rgba(234,179,8,0.2)] ${directive.trim() || refImage ? 'bg-yellow-500 text-black hover:scale-105 active:scale-95' : 'bg-black/[0.06] dark:bg-white/[0.06] text-gray-400'}`}
                >
                   <Zap size={28} className={processingCount > 0 ? 'animate-pulse' : 'group-hover:rotate-12 transition-transform'} fill="currentColor" />
                   <span className="text-[11px] font-bold uppercase tracking-[0.6em]">{processingCount > 0 ? 'Synthesizing' : 'Launch Master Render'}</span>

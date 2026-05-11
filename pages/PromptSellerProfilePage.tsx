@@ -119,7 +119,7 @@ const PromptSellerProfilePage: React.FC = () => {
   /* ── loading ── */
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#060608] flex flex-col items-center justify-center gap-4">
+      <div className="min-h-screen bg-[var(--atlas-bg-page)] flex flex-col items-center justify-center gap-4">
         <Loader2 className="w-10 h-10 text-[#C9A84C] animate-spin" />
         <span className="text-xs uppercase tracking-widest text-white/25 animate-pulse">
           Loading profile...
@@ -131,7 +131,7 @@ const PromptSellerProfilePage: React.FC = () => {
   /* ── not found ── */
   if (!profile) {
     return (
-      <div className="min-h-screen bg-[#060608] flex flex-col items-center justify-center gap-6 px-4 text-center">
+      <div className="min-h-screen bg-[var(--atlas-bg-page)] flex flex-col items-center justify-center gap-6 px-4 text-center">
         <User className="w-16 h-16 text-white/10" />
         <h2 className="text-2xl font-bold text-white">Seller Not Found</h2>
         <p className="text-white/35 max-w-sm">
@@ -156,9 +156,9 @@ const PromptSellerProfilePage: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#060608] text-white">
+    <div className="min-h-screen bg-[var(--atlas-bg-page)] text-white">
       {/* ── Breadcrumb ── */}
-      <div className="border-b border-white/[0.04] bg-[#060608]/80 backdrop-blur-lg sticky top-0 z-30">
+      <div className="border-b border-white/[0.04] bg-[var(--atlas-bg-page)]/80 backdrop-blur-lg sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-2 text-sm text-white/35">
           <Link to="/prompt-market" className="hover:text-white/60 transition-colors">
             Prompt Market
@@ -185,10 +185,10 @@ const PromptSellerProfilePage: React.FC = () => {
                 <img
                   src={profile.avatar}
                   alt={profile.name}
-                  className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl object-cover ring-4 ring-[#060608] shadow-2xl"
+                  className="w-28 h-28 sm:w-32 sm:h-32 rounded-lg object-cover ring-4 ring-[#060608] shadow-atlas-lg"
                 />
               ) : (
-                <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-[#C9A84C]/10 flex items-center justify-center ring-4 ring-[#060608] shadow-2xl">
+                <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-lg bg-[#C9A84C]/10 flex items-center justify-center ring-4 ring-[#060608] shadow-atlas-lg">
                   <User className="w-12 h-12 text-[#C9A84C]/40" />
                 </div>
               )}

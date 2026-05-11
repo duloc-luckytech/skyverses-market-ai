@@ -202,7 +202,7 @@ const SlidePresenter: React.FC<Props> = ({ slides, initialIndex = 0, onClose }) 
               transition={{ duration: 0.25 }}
               className="absolute bottom-20 left-6 right-6 md:left-auto md:right-6 md:max-w-md z-20 pointer-events-none"
             >
-              <div className="rounded-2xl bg-amber-500/15 backdrop-blur-xl border border-amber-500/30 p-4 shadow-2xl">
+              <div className="rounded-lg bg-amber-500/15 backdrop-blur-xl border border-amber-500/30 p-4 shadow-atlas-lg">
                 <div className="flex items-center gap-2 mb-2">
                   <FileText size={11} className="text-amber-400" />
                   <span className="text-[9px] font-bold uppercase tracking-widest text-amber-300">Ghi chú diễn giả</span>
@@ -294,7 +294,7 @@ const SlidePresenter: React.FC<Props> = ({ slides, initialIndex = 0, onClose }) 
                 className="bg-white/[0.08] text-white text-[11px] font-medium rounded-lg px-2 py-1 outline-none border border-white/10"
               >
                 {AUTO_INTERVALS.map(opt => (
-                  <option key={opt.value} value={opt.value} className="bg-gray-900">{opt.label}</option>
+                  <option key={opt.value} value={opt.value} className="bg-[var(--atlas-bg-page)]">{opt.label}</option>
                 ))}
               </select>
 

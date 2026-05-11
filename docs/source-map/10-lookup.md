@@ -31,3 +31,7 @@
 | Sync CDN URLs | `scripts/<product>_cdn*.sh` + result vào `src/constants/<product>-cdn.ts` |
 | Seed DB | root `seed-products.mjs` hoặc backend `src/scripts/seed*.ts` |
 | Deploy | `deploy.sh` (pm2 via `ecosystem.config.cjs`) |
+| SKT wallet / top-up / withdraw | `pages/SkyTokenPage.tsx` + `apis/skytoken.ts` + `components/skytoken/SkyTokenPurchaseModal.tsx` + backend `routes/skytoken.router.ts` |
+| Prompt marketplace | `pages/Prompt*.tsx` (6 page) + `apis/prompt-market.ts` + `components/prompt-market/` (3 file) + backend `routes/prompt-market.router.ts` |
+| Admin SKT withdrawals | `cms/components/admin-pro/SktWithdrawalTab.tsx` + `cms/apis/skytoken.ts` |
+| Promo banners (admin) | `apis/promo-banners.ts` + backend `routes/promoBanner.ts` + `PromoBanner.model.ts` |

@@ -338,7 +338,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                       <div className="absolute -inset-14 rounded-full"
                         style={{ border: '1px solid rgba(236,72,153,0.07)', animation: 'qOrbitRev 12s linear infinite' }}
                       />
-                      <div className="w-20 h-20 rounded-2xl flex items-center justify-center relative"
+                      <div className="w-20 h-20 rounded-lg flex items-center justify-center relative"
                         style={{
                           background: 'linear-gradient(135deg, rgba(201, 168, 76,0.25), rgba(236,72,153,0.15))',
                           border: '1px solid rgba(201, 168, 76,0.3)',
@@ -372,7 +372,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                       whileHover={{ scale: 1.02, y: -1 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={login}
-                      className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl text-[13px] font-bold text-white relative overflow-hidden"
+                      className="w-full flex items-center justify-center gap-3 py-4 rounded-lg text-[13px] font-bold text-white relative overflow-hidden"
                       style={{
                         background: 'linear-gradient(135deg, rgba(201, 168, 76,0.25), rgba(236,72,153,0.15))',
                         border: '1px solid rgba(201, 168, 76,0.3)',
@@ -456,7 +456,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                         style={{ background: 'radial-gradient(circle, rgba(201, 168, 76,0.2) 0%, transparent 70%)' }}
                       />
 
-                      <div className="relative w-18 h-18 w-[72px] h-[72px] rounded-2xl flex items-center justify-center"
+                      <div className="relative w-18 h-18 w-[72px] h-[72px] rounded-lg flex items-center justify-center"
                         style={{
                           background: 'linear-gradient(135deg, rgba(201, 168, 76,0.3), rgba(236,72,153,0.2))',
                           border: '1px solid rgba(201, 168, 76,0.35)',
@@ -510,7 +510,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                           <div className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold transition-all duration-500 ${
                             step.done
                               ? 'text-white'
-                              : 'bg-white/5 text-white/20'
+                              : 'bg-white/[0.06] text-white/20'
                           }`}
                             style={step.done ? { background: 'linear-gradient(135deg, #C9A84C, #ec4899)', boxShadow: '0 0 8px rgba(201, 168, 76,0.5)' } : {}}
                           >
@@ -519,7 +519,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
                           <span className={`text-[9px] font-bold transition-colors ${step.done ? 'text-violet-400' : 'text-white/15'}`}>
                             {step.label}
                           </span>
-                          {i < 2 && <div className={`w-4 h-px transition-colors ${step.done ? 'bg-violet-400/40' : 'bg-white/5'}`} />}
+                          {i < 2 && <div className={`w-4 h-px transition-colors ${step.done ? 'bg-violet-400/40' : 'bg-white/[0.06]'}`} />}
                         </div>
                       ))}
                     </motion.div>
@@ -532,7 +532,7 @@ export const QuickImageGenModal: React.FC<QuickImageGenModalProps> = ({ isOpen, 
               ════════════════════════════════════════════ */}
               <div className="relative z-10 px-5 pt-5 pb-4 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-2xl flex items-center justify-center"
+                  <div className="w-11 h-11 rounded-lg flex items-center justify-center"
                     style={{
                       background: 'linear-gradient(135deg, rgba(201, 168, 76,0.25), rgba(236,72,153,0.15))',
                       border: '1px solid rgba(201, 168, 76,0.25)',

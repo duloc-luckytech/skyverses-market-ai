@@ -196,7 +196,7 @@ Submitted via Skyverses Booking Portal.
             initial={{ opacity: 0, y: 15 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: 0.3 }}
-            className="lg:col-span-3 bg-white dark:bg-[var(--atlas-bg-page)] rounded-lg border border-black/[0.06] dark:border-white/[0.06] overflow-hidden shadow-xl"
+            className="lg:col-span-3 bg-white dark:bg-[var(--atlas-bg-page)] rounded-lg border border-black/[0.06] dark:border-white/[0.06] overflow-hidden shadow-atlas-lg"
           >
             {/* Form Header */}
             <div className="px-6 md:px-8 py-6 border-b border-black/[0.04] dark:border-white/[0.04]">

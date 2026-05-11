@@ -58,8 +58,8 @@ const AppsPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="max-w-lg mx-auto text-center space-y-6"
           >
-            <div className="p-8 bg-white dark:bg-[var(--atlas-bg-page)] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] shadow-xl space-y-5">
-              <div className="w-16 h-16 rounded-2xl bg-brand-blue/10 text-brand-blue flex items-center justify-center mx-auto">
+            <div className="p-8 bg-white dark:bg-[var(--atlas-bg-page)] rounded-lg border border-black/[0.06] dark:border-white/[0.06] shadow-atlas-lg space-y-5">
+              <div className="w-16 h-16 rounded-lg bg-brand-blue/10 text-brand-blue flex items-center justify-center mx-auto">
                 <LogIn size={28} />
               </div>
               <div className="space-y-2">
@@ -89,7 +89,7 @@ const AppsPage: React.FC = () => {
               className="lg:col-span-2 space-y-6"
             >
               {/* Step Indicator */}
-              <div className="bg-white dark:bg-[var(--atlas-bg-page)] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] p-5 shadow-sm">
+              <div className="bg-white dark:bg-[var(--atlas-bg-page)] rounded-lg border border-black/[0.06] dark:border-white/[0.06] p-5 shadow-sm">
                 <StepIndicator 
                   currentStep={currentStep} 
                   onGoToStep={goToStep}
@@ -141,7 +141,7 @@ const AppsPage: React.FC = () => {
               transition={{ delay: 0.3 }}
               className="lg:col-span-3 relative"
             >
-              <div className="bg-white dark:bg-[var(--atlas-bg-page)] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden shadow-xl">
+              <div className="bg-white dark:bg-[var(--atlas-bg-page)] rounded-lg border border-black/[0.06] dark:border-white/[0.06] overflow-hidden shadow-atlas-lg">
                 {/* Form Header */}
                 <div className="px-6 md:px-8 py-5 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between">
                   <div>
@@ -241,7 +241,7 @@ const AppsPage: React.FC = () => {
                     initial={{ opacity: 0 }} 
                     whileInView={{ opacity: 1 }} 
                     viewport={{ once: true }}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/[0.06] border border-white/10 rounded-full"
                   >
                     <Code2 size={12} className="text-brand-blue" />
                     <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-white/70">Developer Portal</span>
@@ -289,7 +289,7 @@ const AppsPage: React.FC = () => {
 
               {/* Right: Process Steps */}
               <div className="hidden lg:block">
-                <div className="relative p-8 bg-white/[0.02] border border-white/[0.06] rounded-2xl space-y-6">
+                <div className="relative p-8 bg-white/[0.02] border border-white/[0.06] rounded-lg space-y-6">
                   <div className="flex items-center gap-2 pb-4 border-b border-white/[0.06]">
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/60" />
                     <span className="text-[10px] text-white/30 font-bold">SUBMISSION PIPELINE</span>

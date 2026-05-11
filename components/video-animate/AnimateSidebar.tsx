@@ -40,7 +40,7 @@ export const AnimateSidebar: React.FC<Props> = (props) => {
     : 'from-purple-600 to-fuchsia-600 shadow-purple-500/20';
 
   return (
-    <div className="w-full lg:w-[500px] flex flex-col h-full bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl relative transition-colors">
+    <div className="w-full lg:w-[500px] flex flex-col h-full bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-xl overflow-hidden shadow-atlas-lg relative transition-colors">
       <div className="flex-grow overflow-y-auto no-scrollbar p-8 lg:p-10 space-y-10">
         <div className="absolute top-0 right-0 p-12 opacity-[0.03] dark:opacity-[0.02] pointer-events-none text-slate-900 dark:text-white">
           <Settings2 size={240} />
@@ -53,7 +53,7 @@ export const AnimateSidebar: React.FC<Props> = (props) => {
               <ImageIcon size={14} className="text-cyan-500" /> Identity Anchor
             </div>
             <div 
-              className={`relative aspect-[3/4] rounded-3xl border-2 border-dashed transition-all overflow-hidden flex flex-col items-center justify-center gap-4 cursor-pointer group ${props.sourceImg ? 'border-cyan-500 shadow-[0_0_30px_rgba(6,182,212,0.1)]' : 'border-slate-200 dark:border-white/10 hover:border-cyan-500/40 bg-slate-50 dark:bg-white/[0.02]'}`}
+              className={`relative aspect-[3/4] rounded-xl border-2 border-dashed transition-all overflow-hidden flex flex-col items-center justify-center gap-4 cursor-pointer group ${props.sourceImg ? 'border-cyan-500 shadow-[0_0_30px_rgba(6,182,212,0.1)]' : 'border-slate-200 dark:border-white/10 hover:border-cyan-500/40 bg-slate-50 dark:bg-white/[0.02]'}`}
               onClick={() => !props.sourceImg && imgInputRef.current?.click()}
             >
               {props.sourceImg ? (
@@ -61,14 +61,14 @@ export const AnimateSidebar: React.FC<Props> = (props) => {
                   <img src={props.sourceImg} className="w-full h-full object-cover" alt="Identity" />
                   <button 
                     onClick={(e) => { e.stopPropagation(); props.setSourceImg(null); }}
-                    className="absolute top-4 right-4 p-2 bg-red-500 rounded-full hover:scale-110 transition-transform shadow-xl text-white"
+                    className="absolute top-4 right-4 p-2 bg-red-500 rounded-full hover:scale-110 transition-transform shadow-atlas-lg text-white"
                   >
                     <X size={16} strokeWidth={3} />
                   </button>
                 </>
               ) : (
                 <div className="text-center space-y-2 p-4">
-                  <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 dark:bg-cyan-500/20 flex items-center justify-center text-cyan-600 dark:text-cyan-500 mx-auto group-hover:scale-110 transition-transform shadow-inner">
+                  <div className="w-14 h-14 rounded-lg bg-cyan-500/10 dark:bg-cyan-500/20 flex items-center justify-center text-cyan-600 dark:text-cyan-500 mx-auto group-hover:scale-110 transition-transform shadow-inner">
                     <User size={32} />
                   </div>
                   <div className="space-y-1">
@@ -86,7 +86,7 @@ export const AnimateSidebar: React.FC<Props> = (props) => {
               <Film size={14} className="text-purple-500" /> Motion Reference
             </div>
             <div 
-              className={`relative aspect-[3/4] rounded-3xl border-2 border-dashed transition-all overflow-hidden flex flex-col items-center justify-center gap-4 cursor-pointer group ${props.refVideo ? 'border-purple-500 shadow-[0_0_30_rgba(147,51,234,0.1)]' : 'border-slate-200 dark:border-white/10 hover:border-purple-500/40 bg-slate-50 dark:bg-white/[0.02]'}`}
+              className={`relative aspect-[3/4] rounded-xl border-2 border-dashed transition-all overflow-hidden flex flex-col items-center justify-center gap-4 cursor-pointer group ${props.refVideo ? 'border-purple-500 shadow-[0_0_30_rgba(147,51,234,0.1)]' : 'border-slate-200 dark:border-white/10 hover:border-purple-500/40 bg-slate-50 dark:bg-white/[0.02]'}`}
               onClick={() => !props.refVideo && vidInputRef.current?.click()}
             >
               {props.refVideo ? (
@@ -96,14 +96,14 @@ export const AnimateSidebar: React.FC<Props> = (props) => {
                   </div>
                   <button 
                     onClick={(e) => { e.stopPropagation(); props.setRefVideo(null); }}
-                    className="absolute top-4 right-4 p-2 bg-red-500 rounded-full hover:scale-110 transition-transform shadow-xl text-white"
+                    className="absolute top-4 right-4 p-2 bg-red-500 rounded-full hover:scale-110 transition-transform shadow-atlas-lg text-white"
                   >
                     <X size={16} strokeWidth={3} />
                   </button>
                 </>
               ) : (
                 <div className="text-center space-y-2 p-4">
-                  <div className="w-14 h-14 rounded-2xl bg-purple-500/10 dark:bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-500 mx-auto group-hover:scale-110 transition-transform shadow-inner">
+                  <div className="w-14 h-14 rounded-lg bg-purple-500/10 dark:bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-500 mx-auto group-hover:scale-110 transition-transform shadow-inner">
                     <Film size={32} />
                   </div>
                   <div className="space-y-1">
@@ -158,13 +158,13 @@ export const AnimateSidebar: React.FC<Props> = (props) => {
                   {showModelMenu && (
                     <motion.div 
                       initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                      className="absolute bottom-full mb-2 w-full bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl p-2 z-[110] overflow-hidden max-h-60 overflow-y-auto no-scrollbar"
+                      className="absolute bottom-full mb-2 w-full bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-lg shadow-atlas-lg p-2 z-[110] overflow-hidden max-h-60 overflow-y-auto no-scrollbar"
                     >
                       {props.availableModels.map(m => (
                         <button 
                           key={m._id} 
                           onClick={() => { props.setSelectedModel(m); setShowModelMenu(false); }}
-                          className={`w-full p-4 flex flex-col items-start rounded-xl transition-all ${props.selectedModel?._id === m._id ? 'bg-brand-blue/10 text-brand-blue' : 'hover:bg-slate-50 dark:hover:bg-white/5 text-slate-600 dark:text-gray-400'}`}
+                          className={`w-full p-4 flex flex-col items-start rounded-xl transition-all ${props.selectedModel?._id === m._id ? 'bg-brand-blue/10 text-brand-blue' : 'hover:bg-slate-50 dark:hover:bg-white/[0.06] text-slate-600 dark:text-gray-400'}`}
                         >
                           <p className="text-[10px] font-bold uppercase italic">{m.name}</p>
                           <p className="text-[8px] font-medium opacity-60 uppercase tracking-widest mt-1 line-clamp-1">{m.description || 'Professional production model'}</p>
@@ -185,7 +185,7 @@ export const AnimateSidebar: React.FC<Props> = (props) => {
             <select 
               value={props.selectedQuality} 
               onChange={e => props.setSelectedQuality(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 p-4 rounded-2xl text-[11px] font-bold uppercase outline-none focus:border-cyan-500/30 text-slate-900 dark:text-white shadow-inner"
+              className="w-full bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 p-4 rounded-lg text-[11px] font-bold uppercase outline-none focus:border-cyan-500/30 text-slate-900 dark:text-white shadow-inner"
             >
               {QUALITY_MODES.map(q => <option key={q} value={q}>{q}</option>)}
             </select>
@@ -195,7 +195,7 @@ export const AnimateSidebar: React.FC<Props> = (props) => {
             <select 
               value={props.selectedRatio} 
               onChange={e => props.setSelectedRatio(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 p-4 rounded-2xl text-[11px] font-bold uppercase outline-none focus:border-cyan-500/30 text-slate-900 dark:text-white shadow-inner"
+              className="w-full bg-slate-50 dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 p-4 rounded-lg text-[11px] font-bold uppercase outline-none focus:border-cyan-500/30 text-slate-900 dark:text-white shadow-inner"
             >
               {RATIOS.map(r => <option key={r} value={r}>{r}</option>)}
             </select>
@@ -204,11 +204,11 @@ export const AnimateSidebar: React.FC<Props> = (props) => {
       </div>
 
       {/* ACTION FOOTER */}
-      <div className="p-10 border-t border-black/5 dark:border-white/5 bg-white/80 dark:bg-[var(--atlas-bg-panel)]/80 backdrop-blur-md shrink-0 space-y-4">
+      <div className="p-10 border-t border-black/5 dark:border-white/[0.06] bg-white/80 dark:bg-[var(--atlas-bg-panel)]/80 backdrop-blur-md shrink-0 space-y-4">
         <button 
           onClick={props.handleSynthesize}
           disabled={props.isGenerating || !props.sourceImg}
-          className={`w-full py-7 rounded-[2.5rem] flex items-center justify-center gap-4 text-[14px] font-bold uppercase tracking-[0.4em] shadow-2xl transition-all active:scale-[0.97] group overflow-hidden relative ${props.sourceImg ? `bg-gradient-to-r ${activeGradient} text-white` : 'bg-slate-100 dark:bg-[var(--atlas-bg-panel)] text-slate-400 dark:text-gray-500 cursor-not-allowed'}`}
+          className={`w-full py-7 rounded-xl flex items-center justify-center gap-4 text-[14px] font-bold uppercase tracking-[0.4em] shadow-atlas-lg transition-all active:scale-[0.97] group overflow-hidden relative ${props.sourceImg ? `bg-gradient-to-r ${activeGradient} text-white` : 'bg-slate-100 dark:bg-[var(--atlas-bg-panel)] text-slate-400 dark:text-gray-500 cursor-not-allowed'}`}
         >
           <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
           {props.isGenerating ? <Loader2 className="animate-spin" size={24} /> : <Zap size={24} fill="currentColor" />}

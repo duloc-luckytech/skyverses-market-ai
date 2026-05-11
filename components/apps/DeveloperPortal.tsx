@@ -11,7 +11,7 @@ export const DeveloperPortal: React.FC<DeveloperPortalProps> = ({ onApply }) => 
   return (
     <section className="py-20 md:py-28">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8">
-        <div className="relative overflow-hidden rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-[#0a0e1a] to-slate-900 dark:from-[#060810] dark:via-[#080c18] dark:to-[#060810] p-8 md:p-14 lg:p-16">
+        <div className="relative overflow-hidden rounded-xl md:rounded-xl bg-gradient-to-br from-slate-900 via-[#0a0e1a] to-slate-900 dark:from-[#060810] dark:via-[#080c18] dark:to-[#060810] p-8 md:p-14 lg:p-16">
           {/* Background glows */}
           <div className="absolute top-0 right-[20%] w-[400px] h-[400px] bg-brand-blue/10 rounded-full blur-[120px] pointer-events-none" />
           <div className="absolute bottom-0 left-[10%] w-[300px] h-[300px] bg-purple-500/8 rounded-full blur-[100px] pointer-events-none" />
@@ -24,7 +24,7 @@ export const DeveloperPortal: React.FC<DeveloperPortalProps> = ({ onApply }) => 
                   initial={{ opacity: 0 }} 
                   whileInView={{ opacity: 1 }} 
                   viewport={{ once: true }}
-                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/[0.06] border border-white/10 rounded-full"
                 >
                   <Code2 size={12} className="text-brand-blue" />
                   <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-white/70">Developer Portal</span>
@@ -71,7 +71,7 @@ export const DeveloperPortal: React.FC<DeveloperPortalProps> = ({ onApply }) => 
               <div className="flex flex-col sm:flex-row gap-3">
                 <button 
                   onClick={onApply}
-                  className="group inline-flex items-center gap-2 bg-white text-black px-7 py-3.5 rounded-xl text-xs font-bold hover:shadow-2xl hover:shadow-white/10 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                  className="group inline-flex items-center gap-2 bg-white text-black px-7 py-3.5 rounded-xl text-xs font-bold hover:shadow-atlas-lg hover:shadow-white/10 hover:scale-[1.02] active:scale-[0.98] transition-all"
                 >
                   Đăng ký Developer Access
                   <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
@@ -84,7 +84,7 @@ export const DeveloperPortal: React.FC<DeveloperPortalProps> = ({ onApply }) => 
 
             {/* Right: Visual */}
             <div className="hidden lg:block">
-              <div className="relative p-8 bg-white/[0.02] border border-white/[0.06] rounded-2xl">
+              <div className="relative p-8 bg-white/[0.02] border border-white/[0.06] rounded-lg">
                 {/* Code Preview */}
                 <div className="space-y-3 font-mono text-xs">
                   <div className="flex items-center gap-2 pb-3 border-b border-white/[0.06]">

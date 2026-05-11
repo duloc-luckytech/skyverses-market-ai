@@ -121,7 +121,7 @@ export const RenderConfig: React.FC<RenderConfigProps> = ({ settings, setSetting
       </section>
 
       {/* VIDEO CONFIGURATION */}
-      <section className="space-y-6 pt-6 border-t border-black/5 dark:border-white/5">
+      <section className="space-y-6 pt-6 border-t border-black/5 dark:border-white/[0.06]">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-purple-600/10 flex items-center justify-center text-purple-600">
             <Film size={18} />
@@ -174,7 +174,7 @@ export const RenderConfig: React.FC<RenderConfigProps> = ({ settings, setSetting
 
         <div className="space-y-2">
           <label className={sectionLabel}>CHẾ ĐỘ ƯU TIÊN</label>
-          <div className="flex gap-2 bg-slate-100 dark:bg-black/60 p-1 rounded-xl w-fit border border-black/5 dark:border-white/5">
+          <div className="flex gap-2 bg-slate-100 dark:bg-black/60 p-1 rounded-xl w-fit border border-black/5 dark:border-white/[0.06]">
              {['fast', 'quality', 'relaxed'].map(mode => (
                <button 
                  key={mode}

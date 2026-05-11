@@ -241,12 +241,12 @@ console.log(data);`;
       exit={{ opacity: 0, x: -20 }} 
       className="space-y-10 pb-32"
     >
-      <div className="p-8 lg:p-12 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/5 rounded-[2.5rem] shadow-2xl space-y-16 relative overflow-hidden transition-colors">
+      <div className="p-8 lg:p-12 bg-white dark:bg-[var(--atlas-bg-panel)] border border-black/5 dark:border-white/[0.06] rounded-xl shadow-atlas-lg space-y-16 relative overflow-hidden transition-colors">
          <div className="absolute top-0 right-0 p-12 opacity-[0.02] dark:opacity-[0.05] pointer-events-none">
             <Terminal size={320} />
          </div>
 
-         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 relative z-10 border-b border-black/5 dark:border-white/5 pb-10">
+         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 relative z-10 border-b border-black/5 dark:border-white/[0.06] pb-10">
             <div className="space-y-2">
                <div className="flex items-center gap-3">
                   <div className="w-2 h-6 bg-indigo-600 rounded-full"></div>
@@ -260,13 +260,13 @@ console.log(data);`;
             <div className="flex bg-slate-100 dark:bg-black/40 p-1 rounded-xl border border-black/5 dark:border-white/10 shrink-0">
                <button 
                  onClick={() => { setDocEndpoint('REQUEST'); setLiveResponse(null); pollingRef.current = false; setIsRunning(false); }}
-                 className={`px-6 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${docEndpoint === 'REQUEST' ? 'bg-white dark:bg-[var(--atlas-bg-panel)] text-indigo-600 shadow-xl' : 'text-gray-500'}`}
+                 className={`px-6 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${docEndpoint === 'REQUEST' ? 'bg-white dark:bg-[var(--atlas-bg-panel)] text-indigo-600 shadow-atlas-lg' : 'text-gray-500'}`}
                >
                  1. REQUEST TOKEN
                </button>
                <button 
                  onClick={() => { setDocEndpoint('POLL'); setLiveResponse(null); pollingRef.current = false; setIsRunning(false); }}
-                 className={`px-6 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${docEndpoint === 'POLL' ? 'bg-white dark:bg-[var(--atlas-bg-panel)] text-indigo-600 shadow-xl' : 'text-gray-500'}`}
+                 className={`px-6 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${docEndpoint === 'POLL' ? 'bg-white dark:bg-[var(--atlas-bg-panel)] text-indigo-600 shadow-atlas-lg' : 'text-gray-500'}`}
                >
                  2. POLL RESULT
                </button>
@@ -294,7 +294,7 @@ console.log(data);`;
                              <select 
                                value={action}
                                onChange={(e) => setAction(e.target.value as CaptchaAction)}
-                               className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 p-4 rounded-2xl text-xs font-bold uppercase italic outline-none focus:border-indigo-500/40 appearance-none cursor-pointer text-slate-800 dark:text-white shadow-inner transition-all"
+                               className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 p-4 rounded-lg text-xs font-bold uppercase italic outline-none focus:border-indigo-500/40 appearance-none cursor-pointer text-slate-800 dark:text-white shadow-inner transition-all"
                              >
                                 <option value="VIDEO">VIDEO (Veo3)</option>
                              </select>
@@ -318,7 +318,7 @@ console.log(data);`;
                                type="text"
                                value={testJobId}
                                onChange={(e) => setTestJobId(e.target.value)}
-                               className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 py-4 pl-12 pr-4 rounded-2xl text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 outline-none focus:border-indigo-500/40 shadow-inner transition-all"
+                               className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 py-4 pl-12 pr-4 rounded-lg text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 outline-none focus:border-indigo-500/40 shadow-inner transition-all"
                                placeholder="Nhập Job ID..."
                              />
                           </div>
@@ -341,7 +341,7 @@ console.log(data);`;
                              type="text"
                              value={displayApiKey}
                              onChange={(e) => setDisplayApiKey(e.target.value)}
-                             className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 py-4 pl-12 pr-4 rounded-2xl text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 outline-none focus:border-indigo-500/40 shadow-inner transition-all"
+                             className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 py-4 pl-12 pr-4 rounded-lg text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 outline-none focus:border-indigo-500/40 shadow-inner transition-all"
                              placeholder="Khóa bảo mật của bạn..."
                            />
                         </div>
@@ -360,12 +360,12 @@ console.log(data);`;
                      </h4>
                   </div>
                   
-                  <div className="flex bg-slate-100 dark:bg-black/40 p-1 rounded-xl border border-black/5 dark:border-white/5 shadow-inner">
+                  <div className="flex bg-slate-100 dark:bg-black/40 p-1 rounded-xl border border-black/5 dark:border-white/[0.06] shadow-inner">
                      {(['CURL', 'PYTHON', 'NODEJS'] as CodeLang[]).map(lang => (
                        <button 
                          key={lang}
                          onClick={() => setActiveLang(lang)}
-                         className={`px-5 py-2.5 text-[9px] font-bold uppercase tracking-widest transition-all rounded-lg ${activeLang === lang ? 'bg-white dark:bg-[var(--atlas-bg-panel)] text-indigo-600 shadow-xl' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
+                         className={`px-5 py-2.5 text-[9px] font-bold uppercase tracking-widest transition-all rounded-lg ${activeLang === lang ? 'bg-white dark:bg-[var(--atlas-bg-panel)] text-indigo-600 shadow-atlas-lg' : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'}`}
                        >
                          {lang}
                        </button>
@@ -375,7 +375,7 @@ console.log(data);`;
 
                <div className="relative group">
                   <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <pre className="p-8 bg-[var(--atlas-bg-page)] rounded-[2.5rem] border border-white/5 text-[12px] font-mono text-indigo-400/90 overflow-x-auto shadow-2xl leading-relaxed min-h-[220px] no-scrollbar">
+                  <pre className="p-8 bg-[var(--atlas-bg-page)] rounded-xl border border-white/[0.06] text-[12px] font-mono text-indigo-400/90 overflow-x-auto shadow-atlas-lg leading-relaxed min-h-[220px] no-scrollbar">
                      <AnimatePresence mode="wait">
                        <motion.code
                          key={activeLang + action + displayApiKey + docEndpoint + testJobId}
@@ -392,7 +392,7 @@ console.log(data);`;
                   <div className="absolute top-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
                     <button 
                       onClick={handleRunRequest}
-                      className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-xl transition-all active:scale-95 ${
+                      className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-atlas-lg transition-all active:scale-95 ${
                         isRunning 
                           ? 'bg-rose-600 text-white shadow-rose-500/20' 
                           : 'bg-indigo-600 text-white shadow-indigo-600/20 hover:scale-105'
@@ -412,7 +412,7 @@ console.log(data);`;
                     </button>
                     <button 
                       onClick={() => handleCopy(getCodeContent(activeLang)!, activeLang)}
-                      className="p-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-gray-400 hover:text-white transition-all border border-white/5 backdrop-blur-md"
+                      className="p-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-gray-400 hover:text-white transition-all border border-white/[0.06] backdrop-blur-md"
                     >
                        {copiedSection === activeLang ? <Check size={18} className="text-emerald-500" /> : <Copy size={18} />}
                     </button>
@@ -420,7 +420,7 @@ console.log(data);`;
                </div>
 
                <div className="pt-10 space-y-8">
-                  <div className="flex justify-between items-center border-b border-black/5 dark:border-white/5 pb-5">
+                  <div className="flex justify-between items-center border-b border-black/5 dark:border-white/[0.06] pb-5">
                     <div className="flex items-center gap-3">
                        <Server size={16} className={liveResponse ? "text-indigo-500" : "text-emerald-500"} />
                        <h4 className="text-[11px] font-bold uppercase tracking-[0.4em] text-slate-400 flex items-center gap-3 italic leading-none">
@@ -457,7 +457,7 @@ console.log(data);`;
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
-                          className="absolute inset-0 z-20 bg-white/60 dark:bg-black/60 backdrop-blur-md flex flex-col items-center justify-center gap-4 rounded-[2.5rem]"
+                          className="absolute inset-0 z-20 bg-white/60 dark:bg-black/60 backdrop-blur-md flex flex-col items-center justify-center gap-4 rounded-xl"
                         >
                            <Loader2 size={32} className="text-indigo-600 animate-spin" />
                            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-indigo-600 animate-pulse italic">Đang truy vấn dữ liệu theo chu kỳ 5 giây...</p>
@@ -465,7 +465,7 @@ console.log(data);`;
                       )}
                     </AnimatePresence>
                     
-                    <pre className={`p-8 rounded-[2.5rem] border border-white/5 text-[12px] font-mono overflow-x-auto shadow-inner leading-relaxed transition-all duration-700 min-h-[160px] ${liveResponse ? "bg-black text-indigo-400 shadow-[0_0_50px_rgba(99,102,241,0.1)]" : "bg-[#08080a] text-emerald-500/80"}`}>
+                    <pre className={`p-8 rounded-xl border border-white/[0.06] text-[12px] font-mono overflow-x-auto shadow-inner leading-relaxed transition-all duration-700 min-h-[160px] ${liveResponse ? "bg-black text-indigo-400 shadow-[0_0_50px_rgba(99,102,241,0.1)]" : "bg-[#08080a] text-emerald-500/80"}`}>
                        {liveResponse ? JSON.stringify(liveResponse, null, 4) : responseSchemaExample}
                     </pre>
                     

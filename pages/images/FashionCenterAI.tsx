@@ -74,23 +74,23 @@ const FashionCenterAI = () => {
               >
                 Start Fashion Studio <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="px-12 py-6 border border-slate-200 dark:border-white/10 rounded-sm text-[12px] font-bold uppercase tracking-[0.4em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/10 transition-all bg-white/50 dark:bg-white/5 backdrop-blur-md flex items-center justify-center gap-4">
+              <button className="px-12 py-6 border border-slate-200 dark:border-white/10 rounded-sm text-[12px] font-bold uppercase tracking-[0.4em] text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-white/10 transition-all bg-white/50 dark:bg-white/[0.06] backdrop-blur-md flex items-center justify-center gap-4">
                 Watch Demo <Play size={16} fill="currentColor" />
               </button>
             </div>
           </div>
 
           <div className="lg:col-span-6 relative">
-             <div className="aspect-[3/4] bg-white dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/5 rounded-sm p-6 shadow-3xl overflow-hidden group transition-colors">
+             <div className="aspect-[3/4] bg-white dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/[0.06] rounded-sm p-6 shadow-atlas-xl overflow-hidden group transition-colors">
                 <div className="flex h-full gap-6">
                    {/* Left Panel Simulator */}
-                   <div className="w-1/3 h-full border-r border-slate-100 dark:border-white/5 pr-6 space-y-6 opacity-40 group-hover:opacity-100 transition-opacity">
+                   <div className="w-1/3 h-full border-r border-slate-100 dark:border-white/[0.06] pr-6 space-y-6 opacity-40 group-hover:opacity-100 transition-opacity">
                       <div className="space-y-2">
                         <div className="h-1 w-10 bg-pink-500"></div>
                         <div className="h-4 w-full bg-slate-100 dark:bg-white/10 rounded-sm"></div>
                       </div>
                       <div className="grid grid-cols-2 gap-2 pt-4">
-                         {[1,2,3,4].map(i => <div key={i} className="aspect-square bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5"></div>)}
+                         {[1,2,3,4].map(i => <div key={i} className="aspect-square bg-slate-50 dark:bg-white/[0.06] border border-slate-100 dark:border-white/[0.06]"></div>)}
                       </div>
                       <div className="space-y-3 pt-6">
                          <div className="h-2 w-1/2 bg-slate-100 dark:bg-white/10 rounded-sm"></div>
@@ -110,7 +110,7 @@ const FashionCenterAI = () => {
                 </div>
              </div>
              {/* Floating Badge */}
-             <div className="absolute -bottom-8 -right-8 bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-6 rounded-sm shadow-3xl border-4 border-slate-900 dark:border-white animate-bounce hidden md:block transition-colors">
+             <div className="absolute -bottom-8 -right-8 bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-6 rounded-sm shadow-atlas-xl border-4 border-slate-900 dark:border-white animate-bounce hidden md:block transition-colors">
                 <div className="flex items-center gap-4">
                    <div className="p-3 bg-pink-500/10 rounded-full text-pink-600"><Crown size={24}/></div>
                    <div className="space-y-0.5">
@@ -124,7 +124,7 @@ const FashionCenterAI = () => {
       </section>
 
       {/* 2. HOW IT WORKS */}
-      <section className="py-40 border-y border-slate-100 dark:border-white/5 relative bg-slate-50 dark:bg-[var(--atlas-bg-page)] transition-colors">
+      <section className="py-40 border-y border-slate-100 dark:border-white/[0.06] relative bg-slate-50 dark:bg-[var(--atlas-bg-page)] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center space-y-4 mb-24">
              <h2 className="text-4xl lg:text-6xl font-bold uppercase italic tracking-tighter text-slate-900 dark:text-white">Automated Fashion Flow</h2>
@@ -137,7 +137,7 @@ const FashionCenterAI = () => {
               { s: '02', t: 'Upload Clothing', d: 'Upload a flat lay or ghost mannequin photo of the garment you want to try on.', i: <Shirt /> },
               { s: '03', t: 'Generate Results', d: 'AI maps the fabric textures and drape onto the model with realistic physics.', i: <Sparkles /> }
             ].map((step, i) => (
-              <div key={i} className="p-12 bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 rounded-sm relative group hover:border-pink-500/30 transition-all shadow-sm">
+              <div key={i} className="p-12 bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.06] rounded-sm relative group hover:border-pink-500/30 transition-all shadow-sm">
                 <div className="absolute top-6 right-10 text-6xl font-bold italic text-slate-900/[0.03] dark:text-white/[0.03] group-hover:text-pink-500/10 transition-colors">{step.s}</div>
                 <div className="w-16 h-16 bg-pink-500/5 dark:bg-pink-500/10 border border-pink-500/10 dark:border-pink-500/20 flex items-center justify-center text-pink-600 dark:text-pink-500 mb-10 rounded-sm group-hover:scale-110 transition-transform">
                    {React.cloneElement(step.i as React.ReactElement<any>, { size: 32 })}
@@ -153,7 +153,7 @@ const FashionCenterAI = () => {
       {/* 3. CORE FEATURES */}
       <section className="py-40 bg-white dark:bg-[var(--atlas-bg-page)] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-100 dark:bg-white/5 border border-slate-100 dark:border-white/5 shadow-3xl">
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-100 dark:bg-white/[0.06] border border-slate-100 dark:border-white/[0.06] shadow-atlas-xl">
               {[
                 { t: 'Virtual Try-On', i: <User />, d: 'Apply any garment to any model image with perfect alignment.' },
                 { t: 'Outfit Replacement', i: <Shirt />, d: 'Swap clothes on existing model photos without reshooting.' },
@@ -164,7 +164,7 @@ const FashionCenterAI = () => {
                 { t: 'Batch Processing', i: <Layers />, d: 'Generate entire catalog variants in a single workflow.' },
                 { t: 'IP Protection', i: <ShieldCheck />, d: 'Your proprietary designs are secure and never used for training.' }
               ].map((f, i) => (
-                <div key={i} className="p-12 bg-white dark:bg-[var(--atlas-bg-page)] space-y-6 hover:bg-pink-500/[0.02] transition-all duration-500 border-r border-slate-50 dark:border-white/5 last:border-r-0">
+                <div key={i} className="p-12 bg-white dark:bg-[var(--atlas-bg-page)] space-y-6 hover:bg-pink-500/[0.02] transition-all duration-500 border-r border-slate-50 dark:border-white/[0.06] last:border-r-0">
                    <div className="w-12 h-12 border border-slate-100 dark:border-white/10 flex items-center justify-center text-slate-400 group-hover:text-pink-500 transition-colors rounded-sm shadow-sm dark:shadow-none">
                       {React.cloneElement(f.i as React.ReactElement<any>, { size: 20 })}
                    </div>
@@ -179,7 +179,7 @@ const FashionCenterAI = () => {
       </section>
 
       {/* 4. STUDIO UI SHOWCASE */}
-      <section className="py-40 border-t border-slate-50 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.01] transition-colors">
+      <section className="py-40 border-t border-slate-50 dark:border-white/[0.06] bg-slate-50/50 dark:bg-white/[0.01] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-32 items-center">
              <div className="space-y-12">
@@ -193,7 +193,7 @@ const FashionCenterAI = () => {
                      { t: 'Neural Physics', d: 'AI understands fabric weight and drape for realistic fitting.' },
                      { t: 'Studio Context', d: 'Choose backgrounds, lighting setups, and camera angles.' }
                    ].map(item => (
-                     <div key={item.t} className="flex items-start gap-6 p-6 border border-slate-200 dark:border-white/5 bg-white dark:bg-white/[0.02] rounded-sm group hover:border-pink-500/30 transition-all shadow-sm">
+                     <div key={item.t} className="flex items-start gap-6 p-6 border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] rounded-sm group hover:border-pink-500/30 transition-all shadow-sm">
                         <CheckCircle2 size={24} className="text-pink-500 shrink-0" />
                         <div className="space-y-1">
                            <h5 className="font-bold uppercase tracking-widest text-sm text-slate-800 dark:text-white">{item.t}</h5>
@@ -206,8 +206,8 @@ const FashionCenterAI = () => {
              
              <div className="relative">
                 <div className="absolute inset-0 bg-pink-500/5 blur-[120px] rounded-full animate-pulse"></div>
-                <div className="relative bg-white dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/10 p-12 rounded-sm shadow-3xl space-y-10 group overflow-hidden">
-                   <div className="flex justify-between items-center border-b border-slate-100 dark:border-white/5 pb-6">
+                <div className="relative bg-white dark:bg-[var(--atlas-bg-page)] border border-slate-200 dark:border-white/10 p-12 rounded-sm shadow-atlas-xl space-y-10 group overflow-hidden">
+                   <div className="flex justify-between items-center border-b border-slate-100 dark:border-white/[0.06] pb-6">
                       <span className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-[0.4em]">Engine_Inspector</span>
                       <Settings2 size={16} className="text-pink-600 dark:text-pink-500" />
                    </div>
@@ -215,12 +215,12 @@ const FashionCenterAI = () => {
                       {['Fabric Fidelity', 'Model Alignment', 'Lighting Match'].map(l => (
                         <div key={l} className="space-y-3">
                            <div className="flex justify-between text-[8px] font-bold uppercase text-slate-400 dark:text-gray-500"><span>{l}</span><span>94%</span></div>
-                           <div className="h-1 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-pink-500 w-[94%]"></div></div>
+                           <div className="h-1 bg-slate-100 dark:bg-white/[0.06] rounded-full overflow-hidden"><div className="h-full bg-pink-500 w-[94%]"></div></div>
                         </div>
                       ))}
                    </div>
                    <div className="pt-6 grid grid-cols-3 gap-4">
-                      {[1,2,3].map(i => <div key={i} className="aspect-[3/4] bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-sm shadow-inner"></div>)}
+                      {[1,2,3].map(i => <div key={i} className="aspect-[3/4] bg-slate-50 dark:bg-white/[0.06] border border-slate-100 dark:border-white/10 rounded-sm shadow-inner"></div>)}
                    </div>
                    <div className="absolute -bottom-2 -right-2 opacity-5 group-hover:opacity-20 transition-opacity">
                       <Shirt size={200} className="text-slate-900 dark:text-white" />
@@ -241,7 +241,7 @@ const FashionCenterAI = () => {
               <p className="text-slate-400 dark:text-gray-500 font-bold uppercase text-xs tracking-widest max-w-xs text-right italic">"From catalog production to social hype — scaled in seconds."</p>
            </div>
 
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-200 dark:bg-white/5 border border-slate-200 dark:border-white/5 shadow-xl">
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-200 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.06] shadow-atlas-lg">
               {[
                 { t: 'E-commerce Catalogs', d: 'Generate consistent product images for thousands of SKUs.', img: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=800' },
                 { t: 'Digital Lookbooks', d: 'Architect premium brand stories with high-end models.', img: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&q=80&w=800' },
@@ -265,7 +265,7 @@ const FashionCenterAI = () => {
       </section>
 
       {/* 6. FINAL CTA */}
-      <section className="py-60 text-center relative overflow-hidden border-t border-slate-100 dark:border-white/5 bg-white dark:bg-black transition-colors">
+      <section className="py-60 text-center relative overflow-hidden border-t border-slate-100 dark:border-white/[0.06] bg-white dark:bg-black transition-colors">
         <div className="absolute inset-0 z-0 opacity-5 dark:opacity-10 flex flex-wrap gap-4 p-8 pointer-events-none text-[220px] font-bold text-slate-900 dark:text-pink-600 leading-none tracking-tighter select-none italic">
           FASHION FASHION FASHION FASHION
         </div>
@@ -284,7 +284,7 @@ const FashionCenterAI = () => {
       </section>
 
       {/* 7. FOOTER */}
-      <footer className="py-20 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-[var(--atlas-bg-page)] transition-colors">
+      <footer className="py-20 border-t border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-[var(--atlas-bg-page)] transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-12 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">
            <div className="flex flex-col items-center md:items-start gap-4">
               <div className="flex items-center gap-4">

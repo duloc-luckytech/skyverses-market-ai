@@ -239,7 +239,7 @@ const SlideCanvas: React.FC<Props> = ({
           {/* ── Canvas frame ── */}
           <div
             ref={canvasRef}
-            className={`w-full ${ratioClass} relative rounded-2xl overflow-hidden shadow-2xl border border-black/[0.08] dark:border-white/[0.08] shrink-0 transition-all duration-300`}
+            className={`w-full ${ratioClass} relative rounded-lg overflow-hidden shadow-atlas-lg border border-black/[0.08] dark:border-white/[0.08] shrink-0 transition-all duration-300`}
             style={{ isolation: 'isolate' }}
             onClick={handleCanvasClick}
           >

@@ -9,14 +9,14 @@ export const ShowcaseGallerySkeleton: React.FC = () => (
       {/* Left info column */}
       <div className="md:w-1/4 shrink-0 flex flex-col gap-4 md:py-8">
         <div className={`h-8 w-48 bg-amber-500/10 rounded-lg ${shimmer}`} />
-        <div className="h-4 w-32 bg-white/5 rounded" />
+        <div className="h-4 w-32 bg-white/[0.06] rounded" />
         <div className="space-y-2 mt-2">
-          <div className="h-3 w-full bg-white/5 rounded" />
-          <div className="h-3 w-4/5 bg-white/5 rounded" />
+          <div className="h-3 w-full bg-white/[0.06] rounded" />
+          <div className="h-3 w-4/5 bg-white/[0.06] rounded" />
         </div>
         <div className="flex gap-4 mt-4">
-          <div className="h-3 w-16 bg-white/5 rounded" />
-          <div className="h-3 w-16 bg-white/5 rounded" />
+          <div className="h-3 w-16 bg-white/[0.06] rounded" />
+          <div className="h-3 w-16 bg-white/[0.06] rounded" />
         </div>
         {/* Thumbnail grid */}
         <div className="grid grid-cols-3 gap-2 mt-4">
@@ -42,25 +42,25 @@ export const EnterpriseSectionSkeleton: React.FC = () => (
       {/* Header */}
       <div className="space-y-4 mb-14">
         <div className="h-6 w-32 bg-amber-500/10 rounded" />
-        <div className={`h-10 w-96 bg-slate-200/60 rounded-xl ${shimmer}`} />
-        <div className="h-4 w-80 bg-slate-100 rounded" />
+        <div className={`h-10 w-96 bg-white/[0.08] rounded-xl ${shimmer}`} />
+        <div className="h-4 w-80 bg-white/[0.06] rounded" />
       </div>
       {/* Buttons */}
       <div className="flex gap-5 mb-14">
         <div className="h-9 w-36 bg-amber-500/20 rounded" />
-        <div className="h-9 w-36 bg-slate-200/40 rounded border border-slate-200" />
+        <div className="h-9 w-36 bg-white/[0.06] rounded border border-white/[0.08]" />
       </div>
       {/* 2-col cards */}
       <div className="grid grid-cols-2 gap-2.5 mb-2.5">
         {[1, 2].map(i => (
           <div key={i} className="bg-white rounded p-8 space-y-8 border border-black/[0.04]">
-            <div className={`h-10 w-3/4 bg-slate-200/60 rounded-xl ${shimmer}`} />
-            <div className={`w-full aspect-[591/330] bg-slate-100 rounded ${shimmer}`} />
+            <div className={`h-10 w-3/4 bg-white/[0.08] rounded-xl ${shimmer}`} />
+            <div className={`w-full aspect-[591/330] bg-white/[0.06] rounded ${shimmer}`} />
             <div className="space-y-3">
               {[1, 2, 3].map(j => (
                 <div key={j} className="flex items-center gap-5">
-                  <div className="w-2 h-2 bg-slate-300 rounded-full shrink-0" />
-                  <div className="h-5 w-3/4 bg-slate-100 rounded" />
+                  <div className="w-2 h-2 bg-white/10 rounded-full shrink-0" />
+                  <div className="h-5 w-3/4 bg-white/[0.06] rounded" />
                 </div>
               ))}
             </div>
@@ -77,20 +77,20 @@ export const HomeBlockSkeleton: React.FC = () => (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex items-end justify-between mb-8">
         <div className="space-y-2">
-          <div className={`h-7 w-52 bg-slate-200/60 rounded-lg ${shimmer}`} />
-          <div className="h-4 w-72 bg-slate-100 rounded" />
+          <div className={`h-7 w-52 bg-white/[0.08] rounded-lg ${shimmer}`} />
+          <div className="h-4 w-72 bg-white/[0.06] rounded" />
         </div>
         <div className="hidden md:block h-4 w-16 bg-amber-500/20 rounded" />
       </div>
       <div className="flex gap-5 overflow-hidden">
         {[1, 2, 3, 4, 5].map(i => (
-          <div key={i} className={`flex-shrink-0 w-[280px] md:w-[320px] xl:w-[360px] bg-white border border-black/[0.06] rounded-2xl overflow-hidden ${shimmer}`}>
-            <div className="aspect-[16/10] bg-slate-200/60" />
+          <div key={i} className={`flex-shrink-0 w-[280px] md:w-[320px] xl:w-[360px] bg-white border border-black/[0.06] rounded-lg overflow-hidden ${shimmer}`}>
+            <div className="aspect-[16/10] bg-white/[0.08]" />
             <div className="p-4 md:p-6 space-y-4">
-              <div className="h-6 bg-slate-200/60 rounded w-3/4" />
+              <div className="h-6 bg-white/[0.08] rounded w-3/4" />
               <div className="space-y-2">
-                <div className="h-3 bg-slate-100 rounded w-full" />
-                <div className="h-3 bg-slate-100 rounded w-5/6" />
+                <div className="h-3 bg-white/[0.06] rounded w-full" />
+                <div className="h-3 bg-white/[0.06] rounded w-5/6" />
               </div>
             </div>
           </div>
@@ -116,23 +116,23 @@ export const DevelopersSkeleton: React.FC = () => (
     <div style={{ width: '100%', maxWidth: 1300, margin: '0 auto' }}>
       <div className="space-y-4 mb-14">
         <div className="h-6 w-40 bg-amber-500/10 rounded" />
-        <div className={`h-10 w-80 bg-slate-200/60 rounded-xl ${shimmer}`} />
-        <div className="h-4 w-96 bg-slate-100 rounded" />
+        <div className={`h-10 w-80 bg-white/[0.08] rounded-xl ${shimmer}`} />
+        <div className="h-4 w-96 bg-white/[0.06] rounded" />
       </div>
       <div className="flex gap-12">
         <div className="flex-1 space-y-6">
-          <div className={`h-10 w-3/4 bg-slate-200/60 rounded-xl ${shimmer}`} />
+          <div className={`h-10 w-3/4 bg-white/[0.08] rounded-xl ${shimmer}`} />
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-4 bg-slate-100 rounded w-full" />
+              <div key={i} className="h-4 bg-white/[0.06] rounded w-full" />
             ))}
           </div>
           <div className="flex gap-5 mt-4">
             <div className="h-9 w-36 bg-amber-500/20 rounded" />
-            <div className="h-9 w-36 bg-slate-200/40 rounded" />
+            <div className="h-9 w-36 bg-white/[0.06] rounded" />
           </div>
         </div>
-        <div className={`flex-1 aspect-[789/440] bg-slate-100 rounded ${shimmer}`} />
+        <div className={`flex-1 aspect-[789/440] bg-white/[0.06] rounded ${shimmer}`} />
       </div>
     </div>
   </section>

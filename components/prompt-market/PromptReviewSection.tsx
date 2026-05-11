@@ -159,14 +159,14 @@ export default function PromptReviewSection({ promptSetId, hasPurchased }: Props
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder={t('promptReview.commentPlaceholder') || 'Share your experience with this prompt set...'}
-            className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/30 resize-none focus:outline-none focus:border-[#7036F0]/50"
+            className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/30 resize-none focus:outline-none focus:border-[#C9A84C]/50"
             rows={3}
           />
           {error && <p className="text-red-400 text-xs">{error}</p>}
           <button
             onClick={handleSubmit}
             disabled={submitting || rating === 0}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#7036F0] text-white text-sm font-medium hover:bg-[#7036F0]/80 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C9A84C] text-white text-sm font-medium hover:bg-[#C9A84C]/80 transition-colors disabled:opacity-50"
           >
             {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
             {t('promptReview.submit') || 'Submit Review'}
@@ -199,8 +199,8 @@ export default function PromptReviewSection({ promptSetId, hasPurchased }: Props
                         className="w-7 h-7 rounded-full object-cover ring-1 ring-white/10"
                       />
                     ) : (
-                      <div className="w-7 h-7 rounded-full bg-[#7036F0]/20 flex items-center justify-center ring-1 ring-white/10">
-                        <User className="w-3.5 h-3.5 text-[#7036F0]/70" />
+                      <div className="w-7 h-7 rounded-full bg-[#C9A84C]/20 flex items-center justify-center ring-1 ring-white/10">
+                        <User className="w-3.5 h-3.5 text-[#C9A84C]/70" />
                       </div>
                     )}
                     <div>

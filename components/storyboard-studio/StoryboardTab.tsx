@@ -165,7 +165,7 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
             />
             <button
               onClick={(e) => { e.stopPropagation(); onView(); }}
-              className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm border border-white/15 rounded-lg px-2 py-1 text-[8px] font-bold uppercase tracking-widest text-white/80 hover:text-white hover:bg-brand-blue/70 transition-all opacity-60 hover:opacity-100 z-10"
+              className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm border border-white/[0.15] rounded-lg px-2 py-1 text-[8px] font-bold uppercase tracking-widest text-white/80 hover:text-white hover:bg-brand-blue/70 transition-all opacity-60 hover:opacity-100 z-10"
             >
               <Maximize2 size={10} /> <span className={isListView ? '' : 'hidden sm:inline'}>Xem</span>
             </button>
@@ -197,7 +197,7 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); onView(); }}
-              className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm border border-white/15 rounded-lg px-2 py-1 text-[8px] font-bold uppercase tracking-widest text-white/80 hover:text-white hover:bg-brand-blue/70 transition-all opacity-60 hover:opacity-100 z-10"
+              className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm border border-white/[0.15] rounded-lg px-2 py-1 text-[8px] font-bold uppercase tracking-widest text-white/80 hover:text-white hover:bg-brand-blue/70 transition-all opacity-60 hover:opacity-100 z-10"
             >
               <Play size={10} fill="currentColor" /> <span className={isListView ? '' : 'hidden sm:inline'}>Xem</span>
             </button>
@@ -256,7 +256,7 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
 
       {/* Character strip */}
       {characterAssets.length > 0 && (
-        <div className="px-4 py-2 bg-slate-50 dark:bg-white/[0.02] border-b border-slate-100 dark:border-white/5 flex items-center gap-2">
+        <div className="px-4 py-2 bg-slate-50 dark:bg-white/[0.02] border-b border-slate-100 dark:border-white/[0.06] flex items-center gap-2">
           <User size={10} className="text-emerald-500 shrink-0" />
           <span className="text-[7px] font-bold uppercase text-emerald-500 tracking-widest shrink-0">Mỏ neo:</span>
           <div className="flex -space-x-1.5">
@@ -289,7 +289,7 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
 
       {/* Audio player — hiện khi scene có audioUrl */}
       {scene.audioUrl && (
-        <div className="px-4 py-2 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02] flex items-center gap-2.5">
+        <div className="px-4 py-2 border-t border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02] flex items-center gap-2.5">
           <div className="w-5 h-5 rounded-md bg-violet-500/15 flex items-center justify-center shrink-0">
             <Music2 size={10} className="text-violet-400" />
           </div>
@@ -347,7 +347,7 @@ const SceneCardWrapper: React.FC<SceneCardWrapperProps> = ({
 
       <div
         onClick={onToggle}
-        className={`relative flex overflow-hidden transition-all duration-300 cursor-pointer ml-1 rounded-2xl
+        className={`relative flex overflow-hidden transition-all duration-300 cursor-pointer ml-1 rounded-lg
           ${isListView ? 'flex-row min-h-[120px]' : 'flex-col'}
           ${isSelected
             ? 'ring-2 ring-brand-blue shadow-[0_0_0_4px_rgba(201, 168, 76,0.12)]'
@@ -496,7 +496,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
       <div className="max-w-[1600px] mx-auto w-full">
 
         {/* ── Scenes Panel ─────────────────────────────────────────── */}
-        <div className="space-y-6 pt-2 border-slate-100 dark:border-white/5">
+        <div className="space-y-6 pt-2 border-slate-100 dark:border-white/[0.06]">
           {/* Header toolbar */}
           <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
@@ -523,7 +523,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Tìm cảnh… (/)"
-                    className="pl-7 pr-7 py-2 rounded-xl border border-slate-200 dark:border-white/8 bg-white dark:bg-white/5 text-[10px] font-medium text-slate-700 dark:text-white placeholder:text-slate-300 dark:placeholder:text-white/20 outline-none focus:border-brand-blue/50 focus:ring-2 focus:ring-brand-blue/10 w-[150px] transition-all"
+                    className="pl-7 pr-7 py-2 rounded-xl border border-slate-200 dark:border-white/8 bg-white dark:bg-white/[0.06] text-[10px] font-medium text-slate-700 dark:text-white placeholder:text-slate-300 dark:placeholder:text-white/20 outline-none focus:border-brand-blue/50 focus:ring-2 focus:ring-brand-blue/10 w-[150px] transition-all"
                   />
                   {searchQuery && (
                     <button
@@ -557,20 +557,20 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                   <button
                     onClick={onGenerateImages}
                     disabled={isProcessing}
-                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/8 rounded-xl text-[9px] font-bold uppercase tracking-widest text-slate-500 dark:text-gray-400 hover:text-brand-blue transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">
+                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-white/[0.06] border border-slate-200 dark:border-white/8 rounded-xl text-[9px] font-bold uppercase tracking-widest text-slate-500 dark:text-gray-400 hover:text-brand-blue transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">
                     <LucideImage size={12} /> Ảnh
                   </button>
                   <button
                     onClick={onGenerateVideos}
                     disabled={isProcessing}
-                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/8 rounded-xl text-[9px] font-bold uppercase tracking-widest text-slate-500 dark:text-gray-400 hover:text-purple-500 transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">
+                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-white/[0.06] border border-slate-200 dark:border-white/8 rounded-xl text-[9px] font-bold uppercase tracking-widest text-slate-500 dark:text-gray-400 hover:text-purple-500 transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">
                     <Film size={12} /> Video
                   </button>
                 </>
               )}
               {/* Bulk duration selector — visible when ≥2 scenes selected */}
               {selectedSceneIds.length >= 2 && onBulkDurationChange && (
-                <div className="flex items-center gap-1 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/8 rounded-xl px-2 py-1.5 shadow-sm">
+                <div className="flex items-center gap-1 bg-white dark:bg-white/[0.06] border border-slate-200 dark:border-white/8 rounded-xl px-2 py-1.5 shadow-sm">
                   <span className="text-[8px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-400 mr-1">⏱</span>
                   {([4, 8, 12, 16] as DurationPreset[]).map((d) => (
                     <button
@@ -631,7 +631,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               <button
                 onClick={() => setIsShortcutsOpen(true)}
                 title="Xem phím tắt (?)"
-                className="p-2 rounded-xl border border-slate-200 dark:border-white/8 bg-white dark:bg-white/5 text-slate-400 dark:text-gray-400 hover:text-brand-blue transition-all"
+                className="p-2 rounded-xl border border-slate-200 dark:border-white/8 bg-white dark:bg-white/[0.06] text-slate-400 dark:text-gray-400 hover:text-brand-blue transition-all"
               >
                 <Keyboard size={13} />
               </button>
@@ -641,7 +641,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                 <button
                   onClick={() => onAddAct()}
                   title="Tạo Act mới (nhóm cảnh)"
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-white/8 bg-white dark:bg-white/5 text-slate-400 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue hover:border-brand-blue/40 transition-all text-[10px] font-bold"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-white/8 bg-white dark:bg-white/[0.06] text-slate-400 dark:text-gray-400 hover:text-brand-blue dark:hover:text-brand-blue hover:border-brand-blue/40 transition-all text-[10px] font-bold"
                 >
                   <Plus size={11} />
                   <span className="hidden lg:inline">Act</span>
@@ -672,7 +672,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
                   </span>
 
                   {/* Progress bar */}
-                  <div className="flex-1 h-1 bg-slate-100 dark:bg-white/8 rounded-full overflow-hidden">
+                  <div className="flex-1 h-1 bg-slate-100 dark:bg-white/[0.08] rounded-full overflow-hidden">
                     <motion.div
                       className="h-full bg-brand-blue rounded-full"
                       initial={{ width: 0 }}
@@ -711,7 +711,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
           ) : isProcessing ? (
             <div className={`grid gap-4 lg:gap-6 ${viewLayout === 'list' ? 'grid-cols-1' : 'grid-cols-2 md:grid-cols-2 xl:grid-cols-3'}`}>
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="aspect-video bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 rounded-2xl animate-pulse flex flex-col items-center justify-center gap-3">
+                <div key={i} className="aspect-video bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.06] rounded-lg animate-pulse flex flex-col items-center justify-center gap-3">
                   <Loader2 className="animate-spin text-brand-blue/40" size={24} />
                   <span className="text-[9px] font-bold text-slate-300 dark:text-gray-400 uppercase tracking-widest">Đang phân tích...</span>
                 </div>
@@ -722,10 +722,10 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4 }}
-              className="flex flex-col items-center justify-center gap-6 py-16 px-6 text-center border-2 border-dashed border-slate-200 dark:border-white/8 rounded-2xl bg-white dark:bg-white/[0.01]"
+              className="flex flex-col items-center justify-center gap-6 py-16 px-6 text-center border-2 border-dashed border-slate-200 dark:border-white/8 rounded-lg bg-white dark:bg-white/[0.01]"
             >
               {/* Icon */}
-              <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-lg bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center">
                 <Clapperboard size={28} className="text-slate-300 dark:text-white/45" />
               </div>
 
@@ -763,7 +763,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
           ) : filteredScenes.length === 0 && searchQuery.trim() ? (
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              className="flex flex-col items-center justify-center gap-3 py-12 text-center border-2 border-dashed border-slate-200 dark:border-white/8 rounded-2xl"
+              className="flex flex-col items-center justify-center gap-3 py-12 text-center border-2 border-dashed border-slate-200 dark:border-white/8 rounded-lg"
             >
               <Search size={24} className="text-slate-300 dark:text-white/45" />
               <p className="text-[12px] font-semibold text-slate-400 dark:text-gray-400">
@@ -920,7 +920,7 @@ export const StoryboardTab: React.FC<StoryboardTabProps> = ({
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.92, opacity: 0, y: 8 }}
               transition={{ type: 'spring', stiffness: 380, damping: 28 }}
-              className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-2xl"
+              className="bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 rounded-lg p-6 w-full max-w-sm shadow-atlas-lg"
               onClick={e => e.stopPropagation()}
             >
               <p className="text-[11px] font-bold uppercase tracking-widest text-rose-500 mb-1">Xác nhận xoá</p>

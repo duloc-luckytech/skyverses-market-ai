@@ -326,7 +326,7 @@ const ExplorerPage = () => {
                             animate={{ opacity: 1, y: cfg.y, rotate: cfg.rotate }}
                             transition={{ delay: cfg.delay, duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
                             whileHover={{ rotate: 0, scale: 1.06, y: cfg.y - 8 }}
-                            className="absolute top-0 w-[45%] h-full rounded-lg overflow-hidden shadow-2xl border-2 border-white/80 dark:border-white/[0.08] cursor-pointer"
+                            className="absolute top-0 w-[45%] h-full rounded-lg overflow-hidden shadow-atlas-lg border-2 border-white/80 dark:border-white/[0.08] cursor-pointer"
                             style={{ left: `${i * 25}%`, zIndex: cfg.z, transform: `translateX(${cfg.x}px)` }}
                             onClick={() => setSelectedItem(item)}
                           >
@@ -497,7 +497,7 @@ const ExplorerPage = () => {
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[500] w-full max-w-xl px-4"
           >
-            <div className="bg-white/90 dark:bg-[#1a1a22]/90 backdrop-blur-2xl border border-black/[0.08] dark:border-white/[0.08] px-5 py-3.5 rounded-lg shadow-2xl shadow-black/[0.12] dark:shadow-atlas-purple/[0.08] flex items-center justify-between gap-4">
+            <div className="bg-white/90 dark:bg-[#1a1a22]/90 backdrop-blur-2xl border border-black/[0.08] dark:border-white/[0.08] px-5 py-3.5 rounded-lg shadow-atlas-lg shadow-black/[0.12] dark:shadow-atlas-purple/[0.08] flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-xl bg-atlas-purple/10 flex items-center justify-center">
                   <span className="text-sm font-bold text-atlas-purple">{selectedIds.length}</span>
@@ -505,10 +505,10 @@ const ExplorerPage = () => {
                 <span className="text-[13px] font-medium text-[var(--atlas-text-secondary)]">đã chọn</span>
               </div>
               <div className="flex items-center gap-2">
-                <button disabled={!canGenerate} className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-[13px] font-semibold transition-all ${canGenerate ? 'bg-atlas-purple text-white hover:brightness-110 shadow-sm shadow-atlas-purple/20' : 'bg-slate-100 dark:bg-white/5 text-slate-300 cursor-not-allowed'}`}>
+                <button disabled={!canGenerate} className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-[13px] font-semibold transition-all ${canGenerate ? 'bg-atlas-purple text-white hover:brightness-110 shadow-sm shadow-atlas-purple/20' : 'bg-slate-100 dark:bg-white/[0.06] text-slate-300 cursor-not-allowed'}`}>
                   <ImageIcon size={14} /> Tạo ảnh
                 </button>
-                <button disabled={!canGenerate} className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-[13px] font-semibold transition-all ${canGenerate ? 'bg-gradient-to-r from-brand-blue to-amber-600 text-white hover:brightness-110 shadow-sm shadow-brand-blue/20' : 'bg-slate-100 dark:bg-white/5 text-slate-300 cursor-not-allowed'}`}>
+                <button disabled={!canGenerate} className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-[13px] font-semibold transition-all ${canGenerate ? 'bg-gradient-to-r from-brand-blue to-amber-600 text-white hover:brightness-110 shadow-sm shadow-brand-blue/20' : 'bg-slate-100 dark:bg-white/[0.06] text-slate-300 cursor-not-allowed'}`}>
                   <Video size={14} /> Tạo video
                 </button>
                 <button onClick={() => setSelectedIds([])} className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all ml-1">

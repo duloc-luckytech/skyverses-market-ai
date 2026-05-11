@@ -41,7 +41,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
 
   return (
     <div
-      className={`group relative p-2.5 rounded-2xl border transition-all flex flex-col gap-2 cursor-pointer h-full ${isSelected
+      className={`group relative p-2.5 rounded-lg border transition-all flex flex-col gap-2 cursor-pointer h-full ${isSelected
         ? 'border-rose-500/40 bg-rose-500/5'
         : isError
           ? 'border-red-500/20 bg-red-900/5 hover:border-red-500/30'
@@ -90,12 +90,12 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
         {!isError && !isProcessing && res.references.length > 0 && (
           <div className="absolute bottom-3 left-3 flex gap-1.5 z-20 pointer-events-none group-hover:opacity-0 transition-opacity">
             {res.references.slice(0, 2).map((ref, i) => (
-              <div key={i} className="w-8 h-8 rounded-lg border border-white/40 shadow-2xl overflow-hidden bg-black/40 backdrop-blur-md">
+              <div key={i} className="w-8 h-8 rounded-lg border border-white/40 shadow-atlas-lg overflow-hidden bg-black/40 backdrop-blur-md">
                 <img src={ref.url} className="w-full h-full object-cover" alt="Ref" />
               </div>
             ))}
             {res.references.length > 2 && (
-              <div className="w-8 h-8 rounded-lg border border-white/40 shadow-2xl bg-black/60 backdrop-blur-md flex items-center justify-center text-[8px] font-bold text-white">
+              <div className="w-8 h-8 rounded-lg border border-white/40 shadow-atlas-lg bg-black/60 backdrop-blur-md flex items-center justify-center text-[8px] font-bold text-white">
                 +{res.references.length - 2}
               </div>
             )}
@@ -199,14 +199,14 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
           <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 z-40 p-4">
             <button
               onClick={(e) => { e.stopPropagation(); onRetry(); }}
-              className="w-full py-3 bg-rose-500 text-white rounded-xl shadow-2xl flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95"
+              className="w-full py-3 bg-rose-500 text-white rounded-xl shadow-atlas-lg flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95"
             >
               <RefreshCw size={14} />
               <span className="text-[10px] font-bold uppercase">Tạo lại</span>
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); onDelete(res.id); }}
-              className="w-full py-3 bg-red-600 text-white rounded-xl shadow-2xl flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95"
+              className="w-full py-3 bg-red-600 text-white rounded-xl shadow-atlas-lg flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95"
             >
               <Trash2 size={14} />
               <span className="text-[10px] font-bold uppercase">Xóa bản ghi</span>
@@ -232,7 +232,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
           <div className="flex justify-between items-center text-[7px] font-medium text-slate-400 dark:text-gray-500">
             <span className="flex items-center gap-1.5"><Clock size={10} /> {res.fullTimestamp}</span>
             <div className="flex items-center gap-2">
-              <span className="bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded font-mono text-slate-500 dark:text-slate-400">
+              <span className="bg-black/[0.06] dark:bg-white/[0.06] px-1.5 py-0.5 rounded font-mono text-slate-500 dark:text-slate-400">
                 ID: {res.id.length > 10 ? `${res.id.slice(0, 6)}...` : res.id.toUpperCase()}
               </span>
               <button onClick={handleCopyId} className="hover:text-rose-400 transition-colors">
