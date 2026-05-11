@@ -113,6 +113,21 @@ const videoUrls: Record<string, string> = {
   "premium-food-ad-system-video-demo": "https://customer-xq04fu0u3xog8ay1.cloudflarestream.com/02d84aeeafae5efbb981d050748985e0/downloads/default.mp4",
   "real-estate-campaign-kit-video-demo": "https://customer-xq04fu0u3xog8ay1.cloudflarestream.com/cc18f91dc401f57b7b995b3d42f4f7aa/downloads/default.mp4",
   "sci-fi-worldbuilding-codex-video-demo": "https://customer-xq04fu0u3xog8ay1.cloudflarestream.com/7e84b9919926a29e7be7045062f10e0b/downloads/default.mp4",
+  "seafood-night-market-campaign-video-demo": "https://customer-xq04fu0u3xog8ay1.cloudflarestream.com/f408b1523d58984e75cececea8399fe5/downloads/default.mp4",
+  "luxury-oyster-bar-launch-kit-video-demo": "https://customer-xq04fu0u3xog8ay1.cloudflarestream.com/5d517685afc4ab689cecf0598e9c2dbc/downloads/default.mp4",
+  "vietnamese-street-food-storyboard-video-demo": "https://customer-xq04fu0u3xog8ay1.cloudflarestream.com/e592f2d4420c225aa3f2cd956928d2ce/downloads/default.mp4",
+  "sushi-omakase-menu-board-video-demo": "https://customer-xq04fu0u3xog8ay1.cloudflarestream.com/36a0d9b9f8a03082ef70f642492af2c1/downloads/default.mp4",
+  "brown-sugar-boba-launch-kit-video-demo": "https://customer-xq04fu0u3xog8ay1.cloudflarestream.com/f868c3c5af784fbbd10a8ae415d91e69/downloads/default.mp4",
+  "tropical-smoothie-poster-system-video-demo": "https://customer-xq04fu0u3xog8ay1.cloudflarestream.com/7cbde140ccb3fa4078546b7c93aec539/downloads/default.mp4",
+  "sparkling-fruit-tea-campaign-video-demo": "https://customer-xq04fu0u3xog8ay1.cloudflarestream.com/530df0084ee54dc4ecac8c65bd815b5f/downloads/default.mp4",
+  "artisanal-coffee-brew-board-video-demo": "https://customer-xq04fu0u3xog8ay1.cloudflarestream.com/227fb7f0c910494bd501f488fab75d60/downloads/default.mp4",
+  "matcha-dessert-cafe-visual-bible-video-demo": "https://customer-xq04fu0u3xog8ay1.cloudflarestream.com/03e3a3408106367b0bbb897934f68dd4/downloads/default.mp4",
+  "premium-hotpot-restaurant-kit-video-demo": "https://customer-xq04fu0u3xog8ay1.cloudflarestream.com/7f352851d0839751183b592150c63b99/downloads/default.mp4",
+  "mediterranean-seafood-platter-board-video-demo": "https://customer-xq04fu0u3xog8ay1.cloudflarestream.com/4c854a6ea26dba5a33a50b1fe8283b46/downloads/default.mp4",
+  "gelato-flavor-campaign-system-video-demo": "https://customer-xq04fu0u3xog8ay1.cloudflarestream.com/58269003a3ef0826a39e36e4ca773f09/downloads/default.mp4",
+  "bakery-croissant-morning-board-video-demo": "https://customer-xq04fu0u3xog8ay1.cloudflarestream.com/6e4114ab382e2a03468ce291c04873f0/downloads/default.mp4",
+  "fine-dining-tasting-menu-storyboard-video-demo": "https://customer-xq04fu0u3xog8ay1.cloudflarestream.com/c4edf4790c31e33327d816482e898527/downloads/default.mp4",
+  "korean-bbq-tabletop-campaign-video-demo": "https://customer-xq04fu0u3xog8ay1.cloudflarestream.com/601c1f3432760f667a59f0d17277684c/downloads/default.mp4",
 };
 
 const generatedImage = (name: string) => `${CF_IMG_V5}/${name}/public`;
