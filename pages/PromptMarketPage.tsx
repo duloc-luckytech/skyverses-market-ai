@@ -244,12 +244,12 @@ function FeaturedBanner({
     return true;
   });
   const heroMedia = mediaItems.find(item => item.type === 'video') ?? mediaItems[0];
+  const samePackPreviewMedia = mediaItems.filter(item => item.type === 'image' || item.poster);
+  const leftPeekMedia = samePackPreviewMedia[1] ?? samePackPreviewMedia[0];
+  const rightPeekMedia = samePackPreviewMedia[2] ?? samePackPreviewMedia[samePackPreviewMedia.length - 1] ?? samePackPreviewMedia[0];
   const imageCount = mediaItems.filter(item => item.type === 'image').length;
   const videoCount = mediaItems.filter(item => item.type === 'video').length;
-
-  // Prev/next for peek panels
-  const prevIndex = (activeIndex - 1 + sets.length) % sets.length;
-  const nextIndex = (activeIndex + 1) % sets.length;
+  const getPeekMediaUrl = (item?: FeaturedMediaItem) => item?.poster || item?.url;
 
   return (
     <div className="relative w-full overflow-hidden" style={{ minHeight: 480 }}>
@@ -274,7 +274,7 @@ function FeaturedBanner({
       {/* ── 3-column layout ── */}
       <div className="flex w-full items-stretch overflow-hidden border-b border-brand-blue/10" style={{ minHeight: 480 }}>
 
-        {/* LEFT PEEK — previous prompt (hidden on mobile) */}
+        {/* LEFT PEEK — same prompt pack media (hidden on mobile) */}
         {sets.length > 1 && (
           <div
             className="hidden lg:block flex-shrink-0 cursor-pointer relative overflow-hidden"
@@ -283,15 +283,15 @@ function FeaturedBanner({
           >
             <AnimatePresence mode="wait">
               <motion.div
-                key={sets[prevIndex]._id}
+                key={`${current._id}-left-peek-${leftPeekMedia?.key ?? 'fallback'}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
                 className="absolute inset-0"
               >
-                {sets[prevIndex].coverImage ? (
-                  <img src={sets[prevIndex].coverImage} alt="" className="w-full h-full object-cover" loading="lazy" />
+                {getPeekMediaUrl(leftPeekMedia) ? (
+                  <img src={getPeekMediaUrl(leftPeekMedia)} alt="" className="w-full h-full object-cover" loading="lazy" />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-brand-blue/20 to-black" />
                 )}
@@ -312,10 +312,21 @@ function FeaturedBanner({
               transition={{ duration: 0.5 }}
               className="absolute inset-0"
             >
-              {/* Background image */}
-              {current.coverImage ? (
+              {/* Main showcase media */}
+              {heroMedia?.type === 'video' ? (
+                <video
+                  src={heroMedia.url}
+                  poster={heroMedia.poster || current.coverImage}
+                  className="w-full h-full object-cover"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                />
+              ) : heroMedia?.url || current.coverImage ? (
                 <img
-                  src={current.coverImage}
+                  src={heroMedia?.url || current.coverImage}
                   alt={title}
                   className="w-full h-full object-cover"
                   loading="lazy"
@@ -643,7 +654,7 @@ function FeaturedBanner({
           </AnimatePresence>
         </div>
 
-        {/* RIGHT PEEK — next prompt (hidden on smaller screens) */}
+        {/* RIGHT PEEK — same prompt pack media (hidden on smaller screens) */}
         {sets.length > 1 && (
           <div
             className="hidden lg:block flex-shrink-0 cursor-pointer relative overflow-hidden"
@@ -652,15 +663,15 @@ function FeaturedBanner({
           >
             <AnimatePresence mode="wait">
               <motion.div
-                key={sets[nextIndex]._id}
+                key={`${current._id}-right-peek-${rightPeekMedia?.key ?? 'fallback'}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
                 className="absolute inset-0"
               >
-                {sets[nextIndex].coverImage ? (
-                  <img src={sets[nextIndex].coverImage} alt="" className="w-full h-full object-cover" loading="lazy" />
+                {getPeekMediaUrl(rightPeekMedia) ? (
+                  <img src={getPeekMediaUrl(rightPeekMedia)} alt="" className="w-full h-full object-cover" loading="lazy" />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-brand-blue/20 to-black" />
                 )}

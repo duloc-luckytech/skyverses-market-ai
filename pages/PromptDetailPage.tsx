@@ -131,7 +131,10 @@ const PromptShowcaseStage: React.FC<{
     input: title,
     output: description,
   };
-  const stageMedia = mediaItems.length ? mediaItems : [fallbackMedia];
+  const primaryVideo = mediaItems.find(item => item.type === 'video');
+  const stageMedia = primaryVideo
+    ? [primaryVideo, ...mediaItems.filter(item => item.key !== primaryVideo.key)]
+    : (mediaItems.length ? mediaItems : [fallbackMedia]);
   const activeMedia = stageMedia[activeIndex] ?? stageMedia[0];
   const activePromptIndex = Math.min(activeIndex, Math.max(promptSet.prompts.length - 1, 0));
   const featuredPrompt = promptSet.prompts[activePromptIndex] ?? promptSet.prompts[0];
@@ -454,35 +457,36 @@ const PromptDetailPage: React.FC = () => {
       </div>
 
       {/* ── Body ── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 lg:py-12">
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-10">
-          {/* ════════════════════════
-           * LEFT — main content
-           * ════════════════════════ */}
-          <div className="flex-1 min-w-0 space-y-8">
-            <div className="relative">
-              <PromptShowcaseStage
-                promptSet={promptSet}
-                title={title}
-                description={description}
-                activeIndex={activeExampleIndex}
-                onSelect={setActiveExampleIndex}
-              />
-              {isAuthenticated && (
-                <button
-                  onClick={handleWishlistToggle}
-                  disabled={wishLoading}
-                  className={`absolute top-4 right-4 z-20 w-10 h-10 rounded-xl backdrop-blur-md border flex items-center justify-center transition-all duration-200 ${
-                    wishlisted
-                      ? 'bg-red-500/20 border-red-500/30 text-red-400'
-                      : 'bg-black/50 border-white/10 text-white/50 hover:text-red-400 hover:border-red-500/30'
-                  }`}
-                  title={wishlisted ? t('prompt_market.remove_wishlist') : t('prompt_market.add_to_wishlist')}
-                >
-                  <Heart className={`w-5 h-5 ${wishlisted ? 'fill-red-400' : ''}`} />
-                </button>
-              )}
-            </div>
+      <div className="max-w-[1500px] mx-auto px-4 sm:px-6 py-8 lg:py-12">
+        <div className="space-y-8 lg:space-y-10">
+          {/* ── Full-width media showcase ── */}
+          <div className="relative">
+            <PromptShowcaseStage
+              promptSet={promptSet}
+              title={title}
+              description={description}
+              activeIndex={activeExampleIndex}
+              onSelect={setActiveExampleIndex}
+            />
+            {isAuthenticated && (
+              <button
+                onClick={handleWishlistToggle}
+                disabled={wishLoading}
+                className={`absolute top-4 right-4 z-20 w-10 h-10 rounded-xl backdrop-blur-md border flex items-center justify-center transition-all duration-200 ${
+                  wishlisted
+                    ? 'bg-red-500/20 border-red-500/30 text-red-400'
+                    : 'bg-black/50 border-white/10 text-white/50 hover:text-red-400 hover:border-red-500/30'
+                }`}
+                title={wishlisted ? t('prompt_market.remove_wishlist') : t('prompt_market.add_to_wishlist')}
+              >
+                <Heart className={`w-5 h-5 ${wishlisted ? 'fill-red-400' : ''}`} />
+              </button>
+            )}
+          </div>
+
+          {/* ── Content + purchase section below showcase ── */}
+          <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-8 lg:gap-10 items-start">
+            <div className="min-w-0 space-y-8">
 
             {/* Title + Share */}
             <motion.div
@@ -686,10 +690,10 @@ const PromptDetailPage: React.FC = () => {
           </div>
 
           {/* ════════════════════════
-           * RIGHT — sticky sidebar
+           * Purchase/info panel below showcase
            * ════════════════════════ */}
-          <div className="w-full lg:w-80 xl:w-96 flex-shrink-0">
-            <div className="lg:sticky lg:top-20 space-y-4">
+          <div className="w-full">
+            <div className="space-y-4">
               {/* Price card */}
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
@@ -892,6 +896,7 @@ const PromptDetailPage: React.FC = () => {
                 Report this prompt set
               </motion.button>
             </div>
+          </div>
           </div>
         </div>
       </div>
