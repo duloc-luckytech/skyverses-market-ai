@@ -22,11 +22,12 @@ skyverses-backend/
         └── plans.ts
 ```
 
-## Routes — `src/routes/` (31 file)
+## Routes — `src/routes/` (33 file)
 
 | File | Purpose |
 |------|---------|
 | `index.ts` | Mount tất cả routes |
+| `adminTasks.ts` | Admin task management |
 | `ai.ts` | AI generic endpoints |
 | `aiModel.admin.ts` | Admin: AI model CRUD |
 | `apiClient.ts` | API client management |
@@ -46,6 +47,7 @@ skyverses-backend/
 | `market.ts` | Marketplace items |
 | `pricing.router.ts` | Pricing matrix |
 | `productSubmission.ts` | "Submit your AI tool" |
+| `promoBanner.ts` | Promo banner CRUD (admin) |
 | `providerToken.ts` | OAuth provider tokens |
 | `runninghub.ts` | RunningHub provider sync |
 | `uploadMedia.ts` | Media upload |
@@ -56,11 +58,11 @@ skyverses-backend/
 | `webhook.ts` | Provider webhooks |
 | `workerRouter.ts` | Worker control |
 | `skytoken.router.ts` | SKT balance, packages, purchase QR, history, claim welcome, admin add, withdrawal (request/cancel/my + admin approve/reject/complete) |
-| `prompt-market.router.ts` | Browse/search prompts, purchase, seller profile/follow, wishlist, view tracking, related, earnings, reviews, admin |
+| `prompt-market.router.ts` | Browse/search prompts, purchase, seller profile/follow, wishlist, view tracking, related, earnings, reviews, admin clear/seed APIs |
 
-## Models — `src/models/` (37 Mongoose schemas)
+## Models — `src/models/` (41 Mongoose schemas)
 
-`AIModel`, `AffiliateTransaction`, `AudioGeneration`, `AudioVoice`, `BankTransaction`, `BlogPost`, `Category`, `CreditPackage`, `CreditTransaction`, `DeployLog`, `EditImageJob`, `ExplorerMedia`, `FxflowOwner`, `GoogleToken`, `ImageBase64`, `ImageJob`, `ImageOwner`, `MarketItem`, `MetaPromptTemplate`, `ModelPricingMatrix`, `Plan`, `PlanPurchase`, `ProductSubmission`, `PromptGenerationJob`, `PromptPurchase`, `PromptReview`, `PromptSet`, `PromptWishlist`, `ProviderToken`, `RunningHubTemplate`, `SellerFollower`, `ServerStatus`, `SkyTokenPackage`, `SkyTokenTransaction`, `SkyTokenWithdrawal`, `SystemSetting`, `User`, `VideoConcatJob`, `VideoJob`, `VideoJobV2`.
+`AIModel`, `AffiliateTransaction`, `AudioGeneration`, `AudioVoice`, `BankTransaction`, `BlogPost`, `Category`, `CreditPackage`, `CreditTransaction`, `DeployLog`, `EditImageJob`, `ExplorerMedia`, `FxflowOwner`, `GoogleToken`, `ImageBase64`, `ImageJob`, `ImageOwner`, `MarketItem`, `MetaPromptTemplate`, `ModelPricingMatrix`, `Plan`, `PlanPurchase`, `ProductSubmission`, `PromoBanner`, `PromptGenerationJob`, `PromptPurchase`, `PromptReview`, `PromptSet`, `PromptWishlist`, `ProviderToken`, `RunningHubTemplate`, `SellerFollower`, `ServerStatus`, `SkyTokenPackage`, `SkyTokenTransaction`, `SkyTokenWithdrawal`, `SystemSetting`, `User`, `VideoConcatJob`, `VideoJob`, `VideoJobV2`.
 
 Each is `<Name>.model.ts` (or `<Name>.ts` for older).
 
@@ -99,7 +101,7 @@ Worker pool cho image / video / music. Mỗi domain có:
 
 ## Scripts — `src/scripts/`
 
-`asynsDataMongo.ts`, `seed-ai-models.ts`, `seed-prompt-market.ts`, `seed-prompt-market-v4.ts` (40 showcase prompt sets with images+videos), `seedAdmin.ts`, `seedCategories.ts`, `updatePricingX2.ts`.
+`asynsDataMongo.ts`, `seed-ai-models.ts`, `seed-prompt-market.ts`, `seed-prompt-market-v2.ts`, `seed-prompt-market-v3.ts`, `seed-prompt-market-v4.ts` (40 showcase prompt sets with images+videos, exports clear/seed helpers), `seedAdmin.ts`, `seedCategories.ts`, `updatePricingX2.ts`.
 
 ## Common patterns
 

@@ -7,6 +7,10 @@ import SellerFollower from "../models/SellerFollower.model";
 import SkyTokenTransaction from "../models/SkyTokenTransaction.model";
 import User from "../models/UserModel";
 import { authenticate } from "./auth";
+import {
+  clearPromptMarketSeedData,
+  seedPromptMarket,
+} from "../scripts/seed-prompt-market-v4";
 
 const router = express.Router();
 
@@ -444,6 +448,92 @@ router.delete("/admin/:id", authenticate, async (req: any, res) => {
 });
 
 /* =====================================================
+   ADMIN: CREATE PROMPT SET
+   - Admin can specify any sellerId or omit to use own id
+   - Auto-active, no approval needed
+===================================================== */
+router.post("/admin/create", authenticate, async (req: any, res) => {
+  if (req.user.role !== "admin") return res.status(403).json({ message: "FORBIDDEN" });
+
+  try {
+    const {
+      sellerId, title, description, category, tags, coverImage,
+      priceSKT, isFree, prompts, previewText, models, examples,
+      featured,
+    } = req.body;
+
+    if (!prompts || !prompts.length) {
+      return res.status(400).json({ message: "PROMPTS_REQUIRED" });
+    }
+
+    // Use provided sellerId or fall back to admin's own id
+    const finalSellerId = sellerId || req.user.userId;
+
+    // Verify sellerId exists
+    const sellerExists = await User.findById(finalSellerId);
+    if (!sellerExists) {
+      return res.status(400).json({ message: "SELLER_NOT_FOUND" });
+    }
+
+    const slug = generateSlug(title?.en || title?.vi || "prompt");
+
+    const promptSet = await PromptSet.create({
+      sellerId: finalSellerId,
+      slug,
+      title: title || {},
+      description: description || {},
+      category: category || "other",
+      tags: tags || [],
+      coverImage: coverImage || null,
+      priceSKT: isFree ? 0 : (priceSKT || 0),
+      isFree: !!isFree,
+      featured: !!featured,
+      prompts,
+      previewText: previewText || "",
+      models: models || [],
+      examples: examples || [],
+      status: "active",
+      isActive: true,
+    });
+
+    res.json({ success: true, data: promptSet });
+  } catch (err: any) {
+    console.error("❌ [ADMIN PROMPT SET CREATE]", err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+/* =====================================================
+   ADMIN: UPDATE PROMPT SET (full edit, any prompt set)
+===================================================== */
+router.put("/admin/:id", authenticate, async (req: any, res) => {
+  if (req.user.role !== "admin") return res.status(403).json({ message: "FORBIDDEN" });
+
+  try {
+    const promptSet = await PromptSet.findById(req.params.id);
+    if (!promptSet) return res.status(404).json({ message: "NOT_FOUND" });
+
+    const allowed = [
+      "title", "description", "category", "tags", "coverImage",
+      "priceSKT", "isFree", "prompts", "previewText", "models",
+      "examples", "featured", "status", "isActive", "sortOrder",
+      "sellerId",
+    ];
+    for (const key of allowed) {
+      if (req.body[key] !== undefined) {
+        (promptSet as any)[key] = req.body[key];
+      }
+    }
+
+    await promptSet.save();
+    res.json({ success: true, data: promptSet });
+  } catch (err: any) {
+    console.error("❌ [ADMIN PROMPT SET UPDATE]", err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+/* =====================================================
    REVIEWS: GET REVIEWS FOR A PROMPT SET
 ===================================================== */
 router.get("/:id/reviews", async (req, res) => {
@@ -820,6 +910,58 @@ router.get("/:id/check-purchased", authenticate, async (req: any, res) => {
     res.json({ purchased: !!existing });
   } catch (err: any) {
     res.status(500).json({ message: err.message });
+  }
+});
+
+/* =====================================================
+   ADMIN: CLEAR PROMPT MARKET SEED DATA
+   POST /prompt-market/admin/clear-seed
+   Body:
+   - confirm: "CLEAR_PROMPT_MARKET_SEED"
+   - dryRun?: boolean
+   - includeTransactions?: boolean
+   Clears seed prompt sets, fake sellers, and related fake marketplace records.
+===================================================== */
+router.post("/admin/clear-seed", authenticate, async (req: any, res) => {
+  if (req.user.role !== "admin") return res.status(403).json({ message: "FORBIDDEN" });
+
+  const confirm = req.body?.confirm;
+  const dryRun = req.body?.dryRun === true;
+  const includeTransactions = req.body?.includeTransactions !== false;
+
+  if (!dryRun && confirm !== "CLEAR_PROMPT_MARKET_SEED") {
+    return res.status(400).json({
+      message: "CONFIRM_REQUIRED",
+      expectedConfirm: "CLEAR_PROMPT_MARKET_SEED",
+    });
+  }
+
+  try {
+    const result = await clearPromptMarketSeedData({ dryRun, includeTransactions });
+    res.json({
+      message: dryRun ? "Clear seed dry run complete" : "Seed data cleared",
+      ...result,
+    });
+  } catch (err: any) {
+    console.error("Clear seed failed:", err);
+    res.status(500).json({ message: "Clear seed failed", error: err.message });
+  }
+});
+
+/* =====================================================
+   ADMIN: SEED PROMPT MARKET DATA
+   POST /prompt-market/admin/seed
+   - Cleans previous seed data, re-creates 12 users + 40 prompt sets
+   - All images/videos use permanent Cloudflare URLs
+===================================================== */
+router.post("/admin/seed", authenticate, async (req: any, res) => {
+  if (req.user.role !== "admin") return res.status(403).json({ message: "FORBIDDEN" });
+  try {
+    const result = await seedPromptMarket();
+    res.json({ message: "Seed complete", ...result });
+  } catch (err: any) {
+    console.error("Seed failed:", err);
+    res.status(500).json({ message: "Seed failed", error: err.message });
   }
 });
 
