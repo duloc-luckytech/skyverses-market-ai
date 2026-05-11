@@ -101,7 +101,7 @@ Worker pool cho image / video / music. Mỗi domain có:
 
 ## Scripts — `src/scripts/`
 
-`asynsDataMongo.ts`, `seed-ai-models.ts`, `prompt-market-blueprint.ts` (blueprint builder for reusable complex prompt packs), `generate-prompt-market-assets.ts` (external asset generation + Cloudflare upload runner), `seed-prompt-market-v4.ts` (blueprint-driven showcase prompt sets with images+videos, exports clear/seed helpers), `seedAdmin.ts`, `seedCategories.ts`, `updatePricingX2.ts`.
+`asynsDataMongo.ts`, `seed-ai-models.ts`, `prompt-market-blueprint.ts` (blueprint builder for reusable complex prompt packs, including free showcase samples), `generate-prompt-market-assets.ts` (external asset generation + Cloudflare upload runner), `seed-prompt-market-v4.ts` (blueprint-driven showcase prompt sets with images+videos, exports clear/seed helpers), `seedAdmin.ts`, `seedCategories.ts`, `updatePricingX2.ts`.
 
 ## Common patterns
 

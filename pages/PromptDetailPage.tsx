@@ -6,7 +6,7 @@ import {
   User, Tag, CalendarDays, Hash, Download, Sparkles,
   FileText, EyeOff, ArrowLeft, Check, Share2,
   Copy, ExternalLink, Flag, Star, Heart, Eye, Cpu,
-  BadgeCheck, TrendingUp, MessageSquare,
+  BadgeCheck, TrendingUp, ImageIcon, Video, PlayCircle,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -43,6 +43,17 @@ const getSellerName = (s: PromptSet['sellerId']): string =>
 const getSellerAvatar = (s: PromptSet['sellerId']): string | undefined =>
   typeof s === 'string' ? undefined : s?.avatar;
 
+type ShowcaseMediaItem = {
+  key: string;
+  type: 'image' | 'video';
+  url: string;
+  poster?: string;
+  title: string;
+  input: string;
+  style?: string;
+  output: string;
+};
+
 /* ─── sub-components ─── */
 const Stat: React.FC<{ icon: React.ReactNode; label: string; value: string | number }> = ({
   icon, label, value,
@@ -55,6 +66,250 @@ const Stat: React.FC<{ icon: React.ReactNode; label: string; value: string | num
     <span className="text-sm text-white font-medium">{value}</span>
   </div>
 );
+
+const PromptShowcaseStage: React.FC<{
+  promptSet: PromptSet;
+  title: string;
+  description: string;
+  activeIndex: number;
+  onSelect: (index: number) => void;
+}> = ({ promptSet, title, description, activeIndex, onSelect }) => {
+  const examples = promptSet.examples ?? [];
+  const seenMedia = new Set<string>();
+  const rawMediaItems: Array<ShowcaseMediaItem | null> = [
+    promptSet.coverImage
+      ? {
+          key: `${promptSet._id}-cover`,
+          type: 'image' as const,
+          url: promptSet.coverImage,
+          title: 'Cover board',
+          input: title,
+          output: description,
+        }
+      : null,
+    ...examples.flatMap((ex, index) => {
+      const itemTitle = ex.promptTitle || `Output ${index + 1}`;
+      return [
+        ex.image
+          ? {
+              key: `${promptSet._id}-image-${index}`,
+              type: 'image' as const,
+              url: ex.image,
+              title: itemTitle,
+              input: ex.input,
+              style: ex.style,
+              output: ex.output,
+            }
+          : null,
+        ex.video
+          ? {
+              key: `${promptSet._id}-video-${index}`,
+              type: 'video' as const,
+              url: ex.video,
+              poster: ex.image || promptSet.coverImage,
+              title: `${itemTitle} · Video`,
+              input: ex.input,
+              style: ex.style,
+              output: ex.output,
+            }
+          : null,
+      ];
+    }),
+  ];
+  const mediaItems = rawMediaItems.filter((item): item is ShowcaseMediaItem => {
+    if (!item) return false;
+    const mediaKey = `${item.type}:${item.url}`;
+    if (seenMedia.has(mediaKey)) return false;
+    seenMedia.add(mediaKey);
+    return true;
+  });
+  const fallbackMedia: ShowcaseMediaItem = {
+    key: `${promptSet._id}-fallback`,
+    type: 'image',
+    url: promptSet.coverImage || '',
+    title,
+    input: title,
+    output: description,
+  };
+  const stageMedia = mediaItems.length ? mediaItems : [fallbackMedia];
+  const activeMedia = stageMedia[activeIndex] ?? stageMedia[0];
+  const activePromptIndex = Math.min(activeIndex, Math.max(promptSet.prompts.length - 1, 0));
+  const featuredPrompt = promptSet.prompts[activePromptIndex] ?? promptSet.prompts[0];
+  const variables = featuredPrompt?.variables ?? [];
+  const fallbackStyleChips = [
+    ...(promptSet.models ?? []).slice(0, 4).map((m) => MODEL_LABELS[m] ?? m),
+    ...promptSet.tags.slice(0, 4),
+  ];
+  const styleChips = (activeMedia.style ? activeMedia.style.split(' · ') : fallbackStyleChips)
+    .map((chip) => chip.trim())
+    .filter(Boolean)
+    .slice(0, 8);
+  const imageCount = stageMedia.filter(item => item.type === 'image' && item.url).length;
+  const videoCount = stageMedia.filter(item => item.type === 'video').length;
+
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="rounded-[28px] border border-[#d8c9a4] bg-[#f3ead8] text-[#2a241d] overflow-hidden shadow-[0_24px_80px_rgba(0,0,0,0.22)]"
+    >
+      <div className="grid grid-cols-1 xl:grid-cols-[220px_minmax(0,1fr)_340px]">
+        <aside className="order-2 xl:order-1 border-t xl:border-t-0 xl:border-r border-[#d8c9a4] bg-[#f7f0e1] p-4">
+          <div className="mb-4 hidden xl:flex items-center justify-between border-b border-dashed border-[#d8c9a4] pb-3">
+            <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Outputs</p>
+            <div className="flex items-center gap-2 text-[11px] text-[#806b4a]">
+              <span className="inline-flex items-center gap-1"><ImageIcon className="w-3.5 h-3.5" />{imageCount}</span>
+              <span className="inline-flex items-center gap-1"><Video className="w-3.5 h-3.5" />{videoCount}</span>
+            </div>
+          </div>
+          <div className="flex xl:block gap-3 overflow-x-auto xl:overflow-visible pb-1 xl:pb-0 space-y-0 xl:space-y-3">
+            {stageMedia.map((item, index) => {
+              const active = index === activeIndex;
+              return (
+                <button
+                  key={item.key}
+                  onClick={() => onSelect(index)}
+                  className={`min-w-[150px] xl:min-w-0 w-full text-left overflow-hidden rounded-[18px] border transition shadow-sm ${
+                    active
+                      ? 'border-[#88b6cf] bg-[#dcecf1]'
+                      : 'border-[#e0d3b7] bg-[#fff9ec] hover:border-[#c8b68f]'
+                  }`}
+                >
+                  <div className="relative aspect-[4/3] bg-[#eadfc9] overflow-hidden">
+                    {item.type === 'video' ? (
+                      <>
+                        <video src={item.url} poster={item.poster} className="w-full h-full object-cover" muted playsInline preload="metadata" />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                          <PlayCircle className="w-6 h-6 text-white drop-shadow" />
+                        </div>
+                      </>
+                    ) : item.url ? (
+                      <img src={item.url} alt="" className="w-full h-full object-cover" loading="lazy" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <ImageIcon className="w-6 h-6 text-[#806b4a]/40" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-3">
+                    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-[#6b8fa4]">
+                      {item.type === 'video' ? <Video className="w-3 h-3" /> : <ImageIcon className="w-3 h-3" />}
+                      {item.type} {index + 1}
+                    </div>
+                    <p className="mt-1.5 font-serif text-sm leading-snug text-[#2a241d] line-clamp-2">
+                      {item.title || title}
+                    </p>
+                    <p className="mt-1 text-[11px] text-[#7a6a55] line-clamp-1">{item.input}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </aside>
+
+        <div className="order-1 xl:order-2 min-h-[420px] xl:min-h-[620px] bg-[#f4ead4] relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_45%_20%,rgba(255,255,255,0.75),transparent_32%),linear-gradient(135deg,rgba(244,234,212,0.92),rgba(224,211,181,0.86))]" />
+          <div className="relative z-10 h-full flex flex-col">
+            <div className="flex items-start justify-between gap-4 p-6 lg:p-8">
+              <div>
+                <p className="font-serif italic text-sm uppercase tracking-[0.24em] text-[#806b4a]">Prompt Showcase</p>
+                <h2 className="mt-2 text-3xl lg:text-5xl font-serif text-black leading-none max-w-3xl">
+                  {title}
+                </h2>
+                {description && (
+                  <p className="mt-3 max-w-xl text-sm lg:text-base text-black/60 leading-relaxed line-clamp-2">
+                    {description}
+                  </p>
+                )}
+              </div>
+              {promptSet.featured && (
+                <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/[0.06] border border-black/[0.08] text-[11px] font-bold uppercase tracking-wider text-black/60">
+                  <TrendingUp className="w-3.5 h-3.5 text-[#9a7424]" />
+                  Featured
+                </span>
+              )}
+            </div>
+
+            <div className="flex-1 px-5 lg:px-8 pb-6 lg:pb-8 flex items-center justify-center">
+              <div className="relative w-full max-w-4xl">
+                <div className="rounded-[22px] border border-[#d1bea0] bg-[#fff7e8] shadow-[0_28px_70px_rgba(70,48,20,0.20)] overflow-hidden">
+                  {activeMedia.type === 'video' ? (
+                    <video
+                      src={activeMedia.url}
+                      poster={activeMedia.poster}
+                      controls
+                      preload="metadata"
+                      className="w-full aspect-video object-cover bg-black"
+                    />
+                  ) : activeMedia.url ? (
+                    <img
+                      src={activeMedia.url}
+                      alt={activeMedia.input || title}
+                      className="w-full aspect-video object-cover"
+                      loading="eager"
+                    />
+                  ) : (
+                    <div className="w-full aspect-video flex items-center justify-center bg-black/[0.08]">
+                      <Sparkles className="w-16 h-16 text-black/20" />
+                    </div>
+                  )}
+                </div>
+                <div className="absolute left-4 bottom-4 flex items-center gap-2 rounded-full bg-[#fff9ec]/90 backdrop-blur-md border border-[#d1bea0] px-3 py-2 text-xs text-[#5b4a35] shadow-sm">
+                  {activeMedia.type === 'video' ? <Video className="w-3.5 h-3.5" /> : <ImageIcon className="w-3.5 h-3.5" />}
+                  Main {activeMedia.type} output
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside className="order-3 border-t xl:border-t-0 xl:border-l border-[#d8c9a4] bg-[#f7f0e1] p-5 lg:p-6 space-y-5">
+          <div className="rounded-[20px] border border-[#d8c9a4] bg-[#fff9ec] p-5 shadow-sm">
+            <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Input Brief</p>
+            <p className="mt-3 text-sm text-[#4b4035] leading-relaxed">
+              {activeMedia.input || promptSet.previewText || title}
+            </p>
+          </div>
+
+          {styleChips.length > 0 && (
+            <div className="rounded-[20px] border border-[#d8c9a4] bg-[#fff9ec] p-5 shadow-sm">
+              <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Style & Models</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {styleChips.map((chip) => (
+                  <span key={chip} className="px-2.5 py-1 rounded-full border border-[#d1bea0] bg-[#f2e5c9] text-xs text-[#5b4a35]">
+                    {chip}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {variables.length > 0 && (
+            <div className="rounded-[20px] border border-[#d8c9a4] bg-[#fff9ec] p-5 shadow-sm">
+              <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Prompt Inputs</p>
+              <div className="mt-3 space-y-2.5">
+                {variables.slice(0, 6).map((v) => (
+                  <div key={v.name} className="rounded-xl border border-dashed border-[#d8c9a4] bg-[#fbf1dc] p-3">
+                    <div className="font-mono text-[11px] text-[#8b6f2c]">{`{{${v.name}}}`}</div>
+                    <div className="mt-1 text-xs text-[#7a6a55] line-clamp-2">{v.defaultValue || v.description}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="rounded-[20px] border border-[#d8c9a4] bg-[#fff9ec] p-5 shadow-sm">
+            <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Output Result</p>
+            <p className="mt-3 text-sm text-[#4b4035] leading-relaxed">
+              {activeMedia.output || featuredPrompt?.description || description}
+            </p>
+          </div>
+        </aside>
+      </div>
+    </motion.section>
+  );
+};
 
 /* ═══════════════════════════════════════════════════════════════════
  * PromptDetailPage
@@ -75,6 +330,7 @@ const PromptDetailPage: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const [wishlisted, setWishlisted] = useState(false);
   const [wishLoading, setWishLoading] = useState(false);
+  const [activeExampleIndex, setActiveExampleIndex] = useState(0);
 
   /* ── fetch ── */
   useEffect(() => {
@@ -86,6 +342,7 @@ const PromptDetailPage: React.FC = () => {
         isAuthenticated ? skytokenApi.getBalance() : Promise.resolve({ skyTokenBalance: 0 }),
       ]);
       setPromptSet(detailRes.data);
+      setActiveExampleIndex(0);
       setBalance(balRes.skyTokenBalance ?? 0);
 
       if (detailRes.data?._id) {
@@ -146,7 +403,7 @@ const PromptDetailPage: React.FC = () => {
   /* ── loading ── */
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#060608] flex flex-col items-center justify-center gap-4">
+      <div className="min-h-screen bg-[var(--atlas-bg-page)] flex flex-col items-center justify-center gap-4">
         <Loader2 className="w-10 h-10 text-[#C9A84C] animate-spin" />
         <span className="text-xs uppercase tracking-widest text-white/25 animate-pulse">
           Loading prompt set...
@@ -158,7 +415,7 @@ const PromptDetailPage: React.FC = () => {
   /* ── not found ── */
   if (!promptSet) {
     return (
-      <div className="min-h-screen bg-[#060608] flex flex-col items-center justify-center gap-6 px-4 text-center">
+      <div className="min-h-screen bg-[var(--atlas-bg-page)] flex flex-col items-center justify-center gap-6 px-4 text-center">
         <FileText className="w-16 h-16 text-white/10" />
         <h2 className="text-2xl font-bold text-white">Prompt Set Not Found</h2>
         <p className="text-white/35 max-w-sm">
@@ -179,11 +436,12 @@ const PromptDetailPage: React.FC = () => {
   const description = loc(promptSet.description);
   const avatar = getSellerAvatar(promptSet.sellerId);
   const seller = getSellerName(promptSet.sellerId);
+  const canViewFullPrompt = promptSet.isFree || alreadyPurchased;
 
   return (
-    <div className="min-h-screen bg-[#060608] text-white">
+    <div className="min-h-screen bg-[var(--atlas-bg-page)] text-white">
       {/* ── Breadcrumb ── */}
-      <div className="border-b border-white/[0.04] bg-[#060608]/80 backdrop-blur-lg sticky top-0 z-30">
+      <div className="border-b border-white/[0.04] bg-[var(--atlas-bg-page)]/80 backdrop-blur-lg sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-2 text-sm text-white/35">
           <Link to="/prompt-market" className="hover:text-white transition-colors">
             Prompt Market
@@ -202,45 +460,29 @@ const PromptDetailPage: React.FC = () => {
            * LEFT — main content
            * ════════════════════════ */}
           <div className="flex-1 min-w-0 space-y-8">
-            {/* Cover image */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="relative w-full rounded-lg overflow-hidden aspect-video bg-[#0a0a14]"
-            >
-              {promptSet.coverImage ? (
-                <img
-                  src={promptSet.coverImage}
-                  alt={title}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-[#C9A84C]/20 via-[#8B7635]/10 to-[#060608] flex items-center justify-center">
-                  <Sparkles className="w-16 h-16 text-[#C9A84C]/40" />
-                </div>
-              )}
-              {promptSet.featured && (
-                <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-gradient-to-r from-[#C9A84C] to-[#E5C767] text-black text-xs font-bold tracking-wide flex items-center gap-1 shadow-[0_2px_12px_rgba(201,168,76,0.4)]">
-                  <TrendingUp className="w-3 h-3" /> Featured
-                </span>
-              )}
-              {/* Wishlist button */}
+            <div className="relative">
+              <PromptShowcaseStage
+                promptSet={promptSet}
+                title={title}
+                description={description}
+                activeIndex={activeExampleIndex}
+                onSelect={setActiveExampleIndex}
+              />
               {isAuthenticated && (
                 <button
                   onClick={handleWishlistToggle}
                   disabled={wishLoading}
-                  className={`absolute top-3 right-3 z-10 w-10 h-10 rounded-xl backdrop-blur-md border flex items-center justify-center transition-all duration-200 ${
+                  className={`absolute top-4 right-4 z-20 w-10 h-10 rounded-xl backdrop-blur-md border flex items-center justify-center transition-all duration-200 ${
                     wishlisted
                       ? 'bg-red-500/20 border-red-500/30 text-red-400'
-                      : 'bg-black/50 border-white/10 text-white/40 hover:text-red-400 hover:border-red-500/30'
+                      : 'bg-black/50 border-white/10 text-white/50 hover:text-red-400 hover:border-red-500/30'
                   }`}
                   title={wishlisted ? t('prompt_market.remove_wishlist') : t('prompt_market.add_to_wishlist')}
                 >
                   <Heart className={`w-5 h-5 ${wishlisted ? 'fill-red-400' : ''}`} />
                 </button>
               )}
-            </motion.div>
+            </div>
 
             {/* Title + Share */}
             <motion.div
@@ -284,7 +526,7 @@ const PromptDetailPage: React.FC = () => {
             )}
 
             {/* Preview text */}
-            {promptSet.previewText && (
+            {promptSet.previewText && !canViewFullPrompt && (
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -315,23 +557,38 @@ const PromptDetailPage: React.FC = () => {
               transition={{ duration: 0.5, delay: 0.26 }}
             >
               <h3 className="text-xs font-semibold uppercase tracking-widest text-white/30 mb-4">
-                Prompts Included ({promptSet.prompts.length})
+                Prompt Blueprint ({promptSet.prompts.length})
               </h3>
               <div className="space-y-3">
                 {promptSet.prompts.map((prompt, idx) => (
                   <div
                     key={idx}
-                    className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 flex items-start gap-4 hover:border-white/[0.1] transition-colors"
+                    className="relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 flex items-start gap-4 hover:border-white/[0.1] transition-colors overflow-hidden"
                   >
                     <div className="w-7 h-7 rounded-lg bg-[#C9A84C]/15 border border-[#C9A84C]/25 flex items-center justify-center flex-shrink-0 text-xs font-bold text-[#C9A84C]">
                       {idx + 1}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-white truncate text-sm">
-                        {typeof prompt.title === 'object'
-                          ? loc(prompt.title as Parameters<typeof loc>[0])
-                          : prompt.title}
-                      </p>
+                      <div className="flex items-start justify-between gap-3">
+                        <p className="font-medium text-white truncate text-sm">
+                          {typeof prompt.title === 'object'
+                            ? loc(prompt.title as Parameters<typeof loc>[0])
+                            : prompt.title}
+                        </p>
+                        {canViewFullPrompt && (
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(prompt.content);
+                              setCopied(true);
+                              setTimeout(() => setCopied(false), 2000);
+                            }}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.08] px-2 py-1 text-[11px] text-white/45 hover:border-[#C9A84C]/30 hover:text-[#C9A84C] transition"
+                          >
+                            <Copy className="w-3 h-3" />
+                            Copy
+                          </button>
+                        )}
+                      </div>
                       {prompt.description && (
                         <p className="text-xs text-white/35 mt-1 line-clamp-2">
                           {typeof prompt.description === 'object'
@@ -351,9 +608,22 @@ const PromptDetailPage: React.FC = () => {
                           ))}
                         </div>
                       )}
-                      <div className="mt-2 flex items-center gap-1.5 text-[11px] text-white/20">
-                        <Lock className="w-3 h-3" />
-                        <span>Purchase to unlock full content</span>
+                      <div className="mt-3 rounded-lg border border-white/[0.05] bg-black/20 p-3">
+                        <pre className={`whitespace-pre-wrap break-words font-mono text-xs leading-relaxed ${
+                          canViewFullPrompt
+                            ? 'text-white/65'
+                            : 'max-h-20 select-none overflow-hidden blur-[3px] text-white/35'
+                        }`}>
+                          {prompt.content}
+                        </pre>
+                        {!canViewFullPrompt && (
+                          <div className="absolute inset-x-0 bottom-0 flex justify-center bg-gradient-to-t from-[#101015] via-[#101015]/90 to-transparent pb-4 pt-16">
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#C9A84C]/25 bg-black/65 px-3 py-1.5 text-[11px] font-semibold text-[#C9A84C] backdrop-blur">
+                              <Lock className="w-3 h-3" />
+                              Paid prompt is hidden until purchase
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -379,69 +649,6 @@ const PromptDetailPage: React.FC = () => {
                     {tag}
                   </Link>
                 ))}
-              </motion.div>
-            )}
-
-            {/* ── Example I/O ── */}
-            {promptSet.examples && promptSet.examples.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.32 }}
-                className="pt-8 border-t border-white/[0.04]"
-              >
-                <h3 className="text-xs font-semibold uppercase tracking-widest text-white/30 mb-5">
-                  {t('prompt_market.examples') || 'Examples'}
-                </h3>
-                <div className="space-y-4">
-                  {promptSet.examples.map((ex, i) => (
-                    <div
-                      key={i}
-                      className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden"
-                    >
-                      {ex.video ? (
-                        <div className="relative w-full aspect-video bg-black/20">
-                          <video
-                            src={ex.video}
-                            poster={ex.image || undefined}
-                            controls
-                            preload="metadata"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      ) : ex.image ? (
-                        <div className="relative w-full aspect-video bg-black/20">
-                          <img
-                            src={ex.image}
-                            alt={ex.input || `Example ${i + 1}`}
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                          />
-                        </div>
-                      ) : null}
-                      {ex.input && (
-                        <div className="px-4 py-3 border-b border-white/[0.04]">
-                          <span className="text-[10px] font-semibold uppercase tracking-wider text-[#C9A84C]/60 mb-1.5 block">
-                            {t('prompt_market.input') || 'Input'}
-                          </span>
-                          <p className="text-sm text-white/60 whitespace-pre-wrap leading-relaxed">
-                            {ex.input}
-                          </p>
-                        </div>
-                      )}
-                      {ex.output && (
-                        <div className="px-4 py-3 bg-white/[0.01]">
-                          <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400/60 mb-1.5 block">
-                            {t('prompt_market.output') || 'Output'}
-                          </span>
-                          <p className="text-sm text-white/50 whitespace-pre-wrap leading-relaxed">
-                            {ex.output}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
               </motion.div>
             )}
 

@@ -44,6 +44,7 @@ interface PromptBlueprint {
   category: Cat;
   tags: string[];
   priceSKT: number;
+  isFree?: boolean;
   featured?: boolean;
   sellerIdx: number;
   coverKey: string;
@@ -247,6 +248,7 @@ const BLUEPRINTS: PromptBlueprint[] = [
     category: "design",
     tags: ["character", "storyboard", "cute", "video", "emotion", "cinematic"],
     priceSKT: 140,
+    isFree: true,
     featured: true,
     sellerIdx: 5,
     coverKey: "pm-22-childrens-book",
@@ -371,6 +373,7 @@ const BLUEPRINTS: PromptBlueprint[] = [
     category: "education",
     tags: ["botanical", "scientific-illustration", "annotation", "education", "diagram"],
     priceSKT: 120,
+    isFree: true,
     sellerIdx: 11,
     coverKey: "pm-37-botanical",
     exampleKeys: ["ex-14-macro-crystal", "ex-33-dewdrop"],
@@ -444,6 +447,7 @@ const BLUEPRINTS: PromptBlueprint[] = [
     category: "education",
     tags: ["macro", "nature", "photography", "science", "texture", "educational"],
     priceSKT: 110,
+    isFree: true,
     sellerIdx: 11,
     coverKey: "pm-33-macro",
     exampleKeys: ["ex-33-dewdrop", "ex-14-macro-crystal"],
@@ -477,6 +481,7 @@ const createPromptSet = (bp: PromptBlueprint, assets: AssetResolvers): SeedPromp
     category: bp.category,
     tags: bp.tags,
     priceSKT: bp.priceSKT,
+    isFree: bp.isFree,
     featured: bp.featured,
     sellerIdx: bp.sellerIdx,
     description: bp.description,
