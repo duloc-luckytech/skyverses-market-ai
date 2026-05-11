@@ -534,7 +534,7 @@ export async function appendPromptMarketSeedPrompts(
   if (updateExisting) {
     for (const p of PROMPTS.filter((prompt) => existingTitleSet.has(prompt.title.en))) {
       const seller = seedUsers[p.sellerIdx];
-      const payload = createPromptSetPayload(p, seller._id);
+      const payload = createPromptSetPayload(p, seller._id as mongoose.Types.ObjectId);
       await PromptSet.updateOne(
         { "title.en": p.title.en },
         {
@@ -561,10 +561,13 @@ export async function appendPromptMarketSeedPrompts(
 
   const promptSets = missingPrompts.map((p) => {
     const seller = seedUsers[p.sellerIdx];
-    return createPromptSetPayload(p, seller._id);
+    return createPromptSetPayload(p, seller._id as mongoose.Types.ObjectId);
   });
   const createdPromptSets = promptSets.length ? await PromptSet.insertMany(promptSets) : [];
-  const engagement = await createPromptSetEngagement(createdPromptSets, seedUsers);
+  const engagement = await createPromptSetEngagement(
+    createdPromptSets,
+    seedUsers as Array<{ _id: mongoose.Types.ObjectId }>
+  );
 
   return {
     dryRun,
@@ -605,14 +608,17 @@ export async function seedPromptMarket(): Promise<{
   // ── Create prompt sets ──
   const promptSets = PROMPTS.map((p) => {
     const seller = createdUsers[p.sellerIdx];
-    return createPromptSetPayload(p, seller._id);
+    return createPromptSetPayload(p, seller._id as mongoose.Types.ObjectId);
   });
 
   const createdPromptSets = await PromptSet.insertMany(promptSets);
   console.log(`Created ${createdPromptSets.length} prompt sets`);
 
   // ── Create reviews ──
-  const engagement = await createPromptSetEngagement(createdPromptSets, createdUsers);
+  const engagement = await createPromptSetEngagement(
+    createdPromptSets,
+    createdUsers as Array<{ _id: mongoose.Types.ObjectId }>
+  );
   const reviewCount = engagement.reviews;
   console.log(`Created ${reviewCount} reviews`);
 
