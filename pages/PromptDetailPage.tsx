@@ -186,7 +186,31 @@ const PromptShowcaseStage: React.FC<{
   onSelect: (index: number) => void;
   canViewFullPrompt: boolean;
   onOpenWorkflow: () => void;
-}> = ({ promptSet, title, description, activeIndex, onSelect, canViewFullPrompt, onOpenWorkflow }) => {
+  language: string;
+}> = ({ promptSet, title, description, activeIndex, onSelect, canViewFullPrompt, onOpenWorkflow, language }) => {
+  const vi = language === 'vi';
+  const copy = {
+    outputs: vi ? 'Kết quả mẫu' : 'Sample outputs',
+    showcase: vi ? 'Bộ prompt này tạo được gì' : 'What this prompt creates',
+    workflowCta: vi ? 'Xem cách dùng prompt' : 'See how to use it',
+    workflowSub: vi ? 'Các bước tạo ảnh/video' : 'Image/video steps',
+    mainOutput: vi ? 'Kết quả demo chính' : 'Main demo output',
+    mobileWorkflow: vi ? 'Cách dùng' : 'How to use',
+    inputBrief: vi ? 'Thông tin cần chuẩn bị' : 'Input to prepare',
+    inputLocked: vi ? 'Chi tiết đang khóa' : 'Details locked',
+    safePreview: vi ? 'Xem trước an toàn' : 'Safe preview',
+    safePreviewBody: vi
+      ? 'Bạn vẫn xem được kết quả mẫu, model phù hợp và nội dung nhận được. Công thức prompt chi tiết sẽ mở sau khi mua.'
+      : 'You can still review sample outputs, compatible models, and what is included. The exact prompt recipe unlocks after purchase.',
+    protected: vi ? 'Công thức prompt được bảo vệ' : 'Prompt recipe protected',
+    styleModels: vi ? 'Model & phong cách phù hợp' : 'Best models and style',
+    promptInputs: vi ? 'Thông tin cần thay trong prompt' : 'Prompt fields to replace',
+    outputResult: vi ? 'Kết quả mong đợi' : 'Expected result',
+    includedAfterPurchase: vi ? 'Bạn sẽ nhận được sau khi mua' : 'Included after purchase',
+    promptModules: vi ? 'Prompt trong bộ' : 'Prompt modules',
+    imageOutputs: vi ? 'Hình ảnh mẫu' : 'Image outputs',
+    videoDemos: vi ? 'Video mẫu' : 'Video demos',
+  };
   const examples = promptSet.examples ?? [];
   const seenMedia = new Set<string>();
   const rawMediaItems: Array<ShowcaseMediaItem | null> = [
@@ -201,7 +225,7 @@ const PromptShowcaseStage: React.FC<{
         }
       : null,
     ...examples.flatMap((ex, index) => {
-      const itemTitle = ex.promptTitle || `Output ${index + 1}`;
+      const itemTitle = ex.promptTitle || (vi ? `Kết quả ${index + 1}` : `Output ${index + 1}`);
       return [
         ex.image
           ? {
@@ -273,7 +297,7 @@ const PromptShowcaseStage: React.FC<{
       <div className="grid grid-cols-1 xl:grid-cols-[220px_minmax(0,1fr)_340px] xl:h-[720px]">
         <aside className="order-2 xl:order-1 border-t xl:border-t-0 xl:border-r border-[#d8c9a4] bg-[#f7f0e1] p-4 xl:h-full xl:overflow-y-auto">
           <div className="mb-4 hidden xl:flex items-center justify-between border-b border-dashed border-[#d8c9a4] pb-3">
-            <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Outputs</p>
+            <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">{copy.outputs}</p>
             <div className="flex items-center gap-2 text-[11px] text-[#806b4a]">
               <span className="inline-flex items-center gap-1"><ImageIcon className="w-3.5 h-3.5" />{imageCount}</span>
               <span className="inline-flex items-center gap-1"><Video className="w-3.5 h-3.5" />{videoCount}</span>
@@ -317,7 +341,7 @@ const PromptShowcaseStage: React.FC<{
                       {item.title || title}
                     </p>
                     <p className="mt-1 text-[11px] text-[#7a6a55] line-clamp-1">
-                      {canViewFullPrompt ? item.input : 'Input details locked'}
+                      {canViewFullPrompt ? item.input : copy.inputLocked}
                     </p>
                   </div>
                 </button>
@@ -331,7 +355,7 @@ const PromptShowcaseStage: React.FC<{
           <div className="relative z-10 h-full flex flex-col">
             <div className="flex items-start justify-between gap-4 p-6 lg:p-7">
               <div>
-                <p className="font-serif italic text-sm uppercase tracking-[0.24em] text-[#806b4a]">Prompt Showcase</p>
+                <p className="font-serif italic text-sm uppercase tracking-[0.24em] text-[#806b4a]">{copy.showcase}</p>
                 <h2 className="mt-2 text-3xl lg:text-5xl font-serif text-black leading-none max-w-3xl">
                   {title}
                 </h2>
@@ -351,9 +375,9 @@ const PromptShowcaseStage: React.FC<{
                     <Workflow className="w-4 h-4" />
                   </span>
                   <span className="relative leading-none">
-                    View workflow nodes
+                    {copy.workflowCta}
                     <span className="mt-1 block text-[9px] font-bold tracking-[0.12em] text-white/40">
-                      Image + video graph
+                      {copy.workflowSub}
                     </span>
                   </span>
                 </button>
@@ -396,14 +420,14 @@ const PromptShowcaseStage: React.FC<{
                 </div>
                 <div className="absolute left-4 bottom-4 flex items-center gap-2 rounded-full bg-[#fff9ec]/90 backdrop-blur-md border border-[#d1bea0] px-3 py-2 text-xs text-[#5b4a35] shadow-sm">
                   {activeMedia.type === 'video' ? <Video className="w-3.5 h-3.5" /> : <ImageIcon className="w-3.5 h-3.5" />}
-                  Main {activeMedia.type} output
+                  {copy.mainOutput}
                 </div>
                 <button
                   onClick={onOpenWorkflow}
                   className="absolute right-4 bottom-4 inline-flex sm:hidden items-center gap-2 rounded-full border border-[#C9A84C]/45 bg-[#111015]/95 px-4 py-2.5 text-xs font-black uppercase tracking-wider text-[#f5d77a] shadow-[0_0_28px_rgba(201,168,76,0.25)] backdrop-blur-md"
                 >
                   <Workflow className="w-3.5 h-3.5" />
-                  Workflow nodes
+                  {copy.mobileWorkflow}
                 </button>
               </div>
             </div>
@@ -413,27 +437,27 @@ const PromptShowcaseStage: React.FC<{
         <aside className="order-3 border-t xl:border-t-0 xl:border-l border-[#d8c9a4] bg-[#f7f0e1] p-5 lg:p-6 space-y-5 xl:h-full xl:overflow-y-auto">
           {canViewFullPrompt ? (
             <div className="rounded-[20px] border border-[#d8c9a4] bg-[#fff9ec] p-5 shadow-sm">
-              <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Input Brief</p>
+              <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">{copy.inputBrief}</p>
               <p className="mt-3 text-sm text-[#4b4035] leading-relaxed">
                 {activeMedia.input || promptSet.previewText || title}
               </p>
             </div>
           ) : (
             <div className="rounded-[20px] border border-[#d8c9a4] bg-[#fff9ec] p-5 shadow-sm">
-              <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Safe Preview</p>
+              <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">{copy.safePreview}</p>
               <p className="mt-3 text-sm text-[#4b4035] leading-relaxed">
-                This paid pack hides the exact input brief, variables, prompt structure, style recipe, and production notes until purchase.
+                {copy.safePreviewBody}
               </p>
               <div className="mt-4 flex items-center gap-2 rounded-xl border border-[#d8c9a4] bg-[#fbf1dc] px-3 py-2 text-xs font-medium text-[#806b4a]">
                 <Lock className="w-3.5 h-3.5" />
-                Blueprint protected
+                {copy.protected}
               </div>
             </div>
           )}
 
           {styleChips.length > 0 && (
             <div className="rounded-[20px] border border-[#d8c9a4] bg-[#fff9ec] p-5 shadow-sm">
-              <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Style & Models</p>
+              <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">{copy.styleModels}</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {styleChips.map((chip) => (
                   <span key={chip} className="px-2.5 py-1 rounded-full border border-[#d1bea0] bg-[#f2e5c9] text-xs text-[#5b4a35]">
@@ -446,7 +470,7 @@ const PromptShowcaseStage: React.FC<{
 
           {canViewFullPrompt && variables.length > 0 && (
             <div className="rounded-[20px] border border-[#d8c9a4] bg-[#fff9ec] p-5 shadow-sm">
-              <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Prompt Inputs</p>
+              <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">{copy.promptInputs}</p>
               <div className="mt-3 space-y-2.5">
                 {variables.slice(0, 6).map((v) => (
                   <div key={v.name} className="rounded-xl border border-dashed border-[#d8c9a4] bg-[#fbf1dc] p-3">
@@ -460,25 +484,25 @@ const PromptShowcaseStage: React.FC<{
 
           {canViewFullPrompt ? (
             <div className="rounded-[20px] border border-[#d8c9a4] bg-[#fff9ec] p-5 shadow-sm">
-              <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Output Result</p>
+              <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">{copy.outputResult}</p>
               <p className="mt-3 text-sm text-[#4b4035] leading-relaxed">
                 {activeMedia.output || featuredPrompt?.description || description}
               </p>
             </div>
           ) : (
             <div className="rounded-[20px] border border-[#d8c9a4] bg-[#fff9ec] p-5 shadow-sm">
-              <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Included After Purchase</p>
+              <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">{copy.includedAfterPurchase}</p>
               <div className="mt-3 space-y-2 text-sm text-[#4b4035]">
                 <div className="flex items-center justify-between gap-3">
-                  <span>Prompt modules</span>
+                  <span>{copy.promptModules}</span>
                   <span className="font-semibold">{promptSet.prompts.length}</span>
                 </div>
                 <div className="flex items-center justify-between gap-3">
-                  <span>Image outputs</span>
+                  <span>{copy.imageOutputs}</span>
                   <span className="font-semibold">{imageCount}</span>
                 </div>
                 <div className="flex items-center justify-between gap-3">
-                  <span>Video demos</span>
+                  <span>{copy.videoDemos}</span>
                   <span className="font-semibold">{videoCount}</span>
                 </div>
               </div>
@@ -624,7 +648,7 @@ const PromptDetailPage: React.FC = () => {
   const avatar = getSellerAvatar(promptSet.sellerId);
   const seller = getSellerName(promptSet.sellerId);
   const canViewFullPrompt = promptSet.isFree || alreadyPurchased;
-  const workflowPreview = buildPromptWorkflowPreview(promptSet, title, canViewFullPrompt);
+  const workflowPreview = buildPromptWorkflowPreview(promptSet, title, canViewFullPrompt, lang);
 
   return (
     <div className="min-h-screen bg-[var(--atlas-bg-page)] text-white">
@@ -654,6 +678,7 @@ const PromptDetailPage: React.FC = () => {
               onSelect={setActiveExampleIndex}
               canViewFullPrompt={canViewFullPrompt}
               onOpenWorkflow={() => setShowWorkflowPreview(true)}
+              language={lang}
             />
             {isAuthenticated && (
               <button
@@ -756,7 +781,7 @@ const PromptDetailPage: React.FC = () => {
               transition={{ duration: 0.5, delay: 0.26 }}
             >
               <h3 className="text-xs font-semibold uppercase tracking-widest text-white/30 mb-4">
-                Prompt Blueprint ({promptSet.prompts.length})
+                {lang === 'vi' ? `Các prompt trong bộ (${promptSet.prompts.length})` : `Included prompts (${promptSet.prompts.length})`}
               </h3>
               <div className="space-y-3">
                 {promptSet.prompts.map((prompt, idx) => {
@@ -1128,6 +1153,7 @@ const PromptDetailPage: React.FC = () => {
         open={showWorkflowPreview}
         onClose={() => setShowWorkflowPreview(false)}
         workflow={workflowPreview}
+        language={lang}
       />
     </div>
   );

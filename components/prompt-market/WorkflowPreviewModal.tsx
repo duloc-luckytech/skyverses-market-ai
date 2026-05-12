@@ -67,6 +67,7 @@ interface WorkflowPreviewModalProps {
   open: boolean;
   onClose: () => void;
   workflow: WorkflowPreviewDefinition;
+  language?: string;
 }
 
 const TONE_CLASS: Record<WorkflowPreviewTone, { border: string; bg: string; text: string; dot: string }> = {
@@ -231,8 +232,10 @@ const toEdges = (edges: WorkflowPreviewDefinition['edges']): Edge[] =>
 export const buildPromptWorkflowPreview = (
   promptSet: PromptSet,
   title: string,
-  canViewFullPrompt: boolean
+  canViewFullPrompt: boolean,
+  language: string = 'en'
 ): WorkflowPreviewDefinition => {
+  const vi = language === 'vi';
   const examples = promptSet.examples ?? [];
   const imageCount = examples.filter((example) => example.image).length + (promptSet.coverImage ? 1 : 0);
   const videoCount = examples.filter((example) => example.video).length;
@@ -245,21 +248,23 @@ export const buildPromptWorkflowPreview = (
   if (promptSet.coverImage) {
     mediaSteps.push({
       id: 'cover-output',
-      title: '4. Cover output',
-      subtitle: 'Main marketplace cover and first quality target.',
+      title: vi ? '4. Ảnh bìa chính' : '4. Main cover image',
+      subtitle: vi ? 'Ảnh mẫu đầu tiên để hiểu chất lượng bộ prompt.' : 'The first sample image for understanding output quality.',
       tone: 'emerald',
       icon: 'image',
       media: { type: 'image', url: promptSet.coverImage },
-      meta: 'Hero cover',
+      meta: vi ? 'Ảnh bìa' : 'Hero cover',
       details: [
-        'Use this as the visual north star for composition and detail density.',
-        canViewFullPrompt ? 'Compare generated variants against the cover before exporting.' : 'Exact generation recipe unlocks after purchase.',
+        vi ? 'Dùng ảnh này làm mốc để so bố cục, màu sắc và độ chi tiết.' : 'Use this as the reference for composition, color, and detail density.',
+        canViewFullPrompt
+          ? (vi ? 'Tạo vài biến thể rồi so lại với ảnh bìa trước khi xuất bản.' : 'Create variants and compare them with the cover before exporting.')
+          : (vi ? 'Công thức tạo ảnh chi tiết sẽ mở sau khi mua.' : 'The exact generation recipe unlocks after purchase.'),
       ],
       locked: !canViewFullPrompt,
       x: 1040,
       y: -120,
     });
-    mediaEdges.push({ id: 'models-cover-output', source: 'models', target: 'cover-output', label: 'cover' });
+    mediaEdges.push({ id: 'models-cover-output', source: 'models', target: 'cover-output', label: vi ? 'ảnh bìa' : 'cover' });
     reviewSources.push('cover-output');
   }
 
@@ -267,32 +272,32 @@ export const buildPromptWorkflowPreview = (
     const rowY = index * 285;
     const imageId = `example-${index + 1}-image`;
     const videoId = `example-${index + 1}-video`;
-    const exampleTitle = example.promptTitle || `Output ${index + 1}`;
+    const exampleTitle = example.promptTitle || (vi ? `Kết quả ${index + 1}` : `Output ${index + 1}`);
 
     if (example.image) {
       mediaSteps.push({
         id: imageId,
         title: `${index + 5}. ${exampleTitle}`,
-        subtitle: 'Generated image board / poster / detail output.',
+        subtitle: vi ? 'Ảnh mẫu được tạo từ một prompt trong bộ.' : 'A sample image generated from one prompt module.',
         tone: 'emerald',
         icon: 'image',
         media: { type: 'image', url: example.image },
-        meta: 'Image node',
+        meta: vi ? 'Bước tạo ảnh' : 'Image step',
         details: canViewFullPrompt
           ? [
-              example.input || 'Input brief from this prompt module',
-              example.style || 'Style and model direction',
-              example.output || 'Expected image result',
+              example.input || (vi ? 'Thông tin đầu vào cho prompt này' : 'Input brief from this prompt module'),
+              example.style || (vi ? 'Phong cách và model nên dùng' : 'Style and model direction'),
+              example.output || (vi ? 'Kết quả ảnh mong đợi' : 'Expected image result'),
             ]
           : [
-              'Image output is visible as public proof.',
-              'Input, style recipe, and exact output spec are locked.',
+              vi ? 'Ảnh mẫu được mở để bạn xem chất lượng trước.' : 'The image sample is visible as public proof.',
+              vi ? 'Input, công thức style và thông số chi tiết đang khóa.' : 'Input, style recipe, and exact output spec are locked.',
             ],
         locked: !canViewFullPrompt,
         x: 1040,
         y: rowY,
       });
-      mediaEdges.push({ id: `models-${imageId}`, source: 'models', target: imageId, label: `image ${index + 1}` });
+      mediaEdges.push({ id: `models-${imageId}`, source: 'models', target: imageId, label: vi ? `ảnh ${index + 1}` : `image ${index + 1}` });
       reviewSources.push(imageId);
     }
 
@@ -300,20 +305,20 @@ export const buildPromptWorkflowPreview = (
       mediaSteps.push({
         id: videoId,
         title: `${index + 5}. ${exampleTitle} · Video`,
-        subtitle: 'Motion pass using the image direction as continuity reference.',
+        subtitle: vi ? 'Video mẫu được dựng từ hướng hình ảnh đã chọn.' : 'A video sample built from the selected image direction.',
         tone: 'blue',
         icon: 'video',
         media: { type: 'video', url: example.video, poster: example.image || promptSet.coverImage },
-        meta: 'Video node',
+        meta: vi ? 'Bước tạo video' : 'Video step',
         details: canViewFullPrompt
           ? [
-              example.input || 'Video input derived from the prompt module',
-              example.style || 'Camera, timing, and motion style',
-              example.output || 'Expected video result',
+              example.input || (vi ? 'Thông tin đầu vào cho video' : 'Video input derived from the prompt module'),
+              example.style || (vi ? 'Gợi ý camera, nhịp chuyển động và style' : 'Camera, timing, and motion style'),
+              example.output || (vi ? 'Kết quả video mong đợi' : 'Expected video result'),
             ]
           : [
-              'Video demo is visible as public proof.',
-              'Camera prompt, timing, and motion notes are locked.',
+              vi ? 'Video mẫu được mở để bạn xem trước chuyển động.' : 'The video demo is visible as public proof.',
+              vi ? 'Prompt camera, timing và ghi chú chuyển động đang khóa.' : 'Camera prompt, timing, and motion notes are locked.',
             ],
         locked: !canViewFullPrompt,
         x: 1390,
@@ -323,7 +328,7 @@ export const buildPromptWorkflowPreview = (
         id: example.image ? `${imageId}-${videoId}` : `models-${videoId}`,
         source: example.image ? imageId : 'models',
         target: videoId,
-        label: 'animate',
+        label: vi ? 'tạo video' : 'animate',
       });
       reviewSources.push(videoId);
     }
@@ -332,20 +337,20 @@ export const buildPromptWorkflowPreview = (
   const steps: WorkflowPreviewStep[] = [
     {
       id: 'brief',
-      title: '1. Input brief',
-      subtitle: 'Define the project, subject, audience, and output goal.',
+      title: vi ? '1. Chuẩn bị thông tin' : '1. Prepare your input',
+      subtitle: vi ? 'Bạn cần biết mình muốn tạo gì, cho ai xem và dùng ở đâu.' : 'Decide what you want to create, who it is for, and where it will be used.',
       tone: 'gold',
       icon: 'start',
       details: canViewFullPrompt
         ? [
             promptSet.previewText || title,
-            `${promptSet.prompts.length} prompt modules included`,
-            `${imageCount} image references and ${videoCount} video references`,
+            vi ? `${promptSet.prompts.length} prompt có sẵn trong bộ` : `${promptSet.prompts.length} prompt modules included`,
+            vi ? `${imageCount} ảnh mẫu và ${videoCount} video mẫu` : `${imageCount} image references and ${videoCount} video references`,
           ]
         : [
-            'Safe public overview only',
-            `${imageCount} image references and ${videoCount} video references`,
-            'Exact brief fields are protected for paid packs',
+            vi ? 'Đây là bản xem trước, chưa lộ công thức prompt.' : 'Safe public overview only',
+            vi ? `${imageCount} ảnh mẫu và ${videoCount} video mẫu` : `${imageCount} image references and ${videoCount} video references`,
+            vi ? 'Các trường nhập chi tiết sẽ mở sau khi mua.' : 'Exact brief fields are protected for paid packs',
           ],
       locked: !canViewFullPrompt,
       x: 0,
@@ -353,15 +358,15 @@ export const buildPromptWorkflowPreview = (
     },
     {
       id: 'blueprint',
-      title: '2. Prompt blueprint',
-      subtitle: 'Use modular prompts, variables, and production notes.',
+      title: vi ? '2. Dùng prompt trong bộ' : '2. Use the included prompts',
+      subtitle: vi ? 'Chọn prompt phù hợp rồi thay thông tin của dự án vào.' : 'Choose the right prompt and replace it with your project details.',
       tone: canViewFullPrompt ? 'blue' : 'rose',
       icon: canViewFullPrompt ? 'prompt' : 'lock',
       details: canViewFullPrompt && promptTitles.length
         ? promptTitles
         : [
-            `${promptSet.prompts.length} reusable prompt modules`,
-            'Prompt text, variables, style recipe, and notes unlock after purchase',
+            vi ? `${promptSet.prompts.length} prompt có thể tái sử dụng` : `${promptSet.prompts.length} reusable prompt modules`,
+            vi ? 'Nội dung prompt, biến cần thay và ghi chú style sẽ mở sau khi mua.' : 'Prompt text, variables, style recipe, and notes unlock after purchase',
           ],
       locked: !canViewFullPrompt,
       x: 340,
@@ -369,8 +374,8 @@ export const buildPromptWorkflowPreview = (
     },
     {
       id: 'models',
-      title: '3. Model routing',
-      subtitle: 'Pick the best model for board, image, or video output.',
+      title: vi ? '3. Chọn model phù hợp' : '3. Choose the right model',
+      subtitle: vi ? 'Dùng model gợi ý để tạo ảnh, poster, board hoặc video.' : 'Use the suggested model to create images, posters, boards, or videos.',
       tone: 'violet',
       icon: 'model',
       details: modelLabels.length ? modelLabels : ['Nano Banana Pro', 'GPT Image', 'Veo 3.1'],
@@ -380,14 +385,16 @@ export const buildPromptWorkflowPreview = (
     ...mediaSteps,
     {
       id: 'review',
-      title: 'Final. Review & export',
-      subtitle: 'Iterate variables and ship the strongest output set.',
+      title: vi ? 'Cuối cùng. So sánh và xuất bản' : 'Final. Review and export',
+      subtitle: vi ? 'Chọn kết quả tốt nhất, chỉnh lại nếu cần rồi dùng cho chiến dịch.' : 'Choose the best result, adjust if needed, then use it in your campaign.',
       tone: 'gold',
       icon: 'review',
       details: [
-        'Compare every output node against the showcase quality target.',
-        'Adjust one variable at a time, then export the strongest image/video set.',
-        canViewFullPrompt ? 'Use copy buttons in the prompt blueprint below the hero.' : 'Purchase unlocks the exact blueprint used by this workflow.',
+        vi ? 'So từng ảnh/video với kết quả mẫu để biết đã đạt chất lượng chưa.' : 'Compare every image/video with the sample outputs.',
+        vi ? 'Chỉnh từng phần nhỏ, sau đó lưu bộ ảnh/video tốt nhất.' : 'Adjust one small part at a time, then save the strongest image/video set.',
+        canViewFullPrompt
+          ? (vi ? 'Dùng nút copy ở danh sách prompt bên dưới để chạy thử.' : 'Use copy buttons in the prompt list below the hero.')
+          : (vi ? 'Mua bộ prompt để mở công thức chi tiết.' : 'Purchase unlocks the exact prompt recipe.'),
       ],
       locked: !canViewFullPrompt,
       x: 1760,
@@ -396,18 +403,20 @@ export const buildPromptWorkflowPreview = (
   ];
 
   return {
-    title: `${title} workflow`,
-    subtitle: 'A full node map for turning this prompt pack into image boards, posters, video demos, and export-ready variants.',
+    title: vi ? `Cách dùng: ${title}` : `How to use: ${title}`,
+    subtitle: vi
+      ? 'Sơ đồ này cho bạn thấy bộ prompt đi từ thông tin đầu vào tới ảnh, video và kết quả cuối cùng như thế nào.'
+      : 'This map shows how the prompt pack turns your input into images, videos, and final outputs.',
     steps,
     edges: [
-      { id: 'brief-blueprint', source: 'brief', target: 'blueprint', label: 'fill variables' },
-      { id: 'blueprint-models', source: 'blueprint', target: 'models', label: 'route' },
+      { id: 'brief-blueprint', source: 'brief', target: 'blueprint', label: vi ? 'điền thông tin' : 'fill details' },
+      { id: 'blueprint-models', source: 'blueprint', target: 'models', label: vi ? 'chọn model' : 'choose model' },
       ...mediaEdges,
       ...reviewSources.map((source) => ({
         id: `${source}-review`,
         source,
         target: 'review',
-        label: 'review',
+        label: vi ? 'so sánh' : 'review',
       })),
     ],
   };
@@ -450,8 +459,9 @@ const WorkflowCanvas: React.FC<{ workflow: WorkflowPreviewDefinition }> = ({ wor
   );
 };
 
-const WorkflowPreviewModal: React.FC<WorkflowPreviewModalProps> = ({ open, onClose, workflow }) => {
+const WorkflowPreviewModal: React.FC<WorkflowPreviewModalProps> = ({ open, onClose, workflow, language = 'en' }) => {
   const [copied, setCopied] = useState(false);
+  const vi = language === 'vi';
 
   if (!open) return null;
 
@@ -467,7 +477,7 @@ const WorkflowPreviewModal: React.FC<WorkflowPreviewModalProps> = ({ open, onClo
   return (
     <div className="fixed inset-0 z-[1100] flex items-center justify-center p-3 sm:p-6">
       <motion.button
-        aria-label="Close workflow preview"
+        aria-label={vi ? 'Đóng sơ đồ cách dùng prompt' : 'Close workflow preview'}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         className="absolute inset-0 bg-black/85 backdrop-blur-2xl"
@@ -482,7 +492,9 @@ const WorkflowPreviewModal: React.FC<WorkflowPreviewModalProps> = ({ open, onClo
           <div className="min-w-0">
             <div className="flex items-center gap-2 text-[#C9A84C]">
               <Workflow className="h-4 w-4" />
-              <p className="text-[11px] font-bold uppercase tracking-[0.22em]">Workflow Nodes</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.22em]">
+                {vi ? 'Cách dùng prompt' : 'How to use this prompt'}
+              </p>
             </div>
             <h3 className="mt-2 truncate text-xl font-semibold text-white">{workflow.title}</h3>
             <p className="mt-1 max-w-2xl text-sm text-white/42">{workflow.subtitle}</p>
@@ -493,7 +505,7 @@ const WorkflowPreviewModal: React.FC<WorkflowPreviewModalProps> = ({ open, onClo
               className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] px-3 py-2 text-sm font-medium text-white/55 transition hover:border-[#C9A84C]/30 hover:text-[#C9A84C]"
             >
               {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-              {copied ? 'Copied' : 'Copy map'}
+              {copied ? (vi ? 'Đã copy' : 'Copied') : (vi ? 'Copy các bước' : 'Copy steps')}
             </button>
             <button
               onClick={onClose}
