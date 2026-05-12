@@ -41,6 +41,25 @@ import type { PromptSet, LocalizedString } from '../types';
 // ─── Constants ──────────────────────────────────────────────────────────────
 
 type SortOption = 'newest' | 'popular' | 'price_low' | 'price_high';
+type MediaFilter = 'all' | 'image' | 'video' | 'image_video';
+
+const CATEGORY_LABELS: Record<string, Record<string, string>> = {
+  all: { en: 'All categories', vi: 'Tất cả danh mục', ko: '전체', ja: 'すべて' },
+  design: { en: 'Design showcase', vi: 'Showcase thiết kế', ko: '디자인', ja: 'デザイン' },
+  marketing: { en: 'Marketing campaign', vi: 'Campaign marketing', ko: '마케팅', ja: 'マーケティング' },
+  education: { en: 'Education / guide', vi: 'Giáo dục / hướng dẫn', ko: '교육', ja: '教育' },
+  business: { en: 'Business kit', vi: 'Bộ business', ko: '비즈니스', ja: 'ビジネス' },
+  writing: { en: 'Writing system', vi: 'Hệ viết nội dung', ko: '글쓰기', ja: '文章' },
+  coding: { en: 'Coding', vi: 'Lập trình', ko: '코딩', ja: 'コーディング' },
+  other: { en: 'Other', vi: 'Khác', ko: '기타', ja: 'その他' },
+};
+
+const MEDIA_LABELS: Record<MediaFilter, Record<string, string>> = {
+  all: { en: 'All media', vi: 'Tất cả media', ko: '전체 미디어', ja: 'すべてのメディア' },
+  image: { en: 'Has images', vi: 'Có hình ảnh', ko: '이미지 포함', ja: '画像あり' },
+  video: { en: 'Has video', vi: 'Có video', ko: '비디오 포함', ja: '動画あり' },
+  image_video: { en: 'Images + video', vi: 'Hình ảnh + video', ko: '이미지 + 비디오', ja: '画像 + 動画' },
+};
 
 const SORT_LABELS: Record<SortOption, Record<string, string>> = {
   newest: { en: 'Newest', vi: 'Mới nhất', ko: '최신', ja: '最新' },
@@ -50,6 +69,7 @@ const SORT_LABELS: Record<SortOption, Record<string, string>> = {
 };
 
 const PAGE_LIMIT = 12;
+const FILTER_CATALOG_LIMIT = 160;
 
 // ─── Stagger animation variants ─────────────────────────────────────────────
 
@@ -127,6 +147,39 @@ function FilterSection({
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+function FilterOptionButton({
+  active,
+  label,
+  count,
+  icon,
+  onClick,
+}: {
+  active: boolean;
+  label: string;
+  count?: number;
+  icon?: React.ReactNode;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full flex items-center justify-between gap-2 px-3 py-2 text-[13px] font-medium transition-all duration-150 ${
+        active
+          ? 'bg-brand-blue/[0.1] text-brand-blue border border-brand-blue/[0.15]'
+          : 'text-white/50 hover:text-white/70 hover:bg-white/[0.04] border border-transparent'
+      }`}
+    >
+      <span className="min-w-0 flex items-center gap-2 text-left">
+        {icon}
+        <span className="truncate">{label}</span>
+      </span>
+      {typeof count === 'number' && (
+        <span className="text-[10px] text-white/35 tabular-nums">{count}</span>
+      )}
+    </button>
   );
 }
 
@@ -815,8 +868,15 @@ const PromptMarketPage: React.FC = () => {
   const urlQ = searchParams.get('q') ?? '';
   const urlSort = (searchParams.get('sort') ?? 'newest') as SortOption;
   const urlPage = parseInt(searchParams.get('page') ?? '1', 10);
+  const urlCategory = searchParams.get('category') ?? 'all';
   const urlPriceFilter = searchParams.get('price') ?? 'all';
   const urlRatingFilter = searchParams.get('rating') ?? 'any';
+  const urlMediaFilter = (searchParams.get('media') ?? 'all') as MediaFilter;
+  const urlFeaturedFilter = searchParams.get('featured') === 'true';
+  const urlTags = searchParams.get('tags') ?? '';
+  const urlModels = searchParams.get('models') ?? '';
+  const activeTags = urlTags.split(',').map(v => v.trim()).filter(Boolean);
+  const activeModels = urlModels.split(',').map(v => v.trim()).filter(Boolean);
 
   // Local search input (debounced before syncing to URL)
   const [searchInput, setSearchInput] = useState(urlQ);
@@ -825,6 +885,7 @@ const PromptMarketPage: React.FC = () => {
   // Data state
   const [promptSets, setPromptSets] = useState<PromptSet[]>([]);
   const [featuredSets, setFeaturedSets] = useState<PromptSet[]>([]);
+  const [filterCatalog, setFilterCatalog] = useState<PromptSet[]>([]);
   const [pagination, setPagination] = useState({ page: 1, limit: PAGE_LIMIT, total: 0, totalPages: 0 });
   const [loading, setLoading] = useState(true);
   const [featuredLoading, setFeaturedLoading] = useState(true);
@@ -861,6 +922,13 @@ const PromptMarketPage: React.FC = () => {
     setLoading(true);
     const res = await promptMarketApi.list({
       q: urlQ || undefined,
+      category: urlCategory !== 'all' ? urlCategory : undefined,
+      tags: activeTags.length ? activeTags.join(',') : undefined,
+      models: activeModels.length ? activeModels.join(',') : undefined,
+      media: urlMediaFilter !== 'all' ? urlMediaFilter : undefined,
+      price: urlPriceFilter !== 'all' ? urlPriceFilter as 'free' | 'paid' : undefined,
+      rating: urlRatingFilter !== 'any' ? urlRatingFilter : undefined,
+      featured: urlFeaturedFilter || undefined,
       sort: urlSort,
       page: urlPage,
       limit: PAGE_LIMIT,
@@ -868,11 +936,23 @@ const PromptMarketPage: React.FC = () => {
     setPromptSets(res.data ?? []);
     setPagination(res.pagination ?? { page: 1, limit: PAGE_LIMIT, total: 0, totalPages: 0 });
     setLoading(false);
-  }, [urlQ, urlSort, urlPage]);
+  }, [urlQ, urlCategory, urlTags, urlModels, urlMediaFilter, urlPriceFilter, urlRatingFilter, urlFeaturedFilter, urlSort, urlPage]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  useEffect(() => {
+    const loadFilterCatalog = async () => {
+      const res = await promptMarketApi.list({
+        sort: 'popular',
+        page: 1,
+        limit: FILTER_CATALOG_LIMIT,
+      });
+      setFilterCatalog(res.data ?? []);
+    };
+    loadFilterCatalog();
+  }, []);
 
   // Sync searchInput when URL changes externally
   useEffect(() => {
@@ -933,6 +1013,26 @@ const PromptMarketPage: React.FC = () => {
     updateParams({ rating: rating === 'any' ? null : rating });
   };
 
+  const handleCategoryFilter = (category: string) => {
+    updateParams({ category: category === 'all' ? null : category });
+  };
+
+  const handleMediaFilter = (media: MediaFilter) => {
+    updateParams({ media: media === 'all' ? null : media });
+  };
+
+  const handleFeaturedFilter = () => {
+    updateParams({ featured: urlFeaturedFilter ? null : 'true' });
+  };
+
+  const toggleMultiFilter = (key: 'tags' | 'models', value: string) => {
+    const current = key === 'tags' ? activeTags : activeModels;
+    const next = current.includes(value)
+      ? current.filter(item => item !== value)
+      : [...current, value];
+    updateParams({ [key]: next.length ? next.join(',') : null });
+  };
+
   const clearSearch = () => {
     setSearchInput('');
     updateParams({ q: null });
@@ -959,21 +1059,42 @@ const PromptMarketPage: React.FC = () => {
   const currentSortLabel =
     SORT_LABELS[urlSort]?.[lang] ?? SORT_LABELS[urlSort]?.en ?? 'Newest';
 
-  const hasActiveFilters = urlQ || urlPriceFilter !== 'all' || urlRatingFilter !== 'any';
+  const hasActiveFilters =
+    !!urlQ ||
+    urlCategory !== 'all' ||
+    urlPriceFilter !== 'all' ||
+    urlRatingFilter !== 'any' ||
+    urlMediaFilter !== 'all' ||
+    urlFeaturedFilter ||
+    activeTags.length > 0 ||
+    activeModels.length > 0;
   const showFeatured = !hasActiveFilters && urlPage === 1;
 
   const bannerSets = featuredSets.slice(0, 5);
 
-  // Client-side filter (price / rating)
-  const filteredSets = promptSets.filter(ps => {
-    if (urlPriceFilter === 'free' && !ps.isFree) return false;
-    if (urlPriceFilter === 'paid' && ps.isFree) return false;
-    if (urlRatingFilter !== 'any') {
-      const minRating = parseFloat(urlRatingFilter);
-      if (ps.averageRating < minRating) return false;
-    }
-    return true;
-  });
+  const catalogSource = filterCatalog.length ? filterCatalog : [...promptSets, ...featuredSets];
+  const categoryCounts = catalogSource.reduce<Record<string, number>>((acc, ps) => {
+    acc[ps.category] = (acc[ps.category] || 0) + 1;
+    return acc;
+  }, {});
+  const tagCounts = catalogSource.reduce<Record<string, number>>((acc, ps) => {
+    (ps.tags ?? []).forEach(tag => {
+      acc[tag] = (acc[tag] || 0) + 1;
+    });
+    return acc;
+  }, {});
+  const modelCounts = catalogSource.reduce<Record<string, number>>((acc, ps) => {
+    (ps.models ?? []).forEach(model => {
+      acc[model] = (acc[model] || 0) + 1;
+    });
+    return acc;
+  }, {});
+  const topTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]).slice(0, 18);
+  const topModels = Object.entries(modelCounts).sort((a, b) => b[1] - a[1]).slice(0, 14);
+  const totalImageSets = catalogSource.filter(ps => (ps.examples ?? []).some(ex => ex.image)).length;
+  const totalVideoSets = catalogSource.filter(ps => (ps.examples ?? []).some(ex => ex.video)).length;
+
+  const filteredSets = promptSets;
 
   // ── Render ───────────────────────────────────────────────────────────────
 
@@ -1111,6 +1232,21 @@ const PromptMarketPage: React.FC = () => {
 
               {/* Filter container */}
               <div className="lg:bg-[var(--atlas-bg-panel)] lg:border lg:border-white/[0.08] lg:p-4">
+                {/* ─ Category filter ─ */}
+                <FilterSection title={lang === 'vi' ? 'Danh mục showcase' : 'Showcase category'} defaultOpen={true}>
+                  <div className="space-y-0.5">
+                    {Object.keys(CATEGORY_LABELS).map(category => (
+                      <FilterOptionButton
+                        key={category}
+                        active={urlCategory === category}
+                        label={CATEGORY_LABELS[category][lang] ?? CATEGORY_LABELS[category].en}
+                        count={category === 'all' ? catalogSource.length : categoryCounts[category]}
+                        onClick={() => handleCategoryFilter(category)}
+                      />
+                    ))}
+                  </div>
+                </FilterSection>
+
                 {/* ─ Price filter ─ */}
                 <FilterSection title={t('prompt_market.price_range')} defaultOpen={true}>
                   <div className="space-y-0.5">
@@ -1119,17 +1255,34 @@ const PromptMarketPage: React.FC = () => {
                       { key: 'free', label: t('prompt_market.free_only') },
                       { key: 'paid', label: t('prompt_market.paid_only') },
                     ].map(opt => (
-                      <button
+                      <FilterOptionButton
                         key={opt.key}
+                        active={urlPriceFilter === opt.key}
+                        label={opt.label}
+                        count={opt.key === 'all' ? catalogSource.length : opt.key === 'free' ? catalogSource.filter(ps => ps.isFree).length : catalogSource.filter(ps => !ps.isFree).length}
                         onClick={() => handlePriceFilter(opt.key)}
-                        className={`w-full flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium transition-all duration-150 ${
-                          urlPriceFilter === opt.key
-                            ? 'bg-brand-blue/[0.1] text-brand-blue border border-brand-blue/[0.15]'
-                            : 'text-white/50 hover:text-white/70 hover:bg-white/[0.04] border border-transparent'
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
+                      />
+                    ))}
+                  </div>
+                </FilterSection>
+
+                {/* ─ Media filter ─ */}
+                <FilterSection title={lang === 'vi' ? 'Media trong bộ prompt' : 'Prompt media'} defaultOpen={true}>
+                  <div className="space-y-0.5">
+                    {([
+                      { key: 'all' as MediaFilter, icon: <Package className="w-3.5 h-3.5" />, count: catalogSource.length },
+                      { key: 'image' as MediaFilter, icon: <ImageIcon className="w-3.5 h-3.5" />, count: totalImageSets },
+                      { key: 'video' as MediaFilter, icon: <Video className="w-3.5 h-3.5" />, count: totalVideoSets },
+                      { key: 'image_video' as MediaFilter, icon: <PlayCircle className="w-3.5 h-3.5" />, count: Math.min(totalImageSets, totalVideoSets) },
+                    ]).map(opt => (
+                      <FilterOptionButton
+                        key={opt.key}
+                        active={urlMediaFilter === opt.key}
+                        label={MEDIA_LABELS[opt.key][lang] ?? MEDIA_LABELS[opt.key].en}
+                        icon={opt.icon}
+                        count={opt.count}
+                        onClick={() => handleMediaFilter(opt.key)}
+                      />
                     ))}
                   </div>
                 </FilterSection>
@@ -1143,36 +1296,77 @@ const PromptMarketPage: React.FC = () => {
                       { key: '3', label: '3+ ★' },
                       { key: '2', label: '2+ ★' },
                     ].map(opt => (
-                      <button
+                      <FilterOptionButton
                         key={opt.key}
+                        active={urlRatingFilter === opt.key}
+                        label={opt.label}
+                        icon={opt.key !== 'any' ? <Star className="w-3.5 h-3.5" /> : undefined}
                         onClick={() => handleRatingFilter(opt.key)}
-                        className={`w-full flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium transition-all duration-150 ${
-                          urlRatingFilter === opt.key
-                            ? 'bg-brand-blue/[0.1] text-brand-blue border border-brand-blue/[0.15]'
-                            : 'text-white/50 hover:text-white/70 hover:bg-white/[0.04] border border-transparent'
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
+                      />
                     ))}
                   </div>
+                </FilterSection>
+
+                {/* ─ Model filter ─ */}
+                <FilterSection title={lang === 'vi' ? 'Mô hình tương thích' : 'Compatible models'} defaultOpen={false}>
+                  <div className="space-y-0.5 max-h-56 overflow-y-auto pr-1">
+                    {topModels.map(([model, count]) => (
+                      <FilterOptionButton
+                        key={model}
+                        active={activeModels.includes(model)}
+                        label={model}
+                        icon={<Cpu className="w-3.5 h-3.5" />}
+                        count={count}
+                        onClick={() => toggleMultiFilter('models', model)}
+                      />
+                    ))}
+                  </div>
+                </FilterSection>
+
+                {/* ─ Tags filter ─ */}
+                <FilterSection title={lang === 'vi' ? 'Tags nội dung' : 'Content tags'} defaultOpen={false}>
+                  <div className="flex flex-wrap gap-1.5 max-h-64 overflow-y-auto pr-1">
+                    {topTags.map(([tag, count]) => {
+                      const active = activeTags.includes(tag);
+                      return (
+                        <button
+                          key={tag}
+                          onClick={() => toggleMultiFilter('tags', tag)}
+                          className={`inline-flex max-w-full items-center gap-1.5 px-2 py-1 text-[11px] transition ${
+                            active
+                              ? 'bg-brand-blue/[0.12] text-brand-blue border border-brand-blue/[0.18]'
+                              : 'bg-white/[0.04] text-white/45 border border-white/[0.06] hover:text-white/70 hover:border-white/[0.12]'
+                          }`}
+                        >
+                          <span className="truncate">#{tag}</span>
+                          <span className="text-white/30">{count}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </FilterSection>
+
+                {/* ─ Featured filter ─ */}
+                <FilterSection title={lang === 'vi' ? 'Tín hiệu showcase' : 'Showcase signals'} defaultOpen={false}>
+                  <FilterOptionButton
+                    active={urlFeaturedFilter}
+                    label={lang === 'vi' ? 'Chỉ bộ nổi bật' : 'Featured only'}
+                    icon={<Sparkles className="w-3.5 h-3.5" />}
+                    count={catalogSource.filter(ps => ps.featured).length}
+                    onClick={handleFeaturedFilter}
+                  />
                 </FilterSection>
 
                 {/* ─ Sort (sidebar) ─ */}
                 <FilterSection title={t('prompt_market.sort_by')} defaultOpen={false}>
                   <div className="space-y-0.5">
                     {(Object.keys(SORT_LABELS) as SortOption[]).map(opt => (
-                      <button
+                      <FilterOptionButton
                         key={opt}
+                        active={urlSort === opt}
+                        label={SORT_LABELS[opt][lang] ?? SORT_LABELS[opt].en}
                         onClick={() => handleSortChange(opt)}
-                        className={`w-full flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium transition-all duration-150 ${
-                          urlSort === opt
-                            ? 'bg-brand-blue/[0.1] text-brand-blue border border-brand-blue/[0.15]'
-                            : 'text-white/50 hover:text-white/70 hover:bg-white/[0.04] border border-transparent'
-                        }`}
-                      >
-                        {SORT_LABELS[opt][lang] ?? SORT_LABELS[opt].en}
-                      </button>
+                      />
                     ))}
                   </div>
                 </FilterSection>
@@ -1274,6 +1468,59 @@ const PromptMarketPage: React.FC = () => {
                     >
                       <X className="w-3 h-3" />
                     </button>
+                  </span>
+                )}
+                {urlCategory !== 'all' && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.04] border border-white/[0.08] text-xs text-white/60">
+                    {CATEGORY_LABELS[urlCategory]?.[lang] ?? urlCategory}
+                    <button onClick={() => handleCategoryFilter('all')} className="hover:text-white transition">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
+                {urlMediaFilter !== 'all' && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.04] border border-white/[0.08] text-xs text-white/60">
+                    {MEDIA_LABELS[urlMediaFilter]?.[lang] ?? MEDIA_LABELS[urlMediaFilter].en}
+                    <button onClick={() => handleMediaFilter('all')} className="hover:text-white transition">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
+                {urlRatingFilter !== 'any' && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.04] border border-white/[0.08] text-xs text-white/60">
+                    {urlRatingFilter}+ ★
+                    <button onClick={() => handleRatingFilter('any')} className="hover:text-white transition">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
+                {urlFeaturedFilter && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.04] border border-white/[0.08] text-xs text-white/60">
+                    {lang === 'vi' ? 'Nổi bật' : 'Featured'}
+                    <button onClick={handleFeaturedFilter} className="hover:text-white transition">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
+                {activeModels.map(model => (
+                  <span key={model} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.04] border border-white/[0.08] text-xs text-white/60">
+                    {model}
+                    <button onClick={() => toggleMultiFilter('models', model)} className="hover:text-white transition">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+                {activeTags.slice(0, 4).map(tag => (
+                  <span key={tag} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.04] border border-white/[0.08] text-xs text-white/60">
+                    #{tag}
+                    <button onClick={() => toggleMultiFilter('tags', tag)} className="hover:text-white transition">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+                {activeTags.length > 4 && (
+                  <span className="px-2.5 py-1 bg-white/[0.04] border border-white/[0.08] text-xs text-white/40">
+                    +{activeTags.length - 4} tags
                   </span>
                 )}
               </div>

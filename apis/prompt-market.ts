@@ -5,6 +5,11 @@ export interface PromptMarketListParams {
   q?: string;
   category?: string;
   tags?: string;
+  models?: string;
+  media?: 'all' | 'image' | 'video' | 'image_video';
+  price?: 'all' | 'free' | 'paid';
+  rating?: string;
+  featured?: boolean;
   sort?: 'newest' | 'popular' | 'price_low' | 'price_high';
   page?: number;
   limit?: number;
@@ -37,6 +42,11 @@ export const promptMarketApi = {
       if (params.q) qs.set('q', params.q);
       if (params.category) qs.set('category', params.category);
       if (params.tags) qs.set('tags', params.tags);
+      if (params.models) qs.set('models', params.models);
+      if (params.media && params.media !== 'all') qs.set('media', params.media);
+      if (params.price && params.price !== 'all') qs.set('price', params.price);
+      if (params.rating && params.rating !== 'any') qs.set('rating', params.rating);
+      if (params.featured) qs.set('featured', 'true');
       if (params.sort) qs.set('sort', params.sort);
       if (params.page) qs.set('page', String(params.page));
       if (params.limit) qs.set('limit', String(params.limit));

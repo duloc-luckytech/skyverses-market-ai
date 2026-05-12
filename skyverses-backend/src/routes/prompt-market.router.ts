@@ -41,16 +41,38 @@ router.get("/", async (req, res) => {
     const q = req.query.q as string;
     const sort = (req.query.sort as string) || "newest";
     const tags = req.query.tags as string; // comma-separated
+    const models = req.query.models as string; // comma-separated
+    const media = req.query.media as string;
+    const price = req.query.price as string;
+    const rating = req.query.rating as string;
+    const featured = req.query.featured as string;
 
     const query: any = { status: "active", isActive: true };
 
     if (category && category !== "all") query.category = category;
     if (tags) query.tags = { $in: tags.split(",").map((t) => t.trim()) };
+    if (models) query.models = { $in: models.split(",").map((m) => m.trim()) };
+    if (price === "free") query.isFree = true;
+    if (price === "paid") query.isFree = false;
+    if (rating && rating !== "any") query.averageRating = { $gte: Number(rating) };
+    if (featured === "true") query.featured = true;
+    if (media === "image") query["examples.image"] = { $type: "string", $ne: "" };
+    if (media === "video") query["examples.video"] = { $type: "string", $ne: "" };
+    if (media === "image_video") {
+      query.$and = [
+        ...(query.$and || []),
+        { "examples.image": { $type: "string", $ne: "" } },
+        { "examples.video": { $type: "string", $ne: "" } },
+      ];
+    }
     if (q) {
       query.$or = [
         { "title.en": { $regex: q, $options: "i" } },
         { "title.vi": { $regex: q, $options: "i" } },
+        { "description.en": { $regex: q, $options: "i" } },
+        { "description.vi": { $regex: q, $options: "i" } },
         { tags: { $regex: q, $options: "i" } },
+        { models: { $regex: q, $options: "i" } },
       ];
     }
 
