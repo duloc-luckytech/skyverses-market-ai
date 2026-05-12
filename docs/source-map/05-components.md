@@ -160,10 +160,11 @@
 ### `video-generator/` (8 file)
 `ConfigurationPanel.tsx`, `DurationSelector.tsx`, `JobLogsModal.tsx`, `ModelEngineSelector.tsx`, `ResultsMain.tsx`, `SidebarLeft.tsx`, `VideoCard.tsx`, `VideoModelEngineSettings.tsx`.
 
-### `prompt-market/` — Prompt marketplace (3 file)
+### `prompt-market/` — Prompt marketplace (4 file)
 `PromptSetCard.tsx` — card for marketplace grid (cover, title, category, price, seller, rating, wishlist heart, model tags, view count, verified badge).
 `PromptPurchaseModal.tsx` — confirm purchase modal (balance check, insufficient SKT warning).
 `PromptReviewSection.tsx` — rating/review section: star rating, submit review form, review list with pagination; used in `PromptDetailPage`.
+`WorkflowPreviewModal.tsx` — reusable React Flow workflow viewer for prompt packs, with safe locked nodes for paid previews.
 
 ### `skytoken/` — SkyToken (1 file)
 `SkyTokenPurchaseModal.tsx` — bank QR purchase modal for SKT top-up.

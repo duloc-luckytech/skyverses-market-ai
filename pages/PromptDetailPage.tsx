@@ -7,7 +7,7 @@ import {
   FileText, EyeOff, ArrowLeft, Check, Share2,
   Copy, ExternalLink, Flag, Star, Heart, Eye, Cpu,
   BadgeCheck, TrendingUp, ImageIcon, Video, PlayCircle,
-  BookOpen, Wand2, ListChecks, ShieldCheck,
+  BookOpen, Wand2, ListChecks, ShieldCheck, Workflow,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -17,6 +17,7 @@ import type { PromptSet } from '../types';
 import PromptPurchaseModal from '../components/prompt-market/PromptPurchaseModal';
 import PromptSetCard from '../components/prompt-market/PromptSetCard';
 import PromptReviewSection from '../components/prompt-market/PromptReviewSection';
+import WorkflowPreviewModal, { buildPromptWorkflowPreview } from '../components/prompt-market/WorkflowPreviewModal';
 
 const MODEL_LABELS: Partial<Record<string, string>> = {
   'gpt-4': 'GPT-4',
@@ -184,7 +185,8 @@ const PromptShowcaseStage: React.FC<{
   activeIndex: number;
   onSelect: (index: number) => void;
   canViewFullPrompt: boolean;
-}> = ({ promptSet, title, description, activeIndex, onSelect, canViewFullPrompt }) => {
+  onOpenWorkflow: () => void;
+}> = ({ promptSet, title, description, activeIndex, onSelect, canViewFullPrompt, onOpenWorkflow }) => {
   const examples = promptSet.examples ?? [];
   const seenMedia = new Set<string>();
   const rawMediaItems: Array<ShowcaseMediaItem | null> = [
@@ -339,12 +341,29 @@ const PromptShowcaseStage: React.FC<{
                   </p>
                 )}
               </div>
-              {promptSet.featured && (
-                <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/[0.06] border border-black/[0.08] text-[11px] font-bold uppercase tracking-wider text-black/60">
-                  <TrendingUp className="w-3.5 h-3.5 text-[#9a7424]" />
-                  Featured
-                </span>
-              )}
+              <div className="hidden sm:flex shrink-0 flex-col items-end gap-2">
+                <button
+                  onClick={onOpenWorkflow}
+                  className="group relative inline-flex items-center gap-3 overflow-hidden rounded-2xl border border-[#8b6f2c]/45 bg-[#121014] px-5 py-3 text-[12px] font-black uppercase tracking-[0.16em] text-[#f5d77a] shadow-[0_16px_38px_rgba(42,28,8,0.28)] transition hover:-translate-y-0.5 hover:border-[#C9A84C] hover:text-white hover:shadow-[0_20px_55px_rgba(154,116,36,0.34)]"
+                >
+                  <span className="absolute inset-0 bg-[linear-gradient(110deg,transparent,rgba(255,255,255,0.16),transparent)] opacity-0 transition group-hover:opacity-100" />
+                  <span className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-[#C9A84C] text-black shadow-[0_0_24px_rgba(201,168,76,0.45)]">
+                    <Workflow className="w-4 h-4" />
+                  </span>
+                  <span className="relative leading-none">
+                    View workflow nodes
+                    <span className="mt-1 block text-[9px] font-bold tracking-[0.12em] text-white/40">
+                      Image + video graph
+                    </span>
+                  </span>
+                </button>
+                {promptSet.featured && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/[0.06] border border-black/[0.08] text-[11px] font-bold uppercase tracking-wider text-black/60">
+                    <TrendingUp className="w-3.5 h-3.5 text-[#9a7424]" />
+                    Featured
+                  </span>
+                )}
+              </div>
             </div>
 
             <div className="flex-1 px-5 lg:px-7 pb-6 lg:pb-7 flex items-center justify-center">
@@ -379,6 +398,13 @@ const PromptShowcaseStage: React.FC<{
                   {activeMedia.type === 'video' ? <Video className="w-3.5 h-3.5" /> : <ImageIcon className="w-3.5 h-3.5" />}
                   Main {activeMedia.type} output
                 </div>
+                <button
+                  onClick={onOpenWorkflow}
+                  className="absolute right-4 bottom-4 inline-flex sm:hidden items-center gap-2 rounded-full border border-[#C9A84C]/45 bg-[#111015]/95 px-4 py-2.5 text-xs font-black uppercase tracking-wider text-[#f5d77a] shadow-[0_0_28px_rgba(201,168,76,0.25)] backdrop-blur-md"
+                >
+                  <Workflow className="w-3.5 h-3.5" />
+                  Workflow nodes
+                </button>
               </div>
             </div>
           </div>
@@ -484,6 +510,7 @@ const PromptDetailPage: React.FC = () => {
   const [wishlisted, setWishlisted] = useState(false);
   const [wishLoading, setWishLoading] = useState(false);
   const [activeExampleIndex, setActiveExampleIndex] = useState(0);
+  const [showWorkflowPreview, setShowWorkflowPreview] = useState(false);
 
   /* ── fetch ── */
   useEffect(() => {
@@ -597,6 +624,7 @@ const PromptDetailPage: React.FC = () => {
   const avatar = getSellerAvatar(promptSet.sellerId);
   const seller = getSellerName(promptSet.sellerId);
   const canViewFullPrompt = promptSet.isFree || alreadyPurchased;
+  const workflowPreview = buildPromptWorkflowPreview(promptSet, title, canViewFullPrompt);
 
   return (
     <div className="min-h-screen bg-[var(--atlas-bg-page)] text-white">
@@ -625,6 +653,7 @@ const PromptDetailPage: React.FC = () => {
               activeIndex={activeExampleIndex}
               onSelect={setActiveExampleIndex}
               canViewFullPrompt={canViewFullPrompt}
+              onOpenWorkflow={() => setShowWorkflowPreview(true)}
             />
             {isAuthenticated && (
               <button
@@ -1094,6 +1123,12 @@ const PromptDetailPage: React.FC = () => {
           }}
         />
       )}
+
+      <WorkflowPreviewModal
+        open={showWorkflowPreview}
+        onClose={() => setShowWorkflowPreview(false)}
+        workflow={workflowPreview}
+      />
     </div>
   );
 };
