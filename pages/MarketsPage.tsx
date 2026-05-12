@@ -5,17 +5,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search, Sparkles, ArrowRight, ChevronLeft, ChevronRight,
   Video, ImageIcon, Mic, Music, LayoutGrid, LayoutList, Zap,
-  TrendingUp, Heart, BookmarkPlus, Bookmark,
-  X, Layers, Box, Cpu, SlidersHorizontal,
-  Check, ArrowUp, Clock, Tag, ChevronUp, ChevronDown,
-  Eye, GitCompare, Command,
-  Globe, Smartphone, Tablet, Film, Lightbulb
+  TrendingUp, BookmarkPlus, Bookmark,
+  X, Box, Cpu, SlidersHorizontal,
+  Check, Clock, ChevronUp, ChevronDown,
+  Eye, GitCompare,
+  Globe, Smartphone, Tablet, Film, Lightbulb,
+  Activity, CircuitBoard, Flame,
+  Code2, Gamepad2,
+  Grid3X3, Rocket, Settings, Star, Workflow
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { marketApi } from '../apis/market';
-import { promoBannersPublicApi, PromoBanner as PromoBannerType } from '../apis/promo-banners';
 import { Solution, Language } from '../types';
 
 // ═══════ TYPES ═══════
@@ -31,14 +33,14 @@ interface RecentlyViewedItem {
 // Sky Partners đã được rút khỏi danh mục chính (khái niệm mơ hồ với user mới).
 // User vẫn có thể filter qua tag "Sky Partners" trong "Bộ lọc nâng cao → Tags" nếu muốn.
 const STATIC_CATEGORIES = [
-  { key: 'ALL', label: 'Tất cả', icon: LayoutGrid },
-  { key: 'Video', label: 'Video AI', icon: Video },
-  { key: 'Image', label: 'Hình ảnh AI', icon: ImageIcon },
+  { key: 'ALL', label: 'All', icon: LayoutGrid },
+  { key: 'Image', label: 'Image', icon: ImageIcon },
+  { key: 'Video', label: 'Video', icon: Video },
+  { key: 'Audio', label: 'Audio', icon: Mic },
+  { key: 'Automation', label: 'Automation', icon: Zap },
+  { key: '3D', label: '3D', icon: Box },
   { key: 'Script', label: 'Kịch bản & Studio', icon: Film },
-  { key: 'Audio', label: 'Giọng nói', icon: Mic },
-  { key: 'Music', label: 'Nhạc AI', icon: Music },
-  { key: 'Automation', label: 'Tự động hóa', icon: Zap },
-  { key: '3D', label: '3D & Game', icon: Box },
+  { key: 'Music', label: 'Music', icon: Music },
 ];
 // Việt hoá label nhưng giữ key tiếng Anh để khớp Solution.complexity từ backend
 const COMPLEXITY_LEVELS: { key: string; label: string }[] = [
@@ -68,6 +70,43 @@ const QUICK_PATHS: { key: string; category: string; label: string; desc: string;
   { key: 'script',     category: 'Script',     label: 'Viết blog & nội dung', desc: 'Kịch bản, bài viết AI',  icon: Film,      iconColor: 'text-blue-500',    gradient: 'from-blue-500/[0.07] to-cyan-500/[0.05]' },
   { key: 'automation', category: 'Automation', label: 'Tự động hoá quy trình', desc: 'Workflow, n8n, agents',  icon: Zap,       iconColor: 'text-yellow-500',  gradient: 'from-yellow-500/[0.07] to-amber-500/[0.05]' },
 ];
+
+const HERO_SPARKS = [
+  'left-[38%] top-[10%]', 'left-[46%] top-[18%]', 'left-[58%] top-[9%]', 'left-[68%] top-[17%]',
+  'left-[78%] top-[11%]', 'left-[88%] top-[25%]', 'left-[53%] top-[42%]', 'left-[72%] top-[48%]',
+  'left-[92%] top-[58%]', 'left-[43%] top-[72%]', 'left-[64%] top-[78%]', 'left-[84%] top-[73%]',
+];
+
+const HERO_WAVES = [
+  'right-[-8%] top-[4%] h-[150px] w-[62%] rotate-[-8deg] opacity-80',
+  'right-[2%] top-[24%] h-[120px] w-[48%] rotate-[7deg] opacity-55',
+  'right-[18%] top-[52%] h-[86px] w-[40%] rotate-[-4deg] opacity-45',
+];
+
+const MARKET_RAIL = [
+  { label: 'Apps', icon: Grid3X3, active: true },
+  { label: 'Favorites', icon: Star },
+  { label: 'Launch', icon: Rocket },
+  { label: 'Signal', icon: Activity },
+  { label: '3D', icon: Box },
+  { label: 'Voice', icon: Mic },
+  { label: 'Workflow', icon: Workflow },
+  { label: 'Settings', icon: Settings },
+  { label: 'Games', icon: Gamepad2 },
+  { label: 'Code', icon: Code2 },
+];
+
+const FILTER_MENU: { key: string; label: string; count: number; icon: typeof ImageIcon; color: string }[] = [
+  { key: 'Image', label: 'Image', count: 132, icon: ImageIcon, color: 'text-lime-400' },
+  { key: 'Video', label: 'Video', count: 98, icon: Video, color: 'text-violet-400' },
+  { key: 'Audio', label: 'Audio', count: 64, icon: Mic, color: 'text-orange-400' },
+  { key: 'Automation', label: 'Automation', count: 76, icon: Workflow, color: 'text-yellow-400' },
+  { key: '3D', label: '3D', count: 41, icon: Box, color: 'text-cyan-400' },
+  { key: 'Productivity', label: 'Productivity', count: 55, icon: CircuitBoard, color: 'text-sky-400' },
+  { key: 'Script', label: 'Code', count: 38, icon: Code2, color: 'text-pink-400' },
+  { key: 'Other', label: 'Other', count: 27, icon: Cpu, color: 'text-white/60' },
+];
+
 // Phân nhóm Categories theo persona user mới VN:
 // "Tạo nội dung" = các category sáng tạo (expand mặc định), "Khác" = automation + extras (collapse mặc định).
 const CONTENT_CATEGORY_KEYS = new Set(['Video', 'Image', 'Music', 'Audio', 'Script', '3D']);
@@ -80,60 +119,6 @@ const CAT_OTHER_OPEN_KEY = 'skyverses_cat_other_open';
 const GRID_ANCHOR_ID = 'markets-grid-anchor';
 const MAX_RECENT = 8;
 
-// ═══════ PROMO BANNERS — random mỗi lần load ═══════
-// heroTitle + heroHighlight = dòng h1, heroDesc = subtitle, title/desc = promo strip dưới
-const PROMO_BANNERS: Array<{ tag: string; heroTitle: string; heroHighlight: string; heroDesc: string; title: string; desc: string; cta: string; link: string; imageUrl?: string }> = [
-  {
-    tag: 'HOT DEAL',
-    heroTitle: 'Nâng cấp ',
-    heroHighlight: 'gói Pro giảm 30%',
-    heroDesc: 'Truy cập toàn bộ 50+ model AI hàng đầu với mức giá ưu đãi nhất. Một tài khoản, một số dư credits cho tất cả.',
-    title: 'Giảm 30% gói Pro',
-    desc: 'Nâng cấp hôm nay — truy cập toàn bộ 50+ model AI với giá ưu đãi nhất.',
-    cta: 'Nâng cấp ngay',
-    link: '/pricing',
-  },
-  {
-    tag: 'MỚI',
-    heroTitle: 'Veo 3 — Video AI ',
-    heroHighlight: 'chất lượng điện ảnh',
-    heroDesc: 'Model video mới nhất từ Google đã có mặt. Tạo video 8s cinematic chỉ với vài dòng prompt.',
-    title: 'Veo 3 đã có mặt',
-    desc: 'Model video mới nhất từ Google — tạo video 8s chất lượng điện ảnh.',
-    cta: 'Thử ngay',
-    link: '/app/veo-3',
-  },
-  {
-    tag: 'FLASH SALE',
-    heroTitle: 'Mua 500 credits ',
-    heroHighlight: 'tặng thêm 100',
-    heroDesc: 'Chương trình giới hạn — nạp credits hôm nay nhận thêm 20% bonus. Áp dụng cho mọi công cụ AI.',
-    title: 'Mua 500 credits tặng 100',
-    desc: 'Chương trình giới hạn — nạp credits hôm nay nhận thêm 20% bonus.',
-    cta: 'Nạp credits',
-    link: '/credits',
-  },
-  {
-    tag: 'ƯU ĐÃI',
-    heroTitle: 'Đăng ký nhận ',
-    heroHighlight: '50 credits miễn phí',
-    heroDesc: 'Tài khoản mới nhận ngay 50 credits trải nghiệm mọi công cụ AI — video, ảnh, nhạc, giọng nói.',
-    title: 'Miễn phí 50 credits',
-    desc: 'Đăng ký tài khoản mới và nhận ngay 50 credits trải nghiệm mọi công cụ AI.',
-    cta: 'Đăng ký miễn phí',
-    link: '/login',
-  },
-  {
-    tag: 'BUNDLE',
-    heroTitle: 'Combo ',
-    heroHighlight: 'Video + Nhạc AI',
-    heroDesc: 'Tạo video TikTok kèm nhạc nền AI chỉ trong vài phút — tiết kiệm 40% so với mua lẻ từng tool.',
-    title: 'Combo Video + Nhạc AI',
-    desc: 'Tạo video TikTok kèm nhạc nền AI — tiết kiệm 40% so với mua lẻ.',
-    cta: 'Xem combo',
-    link: '/pricing',
-  },
-];
 const TRENDING_LIMIT = 12;
 const SCROLL_POS_KEY = 'skyverses_markets_scroll';
 
@@ -177,42 +162,88 @@ const getRelevanceScore = (sol: Solution, query: string, lang: Language): number
   return score;
 };
 
+const getSolutionAccent = (sol: Solution) => {
+  const key = `${sol.demoType}-${sol.category?.en || ''}`.toLowerCase();
+  if (key.includes('video')) return 'from-rose-500/30 via-brand-blue/15 to-black/0';
+  if (key.includes('image')) return 'from-brand-blue/30 via-[#E5C767]/10 to-black/0';
+  if (key.includes('audio') || key.includes('music')) return 'from-emerald-500/20 via-brand-blue/15 to-black/0';
+  if (key.includes('automation')) return 'from-sky-500/20 via-brand-blue/15 to-black/0';
+  return 'from-brand-blue/25 via-white/[0.04] to-black/0';
+};
+
+const getStageIcon = (sol?: Solution) => {
+  const key = `${sol?.demoType || ''}-${sol?.category?.en || ''}`.toLowerCase();
+  if (key.includes('video')) return Video;
+  if (key.includes('audio') || key.includes('music')) return Mic;
+  if (key.includes('automation')) return Workflow;
+  if (key.includes('3d')) return Box;
+  if (key.includes('code') || key.includes('script')) return Code2;
+  return ImageIcon;
+};
+
+const pickRandomSolutions = (items: Solution[], count = 5): Solution[] => {
+  const pool = items.filter(sol => sol.isActive !== false && sol.id && sol.slug && sol.imageUrl);
+  for (let i = pool.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool.slice(0, count);
+};
+
 // ═══════ TRENDING SLIDER ═══════
 const TrendingSlider: React.FC<{ items: Solution[]; lang: Language; onNavigate: (slug: string) => void }> = React.memo(({ items, lang, onNavigate }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const scroll = (dir: 'left' | 'right') => {
-    if (scrollRef.current) scrollRef.current.scrollBy({ left: dir === 'left' ? -320 : 320, behavior: 'smooth' });
+    if (scrollRef.current) scrollRef.current.scrollBy({ left: dir === 'left' ? -360 : 360, behavior: 'smooth' });
   };
-  const limitedItems = useMemo(() => items.slice(0, TRENDING_LIMIT), [items]);
+  const limitedItems = useMemo(() => items.slice(0, 6), [items]);
   if (limitedItems.length === 0) return null;
   return (
-    <div className="mb-6">
-      <div className="flex items-center justify-between mb-3">
+    <section className="relative overflow-hidden border-y border-white/[0.06] bg-black/28 px-5 py-4 xl:px-6">
+      <motion.div
+        className="pointer-events-none absolute inset-y-0 left-[-30%] w-[38%] bg-gradient-to-r from-transparent via-[#E5C767]/10 to-transparent"
+        animate={{ x: ['0%', '360%'] }}
+        transition={{ duration: 8.5, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      <div className="relative z-10 mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <TrendingUp size={15} className="text-brand-blue" />
-          <h3 className="text-[14px] font-bold text-neutral-800">Trending</h3>
+          <TrendingUp size={17} className="text-[#E5C767]" />
+          <h3 className="text-[18px] font-medium text-white">Trending</h3>
         </div>
-        <div className="flex gap-1">
-          <button onClick={() => scroll('left')} className="p-1 rounded-md bg-neutral-800 text-neutral-400 hover:text-brand-blue transition-colors"><ChevronLeft size={14} /></button>
-          <button onClick={() => scroll('right')} className="p-1 rounded-md bg-neutral-800 text-neutral-400 hover:text-brand-blue transition-colors"><ChevronRight size={14} /></button>
+        <div className="flex items-center gap-4">
+          <button className="hidden items-center gap-1 rounded-md text-[12px] font-medium text-[#E5C767] hover:text-white md:flex">
+            View all <ChevronRight size={13} />
+          </button>
+          <button onClick={() => scroll('right')} className="grid h-11 w-11 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-white/70 transition-colors hover:border-[#E5C767]/45 hover:text-[#E5C767]">
+            <ChevronRight size={18} />
+          </button>
         </div>
       </div>
-      <div ref={scrollRef} className="flex gap-3 overflow-x-auto no-scrollbar snap-x pb-1">
+      <div ref={scrollRef} className="relative z-10 flex gap-4 overflow-x-auto no-scrollbar snap-x">
         {limitedItems.map((sol, i) => (
-          <div key={sol.id} onClick={() => onNavigate(sol.slug)}
-            className="snap-start shrink-0 w-[220px] bg-neutral-900 border border-neutral-700/40 overflow-hidden cursor-pointer hover:border-brand-blue/30 transition-all group">
-            <div className="relative h-[120px] overflow-hidden">
-              <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-              <span className="absolute top-2 left-2 px-2 py-0.5 bg-black/60 backdrop-blur-sm text-white text-[9px] font-bold">#{i+1}</span>
+          <motion.button
+            key={sol.id}
+            onClick={() => onNavigate(sol.slug)}
+            className="group flex h-[56px] w-[190px] shrink-0 snap-start items-center gap-3 rounded-lg border border-white/[0.09] bg-[#101112]/90 px-3 text-left transition-all hover:border-[#E5C767]/45 hover:bg-[#151515]"
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.04, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            whileHover={{ y: -5, scale: 1.025 }}
+          >
+            <div className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-md border border-white/[0.08] bg-white/[0.05]">
+              <img src={sol.imageUrl} alt="" className="h-full w-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-110" loading="lazy" />
             </div>
-            <div className="p-3">
-              <h4 className="text-[13px] font-bold text-neutral-200 truncate group-hover:text-brand-blue transition-colors">{sol.name[lang]}</h4>
-              <p className="text-[10px] text-neutral-500 mt-1">{sol.category[lang]}</p>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5">
+                <h4 className="truncate text-[12px] font-medium text-white group-hover:text-[#E5C767]">{sol.name[lang]}</h4>
+                {i < 2 && <Flame size={11} className="shrink-0 text-[#E5C767]" fill="currentColor" />}
+              </div>
+              <p className="mt-0.5 truncate text-[10px] text-white/42">{sol.category[lang]}</p>
             </div>
-          </div>
+          </motion.button>
         ))}
       </div>
-    </div>
+    </section>
   );
 });
 
@@ -246,18 +277,18 @@ const RecentlyViewed: React.FC<{ lang: Language; onNavigate: (slug: string) => v
 // ═══════ QUICK PATH HERO — "Bạn muốn làm gì?" ═══════
 // Hiển thị cho user mới chưa filter gì. Click 1 quick path → set category + scroll xuống grid.
 const QuickPathHero: React.FC<{ onPick: (cat: string) => void; onDismiss: () => void }> = React.memo(({ onPick, onDismiss }) => (
-  <div className="mb-8">
+  <div className="mb-8 border border-white/[0.06] bg-[#0A0A0A]/70 p-4 md:p-5">
     <div className="flex items-center justify-between mb-4">
       <div>
-        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-brand-blue/[0.08] border border-brand-blue/15 rounded-full mb-1.5">
+        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-brand-blue/[0.08] border border-brand-blue/15 mb-1.5">
           <Sparkles size={10} className="text-brand-blue" />
           <span className="text-[9px] font-bold text-brand-blue uppercase tracking-wider">Bắt đầu nhanh</span>
         </div>
         <h2 className="text-[17px] md:text-[19px] font-bold text-white">Bạn muốn làm gì hôm nay?</h2>
-        <p className="text-[12px] text-neutral-400 mt-0.5">Chọn một mục để xem ngay công cụ phù hợp</p>
+        <p className="text-[12px] text-white/45 mt-0.5">Chọn một mục để xem ngay công cụ phù hợp</p>
       </div>
       <button onClick={onDismiss}
-        className="flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-medium text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800 rounded-lg transition-colors">
+        className="flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-medium text-white/38 hover:text-white/70 hover:bg-white/[0.05] transition-colors">
         Ẩn <X size={10} />
       </button>
     </div>
@@ -266,13 +297,14 @@ const QuickPathHero: React.FC<{ onPick: (cat: string) => void; onDismiss: () => 
         const Icon = p.icon;
         return (
           <button key={p.key} onClick={() => onPick(p.category)}
-            className="group relative bg-neutral-900 border border-neutral-700/40 p-3.5 md:p-4 text-left hover:border-brand-blue/30 hover:-translate-y-0.5 transition-all">
-            <div className={`w-9 h-9 md:w-10 md:h-10 bg-neutral-800 border border-neutral-700/40 flex items-center justify-center mb-2.5 ${p.iconColor}`}>
+            className="group relative overflow-hidden bg-[#111111] border border-white/[0.06] p-3.5 md:p-4 text-left hover:border-brand-blue/30 hover:-translate-y-0.5 transition-all">
+            <div className={`absolute inset-0 bg-gradient-to-br ${p.gradient} opacity-0 group-hover:opacity-100 transition-opacity`} />
+            <div className={`relative w-9 h-9 md:w-10 md:h-10 bg-white/[0.045] border border-white/[0.06] flex items-center justify-center mb-2.5 ${p.iconColor}`}>
               <Icon size={17} />
             </div>
-            <p className="text-[12.5px] md:text-[13.5px] font-bold text-neutral-200 group-hover:text-brand-blue transition-colors">{p.label}</p>
-            <p className="text-[10px] md:text-[11px] text-neutral-400 mt-0.5 truncate">{p.desc}</p>
-            <ArrowRight size={11} className="absolute top-3.5 right-3.5 text-neutral-300 group-hover:text-brand-blue group-hover:translate-x-0.5 transition-all" />
+            <p className="relative text-[12.5px] md:text-[13.5px] font-bold text-white group-hover:text-brand-blue transition-colors">{p.label}</p>
+            <p className="relative text-[10px] md:text-[11px] text-white/42 mt-0.5 truncate">{p.desc}</p>
+            <ArrowRight size={11} className="absolute top-3.5 right-3.5 text-white/30 group-hover:text-brand-blue group-hover:translate-x-0.5 transition-all" />
           </button>
         );
       })}
@@ -329,111 +361,363 @@ const SuggestedSection: React.FC<{ solutions: Solution[]; lang: Language; onNavi
   );
 });
 
+const MarketIconRail: React.FC = React.memo(() => (
+  <nav className="fixed bottom-0 left-0 top-[48px] z-30 hidden w-[92px] shrink-0 border-r border-white/[0.08] bg-black/72 lg:block">
+    <div className="flex h-full flex-col items-center gap-4 overflow-y-auto py-6 no-scrollbar">
+      {MARKET_RAIL.map((item) => {
+        const Icon = item.icon;
+        return (
+          <motion.button
+            key={item.label}
+            className={`grid h-[54px] w-[54px] place-items-center rounded-xl border transition-all ${
+              item.active
+                ? 'border-[#E5C767] bg-[#E5C767]/10 text-[#E5C767] shadow-[0_0_24px_rgba(229,199,103,0.18)]'
+                : 'border-transparent text-white/58 hover:border-white/[0.08] hover:bg-white/[0.04] hover:text-[#E5C767]'
+            }`}
+            animate={item.active ? { boxShadow: ['0 0 12px rgba(229,199,103,0.15)', '0 0 30px rgba(229,199,103,0.34)', '0 0 12px rgba(229,199,103,0.15)'] } : {}}
+            transition={item.active ? { duration: 2.4, repeat: Infinity, ease: 'easeInOut' } : undefined}
+            whileHover={{ y: -2, scale: 1.04 }}
+            title={item.label}
+          >
+            <Icon size={22} />
+          </motion.button>
+        );
+      })}
+    </div>
+  </nav>
+));
+
+// ═══════ FEATURED STUDIO STAGE ═══════
+const FeaturedStudioStage: React.FC<{
+  items: Solution[];
+  lang: Language;
+  activeIndex: number;
+  onNavigate: (target: string) => void;
+  onOpenFilters: (e: React.MouseEvent) => void;
+  onSelectBanner: (e: React.MouseEvent, index: number) => void;
+  activeFilterCount: number;
+}> = React.memo(({ items, lang, activeIndex, onNavigate, onOpenFilters, onSelectBanner, activeFilterCount }) => {
+  const stageItems = items.slice(0, 5);
+  const stageIndex = stageItems.length > 0 ? activeIndex % stageItems.length : 0;
+  const spotlight = stageItems.length > 0 ? stageItems[stageIndex] : undefined;
+  const sideItems = spotlight ? [...stageItems.slice(stageIndex + 1), ...stageItems.slice(0, stageIndex)].slice(0, 4) : [];
+  const heroImage = spotlight?.imageUrl;
+  const spotlightName = spotlight?.name[lang] || spotlight?.name.en || 'Đang tải studio';
+  const spotlightDesc = spotlight?.description[lang] || spotlight?.description.en || 'Marketplace sẽ tự lấy danh sách app thật từ hệ thống và chọn ngẫu nhiên mỗi lần tải trang.';
+  const spotlightCategory = spotlight?.category[lang] || spotlight?.category.en || 'Apps';
+  const spotlightInitial = spotlightName.trim().charAt(0).toUpperCase() || 'S';
+  const heroDotCount = stageItems.length;
+  const changeStage = (e: React.MouseEvent, offset: number) => {
+    e.stopPropagation();
+    if (heroDotCount <= 1) return;
+    onSelectBanner(e, (stageIndex + offset + heroDotCount) % heroDotCount);
+  };
+
+  return (
+    <motion.section
+      key={activeIndex}
+      className="relative overflow-hidden border-b border-white/[0.06] bg-[#050505]"
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_4%,rgba(229,199,103,0.24),transparent_31%),radial-gradient(circle_at_57%_73%,rgba(229,199,103,0.13),transparent_38%),linear-gradient(90deg,#050505_0%,#080807_36%,#11100b_100%)]" />
+      <div className="absolute inset-0 opacity-[0.16] bg-[radial-gradient(circle_at_center,rgba(229,199,103,0.34)_1px,transparent_1.5px)] bg-[size:18px_18px]" />
+      <div className="absolute right-0 top-0 h-[78%] w-[68%] bg-[radial-gradient(ellipse_at_center,rgba(229,199,103,0.18),transparent_68%)]" />
+      {HERO_WAVES.map((wave, index) => (
+        <motion.div
+          key={wave}
+          className={`absolute rounded-[50%] bg-[radial-gradient(circle,rgba(229,199,103,0.55)_1px,transparent_1.9px)] bg-[size:9px_9px] [mask-image:radial-gradient(ellipse_at_center,black_0%,black_42%,transparent_72%)] ${wave}`}
+          animate={{ x: [0, index % 2 === 0 ? -18 : 14, 0], y: [0, index % 2 === 0 ? 8 : -7, 0] }}
+          transition={{ duration: 10 + index * 2, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      ))}
+      <motion.div
+        className="absolute right-[-6%] top-[18%] h-px w-[70%] bg-gradient-to-r from-transparent via-[#E5C767]/70 to-transparent"
+        animate={{ opacity: [0.18, 0.72, 0.18], x: [-30, 20, -30] }}
+        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      {HERO_SPARKS.map((spark, index) => (
+        <motion.span
+          key={spark}
+          className={`absolute h-1 w-1 rounded-full bg-[#E5C767] shadow-[0_0_12px_rgba(229,199,103,0.9)] ${spark}`}
+          animate={{ opacity: [0.18, 0.95, 0.18], scale: [0.75, 1.45, 0.75], y: [0, index % 2 === 0 ? -8 : 8, 0] }}
+          transition={{ duration: 2.8 + index * 0.23, repeat: Infinity, ease: 'easeInOut', delay: index * 0.11 }}
+        />
+      ))}
+
+      <div className="relative z-10 grid min-h-[374px] grid-cols-1 gap-6 px-6 py-8 md:grid-cols-[0.74fr_1.26fr] md:px-8 xl:px-11">
+        <div className="flex flex-col justify-center">
+          <div className="mb-5 text-[10px] font-bold uppercase tracking-[0.26em] text-[#E5C767]">Featured Studio</div>
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-[42px] font-semibold leading-none text-white md:text-[50px]">{spotlightName}</h1>
+            <span className="rounded-md border border-[#E5C767]/65 bg-black/45 px-2.5 py-1 text-[10px] font-bold text-[#E5C767]">
+              {spotlight?.isFree ? 'FREE' : 'PRO'}
+            </span>
+          </div>
+          <p className="mt-5 max-w-[360px] text-[15px] leading-6 text-white/70">
+            {spotlightDesc}
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-4 text-[13px] text-white/55">
+            <span className="flex items-center gap-1.5 font-semibold text-[#E5C767]"><Star size={15} fill="currentColor" /> 4.9</span>
+            <span>(1.2K)</span>
+            <span className="h-1 w-1 rounded-full bg-white/35" />
+            <span>{spotlightCategory}</span>
+          </div>
+          <div className="mt-7 flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => spotlight && onNavigate(spotlight.slug)}
+              disabled={!spotlight}
+              className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#E5C767] bg-[#E5C767]/10 px-5 text-[13px] font-medium text-[#E5C767] shadow-[0_0_24px_rgba(229,199,103,0.12)] transition-all hover:bg-[#E5C767] hover:text-black disabled:pointer-events-none disabled:opacity-50"
+            >
+              <Eye size={16} /> Preview Studio
+            </button>
+            <button
+              onClick={onOpenFilters}
+              className="lg:hidden inline-flex h-11 items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.04] px-4 text-[12px] font-semibold text-white/78 transition-all hover:border-[#E5C767]/45 hover:text-[#E5C767]"
+            >
+              <SlidersHorizontal size={15} /> Filters
+              {activeFilterCount > 0 && <span className="grid h-5 min-w-5 place-items-center rounded-full bg-[#E5C767] px-1 text-[10px] text-black">{activeFilterCount}</span>}
+            </button>
+            <button className="grid h-11 w-11 place-items-center rounded-full border border-white/[0.18] bg-black/20 text-white/78 transition-colors hover:border-[#E5C767]/55 hover:text-[#E5C767]">
+              <BookmarkPlus size={18} />
+            </button>
+          </div>
+        </div>
+
+        <div className="relative min-h-[318px] overflow-hidden">
+          <button
+            onClick={(e) => changeStage(e, -1)}
+            disabled={heroDotCount <= 1}
+            className="absolute left-2 top-1/2 z-20 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/20 bg-black/35 text-white/80 backdrop-blur-xl transition-colors hover:border-[#E5C767]/55 hover:text-[#E5C767] disabled:pointer-events-none disabled:opacity-30 md:grid"
+          >
+            <ChevronLeft size={21} />
+          </button>
+          <button
+            onClick={(e) => changeStage(e, 1)}
+            disabled={heroDotCount <= 1}
+            className="absolute right-2 top-1/2 z-20 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/20 bg-black/35 text-white/80 backdrop-blur-xl transition-colors hover:border-[#E5C767]/55 hover:text-[#E5C767] disabled:pointer-events-none disabled:opacity-30 md:grid"
+          >
+            <ChevronRight size={21} />
+          </button>
+
+          <motion.div
+            className="absolute bottom-[-8px] left-[6%] right-[6%] h-[112px] rounded-[50%] border border-[#E5C767]/55 bg-[radial-gradient(ellipse_at_center,rgba(229,199,103,0.28),rgba(0,0,0,0.18)_42%,transparent_74%)] shadow-[0_0_42px_rgba(229,199,103,0.30)]"
+            animate={{ opacity: [0.72, 1, 0.72], scaleX: [0.98, 1.03, 0.98] }}
+            transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <motion.div
+            className="absolute bottom-[24px] left-[13%] right-[13%] h-[54px] rounded-[50%] border-t border-[#E5C767]/90 shadow-[0_-12px_24px_rgba(229,199,103,0.42)]"
+            animate={{ opacity: [0.55, 1, 0.55], y: [0, -2, 0] }}
+            transition={{ duration: 3.6, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <div className="absolute bottom-[58px] left-[19%] right-[19%] h-px bg-gradient-to-r from-transparent via-[#E5C767] to-transparent shadow-[0_0_18px_rgba(229,199,103,0.85)]" />
+          <div className="absolute bottom-[12px] left-[19%] right-[19%] h-[16px] rounded-[50%] border-b border-white/10 bg-black/70 shadow-[0_18px_42px_rgba(0,0,0,0.65)]" />
+
+          {sideItems.map((item, index) => {
+            const Icon = getStageIcon(item);
+            const itemName = item.name[lang] || item.name.en;
+            const itemCategory = item.category[lang] || item.category.en;
+            const positions = [
+              'left-[10%] top-[24%] rotate-[-6deg] opacity-70',
+              'left-[27%] top-[21%] rotate-[-3deg] opacity-85',
+              'right-[20%] top-[21%] rotate-[4deg] opacity-85',
+              'right-[5%] top-[26%] rotate-[7deg] opacity-70',
+            ];
+            return (
+              <motion.button
+                key={item.id}
+                onClick={() => onNavigate(item.slug)}
+                className={`absolute hidden h-[188px] w-[116px] overflow-hidden rounded-lg border border-white/18 bg-[#111]/80 p-3 text-center shadow-[0_24px_54px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-all hover:border-[#E5C767]/55 sm:block ${positions[index]}`}
+                initial={{ opacity: 0, y: 24, scale: 0.9 }}
+                animate={{ opacity: [0.68, 0.94, 0.68], y: [0, -8, 0], scale: 1 }}
+                transition={{ opacity: { duration: 5 + index, repeat: Infinity, ease: 'easeInOut' }, y: { duration: 5 + index, repeat: Infinity, ease: 'easeInOut' }, scale: { delay: index * 0.12, duration: 0.45 } }}
+              >
+                <img src={item.imageUrl} alt="" className="absolute inset-0 h-full w-full object-cover opacity-45" loading="lazy" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-white/10" />
+                <div className="relative z-10 mt-1 line-clamp-2 text-[12px] font-medium leading-4 text-white">{itemName}</div>
+                <div className="relative z-10 mt-10 inline-grid h-9 w-9 place-items-center rounded-full border border-[#E5C767]/30 bg-[#E5C767]/10 text-[#E5C767]">
+                  <Icon size={17} />
+                </div>
+                <div className="relative z-10 mt-6 text-[9px] text-white/55">{itemCategory}</div>
+              </motion.button>
+            );
+          })}
+
+          <motion.button
+            onClick={() => spotlight && onNavigate(spotlight.slug)}
+            disabled={!spotlight}
+            className="absolute left-[50%] top-[8%] z-10 ml-[-107px] h-[288px] w-[214px] overflow-hidden rounded-xl border border-[#E5C767] bg-[#1a1712] shadow-[0_0_34px_rgba(229,199,103,0.34),0_34px_80px_rgba(0,0,0,0.55)]"
+            animate={{ y: [0, -8, 0], boxShadow: ['0 0 24px rgba(229,199,103,0.25),0 34px 80px rgba(0,0,0,0.55)', '0 0 46px rgba(229,199,103,0.48),0 34px 80px rgba(0,0,0,0.55)', '0 0 24px rgba(229,199,103,0.25),0 34px 80px rgba(0,0,0,0.55)'] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            {heroImage && <img src={heroImage} alt="" className="absolute inset-0 h-full w-full object-cover opacity-70" loading="eager" />}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_62%_30%,rgba(229,199,103,0.36),transparent_32%),linear-gradient(to_top,rgba(0,0,0,0.68),rgba(0,0,0,0.08))]" />
+            <motion.div
+              className="absolute inset-x-[-35%] top-[34%] h-px bg-gradient-to-r from-transparent via-white/80 to-transparent"
+              animate={{ x: ['-35%', '35%', '-35%'], opacity: [0.15, 0.55, 0.15] }}
+              transition={{ duration: 5.2, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            <div className="absolute inset-x-0 top-5 px-4 text-center text-[20px] font-light text-white">{spotlightName}</div>
+            <div className="absolute inset-0 grid place-items-center">
+              <span className="text-[118px] font-semibold leading-none text-[#E5C767]/70 drop-shadow-[0_8px_24px_rgba(229,199,103,0.38)]">{spotlightInitial}</span>
+            </div>
+          </motion.button>
+
+          {heroDotCount > 1 && (
+            <div className="absolute bottom-1 left-1/2 flex -translate-x-1/2 items-center gap-3">
+              {Array.from({ length: heroDotCount }).map((_, i) => (
+                <button
+                  key={i}
+                  onClick={(e) => onSelectBanner(e, i)}
+                  className={`h-2 w-2 rounded-full transition-all ${i === stageIndex ? 'bg-[#E5C767] shadow-[0_0_12px_rgba(229,199,103,0.8)]' : 'bg-white/25 hover:bg-white/55'}`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </motion.section>
+  );
+});
+
 // ═══════ PRODUCT CARD (GRID) ═══════
 const ProductCardGrid: React.FC<{
   sol: Solution; lang: Language; onNavigate: (slug: string) => void;
-  isFav: boolean; onToggleFav: (e: React.MouseEvent) => void;
-  onPreview?: (e: React.MouseEvent) => void;
-  isCompare?: boolean; onToggleCompare?: (e: React.MouseEvent) => void;
-}> = React.memo(({ sol, lang, onNavigate, isFav, onToggleFav, onPreview, isCompare, onToggleCompare }) => {
-  const models = sol.models?.slice(0, 3) || [];
+  isFav: boolean; onToggleFav: (e: React.MouseEvent, id: string) => void;
+  onPreview?: (e: React.MouseEvent, sol: Solution) => void;
+  isCompare?: boolean; onToggleCompare?: (e: React.MouseEvent, id: string) => void;
+  isSpotlight?: boolean;
+}> = React.memo(({ sol, lang, onNavigate, isFav, onToggleFav, onPreview, isCompare, onToggleCompare, isSpotlight }) => {
+  const category = sol.category[lang] || sol.category.en;
+  const rating = sol.featured || isSpotlight ? '4.9' : sol.isFree ? '4.8' : '4.7';
   return (
-    <motion.div whileHover={{ y: -1 }}
-      className={`bg-neutral-900 border overflow-hidden cursor-pointer transition-all group flex flex-col ${isCompare ? 'border-brand-blue/30 ring-2 ring-brand-blue/10' : 'border-neutral-700/40 hover:border-neutral-600'}`}
+    <div
+      className={`relative flex h-[292px] cursor-pointer flex-col overflow-hidden rounded-[8px] border bg-[#0F1010] transition-all group shadow-[0_18px_44px_rgba(0,0,0,0.34)] ${
+        isCompare
+          ? 'border-[#E5C767] ring-2 ring-[#E5C767]/10'
+          : isSpotlight
+            ? 'border-[#E5C767]/90 shadow-[0_0_28px_rgba(229,199,103,0.15)]'
+            : 'border-[#2B2F2F] hover:-translate-y-1 hover:border-[#E5C767]/45'
+      }`}
       onClick={() => { saveRecentlyViewed(sol); onNavigate(sol.slug); }}>
-      <div className="relative h-[180px] overflow-hidden">
-        <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-        <div className="absolute top-2.5 left-2.5 flex gap-1">
-          {sol.isFree && <span className="px-2 py-0.5 bg-emerald-500 text-white text-[9px] font-bold rounded-md">FREE</span>}
-          {sol.featured && <span className="px-2 py-0.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[9px] font-bold rounded-md flex items-center gap-0.5"><Sparkles size={8} fill="currentColor" /> Hot</span>}
-        </div>
-        <div className="absolute top-2.5 right-2.5 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          {onPreview && <button onClick={onPreview} className="p-1.5 rounded-lg bg-black/40 backdrop-blur-md border border-white/10 text-white/80 hover:text-white transition-colors" title="Xem nhanh"><Eye size={12} /></button>}
-          {onToggleCompare && <button onClick={onToggleCompare} className={`p-1.5 rounded-lg backdrop-blur-md border transition-colors ${isCompare ? 'bg-brand-blue/80 border-brand-blue text-white' : 'bg-black/40 border-white/10 text-white/80 hover:text-white'}`} title="So sánh"><GitCompare size={12} /></button>}
-          <button onClick={onToggleFav} className={`p-1.5 rounded-lg backdrop-blur-md border transition-all ${isFav ? 'bg-brand-blue/20 border-brand-blue/30 text-brand-blue' : 'bg-black/30 border-white/10 text-white/70'}`}>
+      <div className="pointer-events-none absolute inset-0 rounded-[8px] bg-gradient-to-br from-white/[0.025] via-transparent to-[#E5C767]/[0.04] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+      <div className="relative h-[148px] shrink-0 overflow-hidden">
+        <img src={sol.imageUrl} alt={sol.name[lang]} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+        <div className={`absolute inset-0 bg-gradient-to-t ${getSolutionAccent(sol)}`} />
+        <div className="absolute inset-x-0 bottom-0 h-[74px] bg-gradient-to-t from-[#0F1010] via-[#0F1010]/68 to-transparent" />
+        {isSpotlight && (
+          <span className="absolute left-[9px] top-[9px] rounded-md border border-[#E5C767]/60 bg-[#8A6A18]/85 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur-md">
+            Top Rated
+          </span>
+        )}
+        <div className="absolute right-[8px] top-[8px] flex gap-[5px]">
+          {onPreview && <button onClick={(e) => onPreview(e, sol)} className="grid h-7 w-7 place-items-center rounded-full border border-white/15 bg-black/58 text-white/85 backdrop-blur-md transition-colors hover:border-[#E5C767]/55 hover:text-[#E5C767]" title="Xem nhanh"><Eye size={12} /></button>}
+          {onToggleCompare && <button onClick={(e) => onToggleCompare(e, sol.id)} className={`grid h-7 w-7 place-items-center rounded-[7px] border backdrop-blur-md transition-colors ${isCompare ? 'border-[#E5C767] bg-[#E5C767] text-black' : 'border-white/15 bg-black/58 text-white/75 hover:border-[#E5C767]/55 hover:text-[#E5C767]'}`} title="So sánh"><GitCompare size={12} /></button>}
+          <button onClick={(e) => onToggleFav(e, sol.id)} className={`grid h-7 w-7 place-items-center rounded-[7px] border backdrop-blur-md transition-all ${isFav ? 'border-[#E5C767]/50 bg-[#E5C767]/20 text-[#E5C767]' : 'border-white/15 bg-black/58 text-white/70 hover:text-[#E5C767]'}`}>
             {isFav ? <Bookmark size={12} fill="currentColor" /> : <BookmarkPlus size={12} />}
           </button>
         </div>
       </div>
-      <div className="p-3.5 space-y-2 flex-1 flex flex-col">
-        <div>
-          <h3 className="text-[14px] font-bold text-neutral-200 group-hover:text-brand-blue transition-colors truncate">{sol.name[lang]}</h3>
-          <p className="text-[11px] text-neutral-500 line-clamp-2 mt-0.5">{sol.description[lang]}</p>
-        </div>
-        {/* Models badges */}
-        {models.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {models.map(m => (
-              <span key={m} className="px-1.5 py-0.5 bg-neutral-800 text-neutral-400 rounded text-[8px] font-mono border border-neutral-700/40">{m}</span>
-            ))}
+      <div className="relative flex min-h-0 flex-1 flex-col px-[12px] pb-[10px] pt-[12px]">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <h3 className="truncate text-[13px] font-medium leading-[16px] text-white transition-colors group-hover:text-[#E5C767]">{sol.name[lang]}</h3>
+            <p className="mt-[2px] truncate text-[10px] leading-[13px] text-white/62">{category}</p>
           </div>
-        )}
-        <div className="flex flex-wrap gap-1 mt-auto pt-1">
-          <span className="px-1.5 py-0.5 bg-brand-blue/[0.1] text-brand-blue rounded text-[9px] font-medium border border-brand-blue/20">{sol.category[lang]}</span>
-          {sol.complexity && <span className="px-1.5 py-0.5 bg-neutral-800 text-neutral-400 rounded text-[9px] font-medium border border-neutral-700/40">{sol.complexity}</span>}
+          <span className="flex shrink-0 items-center gap-1 pt-px text-[11px] font-medium text-[#E5C767]">
+            <Star size={12} fill="currentColor" /> {rating}
+          </span>
         </div>
-        <div className="pt-2 border-t border-neutral-700/40 flex items-center justify-between">
-          <div className="text-[10px] font-semibold">
+        <p className="mt-[8px] line-clamp-2 min-h-[32px] text-[10px] leading-[16px] text-white/56">{sol.description[lang]}</p>
+        <div className="mt-auto flex h-7 items-center justify-between gap-2 pt-0">
+          <div className="min-w-0 text-[10px] text-white/55">
             {sol.priceCredits ? (
-              <span className="text-orange-500 flex items-center gap-0.5"><Zap size={10} fill="currentColor" /> {sol.priceCredits} CR</span>
+              <span className="flex items-center gap-1 truncate text-[#E5C767]"><Zap size={10} fill="currentColor" /> {sol.priceCredits} CR</span>
             ) : sol.isFree ? (
-              <span className="text-emerald-500">Miễn phí</span>
-            ) : null}
+              <span className="truncate">Free</span>
+            ) : (
+              <span className="truncate">Freemium</span>
+            )}
           </div>
-          <span className="flex items-center gap-1 text-[11px] font-medium text-brand-blue opacity-0 group-hover:opacity-100 transition-opacity">Mở <ArrowRight size={11} /></span>
+          <button onClick={(e) => onPreview?.(e, sol)} className="inline-flex h-7 shrink-0 items-center gap-1.5 rounded-md border border-[#E5C767]/45 bg-[#E5C767]/10 px-2.5 text-[10px] font-medium text-[#E5C767] transition-colors hover:bg-[#E5C767] hover:text-black">
+            <Eye size={11} /> Preview
+          </button>
+          <button onClick={(e) => onToggleCompare?.(e, sol.id)} className={`grid h-7 w-7 shrink-0 place-items-center rounded-md border ${isCompare ? 'border-[#E5C767] bg-[#E5C767] text-black' : 'border-white/15 text-white/35 hover:border-[#E5C767]/45 hover:text-[#E5C767]'}`}>
+            <Check size={12} />
+          </button>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 });
+
+const ProductCardSkeleton: React.FC = React.memo(() => (
+  <div className="h-[292px] overflow-hidden rounded-[8px] border border-[#2B2F2F] bg-[#0F1010]">
+    <div className="h-[148px] animate-pulse bg-white/[0.06]" />
+    <div className="space-y-2 px-3 pb-3 pt-3">
+      <div className="h-4 w-2/3 rounded bg-white/[0.08]" />
+      <div className="h-3 w-1/3 rounded bg-white/[0.06]" />
+      <div className="pt-2 space-y-1.5">
+        <div className="h-3 w-full rounded bg-white/[0.06]" />
+        <div className="h-3 w-4/5 rounded bg-white/[0.06]" />
+      </div>
+      <div className="flex items-center justify-between pt-6">
+        <div className="h-3 w-12 rounded bg-[#E5C767]/18" />
+        <div className="h-7 w-20 rounded-md bg-[#E5C767]/12" />
+        <div className="h-7 w-7 rounded-md bg-white/[0.06]" />
+      </div>
+    </div>
+  </div>
+));
 
 // ═══════ PRODUCT CARD (LIST) ═══════
 const ProductCardList: React.FC<{
   sol: Solution; lang: Language; onNavigate: (slug: string) => void;
-  isFav: boolean; onToggleFav: (e: React.MouseEvent) => void;
-  onPreview?: (e: React.MouseEvent) => void;
-  isCompare?: boolean; onToggleCompare?: (e: React.MouseEvent) => void;
+  isFav: boolean; onToggleFav: (e: React.MouseEvent, id: string) => void;
+  onPreview?: (e: React.MouseEvent, sol: Solution) => void;
+  isCompare?: boolean; onToggleCompare?: (e: React.MouseEvent, id: string) => void;
 }> = React.memo(({ sol, lang, onNavigate, isFav, onToggleFav, onPreview, isCompare, onToggleCompare }) => {
   const models = sol.models?.slice(0, 2) || [];
   return (
-    <div className={`bg-neutral-900 border overflow-hidden cursor-pointer transition-all group flex ${isCompare ? 'border-brand-blue/30 ring-2 ring-brand-blue/10' : 'border-neutral-700/40 hover:border-neutral-600'}`}
+    <div className={`flex cursor-pointer overflow-hidden rounded-lg border bg-[#111111] transition-all group shadow-[0_16px_42px_rgba(0,0,0,0.18)] ${isCompare ? 'border-brand-blue/45 ring-2 ring-brand-blue/10' : 'border-white/[0.06] hover:border-brand-blue/28'}`}
       onClick={() => { saveRecentlyViewed(sol); onNavigate(sol.slug); }}>
       <div className="relative w-[180px] shrink-0 overflow-hidden">
         <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+        <div className={`absolute inset-0 bg-gradient-to-r ${getSolutionAccent(sol)}`} />
         <div className="absolute top-2 left-2 flex flex-col gap-1">
-          {sol.isFree && <span className="px-1.5 py-0.5 bg-emerald-500 text-white text-[9px] font-bold rounded-md w-fit">FREE</span>}
-          {sol.featured && <span className="px-1.5 py-0.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[9px] font-bold rounded-md flex items-center gap-0.5 w-fit"><Sparkles size={8} fill="currentColor" /> Hot</span>}
+          {sol.isFree && <span className="w-fit rounded-md bg-emerald-500/90 px-1.5 py-0.5 text-[9px] font-bold text-black">FREE</span>}
+          {sol.featured && <span className="flex w-fit items-center gap-0.5 rounded-md bg-brand-blue px-1.5 py-0.5 text-[9px] font-bold text-black"><Sparkles size={8} fill="currentColor" /> Hot</span>}
         </div>
       </div>
       <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
         <div>
           <div className="flex items-start justify-between gap-2">
-            <h3 className="text-[15px] font-bold text-neutral-200 group-hover:text-brand-blue transition-colors truncate">{sol.name[lang]}</h3>
+            <h3 className="text-[15px] font-bold text-white group-hover:text-brand-blue transition-colors truncate">{sol.name[lang]}</h3>
             <div className="flex items-center gap-1 shrink-0">
-              {onPreview && <button onClick={onPreview} className="p-1 rounded-md text-neutral-500 hover:text-brand-blue transition-colors" title="Xem nhanh"><Eye size={14} /></button>}
-              {onToggleCompare && <button onClick={onToggleCompare} className={`p-1 rounded-md transition-colors ${isCompare ? 'text-brand-blue' : 'text-neutral-500 hover:text-brand-blue'}`} title="So sánh"><GitCompare size={14} /></button>}
-              <button onClick={onToggleFav} className={`p-1 rounded-md transition-all ${isFav ? 'text-brand-blue' : 'text-neutral-500 hover:text-brand-blue'}`}>
+                {onPreview && <button onClick={(e) => onPreview(e, sol)} className="rounded-md p-1 text-white/35 transition-colors hover:bg-white/[0.04] hover:text-brand-blue" title="Xem nhanh"><Eye size={14} /></button>}
+                {onToggleCompare && <button onClick={(e) => onToggleCompare(e, sol.id)} className={`rounded-md p-1 transition-colors hover:bg-white/[0.04] ${isCompare ? 'text-brand-blue' : 'text-white/35 hover:text-brand-blue'}`} title="So sánh"><GitCompare size={14} /></button>}
+              <button onClick={(e) => onToggleFav(e, sol.id)} className={`rounded-md p-1 transition-all hover:bg-white/[0.04] ${isFav ? 'text-brand-blue' : 'text-white/35 hover:text-brand-blue'}`}>
                 {isFav ? <Bookmark size={14} fill="currentColor" /> : <BookmarkPlus size={14} />}
               </button>
             </div>
           </div>
-          <p className="text-[12px] text-neutral-500 line-clamp-2 mt-1">{sol.description[lang]}</p>
+          <p className="text-[12px] text-white/45 line-clamp-2 mt-1 leading-relaxed">{sol.description[lang]}</p>
           {/* Models badges */}
           {models.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-1.5">
               {models.map(m => (
-                <span key={m} className="px-1.5 py-0.5 bg-neutral-800 text-neutral-400 rounded text-[8px] font-mono border border-neutral-700/40">{m}</span>
+                <span key={m} className="rounded-md border border-white/[0.05] bg-white/[0.04] px-1.5 py-0.5 font-mono text-[8px] text-white/42">{m}</span>
               ))}
             </div>
           )}
         </div>
         <div className="flex items-center justify-between mt-3">
           <div className="flex items-center gap-2">
-            <span className="px-1.5 py-0.5 bg-brand-blue/[0.1] text-brand-blue rounded text-[9px] font-medium border border-brand-blue/20">{sol.category[lang]}</span>
-            {sol.complexity && <span className="px-1.5 py-0.5 bg-neutral-800 text-neutral-400 rounded text-[9px] font-medium border border-neutral-700/40">{sol.complexity}</span>}
+            <span className="rounded-md border border-brand-blue/20 bg-brand-blue/[0.1] px-1.5 py-0.5 text-[9px] font-medium text-brand-blue">{sol.category[lang]}</span>
+            {sol.complexity && <span className="rounded-md border border-white/[0.05] bg-white/[0.04] px-1.5 py-0.5 text-[9px] font-medium text-white/40">{sol.complexity}</span>}
             {sol.priceCredits ? (
-              <span className="flex items-center gap-0.5 text-[10px] font-semibold text-orange-500"><Zap size={10} fill="currentColor" /> {sol.priceCredits} CR</span>
+              <span className="flex items-center gap-0.5 text-[10px] font-semibold text-brand-blue"><Zap size={10} fill="currentColor" /> {sol.priceCredits} CR</span>
             ) : sol.isFree ? (
               <span className="text-[10px] font-semibold text-emerald-500">Miễn phí</span>
             ) : null}
@@ -548,13 +832,13 @@ const ComparePanel: React.FC<{ items: Solution[]; lang: Language; onRemove: (id:
       <div className="max-w-[1500px] mx-auto px-6 py-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <GitCompare size={14} className="text-brand-blue" />
-            <span className="text-[12px] font-bold text-neutral-200">So sánh ({items.length}/3)</span>
+	            <GitCompare size={14} className="text-brand-blue" />
+	            <span className="text-[12px] font-bold text-neutral-200">So sánh ({items.length}/4)</span>
           </div>
           <button onClick={onClear} className="text-[11px] font-medium text-neutral-400 hover:text-rose-500 transition-colors">Xoá tất cả</button>
         </div>
-        <div className="grid grid-cols-3 gap-4">
-          {[0, 1, 2].map(i => {
+	        <div className="grid grid-cols-4 gap-4">
+	          {[0, 1, 2, 3].map(i => {
             const sol = items[i];
             if (!sol) return <div key={i} className="h-[80px] border-2 border-dashed border-neutral-700/40 flex items-center justify-center text-[11px] text-neutral-500">Chọn để so sánh</div>;
             return (
@@ -600,6 +884,7 @@ const MarketsPage: React.FC = () => {
   // Auto-sliding promo banners — fetch from API, fallback to hardcoded
   const [promoBanners, setPromoBanners] = useState<PromoBannerType[]>([]);
   const [promoIndex, setPromoIndex] = useState(0);
+  const didMountRef = useRef(false);
   const bannerPool = useMemo(() => promoBanners.length > 0 ? promoBanners : PROMO_BANNERS, [promoBanners]);
   const promoBanner = bannerPool[promoIndex % bannerPool.length];
 
@@ -609,16 +894,28 @@ const MarketsPage: React.FC = () => {
     });
   }, []);
 
-  // Auto-slide every 6s
   useEffect(() => {
-    if (bannerPool.length <= 1) return;
-    const timer = setInterval(() => setPromoIndex(i => i + 1), 6000);
-    return () => clearInterval(timer);
-  }, [bannerPool.length]);
+    document.body.classList.add('overflow-hidden');
+    document.documentElement.classList.add('overflow-hidden');
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+      document.documentElement.classList.remove('overflow-hidden');
+    };
+  }, []);
 
   const [solutions, setSolutions] = useState<Solution[]>([]);
   const [featuredSolutions, setFeaturedSolutions] = useState<Solution[]>([]);
   const [loading, setLoading] = useState(true);
+  const [gridSettling, setGridSettling] = useState(false);
+  const heroStageItems = useMemo(() => (featuredSolutions.length > 0 ? featuredSolutions : solutions).slice(0, 5), [featuredSolutions, solutions]);
+  const heroCycleCount = heroStageItems.length || bannerPool.length;
+
+  // Auto-slide every 6s
+  useEffect(() => {
+    if (heroCycleCount <= 1) return;
+    const timer = setInterval(() => setPromoIndex(i => i + 1), 6000);
+    return () => clearInterval(timer);
+  }, [heroCycleCount]);
 
   // URL-BASED FILTERS — init from URL params
   const [inputValue, setInputValue] = useState(searchParams.get('q') || '');
@@ -635,6 +932,7 @@ const MarketsPage: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>((searchParams.get('view') as 'grid' | 'list') || 'grid');
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
   const [showBackTop, setShowBackTop] = useState(false);
+  const marketScrollRef = useRef<HTMLDivElement>(null);
 
   // PREVIEW & COMPARE states
   const [previewSol, setPreviewSol] = useState<Solution | null>(null);
@@ -728,13 +1026,15 @@ const MarketsPage: React.FC = () => {
   // Back to top — throttle bằng rAF + so sánh trước setState để bỏ qua tick không đổi
   // (trước đây setShowBackTop chạy mọi tick scroll → trigger re-render thừa → cards giật lúc scroll)
   useEffect(() => {
+    const scrollEl = marketScrollRef.current;
+    if (!scrollEl) return;
     let ticking = false;
     let last = false;
     const onScroll = () => {
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(() => {
-        const next = window.scrollY > 600;
+        const next = scrollEl.scrollTop > 600;
         if (next !== last) {
           last = next;
           setShowBackTop(next);
@@ -742,40 +1042,59 @@ const MarketsPage: React.FC = () => {
         ticking = false;
       });
     };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    scrollEl.addEventListener('scroll', onScroll, { passive: true });
+    return () => scrollEl.removeEventListener('scroll', onScroll);
   }, []);
 
   // SCROLL RESTORATION
   useEffect(() => {
+    const scrollEl = marketScrollRef.current;
     const saved = sessionStorage.getItem(SCROLL_POS_KEY);
-    if (saved) {
+    if (saved && scrollEl) {
       const pos = parseInt(saved, 10);
       if (!isNaN(pos)) {
-        requestAnimationFrame(() => window.scrollTo({ top: pos, behavior: 'instant' as ScrollBehavior }));
+        requestAnimationFrame(() => scrollEl.scrollTo({ top: pos, behavior: 'instant' as ScrollBehavior }));
       }
       sessionStorage.removeItem(SCROLL_POS_KEY);
     }
     return () => {
-      sessionStorage.setItem(SCROLL_POS_KEY, String(window.scrollY));
+      sessionStorage.setItem(SCROLL_POS_KEY, String(marketScrollRef.current?.scrollTop ?? 0));
     };
   }, []);
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
       try {
         const [solRes, featRes] = await Promise.all([
           marketApi.getSolutions({ lang: currentLang }),
           marketApi.getRandomFeatured()
         ]);
-        if (solRes?.data) setSolutions([...solRes.data.filter((s: Solution) => s.isActive !== false && s.id && s.slug)].reverse());
-        if (featRes?.data) setFeaturedSolutions(featRes.data.filter((s: Solution) => s.id && s.slug));
-      } catch (err) { console.error('Markets fetch:', err); }
-      finally { setLoading(false); }
+        const nextSolutions = solRes?.data?.filter((s: Solution) => s.isActive !== false && s.id && s.slug) || [];
+        const nextFeatured = featRes?.data?.filter((s: Solution) => s.isActive !== false && s.id && s.slug) || [];
+        const nextCatalog = nextSolutions.length > 0 ? [...nextSolutions].reverse() : MARKET_SHOWCASE_SOLUTIONS;
+        const showcaseSource = nextSolutions.length > 0 ? nextSolutions : nextFeatured.length > 0 ? nextFeatured : MARKET_SHOWCASE_SOLUTIONS;
+        setSolutions(nextCatalog);
+        setFeaturedSolutions(pickRandomSolutions(showcaseSource, 5));
+      } catch (err) {
+        console.error('Markets fetch:', err);
+        setSolutions(MARKET_SHOWCASE_SOLUTIONS);
+        setFeaturedSolutions(pickRandomSolutions(MARKET_SHOWCASE_SOLUTIONS, 5));
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
   }, [currentLang]);
+
+  useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
+    setGridSettling(true);
+    const timer = setTimeout(() => setGridSettling(false), 140);
+    return () => clearTimeout(timer);
+  }, [deferredSearch, activeCategory, sortBy, showFreeOnly, showFeaturedOnly, activeComplexity, activeTags, activePlatform]);
 
   useEffect(() => {
     try {
@@ -808,10 +1127,11 @@ const MarketsPage: React.FC = () => {
     setInputValue('');
     requestAnimationFrame(() => {
       const el = document.getElementById(GRID_ANCHOR_ID);
-      if (el) {
+      const scrollEl = marketScrollRef.current;
+      if (el && scrollEl) {
         const offset = 100; // chừa header sticky
-        const top = el.getBoundingClientRect().top + window.scrollY - offset;
-        window.scrollTo({ top, behavior: 'smooth' });
+        const top = el.offsetTop - offset;
+        scrollEl.scrollTo({ top, behavior: 'smooth' });
       }
     });
   }, []);
@@ -821,31 +1141,6 @@ const MarketsPage: React.FC = () => {
     const tagSet = new Set<string>();
     solutions.forEach(s => s.tags?.forEach(t => tagSet.add(t)));
     return Array.from(tagSet).sort();
-  }, [solutions]);
-
-  // Build dynamic categories: static list + any category from API not already covered
-  const CATEGORIES = useMemo(() => {
-    const staticKeys = new Set(STATIC_CATEGORIES.map(c => c.key.toLowerCase()));
-    const extraCats: { key: string; label: string; icon: typeof LayoutGrid }[] = [];
-
-    solutions.forEach(sol => {
-      const catEn = sol.category?.en;
-      if (!catEn) return;
-      const catKey = catEn.trim();
-      if (!catKey) return;
-      // Skip if already covered by a static category (case-insensitive partial match)
-      const alreadyCovered = Array.from(staticKeys).some(k =>
-        k !== 'all' && (
-          catKey.toLowerCase().includes(k) || k.includes(catKey.toLowerCase())
-        )
-      );
-      if (alreadyCovered) return;
-      if (extraCats.some(c => c.key === catKey)) return;
-      extraCats.push({ key: catKey, label: catEn, icon: Cpu });
-    });
-
-    // Append extra categories at the end (Sky Partners đã được rút ra)
-    return [...STATIC_CATEGORIES, ...extraCats];
   }, [solutions]);
 
   const toggleTag = useCallback((tag: string) => {
@@ -899,33 +1194,19 @@ const MarketsPage: React.FC = () => {
   useEffect(() => {
     if (!hasMore) return;
     const el = loadMoreRef.current;
-    if (!el) return;
+    const root = marketScrollRef.current;
+    if (!el || !root) return;
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0]?.isIntersecting) {
-          setVisibleCount(prev => prev + ITEMS_PER_PAGE);
+          setVisibleCount(prev => Math.min(prev + ITEMS_PER_PAGE, filteredSolutions.length));
         }
       },
-      { rootMargin: '300px 0px' }
+      { root, rootMargin: '120px 0px' }
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [hasMore]);
-
-  const catCounts = useMemo(() => {
-    const counts: Record<string, number> = { ALL: solutions.length };
-    CATEGORIES.forEach(c => {
-      if (c.key === 'ALL') return;
-      const cKeyLower = c.key.trim().toLowerCase();
-      counts[c.key] = solutions.filter(s =>
-        s.category[currentLang]?.trim().toLowerCase().includes(cKeyLower) ||
-        s.category.en?.trim().toLowerCase().includes(cKeyLower) ||
-        s.tags?.some(t => t.trim().toLowerCase().includes(cKeyLower)) ||
-        s.demoType?.trim().toLowerCase() === cKeyLower
-      ).length;
-    });
-    return counts;
-  }, [solutions, currentLang, CATEGORIES]);
+  }, [hasMore, filteredSolutions.length]);
 
   const activeFilterCount = [showFreeOnly, showFeaturedOnly, !!activeComplexity, activeCategory !== 'ALL', activeTags.length > 0, activePlatform !== 'ALL', !!inputValue].filter(Boolean).length;
 
@@ -951,547 +1232,269 @@ const MarketsPage: React.FC = () => {
     e.preventDefault(); e.stopPropagation();
     setCompareIds(prev => {
       if (prev.includes(id)) return prev.filter(x => x !== id);
-      if (prev.length >= 3) return prev; // max 3
+	      if (prev.length >= 4) return prev; // max 4
       return [...prev, id];
     });
   }, []);
-  const compareSolutions = useMemo(() => compareIds.map(id => solutions.find(s => s.id === id)).filter(Boolean) as Solution[], [compareIds, solutions]);
+  const favoriteIdSet = useMemo(() => new Set(favorites), [favorites]);
+  const compareIdSet = useMemo(() => new Set(compareIds), [compareIds]);
+  const solutionById = useMemo(() => new Map(solutions.map(sol => [sol.id, sol])), [solutions]);
+  const compareSolutions = useMemo(() => compareIds.map(id => solutionById.get(id)).filter(Boolean) as Solution[], [compareIds, solutionById]);
 
   // ═══════ SIDEBAR ═══════
   // ⚡ JSX biến (KHÔNG phải component) — tránh tạo new component identity mỗi render
   // (vd khi gõ search → MarketsPage re-render → trước đây <SidebarContent /> bị unmount/remount,
   // input mất focus + value reset → cảm giác giật lag).
   const sidebarContent = (
-    <div className="space-y-5">
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={15} />
-        <input ref={searchInputRef} type="text" value={inputValue} onChange={e => setInputValue(e.target.value)} placeholder="Tìm công cụ AI... (⌘K)"
-          className="w-full bg-neutral-900 border border-neutral-700/60 pl-9 pr-8 py-2.5 text-[13px] text-neutral-200 focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/20 outline-none transition-all placeholder:text-neutral-500" />
-        {inputValue && <button onClick={() => setInputValue('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800 transition-colors"><X size={13} /></button>}
+    <div className="space-y-6 px-4 py-5">
+      <div className="flex items-center justify-between">
+        <h2 className="text-[15px] font-medium text-white">Filters</h2>
+        <button onClick={resetFilters} className="text-[10px] font-medium text-white/45 transition-colors hover:text-[#E5C767]">
+          Clear all
+        </button>
       </div>
 
-      {/* Categories Card — chia 2 group: "Tạo nội dung" (expand default) + "Khác" (collapse default) */}
-      <div>
-        <div className="px-1 pb-2 flex items-center gap-2">
-          <LayoutGrid size={13} className="text-brand-blue" />
-          <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">Danh mục</span>
-        </div>
-        <div className="space-y-0.5">
-          {(() => {
-            const allCat = CATEGORIES.find(c => c.key === 'ALL');
-            const contentCats = CATEGORIES.filter(c => CONTENT_CATEGORY_KEYS.has(c.key));
-            const otherCats = CATEGORIES.filter(c => c.key !== 'ALL' && !CONTENT_CATEGORY_KEYS.has(c.key));
-            const contentActiveCount = contentCats.filter(c => activeCategory === c.key).length;
-            const otherActiveCount = otherCats.filter(c => activeCategory === c.key).length;
-
-            const renderCatBtn = (cat: typeof CATEGORIES[0]) => {
-              const Icon = cat.icon;
-              const isActive = activeCategory === cat.key;
-              const count = catCounts[cat.key] || 0;
-              return (
-                <button key={cat.key} onClick={() => setActiveCategory(cat.key)}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 text-[12px] font-medium transition-all ${
-                    isActive
-                      ? 'bg-brand-blue text-white'
-                      : 'text-neutral-300 hover:bg-neutral-800'
-                  }`}>
-                  <Icon size={14} className={isActive ? 'text-white' : ''} />
-                  <span className="flex-1 text-left">{cat.label}</span>
-                  <span className={`text-[10px] font-semibold min-w-[20px] text-center py-0.5 rounded-full ${
-                    isActive
-                      ? 'bg-white/20 text-white'
-                      : 'bg-neutral-800 text-neutral-500'
-                  }`}>{count}</span>
-                </button>
-              );
-            };
-
-            const renderGroupHeader = (
-              icon: React.ReactNode, label: string, isOpen: boolean, onToggle: () => void, badgeDot: boolean
-            ) => (
-              <button onClick={onToggle}
-                className="w-full flex items-center gap-2 px-3 py-1.5 mt-1 text-[10px] font-bold text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800 uppercase tracking-wider transition-colors">
-                {icon}
-                <span className="flex-1 text-left">{label}</span>
-                {badgeDot && <span className="w-1.5 h-1.5 rounded-full bg-brand-blue" />}
-                {isOpen ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
+      <section>
+        <p className="mb-3 text-[10px] font-medium uppercase tracking-wide text-white/46">Category</p>
+        <div className="space-y-2">
+          {FILTER_MENU.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeCategory === item.key;
+              const count = item.count;
+            return (
+              <button
+                key={item.key}
+                onClick={() => setActiveCategory(item.key)}
+                className={`flex h-[32px] w-full items-center gap-2.5 rounded-md border px-3 text-left text-[12px] transition-all ${
+                  isActive
+                    ? 'border-[#E5C767]/65 bg-[#E5C767]/10 text-[#E5C767]'
+                    : 'border-white/[0.07] bg-white/[0.035] text-white/72 hover:border-[#E5C767]/35 hover:text-white'
+                }`}
+              >
+                <Icon size={15} className={isActive ? 'text-[#E5C767]' : item.color} />
+                <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                <span className="text-[10px] text-white/38">{count}</span>
               </button>
             );
-
-            return (
-              <>
-                {/* "Tất cả" — đứng riêng top */}
-                {allCat && renderCatBtn(allCat)}
-
-                {/* Group: Tạo nội dung */}
-                {contentCats.length > 0 && (
-                  <>
-                    {renderGroupHeader(
-                      <Sparkles size={11} className="text-brand-blue" />,
-                      'Tạo nội dung',
-                      contentGroupOpen,
-                      () => setContentGroupOpen(v => !v),
-                      contentActiveCount > 0
-                    )}
-                    <AnimatePresence initial={false}>
-                      {contentGroupOpen && (
-                        <motion.div key="content-cats"
-                          initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.2 }} className="overflow-hidden space-y-0.5">
-                          {contentCats.map(renderCatBtn)}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </>
-                )}
-
-                {/* Group: Khác */}
-                {otherCats.length > 0 && (
-                  <>
-                    {renderGroupHeader(
-                      <Layers size={11} className="text-neutral-400" />,
-                      `Khác (${otherCats.length})`,
-                      otherGroupOpen,
-                      () => setOtherGroupOpen(v => !v),
-                      otherActiveCount > 0
-                    )}
-                    <AnimatePresence initial={false}>
-                      {otherGroupOpen && (
-                        <motion.div key="other-cats"
-                          initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.2 }} className="overflow-hidden space-y-0.5">
-                          {otherCats.map(renderCatBtn)}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </>
-                )}
-              </>
-            );
-          })()}
+          })}
         </div>
-      </div>
+      </section>
 
-      {/* Toggles Card — basic, always visible (đưa lên trước advanced) */}
-      <div className="border-t border-neutral-700/40 pt-4">
-        <div className="px-1 pb-2 flex items-center gap-2">
-          <SlidersHorizontal size={13} className="text-emerald-500" />
-          <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">Bộ lọc nhanh</span>
-        </div>
-        <div className="space-y-0.5">
-          <label className="flex items-center justify-between px-3 py-2.5 cursor-pointer hover:bg-neutral-800 transition-colors">
-            <div className="flex items-center gap-2">
-              <Zap size={13} className={showFreeOnly ? 'text-emerald-500' : 'text-neutral-500'} />
-              <span className="text-[12px] font-medium text-neutral-300">Chỉ miễn phí</span>
-            </div>
-            <div className={`relative w-8 h-[18px] rounded-full transition-colors ${showFreeOnly ? 'bg-brand-blue' : 'bg-neutral-700'}`} onClick={(e) => { e.preventDefault(); setShowFreeOnly(!showFreeOnly); }}>
-              <div className={`absolute top-[2px] w-[14px] h-[14px] bg-white rounded-full shadow-sm transition-all ${showFreeOnly ? 'left-[16px]' : 'left-[2px]'}`} />
-            </div>
-          </label>
-          <label className="flex items-center justify-between px-3 py-2.5 cursor-pointer hover:bg-neutral-800 transition-colors">
-            <div className="flex items-center gap-2">
-              <Sparkles size={13} className={showFeaturedOnly ? 'text-amber-500' : 'text-neutral-500'} />
-              <span className="text-[12px] font-medium text-neutral-300">Nổi bật</span>
-            </div>
-            <div className={`relative w-8 h-[18px] rounded-full transition-colors ${showFeaturedOnly ? 'bg-brand-blue' : 'bg-neutral-700'}`} onClick={(e) => { e.preventDefault(); setShowFeaturedOnly(!showFeaturedOnly); }}>
-              <div className={`absolute top-[2px] w-[14px] h-[14px] bg-white rounded-full shadow-sm transition-all ${showFeaturedOnly ? 'left-[16px]' : 'left-[2px]'}`} />
-            </div>
-          </label>
-        </div>
-      </div>
+      <section className="space-y-3">
+        <p className="text-[10px] font-medium uppercase tracking-wide text-white/46">Pricing <span className="text-white/25">ⓘ</span></p>
+        {[
+          { label: 'Free', active: showFreeOnly, onClick: () => setShowFreeOnly(v => !v) },
+          { label: 'Freemium', active: showFeaturedOnly, onClick: () => setShowFeaturedOnly(v => !v) },
+          { label: 'Paid', active: !showFreeOnly, onClick: () => setShowFreeOnly(false) },
+        ].map((item) => (
+          <button key={item.label} onClick={item.onClick} className="flex w-full items-center justify-between text-[13px] text-white/82">
+            <span>{item.label}</span>
+            <span className={`relative h-[18px] w-8 rounded-full transition-colors ${item.active ? 'bg-[#E5C767]' : 'bg-white/[0.13]'}`}>
+              <span className={`absolute top-[2px] h-[14px] w-[14px] rounded-full bg-white shadow-sm transition-all ${item.active ? 'left-[16px]' : 'left-[2px]'}`} />
+            </span>
+          </button>
+        ))}
+      </section>
 
-      {/* ─── BỘ LỌC NÂNG CAO — collapse mặc định đóng (Complexity + Platform + Tags) ─── */}
-      {(() => {
-        const advCount = [!!activeComplexity, activeTags.length > 0, activePlatform !== 'ALL'].filter(Boolean).length;
-        return (
-          <div className="border-t border-neutral-700/40 pt-4">
-            <button
-              onClick={() => setAdvancedOpen(v => !v)}
-              className="w-full px-1 pb-2 flex items-center justify-between hover:opacity-70 transition-opacity"
+      <section className="space-y-3">
+        <p className="text-[10px] font-medium uppercase tracking-wide text-white/46">Rating <span className="text-white/25">ⓘ</span></p>
+        <button className="flex w-full items-center justify-between text-[13px] text-white/82">
+          <span>4.5 & up</span>
+          <span className="relative h-[18px] w-8 rounded-full bg-[#E5C767]">
+            <span className="absolute left-[16px] top-[2px] h-[14px] w-[14px] rounded-full bg-white shadow-sm" />
+          </span>
+        </button>
+        <div className="flex items-center gap-1 text-[#E5C767]">
+          {[0, 1, 2, 3, 4].map((star) => <Star key={star} size={14} fill="currentColor" />)}
+          <Star size={14} className="text-[#E5C767]/45" />
+        </div>
+      </section>
+
+      <section className="space-y-3">
+        <p className="text-[10px] font-medium uppercase tracking-wide text-white/46">Compatibility <span className="text-white/25">ⓘ</span></p>
+        {[
+          { label: 'Web', key: 'web' },
+          { label: 'Desktop', key: 'extension' },
+          { label: 'Mobile', key: 'ios' },
+        ].map((item) => {
+          const checked = activePlatform === item.key || (item.key === 'web' && activePlatform === 'ALL');
+          return (
+            <button key={item.key} onClick={() => setActivePlatform(activePlatform === item.key ? 'ALL' : item.key)} className="flex w-full items-center gap-2.5 text-[13px] text-white/76">
+              <span className={`grid h-[15px] w-[15px] place-items-center rounded-[3px] border ${checked ? 'border-[#E5C767] bg-[#E5C767]' : 'border-white/25 bg-transparent'}`}>
+                {checked && <Check size={11} className="text-black" />}
+              </span>
+              {item.label}
+            </button>
+          );
+        })}
+      </section>
+
+      <section>
+        <button onClick={() => setAdvancedOpen(v => !v)} className="flex w-full items-center justify-between py-1 text-[10px] font-medium uppercase tracking-wide text-white/46 transition-colors hover:text-[#E5C767]">
+          More filters
+          {advancedOpen ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+        </button>
+        <AnimatePresence initial={false}>
+          {advancedOpen && (
+            <motion.div
+              key="advanced-market-filters"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
             >
-              <div className="flex items-center gap-2">
-                <SlidersHorizontal size={13} className="text-neutral-500" />
-                <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">Bộ lọc nâng cao</span>
-                {advCount > 0 && (
-                  <span className="text-[9px] font-bold text-brand-blue bg-brand-blue/10 px-1.5 py-0.5 rounded-full">{advCount}</span>
+              <div className="space-y-3 pt-3">
+                <div className="grid grid-cols-3 gap-1.5">
+                  {COMPLEXITY_LEVELS.map(level => {
+                    const isActive = activeComplexity === level.key;
+                    return (
+                      <button key={level.key} onClick={() => setActiveComplexity(isActive ? null : level.key)}
+                        className={`rounded-md py-2 text-[10px] font-semibold transition-all ${isActive ? 'bg-[#E5C767] text-black' : 'border border-white/[0.07] bg-white/[0.035] text-white/48 hover:text-white'}`}>
+                        {level.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                {allTags.length > 0 && (
+                  <div className="flex max-h-[120px] flex-wrap gap-1.5 overflow-y-auto no-scrollbar">
+                    {allTags.slice(0, 18).map(tag => {
+                      const isActive = activeTags.includes(tag);
+                      return (
+                        <button key={tag} onClick={() => toggleTag(tag)}
+                          className={`rounded-md px-2 py-1 text-[10px] font-medium transition-all ${isActive ? 'bg-[#E5C767] text-black' : 'border border-white/[0.07] bg-white/[0.035] text-white/45 hover:text-white'}`}>
+                          {tag}
+                        </button>
+                      );
+                    })}
+                  </div>
                 )}
               </div>
-              {advancedOpen ? <ChevronUp size={13} className="text-neutral-400" /> : <ChevronDown size={13} className="text-neutral-400" />}
-            </button>
-            <AnimatePresence initial={false}>
-              {advancedOpen && (
-                <motion.div
-                  key="adv-filters"
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="overflow-hidden"
-                >
-                  <div className="p-3 space-y-3">
-                    {/* Complexity */}
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <Layers size={12} className="text-purple-500" />
-                        <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">Cấp độ</span>
-                      </div>
-                      <div className="grid grid-cols-3 gap-1.5">
-                        {COMPLEXITY_LEVELS.map(level => {
-                          const isActive = activeComplexity === level.key;
-                          return (
-                            <button key={level.key} onClick={() => setActiveComplexity(isActive ? null : level.key)}
-                              className={`flex items-center justify-center py-2 text-[11px] font-semibold transition-all ${isActive
-                                ? 'bg-brand-blue text-white'
-                                : 'bg-neutral-800 text-neutral-400 hover:bg-neutral-700 border border-neutral-700/40'
-                              }`}>
-                              {level.label}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </section>
 
-                    {/* Platform */}
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <Globe size={12} className="text-cyan-500" />
-                        <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">Nền tảng</span>
-                      </div>
-                      <div className="space-y-0.5">
-                        {PLATFORMS.map(plat => {
-                          const Icon = plat.icon;
-                          const isActive = activePlatform === plat.key;
-                          return (
-                            <button key={plat.key} onClick={() => setActivePlatform(plat.key)}
-                              className={`w-full flex items-center gap-2.5 px-3 py-2 text-[12px] font-medium transition-all ${isActive
-                                ? 'bg-brand-blue text-white'
-                                : 'text-neutral-300 hover:bg-neutral-800'
-                              }`}>
-                              <Icon size={13} className={isActive ? 'text-white' : ''} />
-                              <span className="flex-1 text-left">{plat.label}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
+      <section className="rounded-lg border border-[#E5C767]/18 bg-[#E5C767]/[0.035] p-3.5">
+        <p className="text-[12px] font-medium text-white/82">Compare up to 4 apps</p>
+        <p className="mt-0.5 text-[10px] text-white/42">Select apps to compare features</p>
+        <div className="mt-4 grid grid-cols-4 gap-2">
+          {[0, 1, 2, 3].map((slot) => {
+            const item = compareSolutions[slot];
+            return (
+              <button
+                key={slot}
+                onClick={() => item && setCompareIds(prev => prev.filter(id => id !== item.id))}
+                className="grid h-10 place-items-center rounded-md border border-dashed border-[#E5C767]/55 bg-black/30 text-[#E5C767]"
+              >
+                {item ? <span className="text-[12px] font-bold">{item.name[lang]?.charAt(0)}</span> : <span className="text-xl leading-none">+</span>}
+              </button>
+            );
+          })}
+        </div>
+      </section>
 
-                    {/* Tags */}
-                    {allTags.length > 0 && (
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <Tag size={12} className="text-orange-500" />
-                            <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">Tags</span>
-                          </div>
-                          {activeTags.length > 0 && (
-                            <span className="text-[9px] font-bold text-brand-blue bg-brand-blue/10 px-1.5 py-0.5 rounded">{activeTags.length} chọn</span>
-                          )}
-                        </div>
-                        <div className="flex flex-wrap gap-1.5 max-h-[160px] overflow-y-auto no-scrollbar">
-                          {allTags.map(tag => {
-                            const isActive = activeTags.includes(tag);
-                            return (
-                              <button key={tag} onClick={() => toggleTag(tag)}
-                                className={`px-2.5 py-1.5 text-[10px] font-semibold transition-all ${isActive
-                                  ? 'bg-brand-blue text-white'
-                                  : 'bg-neutral-800 text-neutral-400 border border-neutral-700/40 hover:border-brand-blue/30 hover:text-brand-blue'
-                                }`}>
-                                {isActive && <Check size={9} className="inline mr-1 -mt-px" />}{tag}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        );
-      })()}
-
-      {/* Reset */}
       {activeFilterCount > 0 && (
-        <button onClick={resetFilters} className="w-full flex items-center justify-center gap-2 py-2.5 text-[12px] font-semibold text-brand-blue bg-brand-blue/[0.06] hover:bg-brand-blue/[0.1] border border-brand-blue/10 transition-colors">
-          <X size={12} /> Đặt lại bộ lọc ({activeFilterCount})
+        <button onClick={resetFilters} className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#E5C767]/22 bg-[#E5C767]/10 py-2.5 text-[12px] font-semibold text-[#E5C767] transition-colors hover:bg-[#E5C767]/16">
+          <X size={12} /> Reset filters ({activeFilterCount})
         </button>
       )}
-
-      {/* Keyboard Shortcut Hint — chỉ giữ ⌘K (View toggle G ẩn ngầm cho power user) */}
-      <div className="flex flex-wrap gap-2 text-[9px] text-neutral-400">
-        <span className="flex items-center gap-1"><kbd className="px-1 py-0.5 bg-neutral-800 rounded text-[8px] font-mono text-neutral-400">⌘K</kbd> Tìm</span>
-      </div>
     </div>
   );
 
   return (
-    <div className="pt-24 md:pt-28 pb-32 min-h-screen bg-[#141418] text-neutral-100 transition-colors duration-300">
+    <div className="relative h-screen overflow-hidden bg-[#050505] pt-[48px] text-neutral-100 transition-colors duration-300">
+      <div className="pointer-events-none fixed inset-0 opacity-[0.045] bg-[linear-gradient(rgba(201,168,76,0.26)_1px,transparent_1px),linear-gradient(90deg,rgba(201,168,76,0.26)_1px,transparent_1px)] bg-[size:80px_80px]" />
+      <motion.div
+        className="pointer-events-none fixed inset-x-0 top-0 h-[520px] bg-[radial-gradient(circle_at_72%_18%,rgba(201,168,76,0.13),transparent_34%)]"
+        animate={{ opacity: [0.55, 1, 0.55], scale: [1, 1.03, 1] }}
+        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      <motion.div
+        className="pointer-events-none fixed left-[28%] top-[62px] h-px w-[54vw] bg-gradient-to-r from-transparent via-[#E5C767]/45 to-transparent"
+        animate={{ x: ['-18%', '20%', '-18%'], opacity: [0.18, 0.58, 0.18] }}
+        transition={{ duration: 7.5, repeat: Infinity, ease: 'easeInOut' }}
+      />
 
-      <div className="relative z-10 max-w-[1600px] mx-auto px-4 md:px-6 lg:px-10">
-
-        {/* ═══════ ATLAS HERO STRIP ═══════ */}
-        {/* ═══════ HERO BANNER — promo as background ═══════ */}
-        <motion.div
-          key={promoIndex % bannerPool.length}
-          className="relative mb-8 md:mb-10 overflow-hidden bg-neutral-900 px-6 md:px-10 pt-8 md:pt-10 pb-6 md:pb-8 min-h-[220px] md:min-h-[300px] cursor-pointer group"
-          onClick={() => navigate(promoBanner.link)}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        >
-          {/* ── Promo banner background image — right 3/4 ── */}
-          {promoBanner.imageUrl && (
-            <>
-              <img
-                src={promoBanner.imageUrl}
-                alt=""
-                className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-75 transition-opacity duration-700"
-              />
-              <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-neutral-950 via-neutral-950/80 via-[45%] to-transparent" />
-            </>
-          )}
-          {/* ── Animated gradient background ── */}
-          <div className="absolute inset-0 bg-atlas-hero-dark" style={{ opacity: promoBanner.imageUrl ? 0.1 : 1 }} />
-          <div className="absolute inset-0 bg-gradient-to-br from-brand-blue/[0.08] via-transparent to-brand-blue/[0.04] group-hover:from-brand-blue/[0.12] group-hover:to-brand-blue/[0.06] transition-all duration-700" />
-
-          {/* ── Shimmer sweep overlay ── */}
-          <div
-            className="absolute inset-0 opacity-[0.07] group-hover:opacity-[0.12] transition-opacity duration-500"
-            style={{
-              backgroundImage: 'linear-gradient(105deg, transparent 40%, rgba(201,168,76,0.4) 45%, rgba(201,168,76,0.6) 50%, rgba(201,168,76,0.4) 55%, transparent 60%)',
-              backgroundSize: '200% 100%',
-              animation: 'atlasShimmer 4s linear infinite',
-            }}
-          />
-
-          {/* ── Subtle grid pattern ── */}
-          <div
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage: 'linear-gradient(rgba(201,168,76,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,0.3) 1px, transparent 1px)',
-              backgroundSize: '40px 40px',
-            }}
-          />
-
-          {/* ── Bottom fade — smooth transition to page bg ── */}
-          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#141418] to-transparent z-[2]" />
-
-          {/* ── Corner accent lines ── */}
-          <motion.div
-            className="absolute top-0 left-0 w-16 h-px bg-gradient-to-r from-brand-blue to-transparent"
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            style={{ transformOrigin: 'left' }}
-          />
-          <motion.div
-            className="absolute top-0 left-0 w-px h-16 bg-gradient-to-b from-brand-blue to-transparent"
-            initial={{ scaleY: 0 }}
-            animate={{ scaleY: 1 }}
-            transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            style={{ transformOrigin: 'top' }}
-          />
-
-          {/* ── Content (z-10 above overlays) ── */}
-          <div className="relative z-10">
-            {/* Promo tag — top right */}
-            <motion.div
-              className="absolute -top-2 right-0 md:-top-4 md:right-0 flex items-center gap-3"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3, duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
-            >
-              <span className="relative px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.15em] bg-brand-blue text-white shadow-atlas-glow-soft">
-                <span className="relative z-10">{promoBanner.tag}</span>
-                <span className="absolute inset-0 bg-brand-blue animate-atlas-pulse rounded-[1px]" />
-              </span>
-            </motion.div>
-
-            {/* Title + subtitle */}
-            <motion.p
-              className="text-[11px] font-bold uppercase tracking-[0.2em] text-brand-blue mb-3 flex items-center gap-2"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <motion.span
-                className="w-5 h-px bg-brand-blue/50"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ delay: 0.4, duration: 0.5 }}
-                style={{ transformOrigin: 'left' }}
-              />
-              Marketplace
-            </motion.p>
-
-            <motion.h1
-              className="text-[1.75rem] md:text-[2.5rem] font-bold tracking-[-0.02em] leading-[1.1] text-white"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            >
-              {promoBanner.heroTitle}
-              <span
-                className="bg-gradient-to-r from-brand-blue via-[#E5C767] to-brand-blue bg-[length:200%_auto] bg-clip-text text-transparent"
-                style={{ animation: 'atlasShimmer 3s linear infinite' }}
-              >
-                {promoBanner.heroHighlight}
-              </span>
-            </motion.h1>
-
-            <motion.p
-              className="mt-3 text-[13px] md:text-[15px] text-neutral-400 leading-relaxed max-w-xl"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            >
-              {promoBanner.heroDesc}
-            </motion.p>
-
-            {/* Promo content — bottom */}
-            <motion.div
-              className="mt-6 md:mt-8 pt-5 border-t border-neutral-800/60 flex items-center justify-between"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.65, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <div className="min-w-0">
-                <h3 className="text-[15px] md:text-[18px] font-bold text-white leading-snug">
-                  {promoBanner.title}
-                </h3>
-                <p className="text-[12px] md:text-[13px] text-neutral-500 leading-relaxed mt-1">
-                  {promoBanner.desc}
-                </p>
-              </div>
-              <motion.div
-                className="flex items-center gap-1.5 text-brand-blue text-[13px] md:text-[14px] font-semibold whitespace-nowrap shrink-0 group-hover:gap-2.5 transition-all ml-6"
-                whileHover={{ x: 4 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-              >
-                {promoBanner.cta} <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
-              </motion.div>
-            </motion.div>
-
-            {/* Mobile filter button */}
-            <button onClick={(e) => { e.stopPropagation(); setMobileSidebar(true); }}
-              className="lg:hidden mt-5 inline-flex items-center gap-2 px-4 py-2.5 bg-neutral-800/80 border border-neutral-700/60 text-[13px] font-semibold text-neutral-200 w-fit hover:bg-neutral-700 hover:border-brand-blue/30 transition-all">
-              <SlidersHorizontal size={15} /> Bộ lọc
-              {activeFilterCount > 0 && <span className="w-5 h-5 bg-brand-blue text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-atlas-glow-soft">{activeFilterCount}</span>}
-            </button>
-          </div>
-
-          {/* ── Slide indicators ── */}
-          {bannerPool.length > 1 && (
-            <div className="absolute bottom-3 right-4 z-20 flex items-center gap-1.5">
-              {bannerPool.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={(e) => { e.stopPropagation(); setPromoIndex(i); }}
-                  className={`h-1 rounded-full transition-all duration-300 ${
-                    i === promoIndex % bannerPool.length
-                      ? 'w-5 bg-brand-blue'
-                      : 'w-1.5 bg-neutral-600 hover:bg-neutral-400'
-                  }`}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* ── Bottom glow line ── */}
-          <motion.div
-            className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-blue/40 to-transparent"
-            initial={{ scaleX: 0, opacity: 0 }}
-            animate={{ scaleX: 1, opacity: 1 }}
-            transition={{ delay: 0.8, duration: 1, ease: [0.22, 1, 0.36, 1] }}
-          />
-        </motion.div>
-
+      <div className="relative z-10 h-[calc(100vh-48px)] w-full overflow-hidden">
         {/* ═══════ 2-COLUMN LAYOUT ═══════ */}
-        <div className="flex gap-6 lg:gap-8">
+        <div className="h-full border-t border-white/[0.06]">
+          <MarketIconRail />
 
           {/* LEFT SIDEBAR */}
-          <aside className="hidden lg:block w-[260px] shrink-0">
-            <div className="sticky top-28 max-h-[calc(100vh-7rem)] overflow-y-auto no-scrollbar pr-1 space-y-1">
-              {sidebarContent}
-            </div>
+          <aside className="fixed bottom-0 left-[92px] top-[48px] z-30 hidden w-[224px] shrink-0 overflow-y-auto overscroll-contain border-r border-white/[0.08] bg-black/46 no-scrollbar lg:block">
+            {sidebarContent}
           </aside>
 
           {/* RIGHT CONTENT */}
-          <div className="flex-1 min-w-0">
+          <div ref={marketScrollRef} className="h-full min-w-0 overflow-y-auto overscroll-contain pb-10 lg:ml-[316px]">
+            <FeaturedStudioStage
+              promo={promoBanner}
+              items={heroStageItems}
+              lang={currentLang}
+              activeIndex={promoIndex}
+              bannerCount={heroCycleCount}
+              onNavigate={(target) => navigate(target.startsWith('/') ? target : `/product/${target}`)}
+              onOpenFilters={(e) => { e.stopPropagation(); setMobileSidebar(true); }}
+              onSelectBanner={(e, index) => { e.stopPropagation(); setPromoIndex(index); }}
+              onPickCategory={handleQuickPath}
+              searchValue={inputValue}
+              onSearchChange={setInputValue}
+              activeFilterCount={activeFilterCount}
+            />
 
             {/* Quick Path Hero — chỉ hiển thị cho user mới (chưa search/filter) và chưa dismiss */}
-            {!quickPathDismissed && !inputValue && activeCategory === 'ALL' && !loading && (
+            {!quickPathDismissed && !inputValue && activeCategory === 'ALL' && !loading && false && (
               <QuickPathHero onPick={handleQuickPath} onDismiss={dismissQuickPath} />
             )}
 
-            {/* Recently Viewed */}
-            <RecentlyViewed lang={currentLang} onNavigate={handleNavigate} />
-
-            {/* Suggested for you */}
-            {!inputValue && solutions.length > 0 && (
-              <SuggestedSection
-                solutions={solutions}
-                lang={currentLang}
-                onNavigate={handleNavigate}
-                onPreview={handlePreview}
-                favorites={favorites}
-                onToggleFav={toggleFavorite}
-              />
-            )}
-
-            {/* Trending — ẩn khi QuickPathHero đang hiển thị (tránh chồng chéo chức năng giới thiệu tools) */}
-            {!inputValue && featuredSolutions.length > 0 && (quickPathDismissed || activeCategory !== 'ALL') && (
+            {!inputValue && featuredSolutions.length > 0 && (
               <TrendingSlider items={featuredSolutions} lang={currentLang} onNavigate={handleNavigate} />
             )}
 
             {/* Toolbar */}
-            <div id={GRID_ANCHOR_ID} className="flex items-center justify-between mb-4 scroll-mt-28">
-              <p className="text-[13px] text-neutral-400">
-                {loading ? 'Đang tải...' : <><strong className="text-neutral-200">{filteredSolutions.length}</strong> kết quả</>}
-                {deferredSearch && <span className="text-brand-blue ml-1">"{deferredSearch}"</span>}
-                {hasMore && <span className="text-neutral-300 ml-1">· hiện {visibleCount}</span>}
+            <div id={GRID_ANCHOR_ID} className="flex items-center justify-between px-5 py-4 scroll-mt-20 xl:px-6">
+              <p className="text-[13px] text-white/62">
+                {loading ? 'Loading...' : <><strong className="font-medium text-white">{filteredSolutions.length}</strong> results</>}
+                {deferredSearch && <span className="ml-1 text-[#E5C767]">"{deferredSearch}"</span>}
+                {hasMore && <span className="ml-1 text-white/45">· showing {visibleCount}</span>}
               </p>
               <div className="flex items-center gap-2">
                 {/* View mode toggle */}
-                <div className="flex items-center bg-neutral-800 border border-neutral-700/40 p-0.5">
+                <div className="flex h-9 items-center rounded-lg border border-white/[0.08] bg-black/40 p-0.5">
                   <button
                     onClick={() => setViewMode('grid')}
-                    className={`p-1.5 transition-colors ${viewMode === 'grid' ? 'bg-brand-blue/20 text-brand-blue' : 'text-neutral-500 hover:text-neutral-300'}`}
+                    className={`grid h-8 w-8 place-items-center rounded-md transition-colors ${viewMode === 'grid' ? 'bg-[#E5C767]/14 text-[#E5C767]' : 'text-white/45 hover:text-white'}`}
                     title="Xem dạng lưới (G)"
                   >
                     <LayoutGrid size={14} />
                   </button>
                   <button
                     onClick={() => setViewMode('list')}
-                    className={`p-1.5 transition-colors ${viewMode === 'list' ? 'bg-brand-blue/20 text-brand-blue' : 'text-neutral-500 hover:text-neutral-300'}`}
+                    className={`grid h-8 w-8 place-items-center rounded-md transition-colors ${viewMode === 'list' ? 'bg-[#E5C767]/14 text-[#E5C767]' : 'text-white/45 hover:text-white'}`}
                     title="Xem dạng danh sách (G)"
                   >
                     <LayoutList size={14} />
                   </button>
                 </div>
                 {/* Compare button */}
-                {compareIds.length > 0 && (
-                  <button
-                    onClick={() => setCompareIds([])}
-                    className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-medium bg-brand-blue/[0.08] text-brand-blue border border-brand-blue/20 hover:bg-brand-blue/15 transition-colors"
-                  >
-                    <GitCompare size={12} /> So sánh ({compareIds.length})
-                  </button>
-                )}
                 {/* Sort */}
                 {deferredSearch ? (
-                  <span className="text-[11px] px-2.5 py-1.5 bg-brand-blue/[0.06] text-brand-blue border border-brand-blue/15 flex items-center gap-1 font-medium">
+                  <span className="flex h-9 items-center gap-1 rounded-lg border border-[#E5C767]/22 bg-[#E5C767]/10 px-3 text-[11px] font-medium text-[#E5C767]">
                     <Sparkles size={11} /> Theo độ liên quan
                   </span>
                 ) : (
                   <select value={sortBy} onChange={e => setSortBy(e.target.value)}
-                    className="text-[12px] px-3 py-1.5 bg-neutral-800 border border-neutral-700/40 text-neutral-300 outline-none cursor-pointer">
+                    className="h-9 cursor-pointer rounded-lg border border-white/[0.08] bg-black/40 px-3 text-[12px] text-white/72 outline-none">
                     {SORT_OPTIONS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
                   </select>
                 )}
+                <button
+                  onClick={() => setCompareIds([])}
+                  className="flex h-9 items-center gap-2 rounded-lg border border-white/[0.08] bg-black/40 px-3 text-[12px] font-medium text-white/70 transition-colors hover:border-[#E5C767]/35 hover:text-[#E5C767]"
+                >
+                  <GitCompare size={14} /> Compare ({compareIds.length}/4)
+                </button>
               </div>
             </div>
 
@@ -1501,7 +1504,7 @@ const MarketsPage: React.FC = () => {
                 <span className="text-[11px] text-neutral-400 mr-1 py-1">Active:</span>
                 {activeTags.map(tag => (
                   <button key={tag} onClick={() => toggleTag(tag)}
-                    className="flex items-center gap-1 px-2 py-1 bg-brand-blue/[0.08] text-brand-blue text-[11px] font-medium">
+                    className="flex items-center gap-1 rounded-md bg-brand-blue/[0.08] px-2 py-1 text-[11px] font-medium text-brand-blue">
                     {tag} <X size={10} />
                   </button>
                 ))}
@@ -1509,19 +1512,13 @@ const MarketsPage: React.FC = () => {
             )}
 
             {/* GRID / LIST */}
-            {loading ? (
-              <div className={viewMode === 'grid' ? 'grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4' : 'space-y-3'}>
-                {[1,2,3,4,5,6].map(i => (
+            {loading || gridSettling ? (
+              <div className={viewMode === 'grid' ? 'grid grid-cols-2 gap-3 px-5 lg:grid-cols-3 xl:grid-cols-5 xl:px-6' : 'space-y-3 px-5 xl:px-6'}>
+                {[1,2,3,4,5,6,7,8,9,10].map(i => (
                   viewMode === 'grid' ? (
-                    <div key={i} className="animate-pulse bg-neutral-900 border border-neutral-700/40 overflow-hidden">
-                      <div className="h-[180px] bg-neutral-800" />
-                      <div className="p-3.5 space-y-2.5">
-                        <div className="h-4 bg-neutral-800 rounded w-3/4" />
-                        <div className="h-3 bg-neutral-800 rounded w-full" />
-                      </div>
-                    </div>
+                    <ProductCardSkeleton key={i} />
                   ) : (
-                    <div key={i} className="animate-pulse bg-neutral-900 border border-neutral-700/40 h-[100px] flex">
+                    <div key={i} className="flex h-[100px] animate-pulse overflow-hidden rounded-lg border border-neutral-700/40 bg-neutral-900">
                       <div className="w-[180px] bg-neutral-800" />
                       <div className="flex-1 p-4 space-y-2">
                         <div className="h-4 bg-neutral-800 rounded w-1/2" />
@@ -1533,21 +1530,22 @@ const MarketsPage: React.FC = () => {
               </div>
             ) : paginatedSolutions.length > 0 ? (
               <>
-                <div className={viewMode === 'grid' ? 'grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4' : 'space-y-3'}>
-                  {paginatedSolutions.map((sol) => (
+                <div className={viewMode === 'grid' ? 'grid grid-cols-2 gap-3 px-5 lg:grid-cols-3 xl:grid-cols-5 xl:px-6' : 'space-y-3 px-5 xl:px-6'}>
+                  {paginatedSolutions.map((sol, index) => (
                     <React.Fragment key={sol.id}>
                       {viewMode === 'grid' ? (
                         <ProductCardGrid sol={sol} lang={currentLang} onNavigate={handleNavigate}
-                          isFav={favorites.includes(sol.id)} onToggleFav={(e) => toggleFavorite(e, sol.id)}
-                          onPreview={(e) => handlePreview(e, sol)}
-                          isCompare={compareIds.includes(sol.id)}
-                          onToggleCompare={(e) => toggleCompare(e, sol.id)} />
+                          isFav={favoriteIdSet.has(sol.id)} onToggleFav={toggleFavorite}
+                          onPreview={handlePreview}
+                          isCompare={compareIdSet.has(sol.id)}
+                          onToggleCompare={toggleCompare}
+                          isSpotlight={index === 0} />
                       ) : (
                         <ProductCardList sol={sol} lang={currentLang} onNavigate={handleNavigate}
-                          isFav={favorites.includes(sol.id)} onToggleFav={(e) => toggleFavorite(e, sol.id)}
-                          onPreview={(e) => handlePreview(e, sol)}
-                          isCompare={compareIds.includes(sol.id)}
-                          onToggleCompare={(e) => toggleCompare(e, sol.id)} />
+                          isFav={favoriteIdSet.has(sol.id)} onToggleFav={toggleFavorite}
+                          onPreview={handlePreview}
+                          isCompare={compareIdSet.has(sol.id)}
+                          onToggleCompare={toggleCompare} />
                       )}
                     </React.Fragment>
                   ))}
@@ -1624,7 +1622,7 @@ const MarketsPage: React.FC = () => {
         {showBackTop && (
           <motion.button
             initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            onClick={() => marketScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
             className={`fixed ${compareIds.length > 0 ? 'bottom-36' : 'bottom-8'} right-8 z-[400] w-10 h-10 bg-brand-blue text-white rounded-full shadow-lg shadow-brand-blue/20 flex items-center justify-center hover:brightness-110 active:scale-95 transition-all`}
           >
             <ChevronUp size={18} />
