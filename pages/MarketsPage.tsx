@@ -15,7 +15,6 @@ import {
   Grid3X3, Rocket, Settings, Star, Workflow
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-import { useAuth } from '../context/AuthContext';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { marketApi } from '../apis/market';
 import { Solution, Language } from '../types';
@@ -96,15 +95,15 @@ const MARKET_RAIL = [
   { label: 'Code', icon: Code2 },
 ];
 
-const FILTER_MENU: { key: string; label: string; count: number; icon: typeof ImageIcon; color: string }[] = [
-  { key: 'Image', label: 'Image', count: 132, icon: ImageIcon, color: 'text-lime-400' },
-  { key: 'Video', label: 'Video', count: 98, icon: Video, color: 'text-violet-400' },
-  { key: 'Audio', label: 'Audio', count: 64, icon: Mic, color: 'text-orange-400' },
-  { key: 'Automation', label: 'Automation', count: 76, icon: Workflow, color: 'text-yellow-400' },
-  { key: '3D', label: '3D', count: 41, icon: Box, color: 'text-cyan-400' },
-  { key: 'Productivity', label: 'Productivity', count: 55, icon: CircuitBoard, color: 'text-sky-400' },
-  { key: 'Script', label: 'Code', count: 38, icon: Code2, color: 'text-pink-400' },
-  { key: 'Other', label: 'Other', count: 27, icon: Cpu, color: 'text-white/60' },
+const FILTER_MENU: { key: string; label: string; icon: typeof ImageIcon; color: string }[] = [
+  { key: 'Image', label: 'Image', icon: ImageIcon, color: 'text-lime-400' },
+  { key: 'Video', label: 'Video', icon: Video, color: 'text-violet-400' },
+  { key: 'Audio', label: 'Audio', icon: Mic, color: 'text-orange-400' },
+  { key: 'Automation', label: 'Automation', icon: Workflow, color: 'text-yellow-400' },
+  { key: '3D', label: '3D', icon: Box, color: 'text-cyan-400' },
+  { key: 'Productivity', label: 'Productivity', icon: CircuitBoard, color: 'text-sky-400' },
+  { key: 'Script', label: 'Code', icon: Code2, color: 'text-pink-400' },
+  { key: 'Other', label: 'Other', icon: Cpu, color: 'text-white/60' },
 ];
 
 // Phân nhóm Categories theo persona user mới VN:
@@ -179,6 +178,27 @@ const getStageIcon = (sol?: Solution) => {
   if (key.includes('3d')) return Box;
   if (key.includes('code') || key.includes('script')) return Code2;
   return ImageIcon;
+};
+
+const matchesMenuCategory = (sol: Solution, key: string, lang: Language): boolean => {
+  const needle = key.toLowerCase();
+  const category = `${sol.category?.[lang] || ''} ${sol.category?.en || ''}`.toLowerCase();
+  const demoType = (sol.demoType || '').toLowerCase();
+  const tags = (sol.tags || []).join(' ').toLowerCase();
+
+  if (key === 'Other') {
+    return !FILTER_MENU.filter(item => item.key !== 'Other').some(item => matchesMenuCategory(sol, item.key, lang));
+  }
+  if (key === 'Productivity') {
+    return tags.includes('productivity') || tags.includes('business') || tags.includes('workflow');
+  }
+  if (key === 'Script') {
+    return category.includes('script') || category.includes('code') || tags.includes('script') || tags.includes('code');
+  }
+  if (key === '3D') {
+    return category.includes('3d') || demoType.includes('3d') || tags.includes('3d');
+  }
+  return category.includes(needle) || demoType.includes(needle) || tags.includes(needle);
 };
 
 const pickRandomSolutions = (items: Solution[], count = 5): Solution[] => {
@@ -405,6 +425,8 @@ const FeaturedStudioStage: React.FC<{
   const spotlightName = spotlight?.name[lang] || spotlight?.name.en || 'Đang tải studio';
   const spotlightDesc = spotlight?.description[lang] || spotlight?.description.en || 'Marketplace sẽ tự lấy danh sách app thật từ hệ thống và chọn ngẫu nhiên mỗi lần tải trang.';
   const spotlightCategory = spotlight?.category[lang] || spotlight?.category.en || 'Apps';
+  const spotlightPrice = spotlight ? (spotlight.priceCredits ? `${spotlight.priceCredits} CR` : spotlight.isFree ? 'Free' : spotlight.priceReference || 'Freemium') : 'Loading';
+  const spotlightMeta = spotlight?.models?.slice(0, 2).join(' / ') || spotlight?.tags?.slice(0, 2).join(' / ') || 'Studio';
   const spotlightInitial = spotlightName.trim().charAt(0).toUpperCase() || 'S';
   const heroDotCount = stageItems.length;
   const changeStage = (e: React.MouseEvent, offset: number) => {
@@ -459,8 +481,8 @@ const FeaturedStudioStage: React.FC<{
             {spotlightDesc}
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-4 text-[13px] text-white/55">
-            <span className="flex items-center gap-1.5 font-semibold text-[#E5C767]"><Star size={15} fill="currentColor" /> 4.9</span>
-            <span>(1.2K)</span>
+            <span className="flex items-center gap-1.5 font-semibold text-[#E5C767]"><Zap size={15} fill="currentColor" /> {spotlightPrice}</span>
+            <span>{spotlightMeta}</span>
             <span className="h-1 w-1 rounded-full bg-white/35" />
             <span>{spotlightCategory}</span>
           </div>
@@ -868,7 +890,6 @@ const ComparePanel: React.FC<{ items: Solution[]; lang: Language; onRemove: (id:
 // ═══════ MAIN PAGE ═══════
 const MarketsPage: React.FC = () => {
   const { lang } = useLanguage();
-  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const currentLang = lang as Language;
@@ -881,18 +902,8 @@ const MarketsPage: React.FC = () => {
     canonical: '/markets'
   });
 
-  // Auto-sliding promo banners — fetch from API, fallback to hardcoded
-  const [promoBanners, setPromoBanners] = useState<PromoBannerType[]>([]);
   const [promoIndex, setPromoIndex] = useState(0);
   const didMountRef = useRef(false);
-  const bannerPool = useMemo(() => promoBanners.length > 0 ? promoBanners : PROMO_BANNERS, [promoBanners]);
-  const promoBanner = bannerPool[promoIndex % bannerPool.length];
-
-  useEffect(() => {
-    promoBannersPublicApi.getActive().then(data => {
-      if (data.length > 0) setPromoBanners(data);
-    });
-  }, []);
 
   useEffect(() => {
     document.body.classList.add('overflow-hidden');
@@ -908,7 +919,7 @@ const MarketsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [gridSettling, setGridSettling] = useState(false);
   const heroStageItems = useMemo(() => (featuredSolutions.length > 0 ? featuredSolutions : solutions).slice(0, 5), [featuredSolutions, solutions]);
-  const heroCycleCount = heroStageItems.length || bannerPool.length;
+  const heroCycleCount = heroStageItems.length;
 
   // Auto-slide every 6s
   useEffect(() => {
@@ -1071,14 +1082,15 @@ const MarketsPage: React.FC = () => {
         ]);
         const nextSolutions = solRes?.data?.filter((s: Solution) => s.isActive !== false && s.id && s.slug) || [];
         const nextFeatured = featRes?.data?.filter((s: Solution) => s.isActive !== false && s.id && s.slug) || [];
-        const nextCatalog = nextSolutions.length > 0 ? [...nextSolutions].reverse() : MARKET_SHOWCASE_SOLUTIONS;
-        const showcaseSource = nextSolutions.length > 0 ? nextSolutions : nextFeatured.length > 0 ? nextFeatured : MARKET_SHOWCASE_SOLUTIONS;
+        const nextCatalog = nextSolutions.length > 0 ? [...nextSolutions].reverse() : nextFeatured;
+        const showcaseSource = nextSolutions.length > 0 ? nextSolutions : nextFeatured;
         setSolutions(nextCatalog);
         setFeaturedSolutions(pickRandomSolutions(showcaseSource, 5));
+        setPromoIndex(0);
       } catch (err) {
         console.error('Markets fetch:', err);
-        setSolutions(MARKET_SHOWCASE_SOLUTIONS);
-        setFeaturedSolutions(pickRandomSolutions(MARKET_SHOWCASE_SOLUTIONS, 5));
+        setSolutions([]);
+        setFeaturedSolutions([]);
       } finally {
         setLoading(false);
       }
@@ -1240,6 +1252,13 @@ const MarketsPage: React.FC = () => {
   const compareIdSet = useMemo(() => new Set(compareIds), [compareIds]);
   const solutionById = useMemo(() => new Map(solutions.map(sol => [sol.id, sol])), [solutions]);
   const compareSolutions = useMemo(() => compareIds.map(id => solutionById.get(id)).filter(Boolean) as Solution[], [compareIds, solutionById]);
+  const categoryCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    FILTER_MENU.forEach(item => {
+      counts.set(item.key, solutions.filter(sol => matchesMenuCategory(sol, item.key, currentLang)).length);
+    });
+    return counts;
+  }, [solutions, currentLang]);
 
   // ═══════ SIDEBAR ═══════
   // ⚡ JSX biến (KHÔNG phải component) — tránh tạo new component identity mỗi render
@@ -1260,7 +1279,7 @@ const MarketsPage: React.FC = () => {
           {FILTER_MENU.map((item) => {
             const Icon = item.icon;
             const isActive = activeCategory === item.key;
-              const count = item.count;
+            const count = categoryCounts.get(item.key) ?? 0;
             return (
               <button
                 key={item.key}
@@ -1429,17 +1448,12 @@ const MarketsPage: React.FC = () => {
           {/* RIGHT CONTENT */}
           <div ref={marketScrollRef} className="h-full min-w-0 overflow-y-auto overscroll-contain pb-10 lg:ml-[316px]">
             <FeaturedStudioStage
-              promo={promoBanner}
               items={heroStageItems}
               lang={currentLang}
               activeIndex={promoIndex}
-              bannerCount={heroCycleCount}
               onNavigate={(target) => navigate(target.startsWith('/') ? target : `/product/${target}`)}
               onOpenFilters={(e) => { e.stopPropagation(); setMobileSidebar(true); }}
               onSelectBanner={(e, index) => { e.stopPropagation(); setPromoIndex(index); }}
-              onPickCategory={handleQuickPath}
-              searchValue={inputValue}
-              onSearchChange={setInputValue}
               activeFilterCount={activeFilterCount}
             />
 
