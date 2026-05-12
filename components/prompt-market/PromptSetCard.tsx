@@ -2,62 +2,30 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Code2,
-  PenTool,
-  Megaphone,
-  Palette,
-  Briefcase,
-  GraduationCap,
-  Sparkles,
-  ShoppingBag,
-  FileText,
-  User,
-  TrendingUp,
-  Star,
-  Heart,
-  Eye,
   BadgeCheck,
   Cpu,
+  Eye,
+  FileText,
+  Heart,
+  ImageIcon,
+  Package,
+  PlayCircle,
+  ShoppingBag,
+  Sparkles,
+  Star,
+  User,
+  Video,
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { promptMarketApi } from '../../apis/prompt-market';
-import type { PromptSet } from '../../types';
+import type { AIModel, LocalizedString, PromptSet } from '../../types';
 
-const CATEGORY_ICONS: Record<PromptSet['category'], React.ReactNode> = {
-  coding: <Code2 className="w-5 h-5" />,
-  writing: <PenTool className="w-5 h-5" />,
-  marketing: <Megaphone className="w-5 h-5" />,
-  design: <Palette className="w-5 h-5" />,
-  business: <Briefcase className="w-5 h-5" />,
-  education: <GraduationCap className="w-5 h-5" />,
-  other: <Sparkles className="w-5 h-5" />,
-};
-
-const CATEGORY_GRADIENTS: Record<PromptSet['category'], string> = {
-  coding: 'from-brand-blue/30 via-brand-blue/10 to-neutral-900',
-  writing: 'from-violet-500/30 via-violet-500/10 to-neutral-900',
-  marketing: 'from-pink-500/30 via-pink-500/10 to-neutral-900',
-  design: 'from-amber-500/30 via-amber-500/10 to-neutral-900',
-  business: 'from-emerald-500/30 via-emerald-500/10 to-neutral-900',
-  education: 'from-blue-500/30 via-blue-500/10 to-neutral-900',
-  other: 'from-brand-blue/25 via-brand-blue/10 to-neutral-900',
-};
-
-const MODEL_LABELS: Partial<Record<string, string>> = {
-  'gpt-4': 'GPT-4',
-  'gpt-4o': 'GPT-4o',
-  'gpt-5': 'GPT-5',
-  'claude-3': 'Claude 3',
-  'claude-4': 'Claude 4',
-  'gemini': 'Gemini',
-  'gemini-2': 'Gemini 2',
-  'midjourney': 'MJ',
-  'dall-e-3': 'DALL·E',
-  'stable-diffusion': 'SD',
-  'flux': 'Flux',
-  'llama': 'Llama',
-  'mistral': 'Mistral',
+type CardMedia = {
+  key: string;
+  type: 'image' | 'video';
+  url: string;
+  poster?: string;
 };
 
 interface Props {
@@ -67,232 +35,257 @@ interface Props {
   initialWishlisted?: boolean;
 }
 
+const MODEL_LABELS: Partial<Record<AIModel, string>> = {
+  'Nano Banana Pro': 'Banana Pro',
+  'Nano Banana 2': 'Banana 2',
+  'GPT Image': 'GPT Image',
+  'Imagen 4': 'Imagen 4',
+  'Midjourney V7': 'Midjourney V7',
+  'Niji V7': 'Niji V7',
+  'FLUX.1 Kontext': 'Flux Kontext',
+  'Seedream 4.0': 'Seedream 4',
+  'Stable Diffusion 3.5': 'SD 3.5',
+  'Ideogram 3.0': 'Ideogram 3',
+  'Runway Gen-4.5': 'Runway 4.5',
+  'Runway Gen-4': 'Runway 4',
+  'Veo 3.1': 'Veo 3.1',
+  'Kling 3.0': 'Kling 3',
+  'Kling 3.0 Omni': 'Kling Omni',
+  'Seedance 2.0': 'Seedance 2',
+  'Wan 2.2': 'Wan 2.2',
+  midjourney: 'Midjourney',
+  flux: 'Flux',
+  gemini: 'Gemini',
+  'gemini-2': 'Gemini 2',
+  'gpt-4o': 'GPT-4o',
+  'gpt-5': 'GPT-5',
+};
+
+function localize(value: string | LocalizedString | Record<string, string> | undefined, lang: string): string {
+  if (!value) return '';
+  if (typeof value === 'string') return value;
+  const localized = value as Record<string, string | undefined>;
+  return localized[lang] || localized.en || '';
+}
+
+function compact(value: number): string {
+  if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+  if (value >= 1000) return `${(value / 1000).toFixed(value >= 10000 ? 0 : 1)}K`;
+  return String(value);
+}
+
+function mediaFor(promptSet: PromptSet): CardMedia[] {
+  const seen = new Set<string>();
+  const items: Array<CardMedia | null> = [
+    promptSet.coverImage ? { key: `${promptSet._id}-cover`, type: 'image', url: promptSet.coverImage } : null,
+    ...(promptSet.examples ?? []).flatMap((example, index) => [
+      example.image ? { key: `${promptSet._id}-image-${index}`, type: 'image' as const, url: example.image } : null,
+      example.video ? { key: `${promptSet._id}-video-${index}`, type: 'video' as const, url: example.video, poster: example.image || promptSet.coverImage } : null,
+    ]),
+  ];
+
+  return items.filter((item): item is CardMedia => {
+    if (!item) return false;
+    const key = `${item.type}:${item.url}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function modelLabel(model: AIModel): string {
+  return MODEL_LABELS[model] ?? model;
+}
+
 export default function PromptSetCard({ promptSet, index = 0, variant = 'default', initialWishlisted = false }: Props) {
-  const { t, lang } = useLanguage();
+  const { lang } = useLanguage();
   const { isAuthenticated } = useAuth();
   const [wishlisted, setWishlisted] = useState(initialWishlisted);
   const [wishLoading, setWishLoading] = useState(false);
 
-  const {
-    _id,
-    slug,
-    title,
-    description,
-    category,
-    tags,
-    coverImage,
-    priceSKT,
-    isFree,
-    prompts,
-    purchaseCount,
-    sellerId,
-    featured,
-    averageRating,
-    reviewCount,
-    viewCount,
-    models,
-  } = promptSet;
+  const title = localize(promptSet.title, lang);
+  const description = localize(promptSet.description, lang);
+  const sellerName = typeof promptSet.sellerId === 'object' && promptSet.sellerId !== null ? promptSet.sellerId.name : 'Sky Creator';
+  const sellerAvatar = typeof promptSet.sellerId === 'object' && promptSet.sellerId !== null ? promptSet.sellerId.avatar : undefined;
+  const promptCount = promptSet.promptCount ?? promptSet.prompts?.length ?? 0;
+  const media = mediaFor(promptSet);
+  const mainMedia = media.find(item => item.type === 'video') ?? media[0];
+  const thumbnails = media.filter(item => item.type === 'image' || item.poster).slice(0, 4);
+  const extraCount = Math.max(media.length - thumbnails.length, 0);
+  const imageCount = media.filter(item => item.type === 'image').length;
+  const videoCount = media.filter(item => item.type === 'video').length;
+  const hasVideo = videoCount > 0;
+  const visibleTags = (promptSet.tags ?? []).slice(0, 2);
+  const visibleModels = (promptSet.models ?? []).slice(0, 3);
 
-  const localizedTitle =
-    (typeof title === 'object' ? title[lang] || title.en : title) || '';
-  const localizedDesc =
-    (typeof description === 'object'
-      ? description[lang] || description.en
-      : description) || '';
-
-  const sellerName =
-    typeof sellerId === 'object' && sellerId !== null ? sellerId.name : null;
-  const sellerAvatar =
-    typeof sellerId === 'object' && sellerId !== null ? sellerId.avatar : undefined;
-
-  const safeTags = tags ?? [];
-  const promptCount = promptSet.promptCount ?? (prompts ? prompts.length : 0);
-  const visibleTags = safeTags.slice(0, 2);
-  const visibleModels = (models ?? []).slice(0, 2);
-
-  const handleWishlistToggle = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleWishlistToggle = async (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
     if (!isAuthenticated || wishLoading) return;
     setWishLoading(true);
-    const res = await promptMarketApi.toggleWishlist(_id);
+    const res = await promptMarketApi.toggleWishlist(promptSet._id);
     if (res.success) setWishlisted(res.wishlisted);
     setWishLoading(false);
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 18 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.5, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -3, transition: { duration: 0.2, ease: 'easeOut' } }}
+      transition={{ duration: 0.42, delay: Math.min(index * 0.035, 0.2), ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -4 }}
       className="group h-full"
     >
       <Link
-        to={`/prompt-market/${slug}`}
-        className="flex flex-col h-full bg-[var(--atlas-bg-panel)] border border-white/[0.08] overflow-hidden transition-all duration-300 hover:border-brand-blue/30 hover:shadow-[0_8px_32px_rgba(201,168,76,0.1)]"
+        to={`/prompt-market/${promptSet.slug}`}
+        className={`flex h-full flex-col overflow-hidden border bg-[#101316] shadow-[0_18px_48px_rgba(0,0,0,0.24)] transition-all duration-300 ${
+          variant === 'featured' || promptSet.featured
+            ? 'border-brand-blue/35 hover:border-brand-blue/70'
+            : 'border-white/[0.08] hover:border-brand-blue/35'
+        }`}
       >
-        {/* Cover */}
-        <div className="relative aspect-[3/2] overflow-hidden">
-          {coverImage ? (
+        <div className="relative h-[205px] overflow-hidden bg-black">
+          {mainMedia?.type === 'video' ? (
+            <video
+              src={mainMedia.url}
+              poster={mainMedia.poster || promptSet.coverImage}
+              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+              muted
+              playsInline
+              preload="metadata"
+            />
+          ) : mainMedia ? (
             <img
-              src={coverImage}
-              alt={localizedTitle}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+              src={mainMedia.url}
+              alt={title}
+              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+              loading="lazy"
             />
           ) : (
-            <div
-              className={`w-full h-full bg-gradient-to-br ${CATEGORY_GRADIENTS[category]} flex items-center justify-center`}
-            >
-              <div className="text-white/50 group-hover:text-brand-blue/60 transition-colors duration-300">
-                {CATEGORY_ICONS[category]}
-              </div>
+            <div className="grid h-full w-full place-items-center bg-gradient-to-br from-brand-blue/12 to-black">
+              <Package className="h-8 w-8 text-brand-blue/38" />
             </div>
           )}
 
-          {/* Overlay gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/78 via-transparent to-black/20" />
 
-          {/* Featured badge */}
-          {(featured || variant === 'featured') && (
-            <span className="absolute top-2.5 left-2.5 px-2 py-0.5 bg-gradient-to-r from-brand-blue to-violet-500 text-white text-[9px] font-bold tracking-wide flex items-center gap-1 shadow-lg">
-              <TrendingUp className="w-2.5 h-2.5" />
-              Featured
+          {hasVideo && (
+            <span className="absolute left-3 top-3 grid h-8 w-8 place-items-center border border-white/20 bg-black/55 text-white backdrop-blur">
+              <Video className="h-4 w-4" />
             </span>
           )}
 
-          {/* Category badge */}
-          <span className="absolute top-2.5 right-2.5 px-2 py-0.5 bg-black/60 backdrop-blur-sm border border-white/[0.08] text-[10px] font-medium text-white/70 capitalize">
-            {category}
-          </span>
+          {(promptSet.featured || variant === 'featured') && (
+            <span className="absolute right-3 top-3 inline-flex items-center gap-1 border border-brand-blue/40 bg-brand-blue/18 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-brand-blue backdrop-blur">
+              <Sparkles className="h-3 w-3" /> Hot
+            </span>
+          )}
 
-          {/* Wishlist heart */}
           {isAuthenticated && (
             <button
               onClick={handleWishlistToggle}
               disabled={wishLoading}
-              className={`absolute top-2.5 left-2.5 z-10 w-8 h-8 backdrop-blur-sm border flex items-center justify-center transition-all duration-200 ${
+              className={`absolute bottom-[54px] right-3 z-10 grid h-8 w-8 place-items-center border backdrop-blur transition ${
                 wishlisted
-                  ? 'bg-red-500/20 border-red-500/30 text-red-400'
-                  : 'bg-black/50 border-white/[0.08] text-white/40 opacity-0 group-hover:opacity-100 hover:text-red-400 hover:border-red-500/30'
-              } ${wishlisted ? 'opacity-100' : ''}`}
+                  ? 'border-red-400/45 bg-red-500/18 text-red-300'
+                  : 'border-white/15 bg-black/55 text-white/62 opacity-0 hover:border-red-400/35 hover:text-red-300 group-hover:opacity-100'
+              }`}
             >
-              <Heart className={`w-3.5 h-3.5 ${wishlisted ? 'fill-red-400' : ''}`} />
+              <Heart className={`h-4 w-4 ${wishlisted ? 'fill-current' : ''}`} />
             </button>
           )}
 
-          {/* Price pill */}
-          <div className="absolute bottom-2.5 right-2.5">
-            <span
-              className={`px-2.5 py-1 text-xs font-bold backdrop-blur-sm shadow-lg ${
-                isFree
-                  ? 'bg-emerald-500 text-white'
-                  : 'bg-black/70 border border-white/[0.08] text-white'
-              }`}
-            >
-              {isFree ? t('free') || 'Free' : `${priceSKT} SKT`}
-            </span>
-          </div>
-        </div>
-
-        {/* Body */}
-        <div className="flex flex-col flex-1 p-4 gap-2.5">
-          {/* Title */}
-          <h3 className="text-[13px] font-bold text-white/80 leading-snug line-clamp-2 group-hover:text-brand-blue transition-colors duration-200">
-            {localizedTitle}
-          </h3>
-
-          {/* Description */}
-          {localizedDesc && (
-            <p className="text-[12px] text-white/50 line-clamp-2 leading-relaxed">
-              {localizedDesc}
-            </p>
-          )}
-
-          {/* Tags */}
-          {visibleTags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mt-0.5">
-              {visibleTags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-2 py-0.5 bg-white/[0.04] border border-white/[0.08] text-[10px] text-white/60 font-medium"
-                >
-                  {tag}
-                </span>
+          {thumbnails.length > 0 && (
+            <div className="absolute bottom-0 left-0 right-0 flex gap-1.5 bg-black/42 p-2 backdrop-blur-sm">
+              {thumbnails.map(item => (
+                <div key={item.key} className="relative h-10 flex-1 overflow-hidden border border-white/[0.12] bg-white/[0.05]">
+                  <img src={item.poster || item.url} alt="" className="h-full w-full object-cover" loading="lazy" />
+                  {item.type === 'video' && <PlayCircle className="absolute left-1.5 top-1.5 h-3.5 w-3.5 text-white drop-shadow" />}
+                </div>
               ))}
-              {safeTags.length > 2 && (
-                <span className="px-1.5 py-0.5 text-[10px] text-white/40">
-                  +{safeTags.length - 2}
-                </span>
-              )}
-            </div>
-          )}
-
-          {/* AI Model compatibility */}
-          {visibleModels.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {visibleModels.map((m) => (
-                <span
-                  key={m}
-                  className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-white/[0.04] border border-white/[0.08] text-[10px] text-white/60 font-medium"
-                >
-                  <Cpu className="w-2.5 h-2.5" />
-                  {MODEL_LABELS[m] ?? m}
-                </span>
-              ))}
-              {(models ?? []).length > 2 && (
-                <span className="px-1 py-0.5 text-[10px] text-white/40">
-                  +{(models ?? []).length - 2}
-                </span>
-              )}
-            </div>
-          )}
-
-          {/* Footer */}
-          <div className="mt-auto pt-3 border-t border-white/[0.08] flex items-center justify-between">
-            {/* Seller */}
-            <div className="flex items-center gap-2 min-w-0">
-              {sellerAvatar ? (
-                <img
-                  src={sellerAvatar}
-                  alt={sellerName ?? ''}
-                  className="w-5 h-5 rounded-full object-cover ring-1 ring-white/[0.08]"
-                />
-              ) : (
-                <div className="w-5 h-5 rounded-full bg-white/[0.04] flex items-center justify-center ring-1 ring-white/[0.08]">
-                  <User className="w-2.5 h-2.5 text-white/50" />
+              {extraCount > 0 && (
+                <div className="grid h-10 w-12 place-items-center border border-white/[0.12] bg-black/55 text-xs font-semibold text-white/85">
+                  +{extraCount}
                 </div>
               )}
-              {sellerName && (
-                <span className="text-[11px] text-white/50 truncate max-w-[80px] flex items-center gap-1">
-                  {sellerName}
-                  <BadgeCheck className="w-3 h-3 text-brand-blue/60 flex-shrink-0" />
-                </span>
-              )}
             </div>
+          )}
+        </div>
 
-            {/* Stats */}
-            <div className="flex items-center gap-2.5 text-[11px] text-white/50">
-              {reviewCount > 0 && (
-                <span className="flex items-center gap-1 text-amber-500/80" title="Rating">
-                  <Star className="w-3 h-3 fill-amber-500/70" />
-                  {averageRating.toFixed(1)}
+        <div className="flex flex-1 flex-col p-3.5">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <span className="border border-brand-blue/20 bg-brand-blue/10 px-2 py-0.5 text-[10px] font-semibold capitalize text-brand-blue">
+              {promptSet.category}
+            </span>
+            <span className={`text-[13px] font-bold ${promptSet.isFree ? 'text-emerald-400' : 'text-brand-blue'}`}>
+              {promptSet.isFree ? 'Free' : `${promptSet.priceSKT} SKT`}
+            </span>
+          </div>
+
+          <h3 className="line-clamp-2 text-[15px] font-semibold leading-snug text-white/90 transition-colors group-hover:text-brand-blue">
+            {title}
+          </h3>
+          <p className="mt-2 line-clamp-2 min-h-[38px] text-[12px] leading-[19px] text-white/50">
+            {description}
+          </p>
+
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {visibleModels.map(model => (
+              <span key={model} className="inline-flex items-center gap-1 border border-white/[0.08] bg-white/[0.035] px-2 py-1 text-[10px] text-white/60">
+                <Cpu className="h-3 w-3 text-brand-blue" />
+                {modelLabel(model)}
+              </span>
+            ))}
+            {visibleTags.map(tag => (
+              <span key={tag} className="border border-white/[0.08] bg-white/[0.025] px-2 py-1 text-[10px] text-white/48">
+                #{tag}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-auto border-t border-white/[0.08] pt-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-2">
+                {sellerAvatar ? (
+                  <img src={sellerAvatar} alt="" className="h-7 w-7 rounded-full border border-white/[0.12] object-cover" loading="lazy" />
+                ) : (
+                  <div className="grid h-7 w-7 place-items-center rounded-full border border-white/[0.08] bg-white/[0.04]">
+                    <User className="h-3.5 w-3.5 text-white/52" />
+                  </div>
+                )}
+                <span className="flex min-w-0 items-center gap-1 text-[12px] text-white/58">
+                  <span className="truncate">{sellerName}</span>
+                  <BadgeCheck className="h-3 w-3 shrink-0 text-brand-blue" />
                 </span>
-              )}
-              {viewCount != null && viewCount > 0 && (
-                <span className="flex items-center gap-1" title="Views">
-                  <Eye className="w-3 h-3" />
-                  {viewCount > 999 ? `${(viewCount / 1000).toFixed(1)}k` : viewCount}
+              </div>
+              <div className="flex shrink-0 items-center gap-2 text-[11px] text-white/50">
+                <span className="inline-flex items-center gap-1 text-brand-blue">
+                  <Star className="h-3 w-3 fill-current" />
+                  {promptSet.averageRating?.toFixed(1) || '4.8'}
                 </span>
-              )}
-              <span className="flex items-center gap-1" title="Prompts">
-                <FileText className="w-3 h-3" />
+                <span className="inline-flex items-center gap-1">
+                  <Eye className="h-3 w-3" />
+                  {compact(promptSet.viewCount || 0)}
+                </span>
+              </div>
+            </div>
+            <div className="mt-2 flex items-center justify-between text-[11px] text-white/45">
+              <span className="inline-flex items-center gap-1">
+                <FileText className="h-3 w-3" />
                 {promptCount}
               </span>
-              <span className="flex items-center gap-1" title="Purchases">
-                <ShoppingBag className="w-3 h-3" />
-                {purchaseCount}
+              <span className="inline-flex items-center gap-1">
+                <ShoppingBag className="h-3 w-3" />
+                {compact(promptSet.purchaseCount || 0)}
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <ImageIcon className="h-3 w-3" />
+                {imageCount}
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <Video className="h-3 w-3" />
+                {videoCount}
               </span>
             </div>
           </div>

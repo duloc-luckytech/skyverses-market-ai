@@ -90,6 +90,39 @@ const itemVariants = {
   },
 };
 
+const sectionRevealVariants = {
+  hidden: { opacity: 0, y: 28 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.62, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+  },
+};
+
+const filterPanelVariants = {
+  hidden: { opacity: 0, x: -18 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+      staggerChildren: 0.035,
+      delayChildren: 0.08,
+    },
+  },
+};
+
+const chipVariants = {
+  hidden: { opacity: 0, scale: 0.94, y: 6 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+  },
+};
+
 // ─── Helper: localize PromptSet fields ─────────────────────────────────────
 
 function localize(val: string | LocalizedString | Record<string, string> | undefined, lang: string): string {
@@ -107,6 +140,21 @@ function shufflePromptSets(items: PromptSet[]): PromptSet[] {
   return shuffled;
 }
 
+function compactNumber(value: number): string {
+  if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+  if (value >= 1000) return `${(value / 1000).toFixed(value >= 10000 ? 0 : 1)}K`;
+  return String(value);
+}
+
+function getPromptSetThumb(promptSet: PromptSet): { url?: string; hasVideo: boolean } {
+  const videoExample = (promptSet.examples ?? []).find(ex => ex.video);
+  const imageExample = (promptSet.examples ?? []).find(ex => ex.image);
+  return {
+    url: videoExample?.image || imageExample?.image || promptSet.coverImage,
+    hasVideo: Boolean(videoExample?.video),
+  };
+}
+
 // ─── Collapsible Filter Section ───────────────────────────────────────────
 
 function FilterSection({
@@ -121,7 +169,7 @@ function FilterSection({
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <div className="border-b border-white/[0.08] last:border-b-0">
+    <motion.div variants={itemVariants} className="border-b border-white/[0.08] last:border-b-0">
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between py-3.5 text-[13px] font-semibold text-white/60 hover:text-white/80 transition-colors"
@@ -146,7 +194,7 @@ function FilterSection({
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }
 
@@ -164,12 +212,14 @@ function FilterOptionButton({
   onClick: () => void;
 }) {
   return (
-    <button
+    <motion.button
       onClick={onClick}
-      className={`w-full flex items-center justify-between gap-2 px-3 py-2 text-[13px] font-medium transition-all duration-150 ${
+      whileHover={{ x: 3 }}
+      whileTap={{ scale: 0.985 }}
+      className={`w-full flex items-center justify-between gap-2 border px-3 py-2 text-[12px] font-medium transition-all duration-150 ${
         active
-          ? 'bg-brand-blue/[0.1] text-brand-blue border border-brand-blue/[0.15]'
-          : 'text-white/50 hover:text-white/70 hover:bg-white/[0.04] border border-transparent'
+          ? 'bg-brand-blue/[0.12] text-brand-blue border-brand-blue/45 shadow-[0_0_18px_rgba(201,168,76,0.08)]'
+          : 'text-white/50 hover:text-white/74 hover:bg-white/[0.035] border-white/[0.07]'
       }`}
     >
       <span className="min-w-0 flex items-center gap-2 text-left">
@@ -177,9 +227,9 @@ function FilterOptionButton({
         <span className="truncate">{label}</span>
       </span>
       {typeof count === 'number' && (
-        <span className="text-[10px] text-white/35 tabular-nums">{count}</span>
+          <span className="text-[10px] text-white/35 tabular-nums">{count}</span>
       )}
-    </button>
+    </motion.button>
   );
 }
 
@@ -809,48 +859,53 @@ function AnimatedCounter({ value, suffix = '' }: { value: number; suffix?: strin
 // ─── Trending Token Card (horizontal scroll) ──────────────────────────────
 
 function TrendingPromptPill({ promptSet, index }: { promptSet: PromptSet; index: number }) {
-  const { t, lang } = useLanguage();
+  const { lang } = useLanguage();
   const title = localize(promptSet.title, lang);
-  const sellerName =
-    typeof promptSet.sellerId === 'object' && promptSet.sellerId !== null
-      ? promptSet.sellerId.name
-      : '';
+  const thumb = getPromptSetThumb(promptSet);
+  const statsValue = promptSet.purchaseCount || promptSet.viewCount || 0;
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 30 }}
+      initial={{ opacity: 0, x: 24 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.4, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
     >
       <Link
         to={`/prompt-market/${promptSet.slug}`}
-        className="flex items-center gap-3 bg-[var(--atlas-bg-panel)] border border-white/[0.08] hover:border-brand-blue/30 px-4 py-3 min-w-[240px] sm:min-w-[280px] flex-shrink-0 transition-all duration-200 group hover:shadow-[0_4px_20px_rgba(201,168,76,0.08)]"
+        className="group flex h-[62px] min-w-[260px] flex-shrink-0 items-center gap-3 border border-white/[0.08] bg-[#0f1317]/90 p-1.5 transition-all duration-200 hover:border-brand-blue/35 hover:bg-[#151a20] hover:shadow-[0_4px_20px_rgba(201,168,76,0.08)]"
       >
-        {/* Avatar */}
-        <div className="w-10 h-10 overflow-hidden flex-shrink-0 border border-white/[0.08]">
-          {promptSet.coverImage ? (
-            <img src={promptSet.coverImage} alt="" className="w-full h-full object-cover" />
+        <div className="grid h-11 w-5 place-items-center bg-brand-blue text-[11px] font-bold text-black">
+          {index + 1}
+        </div>
+
+        <div className="relative h-11 w-[90px] flex-shrink-0 overflow-hidden border border-white/[0.08] bg-white/[0.04]">
+          {thumb.url ? (
+            <img src={thumb.url} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-brand-blue/15 to-[var(--atlas-bg-panel)] flex items-center justify-center">
+            <div className="flex h-full w-full items-center justify-center bg-brand-blue/10">
               <Sparkles className="w-4 h-4 text-brand-blue/40" />
+            </div>
+          )}
+          {thumb.hasVideo && (
+            <div className="absolute inset-0 grid place-items-center bg-black/18">
+              <PlayCircle className="h-4 w-4 text-white drop-shadow" />
             </div>
           )}
         </div>
 
-        {/* Text */}
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-white/80 truncate group-hover:text-brand-blue transition-colors">
+          <p className="truncate text-[12px] font-semibold text-white/82 transition-colors group-hover:text-brand-blue">
             {title}
           </p>
-          <p className="text-xs text-white/50 truncate">{sellerName}</p>
-        </div>
-
-        {/* Price badge */}
-        <div className="flex-shrink-0">
-          <span className={`text-xs font-bold ${promptSet.isFree ? 'text-emerald-500' : 'text-white'}`}>
-            {promptSet.isFree ? t('prompt_market.free_label') : `${promptSet.priceSKT} SKT`}
-          </span>
+          <div className="mt-1 flex items-center gap-2 text-[10px] text-white/46">
+            <span>{CATEGORY_LABELS[promptSet.category]?.[lang] ?? promptSet.category}</span>
+            <span className="inline-flex items-center gap-1 text-brand-blue">
+              <Star className="h-3 w-3 fill-current" />
+              {promptSet.averageRating?.toFixed(1) || '4.8'}
+            </span>
+            <span>{compactNumber(statsValue)}</span>
+          </div>
         </div>
       </Link>
     </motion.div>
@@ -1099,22 +1154,33 @@ const PromptMarketPage: React.FC = () => {
   // ── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[#141418] text-white font-[Manrope,sans-serif] pt-24 md:pt-28">
+    <div className="min-h-screen bg-[#080a0d] text-white font-[Manrope,sans-serif] pt-24 md:pt-28">
 
       {/* ═══════════════════════════════════════════
        * FEATURED BANNER (full width, above sidebar layout)
        * ═══════════════════════════════════════════ */}
       {showFeatured && (
-        <section className="pb-2">
+        <motion.section
+          variants={sectionRevealVariants}
+          initial="hidden"
+          animate="visible"
+          className="pb-2"
+        >
           <FeaturedBanner sets={bannerSets} loading={featuredLoading} stats={marketStats} statsLoading={statsLoading} />
-        </section>
+        </motion.section>
       )}
 
       {/* ═══════════════════════════════════════════
        * TRENDING PROMPTS — horizontal scroll row
        * ═══════════════════════════════════════════ */}
       {showFeatured && featuredSets.length > 0 && (
-        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 py-5">
+        <motion.section
+          variants={sectionRevealVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-80px' }}
+          className="max-w-[1500px] mx-auto px-4 sm:px-6 py-5"
+        >
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1128,7 +1194,7 @@ const PromptMarketPage: React.FC = () => {
                 </div>
                 <div>
                   <h2 className="text-sm font-bold text-white/80">
-                    {t('prompt_market.trending_tokens')}
+                    {t('prompt_market.trending_tokens') || 'Bộ prompt đang thịnh hành'}
                   </h2>
                   <p className="text-[11px] text-white/50">
                     {t('prompt_market.trending_tokens_desc')}
@@ -1161,19 +1227,31 @@ const PromptMarketPage: React.FC = () => {
               ))}
             </div>
           </motion.div>
-        </section>
+        </motion.section>
       )}
 
       {/* Divider */}
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
+      <motion.div
+        variants={sectionRevealVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="max-w-[1500px] mx-auto px-4 sm:px-6"
+      >
         <div className="h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
-      </div>
+      </motion.div>
 
       {/* ═══════════════════════════════════════════
        * MAIN LAYOUT: Left Sidebar + Content
        * ═══════════════════════════════════════════ */}
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-5 pb-16">
-        <div className="flex gap-6">
+      <motion.div
+        variants={sectionRevealVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-60px' }}
+        className="max-w-[1500px] mx-auto px-4 sm:px-6 py-5 pb-16 lg:pb-5"
+      >
+        <div className="flex gap-6 lg:items-start">
           {/* ── LEFT SIDEBAR — Filters ── */}
           {/* Mobile overlay */}
           <AnimatePresence>
@@ -1190,16 +1268,22 @@ const PromptMarketPage: React.FC = () => {
 
           <aside
             className={`
-              fixed lg:static inset-y-0 left-0 z-50 lg:z-auto
-              w-[280px] lg:w-[240px] xl:w-[260px] flex-shrink-0
-              bg-[#141418]/95 lg:bg-transparent backdrop-blur-xl lg:backdrop-blur-none
+              fixed lg:sticky inset-y-0 lg:inset-y-auto left-0 z-50 lg:z-30 lg:top-[88px] lg:self-start
+              w-[280px] lg:w-[250px] xl:w-[270px] flex-shrink-0
+              lg:h-[calc(100vh-104px)]
+              bg-[#080a0d]/95 lg:bg-transparent backdrop-blur-xl lg:backdrop-blur-none
               border-r border-white/[0.08] lg:border-r-0
               transform transition-transform duration-300 lg:transform-none
               ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-              overflow-y-auto
+              overflow-y-auto lg:overflow-visible
             `}
           >
-            <div className="p-4 lg:p-0 lg:pr-2 lg:sticky lg:top-[72px]">
+            <motion.div
+              variants={filterPanelVariants}
+              initial="hidden"
+              animate="visible"
+              className="p-4 lg:p-0 lg:pr-2 lg:flex lg:h-full lg:flex-col"
+            >
               {/* Mobile close */}
               <div className="flex items-center justify-between mb-4 lg:hidden">
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
@@ -1231,7 +1315,10 @@ const PromptMarketPage: React.FC = () => {
               </div>
 
               {/* Filter container */}
-              <div className="lg:bg-[var(--atlas-bg-panel)] lg:border lg:border-white/[0.08] lg:p-4">
+              <motion.div
+                variants={filterPanelVariants}
+                className="lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:overscroll-contain lg:bg-[#0d1014]/92 lg:border lg:border-white/[0.08] lg:p-4 lg:shadow-[0_24px_80px_rgba(0,0,0,0.22)] scrollbar-hide [scrollbar-width:none] [-ms-overflow-style:none]"
+              >
                 {/* ─ Category filter ─ */}
                 <FilterSection title={lang === 'vi' ? 'Danh mục showcase' : 'Showcase category'} defaultOpen={true}>
                   <div className="space-y-0.5">
@@ -1370,7 +1457,7 @@ const PromptMarketPage: React.FC = () => {
                     ))}
                   </div>
                 </FilterSection>
-              </div>
+              </motion.div>
 
               {/* Reset all (mobile) */}
               {hasActiveFilters && (
@@ -1384,13 +1471,19 @@ const PromptMarketPage: React.FC = () => {
                   {t('prompt_market.reset_filters')}
                 </button>
               )}
-            </div>
+            </motion.div>
           </aside>
 
           {/* ── RIGHT — Main Content ── */}
-          <div className="flex-1 min-w-0">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="flex-1 min-w-0 lg:h-[calc(100vh-104px)] lg:overflow-y-auto lg:overscroll-contain lg:pr-2 scrollbar-hide [scrollbar-width:none] [-ms-overflow-style:none]"
+          >
             {/* ── Search bar + Sell CTA ── */}
             <motion.div
+              variants={itemVariants}
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
@@ -1436,6 +1529,7 @@ const PromptMarketPage: React.FC = () => {
 
             {/* ── Toolbar: results + active filters + sort + view toggle ── */}
             <motion.div
+              variants={itemVariants}
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
@@ -1737,6 +1831,7 @@ const PromptMarketPage: React.FC = () => {
             {/* ── Pagination ── */}
             {!loading && pagination.totalPages > 1 && (
               <motion.div
+                variants={itemVariants}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
@@ -1791,6 +1886,7 @@ const PromptMarketPage: React.FC = () => {
 
             {/* ── Seller CTA Banner ── */}
             <motion.div
+              variants={itemVariants}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
@@ -1823,9 +1919,9 @@ const PromptMarketPage: React.FC = () => {
                 </Link>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
