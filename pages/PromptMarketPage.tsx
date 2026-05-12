@@ -70,6 +70,7 @@ const SORT_LABELS: Record<SortOption, Record<string, string>> = {
 
 const PAGE_LIMIT = 12;
 const FILTER_CATALOG_LIMIT = 160;
+const EASE_OUT_EXPO = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
 // ─── Stagger animation variants ─────────────────────────────────────────────
 
@@ -77,16 +78,27 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.06, delayChildren: 0.1 },
+    transition: { staggerChildren: 0.055, delayChildren: 0.08 },
+  },
+  exit: {
+    opacity: 0,
+    transition: { duration: 0.18, ease: EASE_OUT_EXPO },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 18, scale: 0.985 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+    scale: 1,
+    transition: { duration: 0.46, ease: EASE_OUT_EXPO },
+  },
+  exit: {
+    opacity: 0,
+    y: -10,
+    scale: 0.985,
+    transition: { duration: 0.18, ease: EASE_OUT_EXPO },
   },
 };
 
@@ -95,7 +107,7 @@ const sectionRevealVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.62, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+    transition: { duration: 0.62, ease: EASE_OUT_EXPO },
   },
 };
 
@@ -106,7 +118,7 @@ const filterPanelVariants = {
     x: 0,
     transition: {
       duration: 0.5,
-      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+      ease: EASE_OUT_EXPO,
       staggerChildren: 0.035,
       delayChildren: 0.08,
     },
@@ -119,7 +131,7 @@ const chipVariants = {
     opacity: 1,
     scale: 1,
     y: 0,
-    transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+    transition: { duration: 0.28, ease: EASE_OUT_EXPO },
   },
 };
 
@@ -187,7 +199,7 @@ function FilterSection({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.25, ease: EASE_OUT_EXPO }}
             className="overflow-hidden"
           >
             <div className="pb-4">{children}</div>
@@ -295,9 +307,28 @@ function FeaturedBanner({
 
   if (loading) {
     return (
-      <div className="min-h-[420px] md:min-h-[480px] bg-[var(--atlas-bg-panel)]/50 flex items-center justify-center">
-        <Loader2 className="w-6 h-6 text-brand-blue animate-spin" />
-      </div>
+      <motion.div
+        className="min-h-[420px] md:min-h-[480px] bg-[var(--atlas-bg-panel)]/50 flex flex-col items-center justify-center gap-4 overflow-hidden border-b border-brand-blue/10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.28, ease: EASE_OUT_EXPO }}
+      >
+        <motion.div
+          className="grid h-14 w-14 place-items-center rounded-xl border border-brand-blue/20 bg-brand-blue/[0.08]"
+          animate={{ scale: [1, 1.05, 1], boxShadow: ['0 0 0 rgba(201,168,76,0)', '0 0 32px rgba(201,168,76,0.16)', '0 0 0 rgba(201,168,76,0)'] }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          <Loader2 className="w-6 h-6 text-brand-blue animate-spin" />
+        </motion.div>
+        <div className="h-1 w-40 overflow-hidden rounded-full bg-white/[0.06]">
+          <motion.div
+            className="h-full w-1/2 rounded-full bg-brand-blue/70"
+            animate={{ x: ['-100%', '220%'] }}
+            transition={{ duration: 1.25, repeat: Infinity, ease: 'easeInOut' }}
+          />
+        </div>
+      </motion.div>
     );
   }
 
@@ -869,7 +900,9 @@ function TrendingPromptPill({ promptSet, index }: { promptSet: PromptSet; index:
       initial={{ opacity: 0, x: 24 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.4, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.4, delay: index * 0.045, ease: EASE_OUT_EXPO }}
+      whileHover={{ y: -3 }}
+      whileTap={{ scale: 0.985 }}
     >
       <Link
         to={`/prompt-market/${promptSet.slug}`}
@@ -1486,7 +1519,7 @@ const PromptMarketPage: React.FC = () => {
               variants={itemVariants}
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.4, ease: EASE_OUT_EXPO }}
               className="flex items-center gap-3 mb-5"
             >
               {/* Mobile filter toggle */}
@@ -1532,7 +1565,7 @@ const PromptMarketPage: React.FC = () => {
               variants={itemVariants}
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.4, ease: EASE_OUT_EXPO }}
               className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-5"
             >
               {/* Left — results + active filter chips */}
@@ -1661,7 +1694,7 @@ const PromptMarketPage: React.FC = () => {
                         initial={{ opacity: 0, y: -6, scale: 0.97 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -6, scale: 0.97 }}
-                        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                        transition={{ duration: 0.2, ease: EASE_OUT_EXPO }}
                         className="absolute right-0 top-full mt-1 z-50 rounded-lg bg-[var(--atlas-bg-panel)] border border-[rgba(201,168,76,0.16)] overflow-hidden shadow-atlas-lg w-52"
                       >
                         {(Object.keys(SORT_LABELS) as SortOption[]).map(opt => (
@@ -1687,25 +1720,46 @@ const PromptMarketPage: React.FC = () => {
               {loading ? (
                 <motion.div
                   key="loading"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex flex-col items-center justify-center py-32 gap-4"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3, ease: EASE_OUT_EXPO }}
+                  className="flex flex-col items-center justify-center py-28 gap-5"
                 >
-                  <Loader2 className="w-7 h-7 text-brand-blue/60 animate-spin" />
-                  <p className="text-white/50 text-sm">{t('prompt_market.loading')}</p>
+                  <motion.div
+                    className="grid h-16 w-16 place-items-center rounded-xl border border-brand-blue/20 bg-brand-blue/[0.08]"
+                    animate={{ scale: [1, 1.05, 1], boxShadow: ['0 0 0 rgba(201,168,76,0)', '0 0 36px rgba(201,168,76,0.16)', '0 0 0 rgba(201,168,76,0)'] }}
+                    transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+                  >
+                    <Loader2 className="w-7 h-7 text-brand-blue/70 animate-spin" />
+                  </motion.div>
+                  <div className="flex flex-col items-center gap-3">
+                    <p className="text-white/50 text-sm">{t('prompt_market.loading')}</p>
+                    <div className="h-1 w-44 overflow-hidden rounded-full bg-white/[0.06]">
+                      <motion.div
+                        className="h-full w-1/2 rounded-full bg-brand-blue/70"
+                        animate={{ x: ['-100%', '220%'] }}
+                        transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+                      />
+                    </div>
+                  </div>
                 </motion.div>
               ) : filteredSets.length === 0 ? (
                 <motion.div
                   key="empty"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  className="flex flex-col items-center justify-center py-32 gap-4"
+                  initial={{ opacity: 0, y: 16, scale: 0.985 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.985 }}
+                  transition={{ duration: 0.36, ease: EASE_OUT_EXPO }}
+                  className="flex flex-col items-center justify-center rounded-2xl border border-[rgba(201,168,76,0.12)] bg-[#C9A84C]/[0.025] py-24 gap-4"
                 >
-                  <div className="w-16 h-16 bg-[var(--atlas-bg-panel)] border border-[rgba(201,168,76,0.16)] flex items-center justify-center">
+                  <motion.div
+                    className="w-16 h-16 bg-[var(--atlas-bg-panel)] border border-[rgba(201,168,76,0.16)] flex items-center justify-center"
+                    animate={{ y: [0, -4, 0] }}
+                    transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+                  >
                     <Package className="w-8 h-8 text-white/30" />
-                  </div>
+                  </motion.div>
                   <p className="text-white/70 text-base font-medium">
                     {t('prompt_market.empty_title')}
                   </p>
@@ -1713,12 +1767,14 @@ const PromptMarketPage: React.FC = () => {
                     {t('prompt_market.empty_desc')}
                   </p>
                   {hasActiveFilters && (
-                    <button
+                    <motion.button
                       onClick={resetAllFilters}
-                    className="mt-2 rounded-lg px-4 py-2 border border-brand-blue/[0.15] text-brand-blue/70 text-sm font-medium hover:bg-brand-blue/[0.06] transition"
+                      className="mt-2 rounded-lg px-4 py-2 border border-brand-blue/[0.15] text-brand-blue/70 text-sm font-medium hover:bg-brand-blue/[0.06] transition"
+                      whileHover={{ scale: 1.025, borderColor: 'rgba(201,168,76,0.32)' }}
+                      whileTap={{ scale: 0.97 }}
                     >
                       {t('prompt_market.clear_filters')}
-                    </button>
+                    </motion.button>
                   )}
                 </motion.div>
               ) : viewMode === 'grid' ? (
@@ -1727,11 +1783,11 @@ const PromptMarketPage: React.FC = () => {
                   variants={containerVariants}
                   initial="hidden"
                   animate="visible"
-                  exit={{ opacity: 0 }}
+                  exit="exit"
                   className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4"
                 >
                   {filteredSets.map((ps, i) => (
-                    <motion.div key={ps._id ?? i} variants={itemVariants}>
+                    <motion.div key={ps._id ?? i} variants={itemVariants} layout>
                       <PromptSetCard promptSet={ps} index={i} />
                     </motion.div>
                   ))}
@@ -1743,7 +1799,7 @@ const PromptMarketPage: React.FC = () => {
                   variants={containerVariants}
                   initial="hidden"
                   animate="visible"
-                  exit={{ opacity: 0 }}
+                  exit="exit"
                   className="space-y-2"
                 >
                   {filteredSets.map((ps, i) => {
@@ -1760,7 +1816,13 @@ const PromptMarketPage: React.FC = () => {
                     const promptCount = ps.promptCount ?? ps.prompts?.length ?? 0;
 
                     return (
-                      <motion.div key={ps._id ?? i} variants={itemVariants}>
+                      <motion.div
+                        key={ps._id ?? i}
+                        variants={itemVariants}
+                        layout
+                        whileHover={{ y: -2 }}
+                        whileTap={{ scale: 0.995 }}
+                      >
                         <Link
                           to={`/prompt-market/${ps.slug}`}
                           className="flex items-center gap-4 rounded-xl bg-[var(--atlas-bg-panel)] border border-[rgba(201,168,76,0.16)] hover:border-brand-blue/30 p-3 sm:p-4 transition-all duration-200 hover:shadow-[0_4px_20px_rgba(201,168,76,0.06)] group"
@@ -1890,7 +1952,7 @@ const PromptMarketPage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.6, ease: EASE_OUT_EXPO }}
               className="mt-14 relative overflow-hidden rounded-xl border border-brand-blue/[0.15]"
             >
               {/* BG glow */}

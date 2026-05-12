@@ -7,6 +7,8 @@ import { useAuth } from '../../context/AuthContext';
 import { promptMarketApi } from '../../apis/prompt-market';
 import type { PromptSet } from '../../types';
 
+const EASE_OUT_EXPO = [0.22, 1, 0.36, 1] as [number, number, number, number];
+
 interface Props {
   promptSet: PromptSet;
   userBalance: number;
@@ -62,6 +64,7 @@ export const PromptPurchaseModal: React.FC<Props> = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
+        transition={{ duration: 0.22, ease: EASE_OUT_EXPO }}
       >
         {/* Backdrop */}
         <motion.div
@@ -69,25 +72,35 @@ export const PromptPurchaseModal: React.FC<Props> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          transition={{ duration: 0.24, ease: EASE_OUT_EXPO }}
           onClick={onClose}
         />
 
         {/* Modal card */}
         <motion.div
-          className="relative w-full max-w-md bg-[#0a0a0f] border border-white/10 rounded-lg p-6 shadow-atlas-lg"
-          initial={{ opacity: 0, scale: 0.95, y: 16 }}
+          className="relative w-full max-w-md overflow-hidden bg-[#0a0a0f] border border-brand-blue/15 rounded-lg p-6 shadow-[0_28px_90px_rgba(0,0,0,0.55),0_0_44px_rgba(201,168,76,0.08)]"
+          initial={{ opacity: 0, scale: 0.94, y: 22 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 16 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+          exit={{ opacity: 0, scale: 0.96, y: 18 }}
+          transition={{ duration: 0.38, ease: EASE_OUT_EXPO }}
         >
+          <motion.div
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-20 -top-24 h-48 w-48 rounded-full bg-brand-blue/10 blur-3xl"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, ease: EASE_OUT_EXPO }}
+          />
           {/* Close button */}
-          <button
+          <motion.button
             onClick={onClose}
             className="absolute top-4 right-4 text-white/40 hover:text-white/80 transition-colors"
             aria-label="Close"
+            whileHover={{ scale: 1.08, rotate: 4 }}
+            whileTap={{ scale: 0.92 }}
           >
             <X size={18} />
-          </button>
+          </motion.button>
 
           {/* Header */}
           <div className="mb-6">
@@ -100,7 +113,12 @@ export const PromptPurchaseModal: React.FC<Props> = ({
           </div>
 
           {/* Prompt set info */}
-          <div className="bg-white/[0.06] border border-white/8 rounded-xl p-4 mb-4 space-y-3">
+          <motion.div
+            className="bg-white/[0.06] border border-white/8 rounded-xl p-4 mb-4 space-y-3"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.34, delay: 0.06, ease: EASE_OUT_EXPO }}
+          >
             {/* Title */}
             <div>
               <p className="text-xs text-white/40 uppercase tracking-wider font-mono mb-0.5">
@@ -128,10 +146,15 @@ export const PromptPurchaseModal: React.FC<Props> = ({
                 {promptCount} {t('prompts')}
               </span>
             </div>
-          </div>
+          </motion.div>
 
           {/* Payment summary */}
-          <div className="bg-white/[0.06] border border-white/8 rounded-xl p-4 mb-4 space-y-2.5">
+          <motion.div
+            className="bg-white/[0.06] border border-white/8 rounded-xl p-4 mb-4 space-y-2.5"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.34, delay: 0.1, ease: EASE_OUT_EXPO }}
+          >
             {/* Price */}
             <div className="flex items-center justify-between">
               <span className="text-sm text-white/60 font-sans">{t('price')}</span>
@@ -170,7 +193,7 @@ export const PromptPurchaseModal: React.FC<Props> = ({
                 </span>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Platform fee note */}
           <p className="text-xs text-white/30 font-sans mb-4 text-center">
@@ -178,8 +201,15 @@ export const PromptPurchaseModal: React.FC<Props> = ({
           </p>
 
           {/* Insufficient balance warning */}
-          {!canAfford && (
-            <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/30 rounded-xl p-3 mb-4">
+          <AnimatePresence>
+            {!canAfford && (
+              <motion.div
+                className="flex items-start gap-2 bg-red-500/10 border border-red-500/30 rounded-xl p-3 mb-4"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.24, ease: EASE_OUT_EXPO }}
+              >
               <AlertTriangle size={15} className="text-red-400 shrink-0 mt-0.5" />
               <div>
                 <p className="text-xs text-red-400 font-sans font-medium">
@@ -194,31 +224,44 @@ export const PromptPurchaseModal: React.FC<Props> = ({
                   <ExternalLink size={11} />
                 </Link>
               </div>
-            </div>
-          )}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Error message */}
-          {error && (
-            <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/30 rounded-xl p-3 mb-4">
+          <AnimatePresence>
+            {error && (
+              <motion.div
+                className="flex items-start gap-2 bg-red-500/10 border border-red-500/30 rounded-xl p-3 mb-4"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.24, ease: EASE_OUT_EXPO }}
+              >
               <AlertTriangle size={15} className="text-red-400 shrink-0 mt-0.5" />
               <p className="text-xs text-red-400 font-sans">{error}</p>
-            </div>
-          )}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Actions */}
           <div className="flex gap-3">
-            <button
+            <motion.button
               onClick={onClose}
               disabled={loading}
               className="flex-1 py-2.5 rounded-xl border border-white/10 text-sm text-white/60 hover:text-white hover:border-white/20 transition-colors font-sans disabled:opacity-50"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
             >
               {t('cancel')}
-            </button>
+            </motion.button>
 
-            <button
+            <motion.button
               onClick={handleConfirm}
               disabled={!canAfford || loading}
               className="flex-1 py-2.5 rounded-xl bg-[#C9A84C] hover:bg-[#C9A84C]/80 text-white text-sm font-semibold font-sans transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              whileHover={canAfford && !loading ? { scale: 1.025, boxShadow: '0 12px 32px rgba(201,168,76,0.26)' } : undefined}
+              whileTap={canAfford && !loading ? { scale: 0.97 } : undefined}
             >
               {loading ? (
                 <>
@@ -231,7 +274,7 @@ export const PromptPurchaseModal: React.FC<Props> = ({
                   {t('confirm_purchase')}
                 </>
               )}
-            </button>
+            </motion.button>
           </div>
         </motion.div>
       </motion.div>

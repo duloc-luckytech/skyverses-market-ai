@@ -32,6 +32,9 @@ export interface IMarketItem extends Document {
   industries: string[];
 
   imageUrl: string;
+  bannerUrl?: string;
+  thumbnailUrl?: string;
+  gallery?: string[];
   demoType: string;
   homeBlocks: {
     type: [String];
@@ -89,6 +92,9 @@ const MarketItemSchema = new Schema<IMarketItem>(
     industries: [String],
 
     imageUrl: { type: String, required: true },
+    bannerUrl: String,
+    thumbnailUrl: String,
+    gallery: [String],
     demoType: String,
 
     tags: [String],

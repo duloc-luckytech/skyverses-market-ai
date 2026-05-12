@@ -3,16 +3,16 @@ import React, { useState, useEffect, useMemo, useRef, useCallback, useDeferredVa
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Search, Sparkles, ArrowRight, ChevronLeft, ChevronRight,
+  Search, Sparkles, ArrowRight, ChevronRight,
   Video, ImageIcon, Mic, Music, LayoutGrid, LayoutList, Zap,
   TrendingUp, BookmarkPlus, Bookmark,
   X, Box, Cpu, SlidersHorizontal,
   Check, Clock, ChevronUp, ChevronDown,
   Eye, GitCompare,
   Globe, Smartphone, Tablet, Film, Lightbulb,
-  Activity, CircuitBoard, Flame,
-  Code2, Gamepad2,
-  Grid3X3, Rocket, Settings, Star, Workflow
+  CircuitBoard, Flame,
+  Code2,
+  Star, Workflow
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { usePageMeta } from '../hooks/usePageMeta';
@@ -68,31 +68,6 @@ const QUICK_PATHS: { key: string; category: string; label: string; desc: string;
   { key: 'audio',      category: 'Audio',      label: 'Lồng tiếng & TTS',     desc: 'ElevenLabs, voice AI',   icon: Mic,       iconColor: 'text-emerald-500', gradient: 'from-emerald-500/[0.07] to-teal-500/[0.05]' },
   { key: 'script',     category: 'Script',     label: 'Viết blog & nội dung', desc: 'Kịch bản, bài viết AI',  icon: Film,      iconColor: 'text-blue-500',    gradient: 'from-blue-500/[0.07] to-cyan-500/[0.05]' },
   { key: 'automation', category: 'Automation', label: 'Tự động hoá quy trình', desc: 'Workflow, n8n, agents',  icon: Zap,       iconColor: 'text-yellow-500',  gradient: 'from-yellow-500/[0.07] to-amber-500/[0.05]' },
-];
-
-const HERO_SPARKS = [
-  'left-[38%] top-[10%]', 'left-[46%] top-[18%]', 'left-[58%] top-[9%]', 'left-[68%] top-[17%]',
-  'left-[78%] top-[11%]', 'left-[88%] top-[25%]', 'left-[53%] top-[42%]', 'left-[72%] top-[48%]',
-  'left-[92%] top-[58%]', 'left-[43%] top-[72%]', 'left-[64%] top-[78%]', 'left-[84%] top-[73%]',
-];
-
-const HERO_WAVES = [
-  'right-[-8%] top-[4%] h-[150px] w-[62%] rotate-[-8deg] opacity-80',
-  'right-[2%] top-[24%] h-[120px] w-[48%] rotate-[7deg] opacity-55',
-  'right-[18%] top-[52%] h-[86px] w-[40%] rotate-[-4deg] opacity-45',
-];
-
-const MARKET_RAIL = [
-  { label: 'Apps', icon: Grid3X3, active: true },
-  { label: 'Favorites', icon: Star },
-  { label: 'Launch', icon: Rocket },
-  { label: 'Signal', icon: Activity },
-  { label: '3D', icon: Box },
-  { label: 'Voice', icon: Mic },
-  { label: 'Workflow', icon: Workflow },
-  { label: 'Settings', icon: Settings },
-  { label: 'Games', icon: Gamepad2 },
-  { label: 'Code', icon: Code2 },
 ];
 
 const FILTER_MENU: { key: string; label: string; icon: typeof ImageIcon; color: string }[] = [
@@ -170,14 +145,13 @@ const getSolutionAccent = (sol: Solution) => {
   return 'from-brand-blue/25 via-white/[0.04] to-black/0';
 };
 
-const getStageIcon = (sol?: Solution) => {
-  const key = `${sol?.demoType || ''}-${sol?.category?.en || ''}`.toLowerCase();
-  if (key.includes('video')) return Video;
-  if (key.includes('audio') || key.includes('music')) return Mic;
-  if (key.includes('automation')) return Workflow;
-  if (key.includes('3d')) return Box;
-  if (key.includes('code') || key.includes('script')) return Code2;
-  return ImageIcon;
+const getSolutionBannerImage = (sol: Solution) => sol.bannerUrl || sol.imageUrl;
+const getSolutionThumbnailImage = (sol: Solution) => {
+  if (sol.thumbnailUrl) return sol.thumbnailUrl;
+  if (sol.imageUrl.includes('/market-products/') && sol.imageUrl.includes('-banner/')) {
+    return sol.imageUrl.replace('-banner/', '-thumbnail/');
+  }
+  return sol.imageUrl;
 };
 
 const matchesMenuCategory = (sol: Solution, key: string, lang: Language): boolean => {
@@ -251,7 +225,7 @@ const TrendingSlider: React.FC<{ items: Solution[]; lang: Language; onNavigate: 
             whileHover={{ y: -5, scale: 1.025 }}
           >
             <div className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-md border border-white/[0.08] bg-white/[0.05]">
-              <img src={sol.imageUrl} alt="" className="h-full w-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-110" loading="lazy" />
+              <img src={getSolutionThumbnailImage(sol)} alt="" className="h-full w-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-110" loading="lazy" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
@@ -363,7 +337,7 @@ const SuggestedSection: React.FC<{ solutions: Solution[]; lang: Language; onNavi
           <div key={sol.id} onClick={() => { saveRecentlyViewed(sol); onNavigate(sol.slug); }}
             className="bg-neutral-900 border border-neutral-700/40 overflow-hidden cursor-pointer hover:border-brand-blue/30 transition-all group">
             <div className="relative h-[100px] overflow-hidden">
-              <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+              <img src={getSolutionThumbnailImage(sol)} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
               {sol.isFree && <span className="absolute top-2 left-2 px-1.5 py-0.5 bg-emerald-500 text-white text-[9px] font-bold rounded-md">FREE</span>}
               <button onClick={(e) => { e.stopPropagation(); onToggleFav(e, sol.id); }}
                 className="absolute top-2 right-2 p-1 rounded-lg bg-black/30 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
@@ -381,33 +355,7 @@ const SuggestedSection: React.FC<{ solutions: Solution[]; lang: Language; onNavi
   );
 });
 
-const MarketIconRail: React.FC = React.memo(() => (
-  <nav className="fixed bottom-0 left-0 top-[48px] z-30 hidden w-[92px] shrink-0 border-r border-white/[0.08] bg-black/72 lg:block">
-    <div className="flex h-full flex-col items-center gap-4 overflow-y-auto py-6 no-scrollbar">
-      {MARKET_RAIL.map((item) => {
-        const Icon = item.icon;
-        return (
-          <motion.button
-            key={item.label}
-            className={`grid h-[54px] w-[54px] place-items-center rounded-xl border transition-all ${
-              item.active
-                ? 'border-[#E5C767] bg-[#E5C767]/10 text-[#E5C767] shadow-[0_0_24px_rgba(229,199,103,0.18)]'
-                : 'border-transparent text-white/58 hover:border-white/[0.08] hover:bg-white/[0.04] hover:text-[#E5C767]'
-            }`}
-            animate={item.active ? { boxShadow: ['0 0 12px rgba(229,199,103,0.15)', '0 0 30px rgba(229,199,103,0.34)', '0 0 12px rgba(229,199,103,0.15)'] } : {}}
-            transition={item.active ? { duration: 2.4, repeat: Infinity, ease: 'easeInOut' } : undefined}
-            whileHover={{ y: -2, scale: 1.04 }}
-            title={item.label}
-          >
-            <Icon size={22} />
-          </motion.button>
-        );
-      })}
-    </div>
-  </nav>
-));
-
-// ═══════ FEATURED STUDIO STAGE ═══════
+// ═══════ FEATURED STUDIO HERO ═══════
 const FeaturedStudioStage: React.FC<{
   items: Solution[];
   lang: Language;
@@ -416,188 +364,109 @@ const FeaturedStudioStage: React.FC<{
   onOpenFilters: (e: React.MouseEvent) => void;
   onSelectBanner: (e: React.MouseEvent, index: number) => void;
   activeFilterCount: number;
-}> = React.memo(({ items, lang, activeIndex, onNavigate, onOpenFilters, onSelectBanner, activeFilterCount }) => {
+}> = React.memo(({ items, lang, activeIndex, onNavigate, onOpenFilters, activeFilterCount }) => {
   const stageItems = items.slice(0, 5);
   const stageIndex = stageItems.length > 0 ? activeIndex % stageItems.length : 0;
   const spotlight = stageItems.length > 0 ? stageItems[stageIndex] : undefined;
-  const sideItems = spotlight ? [...stageItems.slice(stageIndex + 1), ...stageItems.slice(0, stageIndex)].slice(0, 4) : [];
-  const heroImage = spotlight?.imageUrl;
+  const heroImage = spotlight ? getSolutionBannerImage(spotlight) : undefined;
   const spotlightName = spotlight?.name[lang] || spotlight?.name.en || 'Đang tải studio';
   const spotlightDesc = spotlight?.description[lang] || spotlight?.description.en || 'Marketplace sẽ tự lấy danh sách app thật từ hệ thống và chọn ngẫu nhiên mỗi lần tải trang.';
   const spotlightCategory = spotlight?.category[lang] || spotlight?.category.en || 'Apps';
   const spotlightPrice = spotlight ? (spotlight.priceCredits ? `${spotlight.priceCredits} CR` : spotlight.isFree ? 'Free' : spotlight.priceReference || 'Freemium') : 'Loading';
   const spotlightMeta = spotlight?.models?.slice(0, 2).join(' / ') || spotlight?.tags?.slice(0, 2).join(' / ') || 'Studio';
-  const spotlightInitial = spotlightName.trim().charAt(0).toUpperCase() || 'S';
-  const heroDotCount = stageItems.length;
-  const changeStage = (e: React.MouseEvent, offset: number) => {
-    e.stopPropagation();
-    if (heroDotCount <= 1) return;
-    onSelectBanner(e, (stageIndex + offset + heroDotCount) % heroDotCount);
-  };
 
   return (
     <motion.section
-      key={activeIndex}
-      className="relative overflow-hidden border-b border-white/[0.06] bg-[#050505]"
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+      className="relative min-h-[332px] overflow-hidden border-b border-[#E5C767]/25 bg-[#050505]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.45, ease: 'easeOut' }}
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_4%,rgba(229,199,103,0.24),transparent_31%),radial-gradient(circle_at_57%_73%,rgba(229,199,103,0.13),transparent_38%),linear-gradient(90deg,#050505_0%,#080807_36%,#11100b_100%)]" />
-      <div className="absolute inset-0 opacity-[0.16] bg-[radial-gradient(circle_at_center,rgba(229,199,103,0.34)_1px,transparent_1.5px)] bg-[size:18px_18px]" />
-      <div className="absolute right-0 top-0 h-[78%] w-[68%] bg-[radial-gradient(ellipse_at_center,rgba(229,199,103,0.18),transparent_68%)]" />
-      {HERO_WAVES.map((wave, index) => (
-        <motion.div
-          key={wave}
-          className={`absolute rounded-[50%] bg-[radial-gradient(circle,rgba(229,199,103,0.55)_1px,transparent_1.9px)] bg-[size:9px_9px] [mask-image:radial-gradient(ellipse_at_center,black_0%,black_42%,transparent_72%)] ${wave}`}
-          animate={{ x: [0, index % 2 === 0 ? -18 : 14, 0], y: [0, index % 2 === 0 ? 8 : -7, 0] }}
-          transition={{ duration: 10 + index * 2, repeat: Infinity, ease: 'easeInOut' }}
-        />
-      ))}
-      <motion.div
-        className="absolute right-[-6%] top-[18%] h-px w-[70%] bg-gradient-to-r from-transparent via-[#E5C767]/70 to-transparent"
-        animate={{ opacity: [0.18, 0.72, 0.18], x: [-30, 20, -30] }}
-        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      {HERO_SPARKS.map((spark, index) => (
-        <motion.span
-          key={spark}
-          className={`absolute h-1 w-1 rounded-full bg-[#E5C767] shadow-[0_0_12px_rgba(229,199,103,0.9)] ${spark}`}
-          animate={{ opacity: [0.18, 0.95, 0.18], scale: [0.75, 1.45, 0.75], y: [0, index % 2 === 0 ? -8 : 8, 0] }}
-          transition={{ duration: 2.8 + index * 0.23, repeat: Infinity, ease: 'easeInOut', delay: index * 0.11 }}
-        />
-      ))}
+      <div className="absolute inset-0 bg-[linear-gradient(110deg,#050505_0%,#070706_36%,#151207_100%)]" />
+      <AnimatePresence initial={false}>
+        {heroImage && (
+          <motion.button
+            key={spotlight?.id || heroImage}
+            onClick={() => spotlight && onNavigate(spotlight.slug)}
+            disabled={!spotlight}
+            className="group absolute bottom-5 right-0 top-5 w-full overflow-hidden rounded-l-[20px] text-left disabled:pointer-events-none disabled:opacity-60 md:right-7 md:w-[68%]"
+            aria-label={`Preview ${spotlightName}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.9, ease: 'easeInOut' }}
+          >
+            <img
+              src={heroImage}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover opacity-[0.58] transition-transform duration-700 group-hover:scale-[1.012]"
+              loading="eager"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#050505] via-[#050505]/34 to-[#050505]/8" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/62 via-transparent to-[#050505]/30" />
+            <div className="absolute inset-x-0 top-0 h-14 bg-gradient-to-b from-[#050505] via-[#050505]/72 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#050505] via-[#050505]/72 to-transparent" />
+            <div className="absolute left-[34%] top-0 h-full w-px bg-gradient-to-b from-transparent via-[#E5C767]/48 to-transparent" />
+            <div className="absolute bottom-5 left-[17%] hidden text-[58px] font-black uppercase leading-none tracking-tight text-white/[0.045] md:block">
+              {spotlightCategory}
+            </div>
+          </motion.button>
+        )}
+      </AnimatePresence>
+      <div className="absolute inset-0 opacity-[0.055] bg-[linear-gradient(rgba(229,199,103,0.35)_1px,transparent_1px),linear-gradient(90deg,rgba(229,199,103,0.28)_1px,transparent_1px)] bg-[size:64px_64px]" />
+      <div className="absolute right-0 top-0 h-full w-[74%] bg-[radial-gradient(circle_at_62%_38%,rgba(229,199,103,0.18),transparent_58%)]" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#E5C767]/95 to-transparent shadow-[0_0_18px_rgba(229,199,103,0.65)]" />
+      <div className="absolute left-0 top-0 h-full w-[42%] bg-gradient-to-r from-[#050505] via-[#050505]/96 to-transparent" />
 
-      <div className="relative z-10 grid min-h-[374px] grid-cols-1 gap-6 px-6 py-8 md:grid-cols-[0.74fr_1.26fr] md:px-8 xl:px-11">
-        <div className="flex flex-col justify-center">
-          <div className="mb-5 text-[10px] font-bold uppercase tracking-[0.26em] text-[#E5C767]">Featured Studio</div>
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-[42px] font-semibold leading-none text-white md:text-[50px]">{spotlightName}</h1>
-            <span className="rounded-md border border-[#E5C767]/65 bg-black/45 px-2.5 py-1 text-[10px] font-bold text-[#E5C767]">
+      <div className="relative z-10 flex min-h-[332px] items-center px-6 py-8 md:px-8 xl:px-11">
+        <motion.div
+          key={spotlight?.id || spotlightName}
+          className="max-w-[520px]"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: 'easeOut' }}
+        >
+          <div className="mb-4 flex items-center gap-3">
+            <span className="h-10 w-px bg-gradient-to-b from-transparent via-[#E5C767] to-transparent" />
+            <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#E5C767]">Featured Studio</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <h1 className="max-w-[520px] text-[36px] font-bold leading-[1.1] tracking-tight text-white md:text-[45px]">
+              {spotlightName}
+            </h1>
+            <span className="rounded-md border border-[#E5C767]/45 bg-[#E5C767]/8 px-2.5 py-1 text-[10px] font-semibold text-[#E5C767]">
               {spotlight?.isFree ? 'FREE' : 'PRO'}
             </span>
           </div>
-          <p className="mt-5 max-w-[360px] text-[15px] leading-6 text-white/70">
+          <p className="mt-5 max-w-[430px] text-[14px] leading-6 text-white/72">
             {spotlightDesc}
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-4 text-[13px] text-white/55">
-            <span className="flex items-center gap-1.5 font-semibold text-[#E5C767]"><Zap size={15} fill="currentColor" /> {spotlightPrice}</span>
-            <span>{spotlightMeta}</span>
+          <div className="mt-6 flex flex-wrap items-center gap-3 text-[12px] text-white/52">
+            <span className="flex items-center gap-1.5 font-semibold text-[#E5C767]"><Zap size={14} fill="currentColor" /> {spotlightPrice}</span>
+            <span className="max-w-[220px] truncate">{spotlightMeta}</span>
             <span className="h-1 w-1 rounded-full bg-white/35" />
             <span>{spotlightCategory}</span>
           </div>
-          <div className="mt-7 flex flex-wrap items-center gap-3">
+          <div className="mt-6 flex flex-wrap items-center gap-3">
             <button
               onClick={() => spotlight && onNavigate(spotlight.slug)}
               disabled={!spotlight}
-              className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#E5C767] bg-[#E5C767]/10 px-5 text-[13px] font-medium text-[#E5C767] shadow-[0_0_24px_rgba(229,199,103,0.12)] transition-all hover:bg-[#E5C767] hover:text-black disabled:pointer-events-none disabled:opacity-50"
+              className="inline-flex h-10 items-center gap-2 rounded-lg border border-[#E5C767]/70 bg-[#E5C767]/10 px-4 text-[13px] font-medium text-[#E5C767] transition-colors hover:bg-[#E5C767] hover:text-black disabled:pointer-events-none disabled:opacity-50"
             >
               <Eye size={16} /> Preview Studio
             </button>
             <button
               onClick={onOpenFilters}
-              className="lg:hidden inline-flex h-11 items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.04] px-4 text-[12px] font-semibold text-white/78 transition-all hover:border-[#E5C767]/45 hover:text-[#E5C767]"
+              className="lg:hidden inline-flex h-10 items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.04] px-4 text-[12px] font-semibold text-white/78 transition-colors hover:border-[#E5C767]/45 hover:text-[#E5C767]"
             >
               <SlidersHorizontal size={15} /> Filters
               {activeFilterCount > 0 && <span className="grid h-5 min-w-5 place-items-center rounded-full bg-[#E5C767] px-1 text-[10px] text-black">{activeFilterCount}</span>}
             </button>
-            <button className="grid h-11 w-11 place-items-center rounded-full border border-white/[0.18] bg-black/20 text-white/78 transition-colors hover:border-[#E5C767]/55 hover:text-[#E5C767]">
+            <button className="grid h-10 w-10 place-items-center rounded-lg border border-white/[0.12] bg-white/[0.035] text-white/70 transition-colors hover:border-[#E5C767]/45 hover:text-[#E5C767]">
               <BookmarkPlus size={18} />
             </button>
           </div>
-        </div>
-
-        <div className="relative min-h-[318px] overflow-hidden">
-          <button
-            onClick={(e) => changeStage(e, -1)}
-            disabled={heroDotCount <= 1}
-            className="absolute left-2 top-1/2 z-20 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/20 bg-black/35 text-white/80 backdrop-blur-xl transition-colors hover:border-[#E5C767]/55 hover:text-[#E5C767] disabled:pointer-events-none disabled:opacity-30 md:grid"
-          >
-            <ChevronLeft size={21} />
-          </button>
-          <button
-            onClick={(e) => changeStage(e, 1)}
-            disabled={heroDotCount <= 1}
-            className="absolute right-2 top-1/2 z-20 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/20 bg-black/35 text-white/80 backdrop-blur-xl transition-colors hover:border-[#E5C767]/55 hover:text-[#E5C767] disabled:pointer-events-none disabled:opacity-30 md:grid"
-          >
-            <ChevronRight size={21} />
-          </button>
-
-          <motion.div
-            className="absolute bottom-[-8px] left-[6%] right-[6%] h-[112px] rounded-[50%] border border-[#E5C767]/55 bg-[radial-gradient(ellipse_at_center,rgba(229,199,103,0.28),rgba(0,0,0,0.18)_42%,transparent_74%)] shadow-[0_0_42px_rgba(229,199,103,0.30)]"
-            animate={{ opacity: [0.72, 1, 0.72], scaleX: [0.98, 1.03, 0.98] }}
-            transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
-          />
-          <motion.div
-            className="absolute bottom-[24px] left-[13%] right-[13%] h-[54px] rounded-[50%] border-t border-[#E5C767]/90 shadow-[0_-12px_24px_rgba(229,199,103,0.42)]"
-            animate={{ opacity: [0.55, 1, 0.55], y: [0, -2, 0] }}
-            transition={{ duration: 3.6, repeat: Infinity, ease: 'easeInOut' }}
-          />
-          <div className="absolute bottom-[58px] left-[19%] right-[19%] h-px bg-gradient-to-r from-transparent via-[#E5C767] to-transparent shadow-[0_0_18px_rgba(229,199,103,0.85)]" />
-          <div className="absolute bottom-[12px] left-[19%] right-[19%] h-[16px] rounded-[50%] border-b border-white/10 bg-black/70 shadow-[0_18px_42px_rgba(0,0,0,0.65)]" />
-
-          {sideItems.map((item, index) => {
-            const Icon = getStageIcon(item);
-            const itemName = item.name[lang] || item.name.en;
-            const itemCategory = item.category[lang] || item.category.en;
-            const positions = [
-              'left-[10%] top-[24%] rotate-[-6deg] opacity-70',
-              'left-[27%] top-[21%] rotate-[-3deg] opacity-85',
-              'right-[20%] top-[21%] rotate-[4deg] opacity-85',
-              'right-[5%] top-[26%] rotate-[7deg] opacity-70',
-            ];
-            return (
-              <motion.button
-                key={item.id}
-                onClick={() => onNavigate(item.slug)}
-                className={`absolute hidden h-[188px] w-[116px] overflow-hidden rounded-lg border border-white/18 bg-[#111]/80 p-3 text-center shadow-[0_24px_54px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-all hover:border-[#E5C767]/55 sm:block ${positions[index]}`}
-                initial={{ opacity: 0, y: 24, scale: 0.9 }}
-                animate={{ opacity: [0.68, 0.94, 0.68], y: [0, -8, 0], scale: 1 }}
-                transition={{ opacity: { duration: 5 + index, repeat: Infinity, ease: 'easeInOut' }, y: { duration: 5 + index, repeat: Infinity, ease: 'easeInOut' }, scale: { delay: index * 0.12, duration: 0.45 } }}
-              >
-                <img src={item.imageUrl} alt="" className="absolute inset-0 h-full w-full object-cover opacity-45" loading="lazy" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-white/10" />
-                <div className="relative z-10 mt-1 line-clamp-2 text-[12px] font-medium leading-4 text-white">{itemName}</div>
-                <div className="relative z-10 mt-10 inline-grid h-9 w-9 place-items-center rounded-full border border-[#E5C767]/30 bg-[#E5C767]/10 text-[#E5C767]">
-                  <Icon size={17} />
-                </div>
-                <div className="relative z-10 mt-6 text-[9px] text-white/55">{itemCategory}</div>
-              </motion.button>
-            );
-          })}
-
-          <motion.button
-            onClick={() => spotlight && onNavigate(spotlight.slug)}
-            disabled={!spotlight}
-            className="absolute left-[50%] top-[8%] z-10 ml-[-107px] h-[288px] w-[214px] overflow-hidden rounded-xl border border-[#E5C767] bg-[#1a1712] shadow-[0_0_34px_rgba(229,199,103,0.34),0_34px_80px_rgba(0,0,0,0.55)]"
-            animate={{ y: [0, -8, 0], boxShadow: ['0 0 24px rgba(229,199,103,0.25),0 34px 80px rgba(0,0,0,0.55)', '0 0 46px rgba(229,199,103,0.48),0 34px 80px rgba(0,0,0,0.55)', '0 0 24px rgba(229,199,103,0.25),0 34px 80px rgba(0,0,0,0.55)'] }}
-            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            {heroImage && <img src={heroImage} alt="" className="absolute inset-0 h-full w-full object-cover opacity-70" loading="eager" />}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_62%_30%,rgba(229,199,103,0.36),transparent_32%),linear-gradient(to_top,rgba(0,0,0,0.68),rgba(0,0,0,0.08))]" />
-            <motion.div
-              className="absolute inset-x-[-35%] top-[34%] h-px bg-gradient-to-r from-transparent via-white/80 to-transparent"
-              animate={{ x: ['-35%', '35%', '-35%'], opacity: [0.15, 0.55, 0.15] }}
-              transition={{ duration: 5.2, repeat: Infinity, ease: 'easeInOut' }}
-            />
-            <div className="absolute inset-x-0 top-5 px-4 text-center text-[20px] font-light text-white">{spotlightName}</div>
-            <div className="absolute inset-0 grid place-items-center">
-              <span className="text-[118px] font-semibold leading-none text-[#E5C767]/70 drop-shadow-[0_8px_24px_rgba(229,199,103,0.38)]">{spotlightInitial}</span>
-            </div>
-          </motion.button>
-
-          {heroDotCount > 1 && (
-            <div className="absolute bottom-1 left-1/2 flex -translate-x-1/2 items-center gap-3">
-              {Array.from({ length: heroDotCount }).map((_, i) => (
-                <button
-                  key={i}
-                  onClick={(e) => onSelectBanner(e, i)}
-                  className={`h-2 w-2 rounded-full transition-all ${i === stageIndex ? 'bg-[#E5C767] shadow-[0_0_12px_rgba(229,199,103,0.8)]' : 'bg-white/25 hover:bg-white/55'}`}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+        </motion.div>
       </div>
     </motion.section>
   );
@@ -625,7 +494,7 @@ const ProductCardGrid: React.FC<{
       onClick={() => { saveRecentlyViewed(sol); onNavigate(sol.slug); }}>
       <div className="pointer-events-none absolute inset-0 rounded-[8px] bg-gradient-to-br from-white/[0.025] via-transparent to-[#E5C767]/[0.04] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       <div className="relative h-[148px] shrink-0 overflow-hidden">
-        <img src={sol.imageUrl} alt={sol.name[lang]} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+        <img src={getSolutionThumbnailImage(sol)} alt={sol.name[lang]} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
         <div className={`absolute inset-0 bg-gradient-to-t ${getSolutionAccent(sol)}`} />
         <div className="absolute inset-x-0 bottom-0 h-[74px] bg-gradient-to-t from-[#0F1010] via-[#0F1010]/68 to-transparent" />
         {isSpotlight && (
@@ -705,7 +574,7 @@ const ProductCardList: React.FC<{
     <div className={`flex cursor-pointer overflow-hidden rounded-lg border bg-[#111111] transition-all group shadow-[0_16px_42px_rgba(0,0,0,0.18)] ${isCompare ? 'border-brand-blue/45 ring-2 ring-brand-blue/10' : 'border-white/[0.06] hover:border-brand-blue/28'}`}
       onClick={() => { saveRecentlyViewed(sol); onNavigate(sol.slug); }}>
       <div className="relative w-[180px] shrink-0 overflow-hidden">
-        <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+        <img src={getSolutionThumbnailImage(sol)} alt={sol.name[lang]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
         <div className={`absolute inset-0 bg-gradient-to-r ${getSolutionAccent(sol)}`} />
         <div className="absolute top-2 left-2 flex flex-col gap-1">
           {sol.isFree && <span className="w-fit rounded-md bg-emerald-500/90 px-1.5 py-0.5 text-[9px] font-bold text-black">FREE</span>}
@@ -766,7 +635,7 @@ const QuickPreviewModal: React.FC<{ sol: Solution; lang: Language; onClose: () =
       <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
         className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[601] w-[90vw] max-w-[560px] bg-neutral-900 rounded-2xl border border-neutral-700/40 shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
         <div className="relative h-[200px] overflow-hidden shrink-0">
-          <img src={sol.imageUrl} alt={sol.name[lang]} className="w-full h-full object-cover" />
+          <img src={getSolutionBannerImage(sol)} alt={sol.name[lang]} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
           <button onClick={onClose} className="absolute top-3 right-3 p-2 rounded-xl bg-black/40 backdrop-blur-md text-white/80 hover:text-white border border-white/10"><X size={16} /></button>
           <div className="absolute bottom-3 left-4 flex gap-1.5">
@@ -866,7 +735,7 @@ const ComparePanel: React.FC<{ items: Solution[]; lang: Language; onRemove: (id:
             return (
               <div key={sol.id} className="relative p-3 bg-neutral-800 border border-neutral-700/40 flex gap-3">
                 <button onClick={() => onRemove(sol.id)} className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-rose-500 text-white rounded-full flex items-center justify-center text-[10px] shadow-sm"><X size={10} /></button>
-                <img src={sol.imageUrl} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0" />
+                <img src={getSolutionThumbnailImage(sol)} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0" />
                 <div className="min-w-0 flex-1">
                   <p className="text-[12px] font-bold text-neutral-200 truncate">{sol.name[lang]}</p>
                   <p className="text-[10px] text-neutral-400 truncate">{sol.category[lang]}{sol.complexity ? ` · ${sol.complexity}` : ''}</p>
@@ -1438,15 +1307,13 @@ const MarketsPage: React.FC = () => {
       <div className="relative z-10 h-[calc(100vh-48px)] w-full overflow-hidden">
         {/* ═══════ 2-COLUMN LAYOUT ═══════ */}
         <div className="h-full border-t border-white/[0.06]">
-          <MarketIconRail />
-
           {/* LEFT SIDEBAR */}
-          <aside className="fixed bottom-0 left-[92px] top-[48px] z-30 hidden w-[224px] shrink-0 overflow-y-auto overscroll-contain border-r border-white/[0.08] bg-black/46 no-scrollbar lg:block">
+          <aside className="fixed bottom-0 left-0 top-[48px] z-30 hidden w-[224px] shrink-0 overflow-y-auto overscroll-contain border-r border-white/[0.08] bg-black/46 no-scrollbar lg:block">
             {sidebarContent}
           </aside>
 
           {/* RIGHT CONTENT */}
-          <div ref={marketScrollRef} className="h-full min-w-0 overflow-y-auto overscroll-contain pb-10 lg:ml-[316px]">
+          <div ref={marketScrollRef} className="h-full min-w-0 overflow-y-auto overscroll-contain pb-10 lg:ml-[224px]">
             <FeaturedStudioStage
               items={heroStageItems}
               lang={currentLang}

@@ -101,7 +101,7 @@ Worker pool cho image / video / music. Mỗi domain có:
 
 ## Scripts — `src/scripts/`
 
-`asynsDataMongo.ts`, `seed-ai-models.ts`, `prompt-market-blueprint.ts` (blueprint builder for reusable complex prompt packs, including free samples, food/drink packs, and cinema/animation/anime showcase packs), `generate-prompt-market-assets.ts` (external asset generation + Cloudflare upload runner), `seed-prompt-market-v4.ts` (blueprint-driven showcase prompt sets with images+videos, exports clear/seed/append helpers), `seedAdmin.ts`, `seedCategories.ts`, `updatePricingX2.ts`.
+`asynsDataMongo.ts`, `seed-ai-models.ts`, `prompt-market-blueprint.ts` (Prompt Market blueprint standard + reusable complex prompt packs; exports `PROMPT_MARKET_BLUEPRINT_STANDARD`, validator, random picker; video packs require same-pack image references), `generate-prompt-market-assets.ts` (external asset generation + Cloudflare upload runner; video tasks must use generated image refs), `seed-prompt-market-v4.ts` (blueprint-driven showcase prompt sets with images+videos, exports clear/seed/append helpers), `seedAdmin.ts`, `seedCategories.ts`, `updatePricingX2.ts`.
 
 ## Common patterns
 
@@ -109,3 +109,4 @@ Worker pool cho image / video / music. Mỗi domain có:
 - **Credit deduct:** `getPricingCredits()` trước khi enqueue, `refundJobCredits()` nếu fail
 - **Provider token:** `getAccessTokenForJob()` / `getCookieForJob()` để pull credentials
 - **Slug:** `makeSlug()` cho URL-safe tên product
+- **Market product assets:** `MarketItem.model.ts` supports `imageUrl` plus optional `bannerUrl`, `thumbnailUrl`, `gallery` so marketplace hero/cards can use separate visuals.

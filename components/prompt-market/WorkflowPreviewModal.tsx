@@ -14,7 +14,7 @@ import {
   type NodeProps,
   type NodeTypes,
 } from '@xyflow/react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   Check,
   Copy,
@@ -31,6 +31,8 @@ import {
 import type { PromptSet } from '../../types';
 
 export type WorkflowPreviewTone = 'gold' | 'blue' | 'violet' | 'emerald' | 'rose';
+
+const EASE_OUT_EXPO = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
 export interface WorkflowPreviewStep {
   id: string;
@@ -127,7 +129,16 @@ const WorkflowPreviewNode: React.FC<NodeProps<WorkflowNode>> = ({ data }) => {
   const tone = TONE_CLASS[step.tone];
 
   return (
-    <div className={`w-[292px] overflow-hidden rounded-2xl border ${tone.border} bg-[#101015]/95 shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl`}>
+    <motion.div
+      className={`w-[292px] overflow-hidden rounded-2xl border ${tone.border} bg-[#101015]/95 shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl`}
+      initial={{ opacity: 0, y: 14, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.38, ease: EASE_OUT_EXPO }}
+      whileHover={{
+        y: -3,
+        boxShadow: '0 24px 70px rgba(0,0,0,0.42), 0 8px 34px rgba(201,168,76,0.1)',
+      }}
+    >
       <Handle
         type="target"
         position={Position.Left}
@@ -198,7 +209,7 @@ const WorkflowPreviewNode: React.FC<NodeProps<WorkflowNode>> = ({ data }) => {
         className="!h-3 !w-3 !border-2 !border-[#101015]"
         style={{ background: tone.dot }}
       />
-    </div>
+    </motion.div>
   );
 };
 
@@ -463,8 +474,6 @@ const WorkflowPreviewModal: React.FC<WorkflowPreviewModalProps> = ({ open, onClo
   const [copied, setCopied] = useState(false);
   const vi = language === 'vi';
 
-  if (!open) return null;
-
   const handleCopy = () => {
     const summary = workflow.steps
       .map((step, index) => `${index + 1}. ${step.title}: ${step.subtitle}`)
@@ -475,53 +484,97 @@ const WorkflowPreviewModal: React.FC<WorkflowPreviewModalProps> = ({ open, onClo
   };
 
   return (
-    <div className="fixed inset-0 z-[1100] flex items-center justify-center p-3 sm:p-6">
-      <motion.button
-        aria-label={vi ? 'Đóng sơ đồ cách dùng prompt' : 'Close workflow preview'}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="absolute inset-0 bg-black/85 backdrop-blur-2xl"
-        onClick={onClose}
-      />
-      <motion.div
-        initial={{ opacity: 0, scale: 0.96, y: 24 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="relative flex h-[86vh] w-full max-w-[1500px] flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-[#08080c] shadow-[0_40px_120px_rgba(0,0,0,0.55)]"
-      >
-        <div className="flex flex-col gap-4 border-b border-white/[0.06] bg-white/[0.03] p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 text-[#C9A84C]">
-              <Workflow className="h-4 w-4" />
-              <p className="text-[11px] font-bold uppercase tracking-[0.22em]">
-                {vi ? 'Cách dùng prompt' : 'How to use this prompt'}
-              </p>
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          className="fixed inset-0 z-[1100] flex items-center justify-center p-3 sm:p-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.22, ease: EASE_OUT_EXPO }}
+        >
+          <motion.button
+            aria-label={vi ? 'Đóng sơ đồ cách dùng prompt' : 'Close workflow preview'}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.24, ease: EASE_OUT_EXPO }}
+            className="absolute inset-0 bg-black/85 backdrop-blur-2xl"
+            onClick={onClose}
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.94, y: 28 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: 20 }}
+            transition={{ duration: 0.42, ease: EASE_OUT_EXPO }}
+            className="relative flex h-[86vh] w-full max-w-[1500px] flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-[#08080c] shadow-[0_40px_120px_rgba(0,0,0,0.55),0_0_60px_rgba(201,168,76,0.08)]"
+          >
+            <motion.div
+              aria-hidden="true"
+              className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#C9A84C]/10 blur-3xl"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, ease: EASE_OUT_EXPO }}
+            />
+            <div className="relative z-10 flex flex-col gap-4 border-b border-white/[0.06] bg-white/[0.03] p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+              <div className="min-w-0">
+                <motion.div
+                  className="flex items-center gap-2 text-[#C9A84C]"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.34, delay: 0.08, ease: EASE_OUT_EXPO }}
+                >
+                  <Workflow className="h-4 w-4" />
+                  <p className="text-[11px] font-bold uppercase tracking-[0.22em]">
+                    {vi ? 'Cách dùng prompt' : 'How to use this prompt'}
+                  </p>
+                </motion.div>
+                <motion.h3
+                  className="mt-2 truncate text-xl font-semibold text-white"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.34, delay: 0.12, ease: EASE_OUT_EXPO }}
+                >
+                  {workflow.title}
+                </motion.h3>
+                <motion.p
+                  className="mt-1 max-w-2xl text-sm text-white/42"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.34, delay: 0.16, ease: EASE_OUT_EXPO }}
+                >
+                  {workflow.subtitle}
+                </motion.p>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <motion.button
+                  onClick={handleCopy}
+                  className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] px-3 py-2 text-sm font-medium text-white/55 transition hover:border-[#C9A84C]/30 hover:text-[#C9A84C]"
+                  whileHover={{ y: -1, scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  {copied ? (vi ? 'Đã copy' : 'Copied') : (vi ? 'Copy các bước' : 'Copy steps')}
+                </motion.button>
+                <motion.button
+                  onClick={onClose}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.08] text-white/45 transition hover:border-white/15 hover:text-white"
+                  whileHover={{ scale: 1.06, rotate: 3 }}
+                  whileTap={{ scale: 0.92 }}
+                >
+                  <X className="h-4 w-4" />
+                </motion.button>
+              </div>
             </div>
-            <h3 className="mt-2 truncate text-xl font-semibold text-white">{workflow.title}</h3>
-            <p className="mt-1 max-w-2xl text-sm text-white/42">{workflow.subtitle}</p>
-          </div>
-          <div className="flex shrink-0 items-center gap-2">
-            <button
-              onClick={handleCopy}
-              className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] px-3 py-2 text-sm font-medium text-white/55 transition hover:border-[#C9A84C]/30 hover:text-[#C9A84C]"
-            >
-              {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-              {copied ? (vi ? 'Đã copy' : 'Copied') : (vi ? 'Copy các bước' : 'Copy steps')}
-            </button>
-            <button
-              onClick={onClose}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.08] text-white/45 transition hover:border-white/15 hover:text-white"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-        <div className="min-h-0 flex-1">
-          <ReactFlowProvider>
-            <WorkflowCanvas workflow={workflow} />
-          </ReactFlowProvider>
-        </div>
-      </motion.div>
-    </div>
+            <div className="min-h-0 flex-1">
+              <ReactFlowProvider>
+                <WorkflowCanvas workflow={workflow} />
+              </ReactFlowProvider>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

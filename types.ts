@@ -55,6 +55,8 @@ export interface Solution {
   priceCredits?: number; // New: Credit cost for using the service
   isFree?: boolean; // New: Whether the service is free or paid
   imageUrl: string;
+  bannerUrl?: string; // Wide marketplace/hero banner image
+  thumbnailUrl?: string; // Compact product card thumbnail image
   gallery?: string[]; // New: Sub-thumbnails
   neuralStack?: NeuralStackItem[]; // New: Specific AI modes (VEO3, etc)
   demoType: 'text' | 'image' | 'video' | 'automation';

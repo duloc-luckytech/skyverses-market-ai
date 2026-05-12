@@ -1514,65 +1514,52 @@ const PromptDetailPage: React.FC = () => {
       </div>
 
       {/* ── Body ── */}
-      <div className="max-w-[1860px] mx-auto px-4 sm:px-8 py-5">
+      <div className="w-full px-4 py-5 sm:px-8">
         <div className="space-y-8">
-          <div className="grid grid-cols-1 gap-5 2xl:grid-cols-[minmax(0,1fr)_430px]">
-            <div className="min-w-0 space-y-3">
-              <div className="relative">
-                <PromptMockupStage
-                  promptSet={promptSet}
-                  title={title}
-                  description={description}
-                  seller={seller}
-                  activeIndex={activeExampleIndex}
-                  onSelect={setActiveExampleIndex}
-                  onOpenWorkflow={() => setShowWorkflowPreview(true)}
-                  language={lang}
-                />
-                {isAuthenticated && (
-                  <button
-                    onClick={handleWishlistToggle}
-                    disabled={wishLoading}
-                    className={`absolute bottom-[118px] left-[650px] z-20 hidden h-[46px] w-[46px] place-items-center border backdrop-blur-md transition-all duration-200 xl:grid ${
-                      wishlisted
-                        ? 'border-red-500/35 bg-red-500/18 text-red-300'
-                        : 'border-[rgba(201,168,76,0.28)] bg-black/40 text-white/58 hover:border-red-500/30 hover:text-red-300'
-                    }`}
-                    title={wishlisted ? t('prompt_market.remove_wishlist') : t('prompt_market.add_to_wishlist')}
-                  >
-                    <Heart className={`w-5 h-5 ${wishlisted ? 'fill-current' : ''}`} />
-                  </button>
-                )}
-              </div>
-
-              <PromptValueCards
-                promptSet={promptSet}
-                canViewFullPrompt={canViewFullPrompt}
-                language={lang}
-              />
-
-              <PromptWorkflowStrip
-                promptSet={promptSet}
-                onOpenWorkflow={() => setShowWorkflowPreview(true)}
-                language={lang}
-              />
-            </div>
-
-            <PromptPurchaseSidebar
+          <div className="mx-auto w-full max-w-[1860px]">
+            <div className="grid grid-cols-1 gap-5 2xl:grid-cols-[minmax(0,1fr)_430px]">
+              <div className="min-w-0 space-y-8">
+                <div className="relative">
+                  <PromptMockupStage
+                    promptSet={promptSet}
+                    title={title}
+                    description={description}
+                    seller={seller}
+                    activeIndex={activeExampleIndex}
+                    onSelect={setActiveExampleIndex}
+                    onOpenWorkflow={() => setShowWorkflowPreview(true)}
+                    language={lang}
+                  />
+                  {isAuthenticated && (
+                    <button
+                      onClick={handleWishlistToggle}
+                      disabled={wishLoading}
+                      className={`absolute bottom-[118px] left-[650px] z-20 hidden h-[46px] w-[46px] place-items-center border backdrop-blur-md transition-all duration-200 xl:grid ${
+                        wishlisted
+                          ? 'border-red-500/35 bg-red-500/18 text-red-300'
+                          : 'border-[rgba(201,168,76,0.28)] bg-black/40 text-white/58 hover:border-red-500/30 hover:text-red-300'
+                      }`}
+                      title={wishlisted ? t('prompt_market.remove_wishlist') : t('prompt_market.add_to_wishlist')}
+                    >
+                      <Heart className={`w-5 h-5 ${wishlisted ? 'fill-current' : ''}`} />
+                    </button>
+                  )}
+                </div>
+          <div className="mx-auto w-full max-w-[1500px] space-y-8 px-0 sm:px-2 lg:px-4 2xl:px-0">
+            <PromptValueCards
               promptSet={promptSet}
-              balance={balance}
-              alreadyPurchased={alreadyPurchased}
-              isAuthenticated={isAuthenticated}
-              avatar={avatar}
-              seller={seller}
+              canViewFullPrompt={canViewFullPrompt}
               language={lang}
-              onPurchase={() => setShowPurchaseModal(true)}
-              onLogin={login}
             />
-          </div>
 
-          {/* ── Content + purchase section below showcase ── */}
-          <div id="prompt-examples" className="grid grid-cols-1 gap-8 lg:gap-10 items-start">
+            <PromptWorkflowStrip
+              promptSet={promptSet}
+              onOpenWorkflow={() => setShowWorkflowPreview(true)}
+              language={lang}
+            />
+
+            {/* ── Content + purchase section below showcase ── */}
+            <div id="prompt-examples" className="grid grid-cols-1 gap-8 lg:gap-10 items-start">
             <div className="min-w-0 space-y-8">
 
             {/* Plain-language overview + Share */}
@@ -2013,6 +2000,23 @@ const PromptDetailPage: React.FC = () => {
             </div>
           </div>
           </div>
+              </div>
+              </div>
+
+              <PromptPurchaseSidebar
+                promptSet={promptSet}
+                balance={balance}
+                alreadyPurchased={alreadyPurchased}
+                isAuthenticated={isAuthenticated}
+                avatar={avatar}
+                seller={seller}
+                language={lang}
+                onPurchase={() => setShowPurchaseModal(true)}
+                onLogin={login}
+              />
+            </div>
+          </div>
+
         </div>
       </div>
 

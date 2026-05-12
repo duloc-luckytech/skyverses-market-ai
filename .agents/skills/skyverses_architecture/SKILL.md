@@ -320,6 +320,8 @@ Uses conventional commit format: `feat:`, `fix:`, `refactor:`, etc.
 13. **MarketsPage filters are URL-synced**: filter state lives in URLSearchParams for shareable links
 14. **Credits are pre-paid**: Deducted at job creation time, auto-refunded if job fails/cancelled
 15. **Sticky worker assignment**: Each user is consistently routed to the same FXFlow/Grok owner account
+16. **Prompt Market blueprint standard**: Auto-random/new prompt packs must start from `skyverses-backend/src/scripts/prompt-market-blueprint.ts` (`PROMPT_MARKET_BLUEPRINT_STANDARD`, `validatePromptMarketBlueprintStandard`, `pickRandomPromptMarketBlueprintId`). Generate 5 same-pack image assets first; video assets must use those images as `startImage/images` references via `generate-prompt-market-assets.ts`.
+17. **Current local FE review URL**: In this workspace, Vite may run on `http://127.0.0.1:3301/` when `3300` is occupied. Use `http://127.0.0.1:3301/<route>` for reviewing Prompt Market pages if the server reports that fallback port.
 
 ---
 
@@ -332,5 +334,3 @@ This skill covers the **architectural skeleton** of the platform. For deeper con
 | `skyverses_ui_pages` | Working on homepage, markets page, product cards, filters, or any FE page component |
 | `skyverses_business_flows` | Working on payment flows, AI generation pipeline, credit system, worker routing, or pricing |
 | `skyverses_cms` | Working on any CMS tab, drawer, admin component, or the CMS admin panel |
-
-

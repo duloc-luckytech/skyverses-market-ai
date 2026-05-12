@@ -21,6 +21,8 @@ import { useAuth } from '../../context/AuthContext';
 import { promptMarketApi } from '../../apis/prompt-market';
 import type { AIModel, LocalizedString, PromptSet } from '../../types';
 
+const EASE_OUT_EXPO = [0.22, 1, 0.36, 1] as [number, number, number, number];
+
 type CardMedia = {
   key: string;
   type: 'image' | 'video';
@@ -133,13 +135,17 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
       initial={{ opacity: 0, y: 18 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.42, delay: Math.min(index * 0.035, 0.2), ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -4 }}
+      transition={{ duration: 0.42, delay: Math.min(index * 0.035, 0.18), ease: EASE_OUT_EXPO }}
+      whileHover={{
+        y: -5,
+        transition: { duration: 0.24, ease: 'easeOut' },
+      }}
+      whileTap={{ scale: 0.992 }}
       className="group h-full"
     >
       <Link
         to={`/prompt-market/${promptSet.slug}`}
-        className={`flex h-full flex-col overflow-hidden rounded-xl border bg-[#101316] shadow-[0_18px_48px_rgba(0,0,0,0.24)] transition-all duration-300 ${
+        className={`relative flex h-full flex-col overflow-hidden rounded-xl border bg-[#101316] shadow-[0_18px_48px_rgba(0,0,0,0.24)] transition-all duration-300 before:pointer-events-none before:absolute before:inset-0 before:opacity-0 before:transition-opacity before:duration-500 before:content-[''] before:bg-[radial-gradient(circle_at_30%_0%,rgba(201,168,76,0.16),transparent_34%)] group-hover:shadow-[0_24px_68px_rgba(0,0,0,0.34),0_8px_34px_rgba(201,168,76,0.12)] group-hover:before:opacity-100 ${
           variant === 'featured' || promptSet.featured
             ? 'border-brand-blue/35 hover:border-brand-blue/70'
             : 'border-[rgba(201,168,76,0.16)] hover:border-brand-blue/35'
@@ -171,21 +177,33 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
           <div className="absolute inset-0 bg-gradient-to-t from-black/78 via-transparent to-black/20" />
 
           {hasVideo && (
-            <span className="absolute left-3 top-3 grid h-8 w-8 place-items-center rounded-lg border border-[rgba(201,168,76,0.28)] bg-black/55 text-white backdrop-blur">
+            <motion.span
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.34, ease: EASE_OUT_EXPO }}
+              className="absolute left-3 top-3 grid h-8 w-8 place-items-center rounded-lg border border-[rgba(201,168,76,0.28)] bg-black/55 text-white backdrop-blur"
+            >
               <Video className="h-4 w-4" />
-            </span>
+            </motion.span>
           )}
 
           {(promptSet.featured || variant === 'featured') && (
-            <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-md border border-brand-blue/40 bg-brand-blue/18 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-brand-blue backdrop-blur">
+            <motion.span
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.34, ease: EASE_OUT_EXPO }}
+              className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-md border border-brand-blue/40 bg-brand-blue/18 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-brand-blue backdrop-blur"
+            >
               <Sparkles className="h-3 w-3" /> Hot
-            </span>
+            </motion.span>
           )}
 
           {isAuthenticated && (
-            <button
+            <motion.button
               onClick={handleWishlistToggle}
               disabled={wishLoading}
+              whileHover={{ scale: 1.06 }}
+              whileTap={{ scale: 0.94 }}
               className={`absolute bottom-[54px] right-3 z-10 grid h-8 w-8 place-items-center border backdrop-blur transition ${
                 wishlisted
                   ? 'border-red-400/45 bg-red-500/18 text-red-300'
@@ -193,16 +211,22 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
               }`}
             >
               <Heart className={`h-4 w-4 ${wishlisted ? 'fill-current' : ''}`} />
-            </button>
+            </motion.button>
           )}
 
           {thumbnails.length > 0 && (
             <div className="absolute bottom-0 left-0 right-0 flex gap-1.5 bg-black/42 p-2 backdrop-blur-sm">
-              {thumbnails.map(item => (
-                <div key={item.key} className="relative h-10 flex-1 overflow-hidden rounded-md border border-[rgba(201,168,76,0.24)] bg-white/[0.05]">
+              {thumbnails.map((item, thumbIndex) => (
+                <motion.div
+                  key={item.key}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.32, delay: thumbIndex * 0.035, ease: EASE_OUT_EXPO }}
+                  className="relative h-10 flex-1 overflow-hidden rounded-md border border-[rgba(201,168,76,0.24)] bg-white/[0.05]"
+                >
                   <img src={item.poster || item.url} alt="" className="h-full w-full object-cover" loading="lazy" />
                   {item.type === 'video' && <PlayCircle className="absolute left-1.5 top-1.5 h-3.5 w-3.5 text-white drop-shadow" />}
-                </div>
+                </motion.div>
               ))}
               {extraCount > 0 && (
                 <div className="grid h-10 w-12 place-items-center rounded-md border border-[rgba(201,168,76,0.24)] bg-black/55 text-xs font-semibold text-white/85">

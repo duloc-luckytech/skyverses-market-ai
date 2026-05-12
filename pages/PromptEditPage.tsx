@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { motion, AnimatePresence, Reorder } from 'framer-motion';
+import { motion, AnimatePresence, Reorder, type Variants } from 'framer-motion';
 import {
   ArrowLeft,
   Plus,
@@ -58,6 +58,32 @@ const AI_MODELS: { value: AIModel; label: string }[] = [
 const INPUT_CLASS =
   'bg-white/[0.06] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:border-[#C9A84C]/50 focus:outline-none w-full transition-colors';
 const LABEL_CLASS = 'text-sm text-white/60 mb-1.5 block';
+
+const pageVariants: Variants = {
+  hidden: { opacity: 0, y: 18 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.32, ease: 'easeOut', staggerChildren: 0.07 },
+  },
+};
+
+const sectionVariants: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.28, ease: 'easeOut' } },
+};
+
+const groupVariants: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.06 } },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.22, ease: 'easeOut' } },
+};
+
+const MotionLink = motion(Link);
 
 /* ─── Types ─── */
 
@@ -124,10 +150,17 @@ function emptyLocalized(): LocalizedFields {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white/[0.03] border border-white/10 rounded-lg p-6 space-y-5">
+    <motion.section
+      variants={sectionVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: '-80px' }}
+      whileHover={{ borderColor: 'rgba(201,168,76,0.18)' }}
+      className="bg-white/[0.03] border border-white/10 rounded-lg p-6 space-y-5"
+    >
       <h2 className="text-white font-semibold text-base">{title}</h2>
       {children}
-    </div>
+    </motion.section>
   );
 }
 
@@ -145,10 +178,12 @@ function LangTabs({
   return (
     <div className="flex items-center gap-1 p-1 bg-white/[0.03] rounded-xl border border-white/[0.06]">
       {LANGS.map(({ code, flag }) => (
-        <button
+        <motion.button
           key={code}
           type="button"
           onClick={() => onChange(code)}
+          whileHover={{ y: -1 }}
+          whileTap={{ scale: 0.96 }}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
             active === code
               ? 'bg-[#C9A84C] text-white shadow-lg'
@@ -159,7 +194,7 @@ function LangTabs({
           {filled[code] && active !== code && (
             <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
           )}
-        </button>
+        </motion.button>
       ))}
     </div>
   );
@@ -276,12 +311,14 @@ export default function PromptEditPage() {
         <p className="text-white/60 text-center text-base">
           {t('common.login_required') || 'You need to be logged in.'}
         </p>
-        <button
+        <motion.button
           onClick={login}
+          whileHover={{ y: -1, scale: 1.01 }}
+          whileTap={{ scale: 0.98 }}
           className="px-6 py-3 rounded-xl bg-[#C9A84C] text-white font-semibold hover:bg-[#B8963F] transition-colors"
         >
           {t('common.login') || 'Log In'}
-        </button>
+        </motion.button>
       </div>
     );
   }
@@ -300,12 +337,14 @@ export default function PromptEditPage() {
         <p className="text-white/60 text-lg">
           {t('prompt_market.not_found') || 'Listing not found.'}
         </p>
-        <Link
+        <MotionLink
           to="/prompt-market/sell"
+          whileHover={{ x: -2 }}
+          whileTap={{ scale: 0.97 }}
           className="inline-flex items-center gap-2 text-[#C9A84C] hover:underline text-sm"
         >
           <ArrowLeft className="w-4 h-4" /> Back to My Listings
-        </Link>
+        </MotionLink>
       </div>
     );
   }
@@ -572,36 +611,46 @@ export default function PromptEditPage() {
   /* ─── Render ─── */
   return (
     <div className="min-h-screen bg-black/95 text-white">
-      <div className="max-w-4xl mx-auto px-4 py-12">
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={pageVariants}
+        className="max-w-4xl mx-auto px-4 py-12"
+      >
         {/* Header */}
-        <div className="flex items-center gap-4 mb-10">
-          <Link
+        <motion.div variants={sectionVariants} className="flex items-center gap-4 mb-10">
+          <MotionLink
             to="/prompt-market/sell"
+            whileHover={{ x: -2 }}
+            whileTap={{ scale: 0.97 }}
             className="flex items-center gap-2 text-white/50 hover:text-white transition-colors text-sm"
           >
             <ArrowLeft size={16} />
             {t('promptEdit.back') || 'Back to Sell'}
-          </Link>
+          </MotionLink>
           <span className="text-white/20">|</span>
           <h1 className="text-xl font-bold text-white">
             {t('promptEdit.title') || 'Edit Prompt Set'}
           </h1>
-        </div>
+        </motion.div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <motion.form onSubmit={handleSubmit} variants={groupVariants} className="space-y-6">
           {/* ─── Replace from Template ─── */}
           <Section title="Replace from Template">
             <p className="text-xs text-white/30">
               Pick a template to replace current prompts with structured variables. This will overwrite existing prompts, category, and tags.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <motion.div variants={groupVariants} className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {PROMPT_TEMPLATES.map((tpl) => {
                 const isApplied = appliedTemplate === tpl.key;
                 return (
-                  <button
+                  <motion.button
                     key={tpl.key}
                     type="button"
                     onClick={() => setPreviewTemplate(tpl)}
+                    variants={itemVariants}
+                    whileHover={{ y: -3, borderColor: 'rgba(201,168,76,0.38)' }}
+                    whileTap={{ scale: 0.98 }}
                     className={`relative text-left p-4 rounded-xl border transition-all group ${
                       isApplied
                         ? 'bg-[#C9A84C]/10 border-[#C9A84C]/40'
@@ -629,10 +678,10 @@ export default function PromptEditPage() {
                         {tpl.category}
                       </span>
                     </div>
-                  </button>
+                  </motion.button>
                 );
               })}
-            </div>
+            </motion.div>
             {appliedTemplate && (
               <motion.p
                 initial={{ opacity: 0 }}
@@ -697,24 +746,28 @@ export default function PromptEditPage() {
                     ))}
                   </div>
                   <div className="p-6 border-t border-white/10 flex items-center justify-end gap-3">
-                    <button
+                    <motion.button
                       type="button"
                       onClick={() => setPreviewTemplate(null)}
+                      whileHover={{ y: -1 }}
+                      whileTap={{ scale: 0.97 }}
                       className="px-4 py-2 rounded-xl text-sm text-white/50 hover:text-white transition-colors"
                     >
                       Cancel
-                    </button>
-                    <button
+                    </motion.button>
+                    <motion.button
                       type="button"
                       onClick={() => {
                         applyTemplate(previewTemplate);
                         setPreviewTemplate(null);
                       }}
+                      whileHover={{ y: -1, scale: 1.02 }}
+                      whileTap={{ scale: 0.97 }}
                       className="px-5 py-2 rounded-xl text-sm font-medium text-white bg-[#C9A84C] hover:bg-[#C9A84C]/80 transition-colors flex items-center gap-2"
                     >
                       <Wand2 size={14} />
                       Apply Template
-                    </button>
+                    </motion.button>
                   </div>
                 </motion.div>
               </motion.div>
@@ -819,15 +872,17 @@ export default function PromptEditPage() {
                   value={form.coverImage}
                   onChange={(e) => handleCoverChange(e.target.value)}
                 />
-                <button
+                <motion.button
                   type="button"
                   onClick={() => coverFileRef.current?.click()}
                   disabled={coverUploading}
+                  whileHover={{ y: -1, scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
                   className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#C9A84C]/20 border border-[#C9A84C]/30 text-[#E5C767] hover:bg-[#C9A84C]/30 transition-colors text-sm font-medium disabled:opacity-50 whitespace-nowrap"
                 >
                   {coverUploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
                   {coverUploading ? 'Uploading…' : 'Upload'}
-                </button>
+                </motion.button>
                 <input
                   ref={coverFileRef}
                   type="file"
@@ -856,9 +911,11 @@ export default function PromptEditPage() {
           {/* Pricing */}
           <Section title={t('promptCreate.sectionPricing') || 'Pricing'}>
             <div className="flex items-center gap-3">
-              <button
+              <motion.button
                 type="button"
                 onClick={() => setField('isFree', true)}
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.96 }}
                 className={`px-5 py-2 rounded-lg text-sm font-medium transition-colors ${
                   form.isFree
                     ? 'bg-[#C9A84C] text-white'
@@ -866,10 +923,12 @@ export default function PromptEditPage() {
                 }`}
               >
                 {t('promptCreate.free') || 'Free'}
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 type="button"
                 onClick={() => setField('isFree', false)}
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.96 }}
                 className={`px-5 py-2 rounded-lg text-sm font-medium transition-colors ${
                   !form.isFree
                     ? 'bg-[#C9A84C] text-white'
@@ -877,7 +936,7 @@ export default function PromptEditPage() {
                 }`}
               >
                 {t('promptCreate.paid') || 'Paid'}
-              </button>
+              </motion.button>
             </div>
 
             <AnimatePresence>
@@ -939,14 +998,17 @@ export default function PromptEditPage() {
             <p className="text-xs text-white/30">
               {t('promptCreate.modelsHint') || 'Select the AI models these prompts are designed for.'}
             </p>
-            <div className="flex flex-wrap gap-2">
+            <motion.div variants={groupVariants} initial="hidden" animate="visible" className="flex flex-wrap gap-2">
               {AI_MODELS.map((m) => {
                 const selected = form.models.includes(m.value);
                 return (
-                  <button
+                  <motion.button
                     key={m.value}
                     type="button"
                     onClick={() => toggleModel(m.value)}
+                    variants={itemVariants}
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.96 }}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
                       selected
                         ? 'bg-[#C9A84C]/20 border-[#C9A84C]/50 text-[#E5C767]'
@@ -955,10 +1017,10 @@ export default function PromptEditPage() {
                   >
                     <Cpu size={12} />
                     {m.label}
-                  </button>
+                  </motion.button>
                 );
               })}
-            </div>
+            </motion.div>
             {form.models.length > 0 && (
               <p className="text-xs text-white/30">
                 {form.models.length} model{form.models.length > 1 ? 's' : ''} selected
@@ -988,13 +1050,15 @@ export default function PromptEditPage() {
                         <FileOutput size={14} />
                         <span className="text-xs font-mono">Example #{idx + 1}</span>
                       </div>
-                      <button
+                      <motion.button
                         type="button"
                         onClick={() => removeExample(ex._id)}
+                        whileHover={{ scale: 1.08 }}
+                        whileTap={{ scale: 0.92 }}
                         className="text-red-400/70 hover:text-red-400 transition-colors"
                       >
                         <Trash2 size={14} />
-                      </button>
+                      </motion.button>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1059,14 +1123,16 @@ export default function PromptEditPage() {
               ))}
             </AnimatePresence>
 
-            <button
+            <motion.button
               type="button"
               onClick={addExample}
+              whileHover={{ y: -2, borderColor: 'rgba(201,168,76,0.4)' }}
+              whileTap={{ scale: 0.98 }}
               className="w-full flex items-center gap-2 px-4 py-3 rounded-xl border border-dashed border-white/20 text-white/50 hover:text-white hover:border-[#C9A84C]/40 transition-colors justify-center text-sm"
             >
               <Plus size={16} />
               {t('promptCreate.addExample') || 'Add Example'}
-            </button>
+            </motion.button>
           </Section>
 
           {/* Prompts — Drag reorder */}
@@ -1091,6 +1157,7 @@ export default function PromptEditPage() {
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.18 }}
                     className="bg-white/[0.03] border border-white/10 rounded-xl p-5 space-y-4 cursor-grab active:cursor-grabbing"
+                    whileHover={{ y: -2, borderColor: 'rgba(201,168,76,0.22)' }}
                     whileDrag={{ scale: 1.02, boxShadow: '0 8px 32px rgba(201,168,76,0.2)' }}
                   >
                     {/* Prompt header */}
@@ -1102,14 +1169,16 @@ export default function PromptEditPage() {
                         </span>
                       </div>
                       {form.prompts.length > 1 && (
-                        <button
+                        <motion.button
                           type="button"
                           onClick={() => removePrompt(prompt._id)}
+                          whileHover={{ scale: 1.08 }}
+                          whileTap={{ scale: 0.92 }}
                           className="text-red-400/70 hover:text-red-400 transition-colors"
                           title="Remove prompt"
                         >
                           <Trash2 size={15} />
-                        </button>
+                        </motion.button>
                       )}
                     </div>
 
@@ -1166,14 +1235,16 @@ export default function PromptEditPage() {
                         <span className="text-xs text-white/40 font-medium uppercase tracking-wide">
                           {t('promptCreate.variables') || 'Variables'}
                         </span>
-                        <button
+                        <motion.button
                           type="button"
                           onClick={() => addVariable(prompt._id)}
+                          whileHover={{ x: 1 }}
+                          whileTap={{ scale: 0.97 }}
                           className="flex items-center gap-1 text-xs text-[#C9A84C] hover:text-[#E5C767] transition-colors"
                         >
                           <Plus size={13} />
                           {t('promptCreate.addVariable') || 'Add Variable'}
-                        </button>
+                        </motion.button>
                       </div>
 
                       <AnimatePresence initial={false}>
@@ -1191,13 +1262,15 @@ export default function PromptEditPage() {
                                 <span className="text-xs text-white/30 font-mono">
                                   {'{{'}{v.name || `var_${varIdx + 1}`}{'}}'}
                                 </span>
-                                <button
+                                <motion.button
                                   type="button"
                                   onClick={() => removeVariable(prompt._id, varIdx)}
+                                  whileHover={{ scale: 1.08 }}
+                                  whileTap={{ scale: 0.92 }}
                                   className="text-red-400/60 hover:text-red-400 transition-colors"
                                 >
                                   <Trash2 size={13} />
-                                </button>
+                                </motion.button>
                               </div>
 
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -1256,22 +1329,26 @@ export default function PromptEditPage() {
 
             {/* Add Prompt + Bulk Import */}
             <div className="flex gap-3">
-              <button
+              <motion.button
                 type="button"
                 onClick={addPrompt}
+                whileHover={{ y: -2, borderColor: 'rgba(201,168,76,0.4)' }}
+                whileTap={{ scale: 0.98 }}
                 className="flex-1 flex items-center gap-2 px-4 py-3 rounded-xl border border-dashed border-white/20 text-white/50 hover:text-white hover:border-[#C9A84C]/40 transition-colors justify-center text-sm"
               >
                 <Plus size={16} />
                 {t('promptCreate.addPrompt') || 'Add Prompt'}
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 type="button"
                 onClick={() => bulkInputRef.current?.click()}
+                whileHover={{ y: -2, borderColor: 'rgba(16,185,129,0.4)' }}
+                whileTap={{ scale: 0.98 }}
                 className="flex items-center gap-2 px-4 py-3 rounded-xl border border-dashed border-white/20 text-white/50 hover:text-white hover:border-emerald-500/40 transition-colors text-sm"
               >
                 <Upload size={16} />
                 Import
-              </button>
+              </motion.button>
               <input
                 ref={bulkInputRef}
                 type="file"
@@ -1298,15 +1375,19 @@ export default function PromptEditPage() {
 
           {/* Submit */}
           <div className="flex items-center justify-end gap-4 pt-2 pb-8">
-            <Link
+            <MotionLink
               to="/prompt-market/sell"
+              whileHover={{ y: -1 }}
+              whileTap={{ scale: 0.97 }}
               className="px-5 py-2.5 rounded-xl border border-white/10 text-white/60 hover:text-white hover:border-white/20 text-sm transition"
             >
               {t('common.cancel') || 'Cancel'}
-            </Link>
-            <button
+            </MotionLink>
+            <motion.button
               type="submit"
               disabled={saving}
+              whileHover={{ y: -2, scale: 1.01 }}
+              whileTap={{ scale: 0.97 }}
               className="flex items-center gap-2 px-8 py-3.5 rounded-xl bg-[#C9A84C] text-white font-semibold hover:bg-[#B8963F] disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-[0_0_20px_rgba(201,168,76,0.3)]"
             >
               {saving ? (
@@ -1317,10 +1398,10 @@ export default function PromptEditPage() {
               {saving
                 ? t('common.saving') || 'Saving...'
                 : t('promptEdit.saveChanges') || 'Save Changes'}
-            </button>
+            </motion.button>
           </div>
-        </form>
-      </div>
+        </motion.form>
+      </motion.div>
     </div>
   );
 }

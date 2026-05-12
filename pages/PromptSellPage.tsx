@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import {
   Plus,
   Loader2,
@@ -43,6 +43,32 @@ interface EarningsData {
 
 const CATEGORIES = ['all', 'coding', 'writing', 'marketing', 'design', 'business', 'education', 'other'] as const;
 const STATUSES = ['all', 'active', 'draft', 'pending', 'rejected', 'archived'] as const;
+
+const pageVariants: Variants = {
+  hidden: { opacity: 0, y: 18 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.32, ease: 'easeOut', staggerChildren: 0.08 },
+  },
+};
+
+const riseVariants: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.26, ease: 'easeOut' } },
+};
+
+const cardGridVariants: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.07, delayChildren: 0.08 } },
+};
+
+const rowVariants: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.22, ease: 'easeOut' } },
+};
+
+const MotionLink = motion(Link);
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 
@@ -211,12 +237,14 @@ export default function PromptSellPage() {
               You need to be logged in to access your Seller Dashboard.
             </p>
           </div>
-          <button
+          <motion.button
             onClick={login}
+            whileHover={{ y: -1, scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
             className="w-full py-3 rounded-xl bg-[#C9A84C] hover:bg-[#B8963F] text-white font-medium transition-colors"
           >
             Sign In
-          </button>
+          </motion.button>
         </motion.div>
       </div>
     );
@@ -248,27 +276,38 @@ export default function PromptSellPage() {
 
   return (
     <div className="min-h-screen bg-black/95">
-      <div className="max-w-6xl mx-auto px-4 py-12">
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={pageVariants}
+        className="max-w-6xl mx-auto px-4 py-12"
+      >
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <motion.div variants={riseVariants} className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl font-semibold text-white">Seller Dashboard</h1>
             <p className="text-white/40 text-sm mt-1">Manage your prompt listings and track earnings</p>
           </div>
-          <Link
+          <MotionLink
             to="/prompt-market/sell/new"
+            whileHover={{ y: -2, scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#C9A84C] hover:bg-[#B8963F] text-white text-sm font-medium transition-colors"
           >
             <Plus size={16} />
             Create New
-          </Link>
-        </div>
+          </MotionLink>
+        </motion.div>
 
         {/* Earnings summary cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <motion.div variants={cardGridVariants} className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           {/* Total Sales */}
-          <div className="bg-white/[0.06] border border-white/8 rounded-xl p-4">
+          <motion.div
+            variants={riseVariants}
+            whileHover={{ y: -4, borderColor: 'rgba(201,168,76,0.28)' }}
+            className="bg-white/[0.06] border border-white/8 rounded-xl p-4"
+          >
             <div className="flex items-center gap-2 mb-2">
               <TrendingUp size={15} className="text-white/40" />
               <span className="text-xs text-white/40 uppercase tracking-wider font-mono">Total Sales</span>
@@ -276,10 +315,14 @@ export default function PromptSellPage() {
             <p className="text-xl font-bold text-white font-mono">
               {loadingEarnings ? '...' : earnings.totalSales}
             </p>
-          </div>
+          </motion.div>
 
           {/* Total Earned */}
-          <div className="bg-white/[0.06] border border-white/8 rounded-xl p-4">
+          <motion.div
+            variants={riseVariants}
+            whileHover={{ y: -4, borderColor: 'rgba(201,168,76,0.28)' }}
+            className="bg-white/[0.06] border border-white/8 rounded-xl p-4"
+          >
             <div className="flex items-center gap-2 mb-2">
               <Coins size={15} className="text-yellow-400" />
               <span className="text-xs text-white/40 uppercase tracking-wider font-mono">Total Earned</span>
@@ -287,10 +330,14 @@ export default function PromptSellPage() {
             <p className="text-xl font-bold text-white font-mono">
               {loadingEarnings ? '...' : `${earnings.totalEarned.toLocaleString()} SKT`}
             </p>
-          </div>
+          </motion.div>
 
           {/* SKT Balance + Withdraw */}
-          <div className="bg-white/[0.06] border border-white/8 rounded-xl p-4">
+          <motion.div
+            variants={riseVariants}
+            whileHover={{ y: -4, borderColor: 'rgba(201,168,76,0.28)' }}
+            className="bg-white/[0.06] border border-white/8 rounded-xl p-4"
+          >
             <div className="flex items-center gap-2 mb-2">
               <Wallet size={15} className="text-[#C9A84C]" />
               <span className="text-xs text-white/40 uppercase tracking-wider font-mono">SKT Balance</span>
@@ -306,8 +353,8 @@ export default function PromptSellPage() {
                 Withdraw →
               </Link>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Error banner */}
         <AnimatePresence>
@@ -436,7 +483,12 @@ export default function PromptSellPage() {
                     </div>
 
                     {/* Table rows */}
-                    <div className="divide-y divide-white/[0.06]">
+                    <motion.div
+                      variants={cardGridVariants}
+                      initial="hidden"
+                      animate="visible"
+                      className="divide-y divide-white/[0.06]"
+                    >
                       {filteredListings.map((listing) => {
                         const title =
                           listing.title[lang as keyof typeof listing.title] ??
@@ -445,8 +497,10 @@ export default function PromptSellPage() {
                         const isDeleting = deletingId === listing._id;
 
                         return (
-                          <div
+                          <motion.div
                             key={listing._id}
+                            variants={rowVariants}
+                            whileHover={{ backgroundColor: 'rgba(255,255,255,0.045)', x: 2 }}
                             className={`flex flex-col md:grid md:grid-cols-[1fr_120px_90px_80px_70px_110px] gap-2 md:gap-4 px-5 py-4 items-start md:items-center transition-colors hover:bg-white/[0.03] ${isDeleting ? 'opacity-50 pointer-events-none' : ''}`}
                           >
                             {/* Title + cover thumbnail */}
@@ -492,23 +546,29 @@ export default function PromptSellPage() {
 
                             {/* Actions */}
                             <div className="flex items-center gap-2 md:justify-end">
-                              <Link
+                              <MotionLink
                                 to={`/prompt-market/${listing.slug}`}
+                                whileHover={{ scale: 1.06 }}
+                                whileTap={{ scale: 0.94 }}
                                 className="inline-flex items-center gap-1 p-1.5 rounded-lg bg-white/[0.06] hover:bg-white/10 text-white/40 hover:text-white text-xs transition-colors"
                                 title="View"
                               >
                                 <Eye size={12} />
-                              </Link>
-                              <Link
+                              </MotionLink>
+                              <MotionLink
                                 to={`/prompt-market/sell/edit/${listing._id}`}
+                                whileHover={{ y: -1, scale: 1.03 }}
+                                whileTap={{ scale: 0.96 }}
                                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/10 text-white/60 hover:text-white text-xs transition-colors"
                               >
                                 <Pencil size={12} />
                                 Edit
-                              </Link>
-                              <button
+                              </MotionLink>
+                              <motion.button
                                 onClick={() => handleDelete(listing._id, title)}
                                 disabled={isDeleting}
+                                whileHover={{ y: -1, scale: 1.03 }}
+                                whileTap={{ scale: 0.96 }}
                                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 text-xs transition-colors"
                               >
                                 {isDeleting ? (
@@ -517,12 +577,12 @@ export default function PromptSellPage() {
                                   <Trash2 size={12} />
                                 )}
                                 Delete
-                              </button>
+                              </motion.button>
                             </div>
-                          </div>
+                          </motion.div>
                         );
                       })}
-                    </div>
+                    </motion.div>
                   </div>
                 </>
               )}
@@ -554,10 +614,17 @@ export default function PromptSellPage() {
                     <span className="text-right">Date</span>
                   </div>
 
-                  <div className="divide-y divide-white/[0.06]">
+                  <motion.div
+                    variants={cardGridVariants}
+                    initial="hidden"
+                    animate="visible"
+                    className="divide-y divide-white/[0.06]"
+                  >
                     {earnings.recentSales.map((sale) => (
-                      <div
+                      <motion.div
                         key={sale._id}
+                        variants={rowVariants}
+                        whileHover={{ backgroundColor: 'rgba(255,255,255,0.045)', x: 2 }}
                         className="flex flex-col md:grid md:grid-cols-[1fr_1fr_100px_100px_110px] gap-2 md:gap-4 px-5 py-4 items-start md:items-center hover:bg-white/[0.03] transition-colors"
                       >
                         {/* Buyer */}
@@ -598,16 +665,16 @@ export default function PromptSellPage() {
                         <span className="text-white/30 text-xs md:text-right">
                           {formatDate(sale.createdAt)}
                         </span>
-                      </div>
+                      </motion.div>
                     ))}
-                  </div>
+                  </motion.div>
                 </div>
               )}
             </motion.div>
           )}
 
         </AnimatePresence>
-      </div>
+      </motion.div>
     </div>
   );
 }

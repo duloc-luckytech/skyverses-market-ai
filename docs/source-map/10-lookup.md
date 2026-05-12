@@ -5,6 +5,7 @@
 | Add a new product route | `App.tsx` (thêm vào `pageImports` + `<Route>`) |
 | Add new API call | `apis/<domain>.ts` |
 | Edit homepage block ordering | `constants/market-config.tsx` + `pages/MarketPage.tsx` |
+| Remake Market product content/assets | live `/market` API + `tmp/market-products-remake-plan.json` / `tmp/market-products-asset-jobs.json`; frontend uses `bannerUrl` for hero and `thumbnailUrl` for cards when backend schema is deployed |
 | Add/edit prompt templates | `constants/prompt-templates.ts` (shared by PromptCreatePage + PromptEditPage) |
 | Tweak header / menu | `components/Header.tsx` |
 | Add language string | `context/LanguageContext.tsx` (translation map) |
@@ -30,6 +31,7 @@
 | Generate landing images | `scripts/gen_<product>_*.sh` |
 | Sync CDN URLs | `scripts/<product>_cdn*.sh` + result vào `src/constants/<product>-cdn.ts` |
 | Seed DB | root `seed-products.mjs` hoặc backend `src/scripts/seed*.ts` |
+| Add/auto-random Prompt Market blueprint pack | `skyverses-backend/src/scripts/prompt-market-blueprint.ts` (`PROMPT_MARKET_BLUEPRINT_STANDARD`, `validatePromptMarketBlueprintStandard`, `pickRandomPromptMarketBlueprintId`) + `generate-prompt-market-assets.ts` (video must use same-pack image references before upload) |
 | Deploy | `deploy.sh` (pm2 via `ecosystem.config.cjs`) |
 | SKT wallet / top-up / withdraw | `pages/SkyTokenPage.tsx` + `apis/skytoken.ts` + `components/skytoken/SkyTokenPurchaseModal.tsx` + backend `routes/skytoken.router.ts` |
 | Prompt marketplace | `pages/Prompt*.tsx` (6 page) + `apis/prompt-market.ts` + `components/prompt-market/` (3 file) + backend `routes/prompt-market.router.ts` |

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import {
   Loader2,
   ArrowLeft,
@@ -32,6 +32,48 @@ import type { SellerProfile, SellerBadge } from '../types';
 const fmtDate = (iso: string) =>
   new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
+const EASE_OUT_EXPO: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
+const pageVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { duration: 0.5, ease: EASE_OUT_EXPO, staggerChildren: 0.06 },
+  },
+};
+
+const headerVariants: Variants = {
+  hidden: { opacity: 0, y: 18 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE_OUT_EXPO } },
+};
+
+const heroVariants: Variants = {
+  hidden: { opacity: 0, y: 26 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: EASE_OUT_EXPO, staggerChildren: 0.07, delayChildren: 0.08 },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 18, scale: 0.98 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.45, ease: EASE_OUT_EXPO } },
+};
+
+const gridVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.055, delayChildren: 0.08 },
+  },
+};
+
+const stateVariants: Variants = {
+  hidden: { opacity: 0, y: 18, scale: 0.98 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: EASE_OUT_EXPO } },
+};
+
 const BADGE_CONFIG: Record<SellerBadge['type'], { icon: React.ReactNode; color: string; bg: string }> = {
   verified: {
     icon: <BadgeCheck className="w-3.5 h-3.5" />,
@@ -59,11 +101,16 @@ const BADGE_CONFIG: Record<SellerBadge['type'], { icon: React.ReactNode; color: 
 const StatCard: React.FC<{ icon: React.ReactNode; label: string; value: string | number }> = ({
   icon, label, value,
 }) => (
-  <div className="flex flex-col items-center gap-1.5 p-4 rounded-xl bg-white/[0.02] border border-white/[0.05]">
+  <motion.div
+    variants={itemVariants}
+    whileHover={{ y: -4, scale: 1.02, borderColor: 'rgba(201,168,76,0.28)' }}
+    whileTap={{ scale: 0.98 }}
+    className="flex flex-col items-center gap-1.5 p-4 rounded-xl bg-white/[0.02] border border-white/[0.05] transition-colors"
+  >
     <span className="text-[#C9A84C]/60">{icon}</span>
     <span className="text-lg font-bold text-white">{value}</span>
     <span className="text-[11px] text-white/30 uppercase tracking-wider">{label}</span>
-  </div>
+  </motion.div>
 );
 
 /* ═══════════════════════════════════════════════════
@@ -119,32 +166,59 @@ const PromptSellerProfilePage: React.FC = () => {
   /* ── loading ── */
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--atlas-bg-page)] flex flex-col items-center justify-center gap-4">
-        <Loader2 className="w-10 h-10 text-[#C9A84C] animate-spin" />
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={stateVariants}
+        className="min-h-screen bg-[var(--atlas-bg-page)] flex flex-col items-center justify-center gap-4"
+      >
+        <motion.div
+          animate={{ scale: [1, 1.08, 1], opacity: [0.7, 1, 0.7] }}
+          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+          className="w-16 h-16 rounded-xl bg-[#C9A84C]/10 border border-[#C9A84C]/20 flex items-center justify-center"
+        >
+          <Loader2 className="w-10 h-10 text-[#C9A84C] animate-spin" />
+        </motion.div>
         <span className="text-xs uppercase tracking-widest text-white/25 animate-pulse">
           Loading profile...
         </span>
-      </div>
+      </motion.div>
     );
   }
 
   /* ── not found ── */
   if (!profile) {
     return (
-      <div className="min-h-screen bg-[var(--atlas-bg-page)] flex flex-col items-center justify-center gap-6 px-4 text-center">
-        <User className="w-16 h-16 text-white/10" />
-        <h2 className="text-2xl font-bold text-white">Seller Not Found</h2>
-        <p className="text-white/35 max-w-sm">
-          This seller profile doesn&apos;t exist or has been removed.
-        </p>
-        <Link
-          to="/prompt-market"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C9A84C] text-black font-medium hover:bg-[#B8963F] transition active:scale-95"
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={stateVariants}
+        className="min-h-screen bg-[var(--atlas-bg-page)] flex flex-col items-center justify-center gap-6 px-4 text-center"
+      >
+        <motion.div
+          animate={{ y: [0, -6, 0] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+          className="w-20 h-20 rounded-xl bg-white/[0.02] border border-[#C9A84C]/15 flex items-center justify-center"
         >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Market
-        </Link>
-      </div>
+          <User className="w-10 h-10 text-white/10" />
+        </motion.div>
+        <motion.h2 variants={headerVariants} className="text-2xl font-bold text-white">Seller Not Found</motion.h2>
+        <motion.p variants={headerVariants} className="text-white/35 max-w-sm">
+          This seller profile doesn&apos;t exist or has been removed.
+        </motion.p>
+        <motion.div
+          whileHover={{ scale: 1.03, boxShadow: '0 12px 32px rgba(201,168,76,0.3)' }}
+          whileTap={{ scale: 0.97 }}
+        >
+          <Link
+            to="/prompt-market"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C9A84C] text-black font-medium hover:bg-[#B8963F] transition active:scale-95"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Market
+          </Link>
+        </motion.div>
+      </motion.div>
     );
   }
 
@@ -156,9 +230,17 @@ const PromptSellerProfilePage: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[var(--atlas-bg-page)] text-white">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={pageVariants}
+      className="min-h-screen bg-[var(--atlas-bg-page)] text-white"
+    >
       {/* ── Breadcrumb ── */}
-      <div className="border-b border-white/[0.04] bg-[var(--atlas-bg-page)]/80 backdrop-blur-lg sticky top-0 z-30">
+      <motion.div
+        variants={headerVariants}
+        className="border-b border-white/[0.04] bg-[var(--atlas-bg-page)]/80 backdrop-blur-lg sticky top-0 z-30"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-2 text-sm text-white/35">
           <Link to="/prompt-market" className="hover:text-white/60 transition-colors">
             Prompt Market
@@ -166,20 +248,24 @@ const PromptSellerProfilePage: React.FC = () => {
           <ChevronRight className="w-3.5 h-3.5 text-white/15" />
           <span className="text-white/60 truncate">{profile.name}</span>
         </div>
-      </div>
+      </motion.div>
 
       {/* ── Hero Profile ── */}
-      <div className="relative">
+      <motion.div variants={heroVariants} className="relative">
         {/* Cover gradient */}
-        <div className="h-40 sm:h-52 bg-gradient-to-br from-[#C9A84C]/15 via-[#8B7635]/10 to-[#060608]" />
+        <motion.div
+          initial={{ opacity: 0, scaleY: 0.96 }}
+          animate={{ opacity: 1, scaleY: 1 }}
+          transition={{ duration: 0.65, ease: EASE_OUT_EXPO }}
+          className="h-40 sm:h-52 bg-gradient-to-br from-[#C9A84C]/15 via-[#8B7635]/10 to-[#060608]"
+        />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 -mt-16 sm:-mt-20 relative z-10">
           <div className="flex flex-col sm:flex-row gap-5 sm:gap-6 items-start sm:items-end">
             {/* Avatar */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4 }}
+              variants={itemVariants}
+              whileHover={{ y: -4, scale: 1.02 }}
             >
               {profile.avatar ? (
                 <img
@@ -196,9 +282,7 @@ const PromptSellerProfilePage: React.FC = () => {
 
             {/* Name + badges + follow */}
             <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.1 }}
+              variants={itemVariants}
               className="flex-1 min-w-0 pb-1"
             >
               <div className="flex items-center gap-2.5 flex-wrap">
@@ -214,13 +298,15 @@ const PromptSellerProfilePage: React.FC = () => {
                   {profile.badges.map((badge) => {
                     const cfg = BADGE_CONFIG[badge.type];
                     return (
-                      <span
+                      <motion.span
                         key={badge.type}
+                        variants={itemVariants}
+                        whileHover={{ y: -2, scale: 1.04 }}
                         className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[11px] font-semibold ${cfg.color} ${cfg.bg}`}
                       >
                         {cfg.icon}
                         {badge.label}
-                      </span>
+                      </motion.span>
                     );
                   })}
                 </div>
@@ -229,15 +315,15 @@ const PromptSellerProfilePage: React.FC = () => {
 
             {/* Follow button */}
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.4, delay: 0.15 }}
+              variants={itemVariants}
               className="flex-shrink-0 sm:pb-1"
             >
               {isAuthenticated && (
-                <button
+                <motion.button
                   onClick={handleToggleFollow}
                   disabled={followLoading}
+                  whileHover={{ scale: 1.03, boxShadow: following ? 'none' : '0 12px 32px rgba(201,168,76,0.3)' }}
+                  whileTap={{ scale: 0.97 }}
                   className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 active:scale-95 ${
                     following
                       ? 'bg-white/[0.04] border border-white/[0.08] text-white/60 hover:border-red-500/30 hover:text-red-400'
@@ -255,16 +341,14 @@ const PromptSellerProfilePage: React.FC = () => {
                       {t('prompt_market.follow') || 'Follow'}
                     </>
                   )}
-                </button>
+                </motion.button>
               )}
             </motion.div>
           </div>
 
           {/* Bio + Social */}
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
+            variants={itemVariants}
             className="mt-5 max-w-2xl"
           >
             {profile.bio && (
@@ -280,25 +364,25 @@ const PromptSellerProfilePage: React.FC = () => {
                 {followerCount.toLocaleString()} {t('prompt_market.followers') || 'followers'}
               </span>
               {profile.socialLinks?.website && (
-                <a
+                <motion.a
                   href={profile.socialLinks.website}
                   target="_blank"
                   rel="noopener noreferrer"
+                  whileHover={{ x: 2 }}
+                  whileTap={{ scale: 0.98 }}
                   className="flex items-center gap-1 hover:text-[#C9A84C] transition-colors"
                 >
                   <Globe className="w-3.5 h-3.5" />
                   Website
                   <ExternalLink className="w-2.5 h-2.5" />
-                </a>
+                </motion.a>
               )}
             </div>
           </motion.div>
 
           {/* Stats grid */}
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.25 }}
+            variants={gridVariants}
             className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-8"
           >
             <StatCard
@@ -328,16 +412,18 @@ const PromptSellerProfilePage: React.FC = () => {
             />
           </motion.div>
         </div>
-      </div>
+      </motion.div>
 
       {/* ── Listings Section ── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+      <motion.div variants={headerVariants} className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
         {/* Tab bar */}
-        <div className="flex items-center gap-1 border-b border-white/[0.04] mb-6">
+        <motion.div variants={headerVariants} className="flex items-center gap-1 border-b border-white/[0.04] mb-6">
           {(['all', 'popular', 'newest'] as const).map((tab) => (
-            <button
+            <motion.button
               key={tab}
               onClick={() => setActiveTab(tab)}
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.96 }}
               className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors capitalize ${
                 activeTab === tab
                   ? 'border-[#C9A84C] text-[#C9A84C]'
@@ -349,30 +435,44 @@ const PromptSellerProfilePage: React.FC = () => {
                 : tab === 'popular'
                 ? t('prompt_market.most_popular') || 'Most Popular'
                 : t('prompt_market.newest') || 'Newest'}
-            </button>
+            </motion.button>
           ))}
           <span className="ml-auto text-xs text-white/20">
             {profile.totalListings} {t('prompt_market.results') || 'results'}
           </span>
-        </div>
+        </motion.div>
 
         {/* Grid */}
         {sortedListings.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <motion.div
+            variants={gridVariants}
+            key={activeTab}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+          >
             {sortedListings.map((ps, i) => (
-              <PromptSetCard key={ps._id} promptSet={ps} index={i} />
+              <motion.div key={ps._id} variants={itemVariants} whileHover={{ y: -5 }} whileTap={{ scale: 0.99 }}>
+                <PromptSetCard promptSet={ps} index={i} />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         ) : (
-          <div className="py-20 text-center">
-            <FileText className="w-12 h-12 text-white/10 mx-auto mb-4" />
+          <motion.div variants={stateVariants} className="py-20 text-center">
+            <motion.div
+              animate={{ y: [0, -5, 0] }}
+              transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+              className="w-16 h-16 rounded-xl bg-white/[0.02] border border-[#C9A84C]/15 flex items-center justify-center mx-auto mb-4"
+            >
+              <FileText className="w-8 h-8 text-white/10" />
+            </motion.div>
             <p className="text-white/30 text-sm">
               {t('prompt_market.no_listings') || 'No listings yet'}
             </p>
-          </div>
+          </motion.div>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
