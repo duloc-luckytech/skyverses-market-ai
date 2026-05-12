@@ -17,6 +17,21 @@ const router = express.Router();
 
 const PLATFORM_FEE_PERCENT = 10;
 
+const sanitizePromptSetPreview = (promptSet: any) => ({
+  ...promptSet,
+  prompts: (promptSet.prompts || []).map((prompt: any) => ({
+    _id: prompt._id,
+    title: prompt.title,
+    description: prompt.description,
+    variables: [],
+  })),
+  examples: (promptSet.examples || []).map((example: any) => ({
+    promptTitle: example.promptTitle,
+    image: example.image,
+    video: example.video,
+  })),
+});
+
 /* =====================================================
    HELPER: Generate slug from title
 ===================================================== */
@@ -103,7 +118,9 @@ router.get("/", async (req, res) => {
 });
 
 /* =====================================================
-   GET PROMPT SET DETAIL BY SLUG (PUBLIC — no full prompts)
+   GET PROMPT SET DETAIL BY SLUG
+   - Free prompt sets expose full content.
+   - Paid prompt sets expose only safe preview metadata; purchased content is loaded via /my-purchases.
 ===================================================== */
 router.get("/detail/:slug", async (req, res) => {
   try {
@@ -112,13 +129,12 @@ router.get("/detail/:slug", async (req, res) => {
       status: "active",
       isActive: true,
     })
-      .select("-prompts.content") // Ẩn nội dung prompt, chỉ trả title + description
       .populate("sellerId", "name avatar email")
       .lean();
 
     if (!promptSet) return res.status(404).json({ message: "NOT_FOUND" });
 
-    res.json({ data: promptSet });
+    res.json({ data: promptSet.isFree ? promptSet : sanitizePromptSetPreview(promptSet) });
   } catch (err: any) {
     res.status(500).json({ message: err.message });
   }
@@ -930,7 +946,7 @@ router.get("/:id/check-purchased", authenticate, async (req: any, res) => {
       buyerId: req.user.userId,
       promptSetId: req.params.id,
     });
-    res.json({ purchased: !!existing });
+    res.json({ purchased: !!existing, purchaseId: existing?._id });
   } catch (err: any) {
     res.status(500).json({ message: err.message });
   }

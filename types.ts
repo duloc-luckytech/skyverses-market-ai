@@ -171,6 +171,15 @@ export type AIModel =
   | 'midjourney' | 'dall-e-3'
   | 'stable-diffusion' | 'flux'
   | 'llama' | 'mistral'
+  | 'Nano Banana Pro' | 'Nano Banana 2'
+  | 'GPT Image' | 'Imagen 4'
+  | 'Midjourney V7' | 'Niji V7'
+  | 'FLUX.1 Kontext' | 'Seedream 4.0'
+  | 'Stable Diffusion 3.5' | 'Ideogram 3.0'
+  | 'Runway Gen-4.5' | 'Runway Gen-4'
+  | 'Veo 3.1' | 'Kling 3.0'
+  | 'Kling 3.0 Omni' | 'Seedance 2.0'
+  | 'Wan 2.2'
   | 'other';
 
 export interface PromptExample {

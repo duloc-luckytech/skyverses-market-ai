@@ -58,7 +58,7 @@ skyverses-backend/
 | `webhook.ts` | Provider webhooks |
 | `workerRouter.ts` | Worker control |
 | `skytoken.router.ts` | SKT balance, packages, purchase QR, history, claim welcome, admin add, withdrawal (request/cancel/my + admin approve/reject/complete) |
-| `prompt-market.router.ts` | Browse/search prompts with category/tags/models/media/price/rating/featured filters, purchase, seller profile/follow, wishlist, view tracking, related, earnings, reviews, admin clear/seed/append APIs |
+| `prompt-market.router.ts` | Browse/search prompts with category/tags/models/media/price/rating/featured filters, paid-detail preview sanitization, purchase, seller profile/follow, wishlist, view tracking, related, earnings, reviews, admin clear/seed/append APIs |
 
 ## Models — `src/models/` (41 Mongoose schemas)
 

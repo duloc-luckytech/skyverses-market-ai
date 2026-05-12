@@ -218,7 +218,7 @@ export const promptMarketApi = {
   /* ─── Check if already purchased ─── */
   checkPurchased: async (
     promptSetId: string
-  ): Promise<{ purchased: boolean }> => {
+  ): Promise<{ purchased: boolean; purchaseId?: string }> => {
     try {
       const response = await fetch(
         `${API_BASE_URL}/prompt-market/${promptSetId}/check-purchased`,

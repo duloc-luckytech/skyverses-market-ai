@@ -7,6 +7,7 @@ import {
   FileText, EyeOff, ArrowLeft, Check, Share2,
   Copy, ExternalLink, Flag, Star, Heart, Eye, Cpu,
   BadgeCheck, TrendingUp, ImageIcon, Video, PlayCircle,
+  BookOpen, Wand2, ListChecks, ShieldCheck,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -29,6 +30,23 @@ const MODEL_LABELS: Partial<Record<string, string>> = {
   'dall-e-3': 'DALL·E',
   'stable-diffusion': 'SD',
   'flux': 'Flux',
+  'Nano Banana Pro': 'Nano Banana Pro',
+  'Nano Banana 2': 'Nano Banana 2',
+  'GPT Image': 'GPT Image',
+  'Imagen 4': 'Imagen 4',
+  'Midjourney V7': 'Midjourney V7',
+  'Niji V7': 'Niji V7',
+  'FLUX.1 Kontext': 'FLUX.1 Kontext',
+  'Seedream 4.0': 'Seedream 4.0',
+  'Stable Diffusion 3.5': 'SD 3.5',
+  'Ideogram 3.0': 'Ideogram 3.0',
+  'Runway Gen-4.5': 'Runway Gen-4.5',
+  'Runway Gen-4': 'Runway Gen-4',
+  'Veo 3.1': 'Veo 3.1',
+  'Kling 3.0': 'Kling 3.0',
+  'Kling 3.0 Omni': 'Kling 3.0 Omni',
+  'Seedance 2.0': 'Seedance 2.0',
+  'Wan 2.2': 'Wan 2.2',
   'llama': 'Llama',
   'mistral': 'Mistral',
 };
@@ -66,6 +84,98 @@ const Stat: React.FC<{ icon: React.ReactNode; label: string; value: string | num
     <span className="text-sm text-white font-medium">{value}</span>
   </div>
 );
+
+const PromptUsageGuide: React.FC<{
+  promptSet: PromptSet;
+  canViewFullPrompt: boolean;
+  onPurchase: () => void;
+  onLogin: () => void;
+  isAuthenticated: boolean;
+}> = ({ promptSet, canViewFullPrompt, onPurchase, onLogin, isAuthenticated }) => {
+  const modelLabels = (promptSet.models ?? []).slice(0, 5).map((m) => MODEL_LABELS[m] ?? m);
+  const steps = canViewFullPrompt
+    ? [
+        {
+          icon: <ListChecks className="w-4 h-4" />,
+          title: 'Choose a prompt module',
+          body: 'Start with the board, poster, or video prompt that matches the output you want.',
+        },
+        {
+          icon: <Wand2 className="w-4 h-4" />,
+          title: 'Replace the variables',
+          body: 'Swap the project brief, hero subject, audience, style, and output format with your real campaign details.',
+        },
+        {
+          icon: <Cpu className="w-4 h-4" />,
+          title: 'Run on a recommended model',
+          body: modelLabels.length ? `Best starting models: ${modelLabels.join(', ')}.` : 'Use the compatible model list as your starting point.',
+        },
+        {
+          icon: <ImageIcon className="w-4 h-4" />,
+          title: 'Compare with the showcase',
+          body: 'Use the example media as a quality target, then iterate one variable at a time.',
+        },
+      ]
+    : [
+        {
+          icon: <ShieldCheck className="w-4 h-4" />,
+          title: 'Preview is protected',
+          body: 'Media, models, tags, and outcome summaries are visible, but the reusable prompt blueprint is locked.',
+        },
+        {
+          icon: <BookOpen className="w-4 h-4" />,
+          title: 'After purchase',
+          body: 'You unlock the full prompt modules, variables, copy buttons, and usage notes in My Purchases.',
+        },
+        {
+          icon: <Cpu className="w-4 h-4" />,
+          title: 'Model fit',
+          body: modelLabels.length ? `Designed for ${modelLabels.join(', ')}.` : 'Designed for modern image and video generation models.',
+        },
+      ];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.22 }}
+      className="rounded-2xl border border-white/[0.06] bg-white/[0.025] p-5 sm:p-6"
+    >
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#C9A84C]/70">
+            {canViewFullPrompt ? 'How to use this prompt pack' : 'How this pack works'}
+          </p>
+          <h3 className="mt-2 text-xl font-semibold text-white">
+            {canViewFullPrompt ? 'Use it like a production blueprint' : 'Preview the value without exposing the blueprint'}
+          </h3>
+        </div>
+        {!canViewFullPrompt && (
+          <button
+            onClick={isAuthenticated ? onPurchase : onLogin}
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#C9A84C]/30 px-4 py-2 text-sm font-semibold text-[#C9A84C] hover:bg-[#C9A84C]/10 transition"
+          >
+            <Lock className="w-4 h-4" />
+            {isAuthenticated ? 'Unlock full guide' : 'Login to unlock'}
+          </button>
+        )}
+      </div>
+
+      <div className="mt-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+        {steps.map((step, index) => (
+          <div key={step.title} className="rounded-xl border border-white/[0.06] bg-black/20 p-4">
+            <div className="flex items-center gap-2 text-[#C9A84C]">
+              {step.icon}
+              <span className="text-[11px] font-bold uppercase tracking-widest">Step {index + 1}</span>
+            </div>
+            <p className="mt-3 text-sm font-semibold text-white">{step.title}</p>
+            <p className="mt-1.5 text-xs leading-relaxed text-white/40">{step.body}</p>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+};
 
 const PromptShowcaseStage: React.FC<{
   promptSet: PromptSet;
@@ -244,6 +354,10 @@ const PromptShowcaseStage: React.FC<{
                     <video
                       src={activeMedia.url}
                       poster={activeMedia.poster}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
                       controls
                       preload="metadata"
                       className="w-full aspect-video object-cover bg-black"
@@ -280,10 +394,14 @@ const PromptShowcaseStage: React.FC<{
             </div>
           ) : (
             <div className="rounded-[20px] border border-[#d8c9a4] bg-[#fff9ec] p-5 shadow-sm">
-              <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Input Locked</p>
+              <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Safe Preview</p>
               <p className="mt-3 text-sm text-[#4b4035] leading-relaxed">
-                Purchase this prompt pack to view the input brief, variables, and full prompt structure.
+                This paid pack hides the exact input brief, variables, prompt structure, style recipe, and production notes until purchase.
               </p>
+              <div className="mt-4 flex items-center gap-2 rounded-xl border border-[#d8c9a4] bg-[#fbf1dc] px-3 py-2 text-xs font-medium text-[#806b4a]">
+                <Lock className="w-3.5 h-3.5" />
+                Blueprint protected
+              </div>
             </div>
           )}
 
@@ -314,12 +432,32 @@ const PromptShowcaseStage: React.FC<{
             </div>
           )}
 
-          <div className="rounded-[20px] border border-[#d8c9a4] bg-[#fff9ec] p-5 shadow-sm">
-            <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Output Result</p>
-            <p className="mt-3 text-sm text-[#4b4035] leading-relaxed">
-              {activeMedia.output || featuredPrompt?.description || description}
-            </p>
-          </div>
+          {canViewFullPrompt ? (
+            <div className="rounded-[20px] border border-[#d8c9a4] bg-[#fff9ec] p-5 shadow-sm">
+              <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Output Result</p>
+              <p className="mt-3 text-sm text-[#4b4035] leading-relaxed">
+                {activeMedia.output || featuredPrompt?.description || description}
+              </p>
+            </div>
+          ) : (
+            <div className="rounded-[20px] border border-[#d8c9a4] bg-[#fff9ec] p-5 shadow-sm">
+              <p className="font-serif italic text-sm uppercase tracking-[0.22em] text-[#806b4a]">Included After Purchase</p>
+              <div className="mt-3 space-y-2 text-sm text-[#4b4035]">
+                <div className="flex items-center justify-between gap-3">
+                  <span>Prompt modules</span>
+                  <span className="font-semibold">{promptSet.prompts.length}</span>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <span>Image outputs</span>
+                  <span className="font-semibold">{imageCount}</span>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <span>Video demos</span>
+                  <span className="font-semibold">{videoCount}</span>
+                </div>
+              </div>
+            </div>
+          )}
         </aside>
       </div>
     </motion.section>
@@ -372,6 +510,13 @@ const PromptDetailPage: React.FC = () => {
           ]);
           setAlreadyPurchased(purchaseCheck.purchased);
           setWishlisted(wishCheck.data[detailRes.data._id] ?? false);
+
+          if (purchaseCheck.purchased && purchaseCheck.purchaseId) {
+            const fullRes = await promptMarketApi.getMyPurchaseDetail(purchaseCheck.purchaseId);
+            if (fullRes.data?.promptSet) {
+              setPromptSet(fullRes.data.promptSet);
+            }
+          }
         }
       }
 
@@ -567,6 +712,14 @@ const PromptDetailPage: React.FC = () => {
               </motion.div>
             )}
 
+            <PromptUsageGuide
+              promptSet={promptSet}
+              canViewFullPrompt={canViewFullPrompt}
+              onPurchase={() => setShowPurchaseModal(true)}
+              onLogin={login}
+              isAuthenticated={isAuthenticated}
+            />
+
             {/* Prompt list */}
             <motion.div
               initial={{ opacity: 0, y: 12 }}
@@ -577,74 +730,87 @@ const PromptDetailPage: React.FC = () => {
                 Prompt Blueprint ({promptSet.prompts.length})
               </h3>
               <div className="space-y-3">
-                {promptSet.prompts.map((prompt, idx) => (
-                  <div
-                    key={idx}
-                    className="relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 flex items-start gap-4 hover:border-white/[0.1] transition-colors overflow-hidden"
-                  >
-                    <div className="w-7 h-7 rounded-lg bg-[#C9A84C]/15 border border-[#C9A84C]/25 flex items-center justify-center flex-shrink-0 text-xs font-bold text-[#C9A84C]">
-                      {idx + 1}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-3">
-                        <p className="font-medium text-white truncate text-sm">
-                          {typeof prompt.title === 'object'
-                            ? loc(prompt.title as Parameters<typeof loc>[0])
-                            : prompt.title}
-                        </p>
-                        {canViewFullPrompt && (
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(prompt.content);
-                              setCopied(true);
-                              setTimeout(() => setCopied(false), 2000);
-                            }}
-                            className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.08] px-2 py-1 text-[11px] text-white/45 hover:border-[#C9A84C]/30 hover:text-[#C9A84C] transition"
-                          >
-                            <Copy className="w-3 h-3" />
-                            Copy
-                          </button>
-                        )}
+                {promptSet.prompts.map((prompt, idx) => {
+                  const promptContent = prompt.content || '';
+                  return (
+                    <div
+                      key={idx}
+                      className="relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 flex items-start gap-4 hover:border-white/[0.1] transition-colors overflow-hidden"
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-[#C9A84C]/15 border border-[#C9A84C]/25 flex items-center justify-center flex-shrink-0 text-xs font-bold text-[#C9A84C]">
+                        {idx + 1}
                       </div>
-                      {prompt.description && (
-                        <p className="text-xs text-white/35 mt-1 line-clamp-2">
-                          {typeof prompt.description === 'object'
-                            ? loc(prompt.description as Parameters<typeof loc>[0])
-                            : prompt.description}
-                        </p>
-                      )}
-                      {prompt.variables && prompt.variables.length > 0 && (
-                        <div className="mt-2 flex flex-wrap gap-1.5">
-                          {prompt.variables.map((v) => (
-                            <span
-                              key={v.name}
-                              className="px-2 py-0.5 rounded-md bg-[#C9A84C]/[0.08] border border-[#C9A84C]/15 text-[10px] text-[#C9A84C]/70 font-mono"
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-3">
+                          <p className="font-medium text-white truncate text-sm">
+                            {typeof prompt.title === 'object'
+                              ? loc(prompt.title as Parameters<typeof loc>[0])
+                              : prompt.title}
+                          </p>
+                          {canViewFullPrompt && promptContent && (
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(promptContent);
+                                setCopied(true);
+                                setTimeout(() => setCopied(false), 2000);
+                              }}
+                              className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.08] px-2 py-1 text-[11px] text-white/45 hover:border-[#C9A84C]/30 hover:text-[#C9A84C] transition"
                             >
-                              {`{{${v.name}}}`}
-                            </span>
-                          ))}
+                              <Copy className="w-3 h-3" />
+                              Copy
+                            </button>
+                          )}
                         </div>
-                      )}
-                      <div className="mt-3 rounded-lg border border-white/[0.05] bg-black/20 p-3">
-                        <pre className={`whitespace-pre-wrap break-words font-mono text-xs leading-relaxed ${
-                          canViewFullPrompt
-                            ? 'text-white/65'
-                            : 'max-h-20 select-none overflow-hidden blur-[3px] text-white/35'
-                        }`}>
-                          {prompt.content}
-                        </pre>
-                        {!canViewFullPrompt && (
-                          <div className="absolute inset-x-0 bottom-0 flex justify-center bg-gradient-to-t from-[#101015] via-[#101015]/90 to-transparent pb-4 pt-16">
-                            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#C9A84C]/25 bg-black/65 px-3 py-1.5 text-[11px] font-semibold text-[#C9A84C] backdrop-blur">
-                              <Lock className="w-3 h-3" />
-                              Paid prompt is hidden until purchase
-                            </span>
+                        {prompt.description && (
+                          <p className="text-xs text-white/35 mt-1 line-clamp-2">
+                            {typeof prompt.description === 'object'
+                              ? loc(prompt.description as Parameters<typeof loc>[0])
+                              : prompt.description}
+                          </p>
+                        )}
+                        {canViewFullPrompt && prompt.variables && prompt.variables.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-1.5">
+                            {prompt.variables.map((v) => (
+                              <span
+                                key={v.name}
+                                className="px-2 py-0.5 rounded-md bg-[#C9A84C]/[0.08] border border-[#C9A84C]/15 text-[10px] text-[#C9A84C]/70 font-mono"
+                              >
+                                {`{{${v.name}}}`}
+                              </span>
+                            ))}
                           </div>
                         )}
+                        <div className="mt-3 rounded-lg border border-white/[0.05] bg-black/20 p-3">
+                          {canViewFullPrompt && promptContent ? (
+                            <pre className="whitespace-pre-wrap break-words font-mono text-xs leading-relaxed text-white/65">
+                              {promptContent}
+                            </pre>
+                          ) : canViewFullPrompt ? (
+                            <div className="flex items-center gap-2 text-xs text-white/35">
+                              <Loader2 className="w-3.5 h-3.5 animate-spin text-[#C9A84C]" />
+                              Loading unlocked prompt content...
+                            </div>
+                          ) : (
+                            <div className="relative min-h-24 overflow-hidden">
+                              <div className="space-y-2 select-none blur-[2px]">
+                                <div className="h-2.5 w-full rounded bg-white/20" />
+                                <div className="h-2.5 w-10/12 rounded bg-white/15" />
+                                <div className="h-2.5 w-11/12 rounded bg-white/15" />
+                                <div className="h-2.5 w-8/12 rounded bg-white/10" />
+                              </div>
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#C9A84C]/25 bg-black/70 px-3 py-1.5 text-[11px] font-semibold text-[#C9A84C] backdrop-blur">
+                                  <Lock className="w-3 h-3" />
+                                  Paid prompt is hidden until purchase
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </motion.div>
 
