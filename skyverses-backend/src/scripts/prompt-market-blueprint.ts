@@ -69,13 +69,26 @@ interface AssetResolvers {
   video: (name: string) => string | undefined;
 }
 
+export type PromptMarketImageRole = "cover" | "example" | "poster" | "technical-board" | "thumbnail";
+export type PromptMarketVideoRole = "video-demo";
+export type PromptMarketAssetRole = PromptMarketImageRole | PromptMarketVideoRole;
+
+export const PROMPT_MARKET_BLUEPRINT_STANDARD = {
+  imageRoles: ["cover", "technical-board", "poster", "example", "thumbnail"] as PromptMarketImageRole[],
+  videoRoles: ["video-demo"] as PromptMarketVideoRole[],
+  videoReferenceRoles: ["thumbnail", "cover", "technical-board", "example"] as PromptMarketImageRole[],
+  promptCount: 6,
+  exampleCount: 3,
+} as const;
+
 export interface PromptMarketAssetTask {
   id: string;
   packId: string;
   type: "image" | "video";
-  role: "cover" | "example" | "poster" | "technical-board" | "thumbnail" | "video-demo";
+  role: PromptMarketAssetRole;
   aspectRatio: "16:9" | "9:16" | "1:1" | "4:5";
   prompt: string;
+  referenceRoles?: PromptMarketImageRole[];
 }
 
 const joinList = (items: string[]) => items.filter(Boolean).slice(0, 8).join(", ");
@@ -1431,7 +1444,640 @@ const FILM_BLUEPRINTS: PromptBlueprint[] = [
   }),
 ];
 
-const ALL_BLUEPRINTS = [...BLUEPRINTS, ...FOOD_BLUEPRINTS, ...FILM_BLUEPRINTS];
+const BROAD_BLUEPRINTS: PromptBlueprint[] = [
+  makeFilmBlueprint({
+    id: "streetwear-drop-campaign-kit",
+    title: { en: "Streetwear Drop Campaign Kit", vi: "Bộ prompt campaign drop streetwear" },
+    category: "design",
+    sellerIdx: 3,
+    tags: ["visual","fashion","streetwear","lookbook","social","video"],
+    priceSKT: 170,
+    domain: "fashion streetwear drop visual system",
+    heroSubject: "a streetwear collection launch board with oversized hoodie hero, sneaker detail crops, graffiti wall lookbook, size chart modules, social drop countdown, and cinematic product teaser frames",
+    audience: "streetwear brands, fashion creators, DTC shops, and social content teams",
+    outputSystem: "streetwear lookbook, product hero, drop poster, social countdown, detail sheet, and video teaser prompt",
+    visualLanguage: "urban editorial fashion photography, bold type-safe layout, gritty premium lookbook energy",
+    materialSystem: "heavy cotton fleece, sneaker rubber, metal zippers, wall paint, flash photography, hang tags, asphalt texture",
+    layoutSystem: "hero outfit center, product detail crops, variant grid, drop countdown strip, CTA module",
+    motionSystem: "flash pops, model turns, hoodie fabric moves, sneaker steps forward, countdown hits zero",
+    businessUse: "create a full visual campaign for a limited fashion drop",
+    description: {
+      en: "A fashion visual prompt pack for streetwear drops, lookbooks, product posters, social countdowns, and teaser videos.",
+      vi: "Bộ prompt visual thời trang cho streetwear drop, lookbook, poster sản phẩm, countdown social và video teaser.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "luxury-perfume-visual-story",
+    title: { en: "Luxury Perfume Visual Story", vi: "Bộ prompt visual nước hoa cao cấp" },
+    category: "marketing",
+    sellerIdx: 11,
+    tags: ["visual","perfume","luxury","beauty","product-shot","video"],
+    priceSKT: 175,
+    domain: "luxury fragrance product campaign",
+    heroSubject: "a luxury perfume visual story with glass bottle macro, scent ingredient moodboard, editorial lifestyle scene, packaging ritual, boutique poster, and cinematic mist video frames",
+    audience: "beauty brands, perfume houses, product photographers, and luxury marketers",
+    outputSystem: "perfume campaign hero, ingredient board, packaging poster, social ad set, and video storyboard",
+    visualLanguage: "high-end fragrance advertising, sensual macro lighting, elegant negative space, premium editorial art direction",
+    materialSystem: "cut crystal glass, atomizer mist, velvet box, citrus peel, rose petals, polished stone, gold foil",
+    layoutSystem: "bottle hero, ingredient swatches, lifestyle frame, packaging ritual, tagline-safe space",
+    motionSystem: "mist blooms, bottle rotates, light glides over glass, ingredients float, final boutique hero",
+    businessUse: "create premium perfume images and short videos for launch campaigns",
+    description: {
+      en: "A luxury fragrance prompt pack for bottle visuals, ingredient boards, posters, social ads, and cinematic product videos.",
+      vi: "Bộ prompt nước hoa luxury cho visual chai, ingredient board, poster, social ads và video sản phẩm cinematic.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "coffee-brand-editorial-system",
+    title: { en: "Coffee Brand Editorial System", vi: "Hệ prompt editorial thương hiệu cà phê" },
+    category: "marketing",
+    sellerIdx: 1,
+    tags: ["visual","coffee","food","branding","poster","video"],
+    priceSKT: 150,
+    domain: "coffee brand editorial advertising",
+    heroSubject: "a coffee brand editorial system with bag packaging, espresso pour macro, cafe lifestyle scene, origin map, roast profile cards, menu poster, and slow-motion steam video",
+    audience: "coffee roasters, cafes, beverage brands, and hospitality marketers",
+    outputSystem: "coffee product hero, packaging board, cafe campaign poster, roast profile infographic, social kit, and video prompt",
+    visualLanguage: "warm editorial cafe photography, tactile packaging detail, premium but approachable brand layout",
+    materialSystem: "kraft bags, ceramic cups, crema foam, roasted beans, wood counter, steam, paper labels",
+    layoutSystem: "packshot hero, roast cards, origin map, cafe lifestyle strip, CTA menu block",
+    motionSystem: "espresso pours, steam rises, beans tumble, label slides in, final cup hero",
+    businessUse: "build a coffee visual identity and ad system from one roast brief",
+    description: {
+      en: "A coffee prompt pack for packaging shots, cafe posters, roast cards, menus, social ads, and beverage videos.",
+      vi: "Bộ prompt cà phê cho ảnh packaging, poster cafe, roast card, menu, social ads và video đồ uống.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "korean-beauty-product-launch",
+    title: { en: "K-Beauty Product Launch Kit", vi: "Bộ prompt launch sản phẩm K-beauty" },
+    category: "marketing",
+    sellerIdx: 11,
+    tags: ["visual","beauty","skincare","korean","ads","video"],
+    priceSKT: 160,
+    domain: "K-beauty skincare product launch",
+    heroSubject: "a K-beauty product launch kit with dewy skincare packshot, texture smear swatches, bathroom shelf scene, ingredient callouts, routine cards, influencer social ads, and glossy video demo",
+    audience: "skincare brands, beauty sellers, influencers, and DTC marketers",
+    outputSystem: "beauty hero image, texture board, routine infographic, social ad carousel, influencer brief, and product video prompt",
+    visualLanguage: "clean Korean beauty aesthetic, dewy soft light, pastel commerce layout, ingredient transparency design",
+    materialSystem: "glass jars, serum drops, water gel, ceramic shelf, botanical extracts, satin towel, pearl glow",
+    layoutSystem: "product hero, ingredient side cards, texture strip, routine steps, social crop zones",
+    motionSystem: "dropper releases serum, gel texture glides, routine cards flip, bottle catches light",
+    businessUse: "launch beauty products with polished image and video prompts",
+    description: {
+      en: "A K-beauty prompt pack for skincare visuals, ingredient boards, routine cards, social ads, and product videos.",
+      vi: "Bộ prompt K-beauty cho visual skincare, ingredient board, routine card, social ads và video sản phẩm.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "anime-food-commercial-board",
+    title: { en: "Anime Food Commercial Board", vi: "Bảng prompt quảng cáo món ăn anime" },
+    category: "design",
+    sellerIdx: 9,
+    tags: ["visual","anime","food","restaurant","poster","video"],
+    priceSKT: 155,
+    domain: "anime food commercial art direction",
+    heroSubject: "an anime food commercial board with ramen hero bowl, steam effects, chef character, ingredient close-ups, poster title zone, social thumbnails, and 8-second food animation panels",
+    audience: "anime creators, restaurants, food brands, and short video storytellers",
+    outputSystem: "anime food key visual, ingredient board, campaign poster, thumbnail set, and video storyboard",
+    visualLanguage: "mouthwatering anime rendering, cinematic steam, expressive character staging, bright commercial layout",
+    materialSystem: "noodle sheen, broth glow, sliced egg, wooden counter, lantern light, chopsticks, speed lines",
+    layoutSystem: "hero food frame, ingredient callouts, chef character card, poster crop, video panels",
+    motionSystem: "steam curls, noodles lift, chef smiles, broth sparkles, final poster hit",
+    businessUse: "make food ads feel emotional, animated, and highly shareable",
+    description: {
+      en: "An anime food prompt pack for restaurant visuals, food posters, thumbnails, characters, and animated video prompts.",
+      vi: "Bộ prompt anime food cho visual nhà hàng, poster món ăn, thumbnail, nhân vật và video animation.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "anime-character-merch-pack",
+    title: { en: "Anime Character Merch Pack", vi: "Bộ prompt nhân vật anime và merchandise" },
+    category: "design",
+    sellerIdx: 9,
+    tags: ["visual","anime","character","merch","vtuber","video"],
+    priceSKT: 165,
+    domain: "anime character merchandise design",
+    heroSubject: "an anime character merch pack with hero character sheet, expressions, outfit variants, acrylic stand layout, sticker sheet, T-shirt mockups, social poster, and product teaser frames",
+    audience: "anime artists, VTubers, merch sellers, and creator brands",
+    outputSystem: "character sheet, merch mockup board, sticker pack, apparel poster, social launch kit, and video prompt",
+    visualLanguage: "clean anime character design, commercial merch layout, bright collectible presentation",
+    materialSystem: "vinyl stickers, acrylic stand plastic, cotton T-shirts, glossy keychains, package cards, colored line art",
+    layoutSystem: "hero character, expression row, outfit variants, merch grid, packaging strip, CTA zone",
+    motionSystem: "character pose pops, stickers scatter, acrylic stand rotates, merch grid assembles",
+    businessUse: "turn one anime character into a sellable merch visual system",
+    description: {
+      en: "An anime merch prompt pack for character sheets, stickers, apparel mockups, launch posters, and short videos.",
+      vi: "Bộ prompt merch anime cho character sheet, sticker, mockup áo, poster launch và video ngắn.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "cinematic-product-ad-storyboard",
+    title: { en: "Cinematic Product Ad Storyboard", vi: "Storyboard quảng cáo sản phẩm cinematic" },
+    category: "marketing",
+    sellerIdx: 0,
+    tags: ["visual","product-ad","storyboard","cinematic","social-ads","video"],
+    priceSKT: 170,
+    domain: "cinematic product advertising direction",
+    heroSubject: "a cinematic product ad storyboard with hero packshot, macro material details, hand interaction, dramatic lighting setup, offer end card, social crops, and 8-second shot sequence",
+    audience: "product marketers, filmmakers, DTC brands, and ad creatives",
+    outputSystem: "product ad storyboard, hero image, macro detail prompts, end card layout, social variants, and video script",
+    visualLanguage: "premium cinematic advertising, strong silhouette, controlled lighting, tactile close-ups, clean CTA-safe end frame",
+    materialSystem: "studio backdrop, reflective surface, product packaging, light beams, human hand, dust particles, glossy label",
+    layoutSystem: "opening hero, macro detail row, interaction panel, end card, platform crop guide",
+    motionSystem: "slow push-in, hand enters, label catches light, product rotates, CTA locks",
+    businessUse: "create high-end product ad visuals and video prompts from any product brief",
+    description: {
+      en: "A product advertising prompt pack for hero images, shot lists, macro details, end cards, and cinematic videos.",
+      vi: "Bộ prompt quảng cáo sản phẩm cho hero image, shot list, macro detail, end card và video cinematic.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "interior-airbnb-listing-kit",
+    title: { en: "Airbnb Interior Listing Kit", vi: "Bộ prompt listing nội thất Airbnb" },
+    category: "design",
+    sellerIdx: 4,
+    tags: ["visual","interior","airbnb","real-estate","hospitality","video"],
+    priceSKT: 150,
+    domain: "short-term rental interior listing visuals",
+    heroSubject: "an Airbnb interior listing kit with cozy bedroom hero, amenity cards, neighborhood moodboard, booking page hero, before-after styling sheet, and walkthrough video frames",
+    audience: "Airbnb hosts, interior stylists, property managers, and real estate creators",
+    outputSystem: "listing hero images, amenity board, booking poster, room styling sheet, social ads, and walkthrough video prompt",
+    visualLanguage: "warm hospitality interior photography, bright booking-friendly composition, cozy premium styling",
+    materialSystem: "linen bedding, wood floors, morning light, ceramic mugs, plants, brass lamps, local maps",
+    layoutSystem: "room hero, amenity grid, neighborhood cards, booking CTA, before-after styling strip",
+    motionSystem: "curtains move, lamp warms, camera glides, amenity cards appear, booking CTA fades",
+    businessUse: "make rental spaces look more desirable and bookable",
+    description: {
+      en: "An interior listing prompt pack for Airbnb photos, amenity visuals, booking ads, styling boards, and walkthrough videos.",
+      vi: "Bộ prompt listing Airbnb cho ảnh phòng, visual tiện ích, ads booking, styling board và video walkthrough.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "jewelry-ecommerce-macro-pack",
+    title: { en: "Jewelry E-commerce Macro Pack", vi: "Bộ prompt macro trang sức e-commerce" },
+    category: "marketing",
+    sellerIdx: 11,
+    tags: ["visual","jewelry","ecommerce","luxury","product-shot","video"],
+    priceSKT: 175,
+    domain: "jewelry e-commerce product photography",
+    heroSubject: "a jewelry ecommerce macro pack with ring hero shot, gemstone detail crops, packaging ritual, model hand lifestyle scene, comparison cards, social ads, and sparkle video frames",
+    audience: "jewelry stores, luxury sellers, product photographers, and DTC brands",
+    outputSystem: "jewelry packshot, macro detail board, packaging poster, lifestyle ad set, marketplace thumbnail, and video prompt",
+    visualLanguage: "luxury macro product photography, elegant sparkle control, clean e-commerce conversion layout",
+    materialSystem: "polished gold, diamond facets, velvet box, marble slab, silk ribbon, manicured hand, specular highlights",
+    layoutSystem: "hero ring center, detail crop strip, packaging scene, lifestyle frame, trust badge, CTA",
+    motionSystem: "gem sparkles, ring rotates, box opens, light sweeps, final product lockup",
+    businessUse: "create premium jewelry visuals for product pages and ads",
+    description: {
+      en: "A jewelry prompt pack for macro photos, product pages, packaging visuals, social ads, and sparkling videos.",
+      vi: "Bộ prompt trang sức cho ảnh macro, trang sản phẩm, visual packaging, social ads và video lấp lánh.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "furniture-catalog-render-system",
+    title: { en: "Furniture Catalog Render System", vi: "Hệ prompt render catalog nội thất" },
+    category: "design",
+    sellerIdx: 4,
+    tags: ["visual","furniture","interior","catalog","render","video"],
+    priceSKT: 150,
+    domain: "furniture catalog visualization",
+    heroSubject: "a furniture catalog render system with sofa hero render, material swatches, room context, dimension sheet, color variants, lifestyle poster, and showroom walkthrough frames",
+    audience: "furniture brands, interior studios, catalog designers, and e-commerce teams",
+    outputSystem: "furniture hero render, material board, dimension sheet, colorway grid, catalog poster, and video prompt",
+    visualLanguage: "premium furniture catalog rendering, calm interior composition, precise product documentation",
+    materialSystem: "boucle fabric, oak legs, leather piping, room shadows, catalog paper, dimension arrows, fabric swatches",
+    layoutSystem: "product hero, room context, material callouts, dimension diagram, variant grid, CTA",
+    motionSystem: "sofa rotates, fabric close-up zooms, color variants swap, room scene resolves",
+    businessUse: "turn furniture specs into beautiful catalog and commerce visuals",
+    description: {
+      en: "A furniture prompt pack for catalog renders, material boards, dimension sheets, variants, room scenes, and videos.",
+      vi: "Bộ prompt furniture cho catalog render, material board, dimension sheet, variant, room scene và video.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "toy-package-character-launch",
+    title: { en: "Toy Package Character Launch", vi: "Bộ prompt launch nhân vật đồ chơi" },
+    category: "design",
+    sellerIdx: 5,
+    tags: ["visual","toy","packaging","character","kids","video"],
+    priceSKT: 145,
+    domain: "toy packaging and character launch",
+    heroSubject: "a toy character launch kit with mascot hero, blister packaging mockup, play scene, collectible lineup, sticker sheet, retail shelf visual, and playful product video frames",
+    audience: "toy brands, character designers, kids product teams, and merch sellers",
+    outputSystem: "toy character sheet, package mockup, retail poster, collectible lineup, sticker sheet, and video prompt",
+    visualLanguage: "playful commercial character design, colorful retail packaging, clean toy photography, child-friendly energy",
+    materialSystem: "vinyl toy plastic, cardboard backing, glossy blister, stickers, shelf lighting, soft playroom props",
+    layoutSystem: "mascot hero, package front, accessory callouts, collectible row, retail shelf, CTA",
+    motionSystem: "toy bounces, package spins, stickers pop, lineup assembles, retail shelf reveal",
+    businessUse: "launch toy characters with packaging and content assets",
+    description: {
+      en: "A toy prompt pack for mascot design, packaging mockups, retail posters, sticker sheets, collectible lines, and videos.",
+      vi: "Bộ prompt đồ chơi cho mascot, mockup packaging, poster retail, sticker sheet, collectible line và video.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "music-video-visualizer-pack",
+    title: { en: "Music Video Visualizer Pack", vi: "Bộ prompt visualizer MV âm nhạc" },
+    category: "design",
+    sellerIdx: 9,
+    tags: ["visual","music","album","visualizer","social","video"],
+    priceSKT: 150,
+    domain: "music video visualizer art direction",
+    heroSubject: "a music video visualizer pack with artist silhouette, album cover world, lyric cards, animated waveform scenes, stage lighting board, social teaser thumbnails, and loop video prompts",
+    audience: "musicians, labels, video editors, and creator teams",
+    outputSystem: "album visual world, lyric visuals, teaser thumbnails, loop visualizer prompts, stage board, and social assets",
+    visualLanguage: "cinematic music branding, emotional color grading, rhythm-led layout, bold cover-art silhouette",
+    materialSystem: "stage haze, waveform light, vinyl texture, neon reflection, paper poster, metallic ink, LED panels",
+    layoutSystem: "cover hero, lyric cards, visualizer frames, teaser thumbnails, artist card, platform crops",
+    motionSystem: "waveform pulses, lyrics fade, lights sweep, artist silhouette appears, loop closes",
+    businessUse: "build a cohesive visual world for a single or album release",
+    description: {
+      en: "A music visual prompt pack for album worlds, lyric cards, visualizers, teaser thumbnails, and motion loops.",
+      vi: "Bộ prompt âm nhạc cho album world, lyric card, visualizer, teaser thumbnail và motion loop.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "travel-reel-destination-kit",
+    title: { en: "Travel Reel Destination Kit", vi: "Bộ prompt reel điểm đến du lịch" },
+    category: "marketing",
+    sellerIdx: 5,
+    tags: ["visual","travel","reel","destination","hospitality","video"],
+    priceSKT: 135,
+    domain: "travel destination reel campaign",
+    heroSubject: "a travel destination reel kit with cinematic landmark hero, itinerary cards, food and hotel scenes, map route, packing flatlay, social carousel, and vertical reel storyboard",
+    audience: "travel creators, hotels, tourism boards, and agencies",
+    outputSystem: "destination hero, itinerary board, route map, hotel/food cards, social carousel, and reel video prompt",
+    visualLanguage: "editorial travel photography, cinematic vertical composition, warm destination storytelling",
+    materialSystem: "passport stamps, map paper, hotel key, local food, sunlight, luggage tags, street textures",
+    layoutSystem: "destination hero, route map, day cards, hotel/food modules, reel frames, CTA",
+    motionSystem: "map line draws, suitcase opens, landmark reveal, food close-up, final booking card",
+    businessUse: "turn a destination into shareable visual and video travel content",
+    description: {
+      en: "A travel visual prompt pack for destination campaigns, reels, itinerary cards, maps, hotel/food scenes, and social posts.",
+      vi: "Bộ prompt du lịch cho campaign điểm đến, reel, itinerary card, map, cảnh hotel/food và social post.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "mobile-app-store-screenshot-kit",
+    title: { en: "Mobile App Store Screenshot Kit", vi: "Bộ prompt screenshot App Store" },
+    category: "marketing",
+    sellerIdx: 0,
+    tags: ["visual","mobile-app","app-store","ui","aso","video"],
+    priceSKT: 145,
+    domain: "mobile app store conversion visuals",
+    heroSubject: "a mobile app store screenshot kit with phone mockups, feature screens, onboarding flow, benefit captions, trust badges, dark/light variants, and promo video frames",
+    audience: "mobile app founders, product marketers, indie hackers, and ASO teams",
+    outputSystem: "app store screenshot set, feature carousel, onboarding board, social ad variants, and preview video prompt",
+    visualLanguage: "high-converting mobile app marketing, clean phone mockups, readable benefit captions, polished UI presentation",
+    materialSystem: "phone glass, app UI cards, gradient panels, notification bubbles, trust icons, soft shadows",
+    layoutSystem: "hero phone, feature screens, caption zones, trust badges, dark/light variants, preview frames",
+    motionSystem: "phone slides in, screens swipe, benefit text appears, trust badge locks, final download CTA",
+    businessUse: "create app screenshots and preview videos that explain features fast",
+    description: {
+      en: "A mobile app prompt pack for App Store screenshots, feature carousels, onboarding visuals, ads, and preview videos.",
+      vi: "Bộ prompt mobile app cho screenshot App Store, carousel tính năng, onboarding visual, ads và preview video.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "real-estate-luxury-video-tour",
+    title: { en: "Luxury Real Estate Video Tour Kit", vi: "Bộ prompt video tour bất động sản luxury" },
+    category: "marketing",
+    sellerIdx: 4,
+    tags: ["visual","real-estate","luxury","property","listing","video"],
+    priceSKT: 170,
+    domain: "luxury property video tour direction",
+    heroSubject: "a luxury real estate video tour kit with mansion hero exterior, interior sequence board, amenity cards, twilight pool shot, neighborhood map, agent poster, and walkthrough frames",
+    audience: "real estate agents, developers, brokers, and property marketers",
+    outputSystem: "property hero poster, room sequence board, amenity visuals, agent social ads, and walkthrough video prompt",
+    visualLanguage: "luxury real estate cinematography, warm architectural light, polished listing hierarchy, high-trust agent branding",
+    materialSystem: "marble, glass walls, pool reflections, walnut wood, brass fixtures, twilight sky, brochure paper",
+    layoutSystem: "exterior hero, room cards, amenity strip, map inset, agent profile, booking CTA",
+    motionSystem: "camera glides, doors open, pool reflects sunset, amenity cards reveal, agent CTA appears",
+    businessUse: "sell premium properties with cinematic visuals and listing assets",
+    description: {
+      en: "A real estate prompt pack for luxury listings, room boards, amenity visuals, agent ads, and cinematic tours.",
+      vi: "Bộ prompt bất động sản luxury cho listing, room board, visual tiện ích, ads agent và tour cinematic.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "landing-page-copy-conversion-kit",
+    title: { en: "Landing Page Copy Conversion Kit", vi: "Bộ prompt copy landing page chuyển đổi" },
+    category: "marketing",
+    sellerIdx: 1,
+    tags: ["business","landing-page","copywriting","conversion","sales","marketing"],
+    priceSKT: 130,
+    domain: "landing page conversion copywriting",
+    heroSubject: "a landing page copy system with headline angles, hero section, benefit stack, proof modules, offer block, FAQ, CTA variants, and A/B test plan",
+    audience: "founders, marketers, copywriters, agencies, and product teams",
+    outputSystem: "landing page copy, wireframe notes, offer structure, social proof modules, FAQ, email follow-up, and ad hooks",
+    visualLanguage: "clear direct-response copy, concise benefit hierarchy, proof-first structure, modern SaaS/DTC layout logic",
+    materialSystem: "headline blocks, CTA buttons, proof cards, testimonial modules, offer badges, FAQ accordions",
+    layoutSystem: "hero hook, problem section, benefit grid, proof strip, offer module, objection handling, CTA",
+    motionSystem: "visitor pain appears, benefit cards solve it, proof modules stack, CTA becomes obvious",
+    businessUse: "write high-converting landing pages for products, services, and offers",
+    description: {
+      en: "A business prompt pack for landing page copy, offers, proof modules, FAQs, CTAs, and A/B testing.",
+      vi: "Bộ prompt business cho copy landing page, offer, proof module, FAQ, CTA và A/B testing.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "paid-ads-creative-testing-system",
+    title: { en: "Paid Ads Creative Testing System", vi: "Hệ prompt test creative quảng cáo trả phí" },
+    category: "marketing",
+    sellerIdx: 1,
+    tags: ["business","ads","performance-marketing","ugc","creative-testing","social"],
+    priceSKT: 145,
+    domain: "performance marketing creative testing",
+    heroSubject: "a paid ads creative testing system with audience angles, hook matrix, image concepts, short video scripts, offer variants, UGC briefs, and testing scorecard",
+    audience: "performance marketers, media buyers, agencies, and DTC brands",
+    outputSystem: "ad angle matrix, creative briefs, image prompts, UGC scripts, video hooks, testing dashboard, and iteration plan",
+    visualLanguage: "performance-first advertising logic, fast hook testing, clear offer framing, platform-native creative direction",
+    materialSystem: "ad cards, hook labels, UGC phone frames, offer badges, metrics table, creative thumbnails",
+    layoutSystem: "angle matrix, creative concepts, test variants, KPI scorecard, next-iteration plan",
+    motionSystem: "hooks flash, variants swap, metrics update, winner creative highlights",
+    businessUse: "generate and test ad creatives faster across Meta, TikTok, and YouTube",
+    description: {
+      en: "A marketing prompt pack for ad angles, image concepts, UGC scripts, video hooks, offers, and testing plans.",
+      vi: "Bộ prompt marketing cho angle ads, concept ảnh, script UGC, hook video, offer và kế hoạch test.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "email-sales-sequence-playbook",
+    title: { en: "Email Sales Sequence Playbook", vi: "Playbook prompt email sales sequence" },
+    category: "writing",
+    sellerIdx: 0,
+    tags: ["business","email","sales","outbound","copywriting","b2b"],
+    priceSKT: 115,
+    domain: "sales email sequence and follow-up system",
+    heroSubject: "an email sales sequence playbook with ICP research, pain-point hooks, cold email drafts, follow-up logic, objection replies, breakup email, and CRM notes",
+    audience: "sales teams, founders, agencies, consultants, and B2B marketers",
+    outputSystem: "cold email sequence, follow-up templates, objection handling, lead research brief, CRM notes, and A/B subject lines",
+    visualLanguage: "concise B2B sales writing, relevant personalization, value-led structure, polite but persuasive tone",
+    materialSystem: "subject lines, email cards, CRM notes, objection tags, reply snippets, sequence timeline",
+    layoutSystem: "ICP card, pain points, email 1-5, objection library, breakup note, tracking plan",
+    motionSystem: "lead context enters, emails sequence, objection branch opens, reply CTA lands",
+    businessUse: "create practical outbound sales emails for real business development",
+    description: {
+      en: "A sales prompt pack for cold emails, follow-ups, objection replies, subject lines, lead research, and CRM notes.",
+      vi: "Bộ prompt sales cho cold email, follow-up, phản hồi objection, subject line, research lead và CRM note.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "social-content-calendar-engine",
+    title: { en: "Social Content Calendar Engine", vi: "Bộ máy prompt lịch nội dung social" },
+    category: "marketing",
+    sellerIdx: 6,
+    tags: ["business","social-content","calendar","captions","reels","marketing"],
+    priceSKT: 120,
+    domain: "social media content planning and production",
+    heroSubject: "a social content calendar engine with brand pillars, 30-day calendar, post hooks, carousel scripts, short video ideas, caption variants, and repurposing workflow",
+    audience: "social media managers, creators, small businesses, agencies, and founders",
+    outputSystem: "content calendar, carousel prompts, reel scripts, captions, hashtag sets, repurposing map, and weekly analytics review",
+    visualLanguage: "practical social media strategy, platform-native hooks, repeatable content systems, brand-consistent voice",
+    materialSystem: "calendar cards, post templates, caption blocks, reel frames, analytics tags, brand pillar chips",
+    layoutSystem: "pillars, weekly themes, daily posts, creative formats, repurpose paths, performance review",
+    motionSystem: "calendar fills, post cards slide, captions type in, analytics tags update",
+    businessUse: "plan and produce consistent content without starting from scratch",
+    description: {
+      en: "A social media prompt pack for calendars, captions, carousels, reels, repurposing, and analytics review.",
+      vi: "Bộ prompt social cho lịch nội dung, caption, carousel, reel, repurpose và review analytics.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "sales-page-offer-builder",
+    title: { en: "Sales Page Offer Builder", vi: "Bộ prompt xây offer và sales page" },
+    category: "marketing",
+    sellerIdx: 7,
+    tags: ["business","sales-page","offer","copywriting","conversion","launch"],
+    priceSKT: 135,
+    domain: "offer design and sales page writing",
+    heroSubject: "a sales page offer builder with customer pain map, offer stack, bonuses, guarantee, pricing logic, objection handling, urgency modules, and final sales copy",
+    audience: "coaches, course creators, agencies, consultants, and digital product sellers",
+    outputSystem: "offer blueprint, sales page copy, bonus stack, guarantee module, pricing story, FAQ, and launch email prompts",
+    visualLanguage: "direct-response offer design, clear transformation promise, ethical urgency, proof-led sales structure",
+    materialSystem: "offer cards, price anchors, guarantee badge, bonus tiles, testimonial blocks, FAQ accordion",
+    layoutSystem: "problem, promise, mechanism, offer stack, proof, guarantee, CTA",
+    motionSystem: "offer stack assembles, objections collapse, guarantee badge seals, CTA lands",
+    businessUse: "turn a service or product into a clear offer that sells",
+    description: {
+      en: "A business prompt pack for offer design, sales pages, bonuses, guarantees, pricing, objections, and launch copy.",
+      vi: "Bộ prompt business cho thiết kế offer, sales page, bonus, guarantee, pricing, objection và launch copy.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "brand-positioning-strategy-kit",
+    title: { en: "Brand Positioning Strategy Kit", vi: "Bộ prompt định vị thương hiệu" },
+    category: "business",
+    sellerIdx: 6,
+    tags: ["business","branding","positioning","messaging","strategy","copywriting"],
+    priceSKT: 130,
+    domain: "brand positioning and messaging strategy",
+    heroSubject: "a brand positioning strategy kit with audience segments, category map, value proposition, messaging pillars, tagline routes, competitor contrast, and voice guide",
+    audience: "founders, marketers, brand strategists, agencies, and product teams",
+    outputSystem: "positioning brief, messaging house, tagline options, competitor map, voice guide, landing headline angles, and pitch copy",
+    visualLanguage: "strategic brand thinking, concise positioning language, practical messaging hierarchy, market-aware differentiation",
+    materialSystem: "strategy cards, competitor matrix, message pillars, tagline boards, persona cards, pitch blocks",
+    layoutSystem: "market map, audience segments, value prop, pillars, proof, tagline routes",
+    motionSystem: "category map opens, pillars stack, tagline routes compare, final positioning locks",
+    businessUse: "make brands easier to explain, sell, and remember",
+    description: {
+      en: "A strategy prompt pack for positioning, messaging, taglines, competitor contrast, voice, and pitch copy.",
+      vi: "Bộ prompt strategy cho định vị, messaging, tagline, phân biệt đối thủ, brand voice và pitch copy.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "ecommerce-product-description-engine",
+    title: { en: "E-commerce Product Description Engine", vi: "Bộ prompt mô tả sản phẩm e-commerce" },
+    category: "writing",
+    sellerIdx: 0,
+    tags: ["business","ecommerce","product-copy","seo","conversion","shopify"],
+    priceSKT: 115,
+    domain: "e-commerce product copy and merchandising",
+    heroSubject: "an ecommerce product description engine with product research, benefit bullets, SEO description, comparison copy, FAQ, bundle copy, review response snippets, and ad hooks",
+    audience: "Shopify sellers, marketplaces, DTC brands, and copywriters",
+    outputSystem: "product descriptions, benefit bullets, SEO fields, comparison tables, FAQs, bundle copy, and ad hooks",
+    visualLanguage: "clear commerce writing, benefit-first hierarchy, SEO-aware product language, conversion-friendly tone",
+    materialSystem: "product spec cards, benefit bullets, review snippets, FAQ panels, marketplace listing blocks",
+    layoutSystem: "research, positioning, bullets, description, FAQ, comparison, upsell",
+    motionSystem: "features transform into benefits, SEO fields fill, FAQ answers appear, bundle copy expands",
+    businessUse: "write product pages that are useful, searchable, and persuasive",
+    description: {
+      en: "An e-commerce prompt pack for product descriptions, SEO, benefit bullets, FAQs, comparisons, bundles, and ad hooks.",
+      vi: "Bộ prompt e-commerce cho mô tả sản phẩm, SEO, benefit bullet, FAQ, so sánh, bundle và hook ads.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "tiktok-ugc-script-factory",
+    title: { en: "TikTok UGC Script Factory", vi: "Xưởng prompt script TikTok UGC" },
+    category: "marketing",
+    sellerIdx: 9,
+    tags: ["business","tiktok","ugc","short-form","ads","scripts"],
+    priceSKT: 125,
+    domain: "TikTok UGC and short-form ad scripting",
+    heroSubject: "a TikTok UGC script factory with hook bank, creator brief, problem-solution script, demo beats, objection handling, CTA variants, and editing notes",
+    audience: "DTC brands, creators, media buyers, agencies, and social sellers",
+    outputSystem: "UGC scripts, hook matrix, creator briefs, demo storyboard, CTA variants, captions, and editing notes",
+    visualLanguage: "platform-native short-form writing, casual creator voice, fast hook structure, performance ad logic",
+    materialSystem: "phone frame cards, hook labels, captions, product demo notes, CTA stickers, editing timeline",
+    layoutSystem: "hook, problem, demo, proof, objection, CTA, edit notes",
+    motionSystem: "creator opens with hook, product demo cuts, proof appears, CTA sticker lands",
+    businessUse: "produce short-form ad scripts that creators can actually film",
+    description: {
+      en: "A UGC prompt pack for TikTok hooks, creator briefs, demo scripts, CTA variants, captions, and editing notes.",
+      vi: "Bộ prompt UGC cho hook TikTok, brief creator, script demo, CTA, caption và ghi chú edit.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "linkedin-thought-leadership-system",
+    title: { en: "LinkedIn Thought Leadership System", vi: "Hệ prompt thought leadership LinkedIn" },
+    category: "writing",
+    sellerIdx: 8,
+    tags: ["business","linkedin","thought-leadership","b2b","content","writing"],
+    priceSKT: 120,
+    domain: "LinkedIn thought leadership content system",
+    heroSubject: "a LinkedIn thought leadership system with founder POV, content pillars, story posts, carousel outlines, comment replies, newsletter briefs, and lead magnet CTA",
+    audience: "founders, consultants, executives, B2B creators, and agencies",
+    outputSystem: "LinkedIn post series, carousel outlines, founder stories, newsletter briefs, comment strategy, and lead magnet prompts",
+    visualLanguage: "sharp professional writing, clear POV, useful insights, human founder voice, business development angle",
+    materialSystem: "post cards, POV pillars, story beats, carousel slides, comment snippets, lead magnet blocks",
+    layoutSystem: "POV, audience pain, story, insight, CTA, reply plan",
+    motionSystem: "idea becomes post, carousel builds, comments branch, lead magnet CTA appears",
+    businessUse: "turn expertise into consistent LinkedIn content that builds trust",
+    description: {
+      en: "A B2B content prompt pack for LinkedIn posts, carousels, founder stories, newsletters, comments, and lead magnets.",
+      vi: "Bộ prompt B2B cho post LinkedIn, carousel, founder story, newsletter, comment và lead magnet.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "customer-research-interview-kit",
+    title: { en: "Customer Research Interview Kit", vi: "Bộ prompt phỏng vấn nghiên cứu khách hàng" },
+    category: "business",
+    sellerIdx: 4,
+    tags: ["business","customer-research","interview","persona","product","marketing"],
+    priceSKT: 115,
+    domain: "customer research and insight synthesis",
+    heroSubject: "a customer research interview kit with interview scripts, JTBD questions, survey prompts, insight synthesis, persona cards, objection map, and messaging recommendations",
+    audience: "founders, product managers, marketers, UX researchers, and agencies",
+    outputSystem: "interview guide, survey, synthesis table, persona cards, pain map, messaging insights, and feature recommendations",
+    visualLanguage: "practical customer discovery, unbiased research language, clear synthesis framework, product-market fit focus",
+    materialSystem: "question cards, persona boards, insight clusters, quote snippets, survey charts, decision maps",
+    layoutSystem: "research goal, interview guide, survey, synthesis, personas, messaging next steps",
+    motionSystem: "questions appear, quotes cluster, personas form, message recommendations lock",
+    businessUse: "extract useful customer insight before writing ads or product copy",
+    description: {
+      en: "A research prompt pack for interviews, surveys, synthesis, personas, objection maps, and messaging recommendations.",
+      vi: "Bộ prompt research cho phỏng vấn, survey, synthesis, persona, objection map và recommendation messaging.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "agency-client-proposal-system",
+    title: { en: "Agency Client Proposal System", vi: "Bộ prompt proposal khách hàng agency" },
+    category: "business",
+    sellerIdx: 7,
+    tags: ["business","agency","proposal","sales","consulting","pitch"],
+    priceSKT: 135,
+    domain: "agency proposal and pitch writing",
+    heroSubject: "an agency client proposal system with discovery recap, problem framing, strategy roadmap, deliverables, timeline, pricing options, case study proof, and close plan",
+    audience: "agencies, freelancers, consultants, studios, and service businesses",
+    outputSystem: "client proposal, pitch deck copy, scope of work, pricing options, timeline, case study modules, and follow-up email",
+    visualLanguage: "professional proposal writing, clear value framing, consultative sales tone, scoped delivery logic",
+    materialSystem: "proposal pages, roadmap cards, pricing tables, timeline bars, proof modules, email cards",
+    layoutSystem: "context, problem, strategy, scope, timeline, pricing, proof, next step",
+    motionSystem: "client problem frames, roadmap unfolds, pricing options compare, close plan appears",
+    businessUse: "write stronger proposals that are clear, premium, and easier to approve",
+    description: {
+      en: "A business prompt pack for agency proposals, SOWs, pricing options, timelines, proof modules, and follow-up emails.",
+      vi: "Bộ prompt agency cho proposal, SOW, pricing option, timeline, proof module và email follow-up.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "webinar-launch-funnel-kit",
+    title: { en: "Webinar Launch Funnel Kit", vi: "Bộ prompt funnel webinar launch" },
+    category: "marketing",
+    sellerIdx: 1,
+    tags: ["business","webinar","funnel","email","launch","ads"],
+    priceSKT: 130,
+    domain: "webinar funnel and launch copy",
+    heroSubject: "a webinar launch funnel kit with registration page copy, email sequence, slide outline, reminder messages, show-up scripts, offer pitch, replay campaign, and retargeting ads",
+    audience: "course creators, SaaS marketers, coaches, agencies, and B2B teams",
+    outputSystem: "webinar funnel copy, registration page, email sequence, slide outline, offer pitch, replay emails, and ad hooks",
+    visualLanguage: "launch-focused copywriting, educational hook structure, trust-building sequence, clear offer transition",
+    materialSystem: "webinar cards, email timeline, slide outline blocks, offer stack, replay badges, ad hooks",
+    layoutSystem: "registration, nurture emails, live agenda, offer bridge, replay, retargeting",
+    motionSystem: "registrations rise, reminder sequence runs, pitch opens, replay email lands",
+    businessUse: "build a full webinar funnel from one offer or topic",
+    description: {
+      en: "A launch prompt pack for webinar registration pages, emails, slides, offers, replay campaigns, and retargeting ads.",
+      vi: "Bộ prompt launch cho page đăng ký webinar, email, slide, offer, replay campaign và retargeting ads.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "seo-content-cluster-planner",
+    title: { en: "SEO Content Cluster Planner", vi: "Bộ prompt lập cụm nội dung SEO" },
+    category: "writing",
+    sellerIdx: 8,
+    tags: ["business","seo","content-strategy","blog","writing","marketing"],
+    priceSKT: 120,
+    domain: "SEO content strategy and cluster planning",
+    heroSubject: "an SEO content cluster planner with keyword map, pillar page outline, supporting articles, search intent notes, internal links, meta titles, and refresh roadmap",
+    audience: "content marketers, SEO teams, bloggers, agencies, and SaaS companies",
+    outputSystem: "SEO cluster plan, pillar outline, article briefs, meta copy, internal link map, and content refresh plan",
+    visualLanguage: "search-intent-driven planning, practical editorial structure, concise SERP-aware guidance, conversion path logic",
+    materialSystem: "keyword cards, cluster map, article brief blocks, link arrows, meta snippets, content calendar",
+    layoutSystem: "topic, intent, pillar, cluster, links, briefs, refresh",
+    motionSystem: "keywords cluster, pillar page forms, briefs populate, internal links connect",
+    businessUse: "plan content that can rank and support product conversion",
+    description: {
+      en: "An SEO prompt pack for keyword clusters, pillar pages, article briefs, meta copy, internal links, and refresh plans.",
+      vi: "Bộ prompt SEO cho keyword cluster, pillar page, brief bài viết, meta copy, internal link và refresh plan.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "community-launch-engagement-kit",
+    title: { en: "Community Launch Engagement Kit", vi: "Bộ prompt launch cộng đồng" },
+    category: "marketing",
+    sellerIdx: 6,
+    tags: ["business","community","engagement","launch","creator","retention"],
+    priceSKT: 115,
+    domain: "community launch and engagement strategy",
+    heroSubject: "a community launch engagement kit with member persona, onboarding sequence, welcome posts, event calendar, discussion prompts, moderation guidelines, referral loop, and retention rituals",
+    audience: "community builders, creators, startups, educators, and brand managers",
+    outputSystem: "community launch plan, onboarding copy, post prompts, event calendar, moderation guide, referral loop, and retention emails",
+    visualLanguage: "warm community strategy, clear onboarding, participation-first content, practical moderation tone",
+    materialSystem: "member cards, event calendar, welcome threads, badge icons, referral cards, moderation checklists",
+    layoutSystem: "persona, promise, onboarding, weekly rituals, event plan, retention loop",
+    motionSystem: "members enter, welcome sequence fires, event calendar fills, referral loop opens",
+    businessUse: "launch and maintain a community people actually participate in",
+    description: {
+      en: "A community prompt pack for launch plans, onboarding, discussion prompts, events, moderation, referrals, and retention.",
+      vi: "Bộ prompt community cho kế hoạch launch, onboarding, prompt thảo luận, event, moderation, referral và retention.",
+    },
+  }),
+  makeFilmBlueprint({
+    id: "customer-testimonial-proof-system",
+    title: { en: "Customer Testimonial Proof System", vi: "Bộ prompt testimonial và social proof" },
+    category: "marketing",
+    sellerIdx: 1,
+    tags: ["business","testimonial","social-proof","case-study","sales","marketing"],
+    priceSKT: 120,
+    domain: "testimonial and social proof marketing",
+    heroSubject: "a customer testimonial proof system with interview prompts, before-after story arc, quote cards, case study outline, metric proof blocks, objection-killing snippets, and sales page proof modules",
+    audience: "founders, marketers, agencies, consultants, course creators, and service businesses",
+    outputSystem: "testimonial interview guide, quote card copy, case study structure, proof modules, sales page inserts, and social proof campaign prompts",
+    visualLanguage: "credible conversion copywriting, human customer storytelling, concise proof-first structure, sales-ready messaging",
+    materialSystem: "quote cards, metric blocks, customer profile notes, before-after panels, case study pages, proof badges",
+    layoutSystem: "customer context, pain before, transformation after, metric proof, quote library, sales page insertion map",
+    motionSystem: "before-after panels slide, quote cards appear, metric proof counts up, case study CTA closes",
+    businessUse: "turn customer wins into credible proof assets that improve ads, sales pages, and emails",
+    description: {
+      en: "A business prompt pack for testimonial interviews, case studies, quote cards, proof modules, objection snippets, and sales page inserts.",
+      vi: "Bộ prompt business cho phỏng vấn testimonial, case study, quote card, proof module, snippet xử lý objection và chèn vào sales page.",
+    },
+  }),
+];
+
+const ALL_BLUEPRINTS = [...BLUEPRINTS, ...FOOD_BLUEPRINTS, ...FILM_BLUEPRINTS, ...BROAD_BLUEPRINTS];
 
 const createPromptSet = (bp: PromptBlueprint, assets: AssetResolvers): SeedPrompt => {
   const style = joinList([bp.domain, bp.visualLanguage, bp.outputSystem]);
@@ -1543,8 +2189,63 @@ export const buildPromptMarketAssetTasks = (): PromptMarketAssetTask[] =>
         type: "video",
         role: "video-demo",
         aspectRatio: bp.id === "anime-action-storyboard" || bp.id === "cozy-character-video-board" ? "16:9" : "16:9",
+        referenceRoles: [...PROMPT_MARKET_BLUEPRINT_STANDARD.videoReferenceRoles],
         prompt:
-          `${base} Create an 8-second cinematic video. Motion plan: ${bp.motionSystem}. One clear action, smooth continuity, camera movement specified by the scene, tactile sensory detail, final hero frame.`,
+          `${base} Create an 8-second cinematic video using the generated same-pack item images as visual references for subject identity, palette, lighting, materials, and composition continuity. Motion plan: ${bp.motionSystem}. One clear action, smooth continuity, camera movement specified by the scene, tactile sensory detail, final hero frame.`,
       },
     ];
   });
+
+export interface PromptMarketBlueprintStandardReport {
+  totalPacks: number;
+  totalTasks: number;
+  errors: string[];
+}
+
+export const listPromptMarketBlueprintIds = (): string[] =>
+  ALL_BLUEPRINTS.map((bp) => bp.id);
+
+export const pickRandomPromptMarketBlueprintId = (seed = Math.random()): string => {
+  const ids = listPromptMarketBlueprintIds();
+  return ids[Math.floor(Math.max(0, Math.min(seed, 0.999999)) * ids.length)];
+};
+
+export const validatePromptMarketBlueprintStandard = (): PromptMarketBlueprintStandardReport => {
+  const tasks = buildPromptMarketAssetTasks();
+  const errors: string[] = [];
+  const packIds = listPromptMarketBlueprintIds();
+
+  for (const packId of packIds) {
+    const packTasks = tasks.filter((task) => task.packId === packId);
+    const imageRoles = packTasks.filter((task) => task.type === "image").map((task) => task.role);
+    const videoTasks = packTasks.filter((task) => task.type === "video");
+
+    for (const role of PROMPT_MARKET_BLUEPRINT_STANDARD.imageRoles) {
+      if (!imageRoles.includes(role)) {
+        errors.push(`${packId} is missing required image role: ${role}`);
+      }
+    }
+
+    if (videoTasks.length !== PROMPT_MARKET_BLUEPRINT_STANDARD.videoRoles.length) {
+      errors.push(`${packId} must have exactly ${PROMPT_MARKET_BLUEPRINT_STANDARD.videoRoles.length} video task`);
+    }
+
+    for (const videoTask of videoTasks) {
+      const refs = videoTask.referenceRoles || [];
+      if (!refs.length) {
+        errors.push(`${packId} video task ${videoTask.id} is missing referenceRoles`);
+      }
+      for (const role of PROMPT_MARKET_BLUEPRINT_STANDARD.videoReferenceRoles) {
+        if (!refs.includes(role)) {
+          errors.push(`${packId} video task ${videoTask.id} is missing video reference role: ${role}`);
+        }
+      }
+    }
+  }
+
+  return {
+    totalPacks: packIds.length,
+    totalTasks: tasks.length,
+    errors,
+  };
+};

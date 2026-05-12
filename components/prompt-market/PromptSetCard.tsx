@@ -139,10 +139,10 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
     >
       <Link
         to={`/prompt-market/${promptSet.slug}`}
-        className={`flex h-full flex-col overflow-hidden border bg-[#101316] shadow-[0_18px_48px_rgba(0,0,0,0.24)] transition-all duration-300 ${
+        className={`flex h-full flex-col overflow-hidden rounded-xl border bg-[#101316] shadow-[0_18px_48px_rgba(0,0,0,0.24)] transition-all duration-300 ${
           variant === 'featured' || promptSet.featured
             ? 'border-brand-blue/35 hover:border-brand-blue/70'
-            : 'border-white/[0.08] hover:border-brand-blue/35'
+            : 'border-[rgba(201,168,76,0.16)] hover:border-brand-blue/35'
         }`}
       >
         <div className="relative h-[205px] overflow-hidden bg-black">
@@ -171,13 +171,13 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
           <div className="absolute inset-0 bg-gradient-to-t from-black/78 via-transparent to-black/20" />
 
           {hasVideo && (
-            <span className="absolute left-3 top-3 grid h-8 w-8 place-items-center border border-white/20 bg-black/55 text-white backdrop-blur">
+            <span className="absolute left-3 top-3 grid h-8 w-8 place-items-center rounded-lg border border-[rgba(201,168,76,0.28)] bg-black/55 text-white backdrop-blur">
               <Video className="h-4 w-4" />
             </span>
           )}
 
           {(promptSet.featured || variant === 'featured') && (
-            <span className="absolute right-3 top-3 inline-flex items-center gap-1 border border-brand-blue/40 bg-brand-blue/18 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-brand-blue backdrop-blur">
+            <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-md border border-brand-blue/40 bg-brand-blue/18 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-brand-blue backdrop-blur">
               <Sparkles className="h-3 w-3" /> Hot
             </span>
           )}
@@ -189,7 +189,7 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
               className={`absolute bottom-[54px] right-3 z-10 grid h-8 w-8 place-items-center border backdrop-blur transition ${
                 wishlisted
                   ? 'border-red-400/45 bg-red-500/18 text-red-300'
-                  : 'border-white/15 bg-black/55 text-white/62 opacity-0 hover:border-red-400/35 hover:text-red-300 group-hover:opacity-100'
+                  : 'border-[rgba(201,168,76,0.24)] bg-black/55 text-white/62 opacity-0 hover:border-red-400/35 hover:text-red-300 group-hover:opacity-100'
               }`}
             >
               <Heart className={`h-4 w-4 ${wishlisted ? 'fill-current' : ''}`} />
@@ -199,13 +199,13 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
           {thumbnails.length > 0 && (
             <div className="absolute bottom-0 left-0 right-0 flex gap-1.5 bg-black/42 p-2 backdrop-blur-sm">
               {thumbnails.map(item => (
-                <div key={item.key} className="relative h-10 flex-1 overflow-hidden border border-white/[0.12] bg-white/[0.05]">
+                <div key={item.key} className="relative h-10 flex-1 overflow-hidden rounded-md border border-[rgba(201,168,76,0.24)] bg-white/[0.05]">
                   <img src={item.poster || item.url} alt="" className="h-full w-full object-cover" loading="lazy" />
                   {item.type === 'video' && <PlayCircle className="absolute left-1.5 top-1.5 h-3.5 w-3.5 text-white drop-shadow" />}
                 </div>
               ))}
               {extraCount > 0 && (
-                <div className="grid h-10 w-12 place-items-center border border-white/[0.12] bg-black/55 text-xs font-semibold text-white/85">
+                <div className="grid h-10 w-12 place-items-center rounded-md border border-[rgba(201,168,76,0.24)] bg-black/55 text-xs font-semibold text-white/85">
                   +{extraCount}
                 </div>
               )}
@@ -215,7 +215,7 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
 
         <div className="flex flex-1 flex-col p-3.5">
           <div className="mb-2 flex items-center justify-between gap-2">
-            <span className="border border-brand-blue/20 bg-brand-blue/10 px-2 py-0.5 text-[10px] font-semibold capitalize text-brand-blue">
+            <span className="rounded-md border border-brand-blue/20 bg-brand-blue/10 px-2 py-0.5 text-[10px] font-semibold capitalize text-brand-blue">
               {promptSet.category}
             </span>
             <span className={`text-[13px] font-bold ${promptSet.isFree ? 'text-emerald-400' : 'text-brand-blue'}`}>
@@ -232,25 +232,25 @@ export default function PromptSetCard({ promptSet, index = 0, variant = 'default
 
           <div className="mt-3 flex flex-wrap gap-1.5">
             {visibleModels.map(model => (
-              <span key={model} className="inline-flex items-center gap-1 border border-white/[0.08] bg-white/[0.035] px-2 py-1 text-[10px] text-white/60">
+              <span key={model} className="inline-flex items-center gap-1 rounded-md border border-[rgba(201,168,76,0.16)] bg-white/[0.035] px-2 py-1 text-[10px] text-white/60">
                 <Cpu className="h-3 w-3 text-brand-blue" />
                 {modelLabel(model)}
               </span>
             ))}
             {visibleTags.map(tag => (
-              <span key={tag} className="border border-white/[0.08] bg-white/[0.025] px-2 py-1 text-[10px] text-white/48">
+              <span key={tag} className="rounded-md border border-[rgba(201,168,76,0.16)] bg-white/[0.025] px-2 py-1 text-[10px] text-white/48">
                 #{tag}
               </span>
             ))}
           </div>
 
-          <div className="mt-auto border-t border-white/[0.08] pt-3">
+          <div className="mt-auto border-t border-[rgba(201,168,76,0.16)] pt-3">
             <div className="flex items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-2">
                 {sellerAvatar ? (
-                  <img src={sellerAvatar} alt="" className="h-7 w-7 rounded-full border border-white/[0.12] object-cover" loading="lazy" />
+                  <img src={sellerAvatar} alt="" className="h-7 w-7 rounded-full border border-[rgba(201,168,76,0.24)] object-cover" loading="lazy" />
                 ) : (
-                  <div className="grid h-7 w-7 place-items-center rounded-full border border-white/[0.08] bg-white/[0.04]">
+                  <div className="grid h-7 w-7 place-items-center rounded-full border border-[rgba(201,168,76,0.16)] bg-white/[0.04]">
                     <User className="h-3.5 w-3.5 text-white/52" />
                   </div>
                 )}

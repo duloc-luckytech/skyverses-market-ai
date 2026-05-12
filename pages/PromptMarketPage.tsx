@@ -169,7 +169,7 @@ function FilterSection({
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <motion.div variants={itemVariants} className="border-b border-white/[0.08] last:border-b-0">
+    <motion.div variants={itemVariants} className="border-b border-[rgba(201,168,76,0.16)] last:border-b-0">
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between py-3.5 text-[13px] font-semibold text-white/60 hover:text-white/80 transition-colors"
@@ -216,10 +216,10 @@ function FilterOptionButton({
       onClick={onClick}
       whileHover={{ x: 3 }}
       whileTap={{ scale: 0.985 }}
-      className={`w-full flex items-center justify-between gap-2 border px-3 py-2 text-[12px] font-medium transition-all duration-150 ${
+      className={`w-full flex items-center justify-between gap-2 rounded-lg border px-3 py-2 text-[12px] font-medium transition-all duration-150 ${
         active
           ? 'bg-brand-blue/[0.12] text-brand-blue border-brand-blue/45 shadow-[0_0_18px_rgba(201,168,76,0.08)]'
-          : 'text-white/50 hover:text-white/74 hover:bg-white/[0.035] border-white/[0.07]'
+          : 'text-white/50 hover:text-white/74 hover:bg-white/[0.035] border-[rgba(201,168,76,0.14)]'
       }`}
     >
       <span className="min-w-0 flex items-center gap-2 text-left">
@@ -665,7 +665,7 @@ function FeaturedBanner({
                     {visibleModels.map((m) => (
                       <span
                         key={m}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.04] border border-white/[0.08] text-[11px] text-white/70 font-medium hover:border-brand-blue/30 transition-colors"
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.04] border border-[rgba(201,168,76,0.16)] text-[11px] text-white/70 font-medium hover:border-brand-blue/30 transition-colors"
                       >
                         <Cpu className="w-3 h-3 text-brand-blue/60" />
                         {MODEL_LABELS[m] ?? m}
@@ -690,7 +690,7 @@ function FeaturedBanner({
                     {current.tags.slice(0, 8).map((tag) => (
                       <span
                         key={tag}
-                        className="px-2 py-0.5 bg-white/[0.04] border border-white/[0.06] text-[10px] text-white/60 font-medium"
+                        className="px-2 py-0.5 bg-white/[0.04] border border-[rgba(201,168,76,0.12)] text-[10px] text-white/60 font-medium"
                       >
                         #{tag}
                       </span>
@@ -873,13 +873,13 @@ function TrendingPromptPill({ promptSet, index }: { promptSet: PromptSet; index:
     >
       <Link
         to={`/prompt-market/${promptSet.slug}`}
-        className="group flex h-[62px] min-w-[260px] flex-shrink-0 items-center gap-3 border border-white/[0.08] bg-[#0f1317]/90 p-1.5 transition-all duration-200 hover:border-brand-blue/35 hover:bg-[#151a20] hover:shadow-[0_4px_20px_rgba(201,168,76,0.08)]"
+        className="group flex h-[62px] min-w-[260px] flex-shrink-0 items-center gap-3 rounded-xl border border-[rgba(201,168,76,0.16)] bg-[#0f1317]/90 p-1.5 transition-all duration-200 hover:border-brand-blue/35 hover:bg-[#151a20] hover:shadow-[0_4px_20px_rgba(201,168,76,0.08)]"
       >
-        <div className="grid h-11 w-5 place-items-center bg-brand-blue text-[11px] font-bold text-black">
+        <div className="grid h-11 w-5 place-items-center rounded-md bg-brand-blue text-[11px] font-bold text-black">
           {index + 1}
         </div>
 
-        <div className="relative h-11 w-[90px] flex-shrink-0 overflow-hidden border border-white/[0.08] bg-white/[0.04]">
+        <div className="relative h-11 w-[90px] flex-shrink-0 overflow-hidden rounded-lg border border-[rgba(201,168,76,0.16)] bg-white/[0.04]">
           {thumb.url ? (
             <img src={thumb.url} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
           ) : (
@@ -1204,13 +1204,13 @@ const PromptMarketPage: React.FC = () => {
               <div className="hidden sm:flex items-center gap-1.5">
                 <button
                   onClick={() => scrollTrending('left')}
-                  className="w-7 h-7 border border-white/[0.08] bg-[var(--atlas-bg-panel)] flex items-center justify-center text-white/50 hover:border-brand-blue/30 hover:text-brand-blue transition"
+                  className="w-7 h-7 rounded-md border border-[rgba(201,168,76,0.16)] bg-[var(--atlas-bg-panel)] flex items-center justify-center text-white/50 hover:border-brand-blue/30 hover:text-brand-blue transition"
                 >
                   <ChevronLeft className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() => scrollTrending('right')}
-                  className="w-7 h-7 border border-white/[0.08] bg-[var(--atlas-bg-panel)] flex items-center justify-center text-white/50 hover:border-brand-blue/30 hover:text-brand-blue transition"
+                  className="w-7 h-7 rounded-md border border-[rgba(201,168,76,0.16)] bg-[var(--atlas-bg-panel)] flex items-center justify-center text-white/50 hover:border-brand-blue/30 hover:text-brand-blue transition"
                 >
                   <ChevronRight className="w-3.5 h-3.5" />
                 </button>
@@ -1272,7 +1272,7 @@ const PromptMarketPage: React.FC = () => {
               w-[280px] lg:w-[250px] xl:w-[270px] flex-shrink-0
               lg:h-[calc(100vh-104px)]
               bg-[#080a0d]/95 lg:bg-transparent backdrop-blur-xl lg:backdrop-blur-none
-              border-r border-white/[0.08] lg:border-r-0
+              border-r border-[rgba(201,168,76,0.16)] lg:border-r-0
               transform transition-transform duration-300 lg:transform-none
               ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
               overflow-y-auto lg:overflow-visible
@@ -1317,7 +1317,7 @@ const PromptMarketPage: React.FC = () => {
               {/* Filter container */}
               <motion.div
                 variants={filterPanelVariants}
-                className="lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:overscroll-contain lg:bg-[#0d1014]/92 lg:border lg:border-white/[0.08] lg:p-4 lg:shadow-[0_24px_80px_rgba(0,0,0,0.22)] scrollbar-hide [scrollbar-width:none] [-ms-overflow-style:none]"
+                className="lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:overscroll-contain lg:rounded-xl lg:bg-[#0d1014]/92 lg:border lg:border-[rgba(201,168,76,0.16)] lg:p-4 lg:shadow-[0_24px_80px_rgba(0,0,0,0.22)] scrollbar-hide [scrollbar-width:none] [-ms-overflow-style:none]"
               >
                 {/* ─ Category filter ─ */}
                 <FilterSection title={lang === 'vi' ? 'Danh mục showcase' : 'Showcase category'} defaultOpen={true}>
@@ -1419,10 +1419,10 @@ const PromptMarketPage: React.FC = () => {
                         <button
                           key={tag}
                           onClick={() => toggleMultiFilter('tags', tag)}
-                          className={`inline-flex max-w-full items-center gap-1.5 px-2 py-1 text-[11px] transition ${
+                    className={`inline-flex max-w-full items-center gap-1.5 rounded-md px-2 py-1 text-[11px] transition ${
                             active
                               ? 'bg-brand-blue/[0.12] text-brand-blue border border-brand-blue/[0.18]'
-                              : 'bg-white/[0.04] text-white/45 border border-white/[0.06] hover:text-white/70 hover:border-white/[0.12]'
+                              : 'bg-white/[0.04] text-white/45 border border-[rgba(201,168,76,0.12)] hover:text-white/70 hover:border-[rgba(201,168,76,0.28)]'
                           }`}
                         >
                           <span className="truncate">#{tag}</span>
@@ -1466,7 +1466,7 @@ const PromptMarketPage: React.FC = () => {
                     resetAllFilters();
                     setSidebarOpen(false);
                   }}
-                  className="w-full mt-4 px-4 py-2.5 border border-brand-blue/[0.15] text-brand-blue text-xs font-medium hover:bg-brand-blue/[0.06] transition lg:hidden"
+                  className="w-full mt-4 rounded-lg px-4 py-2.5 border border-brand-blue/[0.15] text-brand-blue text-xs font-medium hover:bg-brand-blue/[0.06] transition lg:hidden"
                 >
                   {t('prompt_market.reset_filters')}
                 </button>
@@ -1492,7 +1492,7 @@ const PromptMarketPage: React.FC = () => {
               {/* Mobile filter toggle */}
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="lg:hidden w-10 h-10 bg-[var(--atlas-bg-panel)] border border-white/[0.08] flex items-center justify-center text-white/50 hover:text-brand-blue hover:border-brand-blue/30 transition-all flex-shrink-0"
+                className="lg:hidden w-10 h-10 rounded-lg bg-[var(--atlas-bg-panel)] border border-[rgba(201,168,76,0.16)] flex items-center justify-center text-white/50 hover:text-brand-blue hover:border-brand-blue/30 transition-all flex-shrink-0"
               >
                 <Filter className="w-4 h-4" />
               </button>
@@ -1505,12 +1505,12 @@ const PromptMarketPage: React.FC = () => {
                   value={searchInput}
                   onChange={e => handleSearchChange(e.target.value)}
                   placeholder={t('prompt_market.search_placeholder')}
-                  className="w-full bg-[var(--atlas-bg-panel)] border border-white/[0.08] pl-10 pr-10 py-2.5 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-brand-blue/40 focus:ring-1 focus:ring-brand-blue/15 transition-all duration-200"
+                  className="w-full rounded-lg bg-[var(--atlas-bg-panel)] border border-[rgba(201,168,76,0.16)] pl-10 pr-10 py-2.5 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-brand-blue/40 focus:ring-1 focus:ring-brand-blue/15 transition-all duration-200"
                 />
                 {searchInput && (
                   <button
                     onClick={clearSearch}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 bg-white/[0.04] hover:bg-white/[0.06] flex items-center justify-center transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-md bg-white/[0.04] hover:bg-white/[0.06] flex items-center justify-center transition-colors"
                   >
                     <X className="w-3 h-3 text-white/50" />
                   </button>
@@ -1520,7 +1520,7 @@ const PromptMarketPage: React.FC = () => {
               {/* Sell CTA */}
               <Link
                 to="/prompt-market/sell"
-                className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-brand-blue hover:bg-brand-blue/90 text-white text-sm font-bold transition-all duration-200 shadow-[0_2px_16px_rgba(201,168,76,0.2)] hover:shadow-[0_4px_24px_rgba(201,168,76,0.35)] active:scale-[0.97] flex-shrink-0"
+                className="hidden md:flex items-center gap-2 rounded-lg px-5 py-2.5 bg-brand-blue hover:bg-brand-blue/90 text-white text-sm font-bold transition-all duration-200 shadow-[0_2px_16px_rgba(201,168,76,0.2)] hover:shadow-[0_4px_24px_rgba(201,168,76,0.35)] active:scale-[0.97] flex-shrink-0"
               >
                 <Crown className="w-4 h-4" />
                 {t('prompt_market.cta_button')}
@@ -1545,7 +1545,7 @@ const PromptMarketPage: React.FC = () => {
                   </span>
                 )}
                 {urlQ && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-blue/[0.06] border border-brand-blue/[0.15] text-xs text-brand-blue/80">
+                  <span className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 bg-brand-blue/[0.06] border border-brand-blue/[0.15] text-xs text-brand-blue/80">
                     <Search className="w-3 h-3" />
                     &quot;{urlQ}&quot;
                     <button onClick={clearSearch} className="hover:text-white transition">
@@ -1554,7 +1554,7 @@ const PromptMarketPage: React.FC = () => {
                   </span>
                 )}
                 {urlPriceFilter !== 'all' && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.04] border border-white/[0.08] text-xs text-white/60">
+                  <span className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 bg-white/[0.04] border border-[rgba(201,168,76,0.16)] text-xs text-white/60">
                     {urlPriceFilter === 'free' ? t('prompt_market.free_only') : t('prompt_market.paid_only')}
                     <button
                       onClick={() => handlePriceFilter('all')}
@@ -1565,7 +1565,7 @@ const PromptMarketPage: React.FC = () => {
                   </span>
                 )}
                 {urlCategory !== 'all' && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.04] border border-white/[0.08] text-xs text-white/60">
+                  <span className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 bg-white/[0.04] border border-[rgba(201,168,76,0.16)] text-xs text-white/60">
                     {CATEGORY_LABELS[urlCategory]?.[lang] ?? urlCategory}
                     <button onClick={() => handleCategoryFilter('all')} className="hover:text-white transition">
                       <X className="w-3 h-3" />
@@ -1573,7 +1573,7 @@ const PromptMarketPage: React.FC = () => {
                   </span>
                 )}
                 {urlMediaFilter !== 'all' && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.04] border border-white/[0.08] text-xs text-white/60">
+                  <span className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 bg-white/[0.04] border border-[rgba(201,168,76,0.16)] text-xs text-white/60">
                     {MEDIA_LABELS[urlMediaFilter]?.[lang] ?? MEDIA_LABELS[urlMediaFilter].en}
                     <button onClick={() => handleMediaFilter('all')} className="hover:text-white transition">
                       <X className="w-3 h-3" />
@@ -1581,7 +1581,7 @@ const PromptMarketPage: React.FC = () => {
                   </span>
                 )}
                 {urlRatingFilter !== 'any' && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.04] border border-white/[0.08] text-xs text-white/60">
+                  <span className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 bg-white/[0.04] border border-[rgba(201,168,76,0.16)] text-xs text-white/60">
                     {urlRatingFilter}+ ★
                     <button onClick={() => handleRatingFilter('any')} className="hover:text-white transition">
                       <X className="w-3 h-3" />
@@ -1589,7 +1589,7 @@ const PromptMarketPage: React.FC = () => {
                   </span>
                 )}
                 {urlFeaturedFilter && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.04] border border-white/[0.08] text-xs text-white/60">
+                  <span className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 bg-white/[0.04] border border-[rgba(201,168,76,0.16)] text-xs text-white/60">
                     {lang === 'vi' ? 'Nổi bật' : 'Featured'}
                     <button onClick={handleFeaturedFilter} className="hover:text-white transition">
                       <X className="w-3 h-3" />
@@ -1597,7 +1597,7 @@ const PromptMarketPage: React.FC = () => {
                   </span>
                 )}
                 {activeModels.map(model => (
-                  <span key={model} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.04] border border-white/[0.08] text-xs text-white/60">
+                  <span key={model} className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 bg-white/[0.04] border border-[rgba(201,168,76,0.16)] text-xs text-white/60">
                     {model}
                     <button onClick={() => toggleMultiFilter('models', model)} className="hover:text-white transition">
                       <X className="w-3 h-3" />
@@ -1605,7 +1605,7 @@ const PromptMarketPage: React.FC = () => {
                   </span>
                 ))}
                 {activeTags.slice(0, 4).map(tag => (
-                  <span key={tag} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.04] border border-white/[0.08] text-xs text-white/60">
+                  <span key={tag} className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 bg-white/[0.04] border border-[rgba(201,168,76,0.16)] text-xs text-white/60">
                     #{tag}
                     <button onClick={() => toggleMultiFilter('tags', tag)} className="hover:text-white transition">
                       <X className="w-3 h-3" />
@@ -1613,7 +1613,7 @@ const PromptMarketPage: React.FC = () => {
                   </span>
                 ))}
                 {activeTags.length > 4 && (
-                  <span className="px-2.5 py-1 bg-white/[0.04] border border-white/[0.08] text-xs text-white/40">
+                  <span className="rounded-md px-2.5 py-1 bg-white/[0.04] border border-[rgba(201,168,76,0.16)] text-xs text-white/40">
                     +{activeTags.length - 4} tags
                   </span>
                 )}
@@ -1622,7 +1622,7 @@ const PromptMarketPage: React.FC = () => {
               {/* Right — sort dropdown + view toggle */}
               <div className="flex items-center gap-2">
                 {/* View toggle */}
-                <div className="flex items-center border border-white/[0.08] overflow-hidden bg-[var(--atlas-bg-panel)]">
+                <div className="flex items-center rounded-lg border border-[rgba(201,168,76,0.16)] overflow-hidden bg-[var(--atlas-bg-panel)]">
                   <button
                     onClick={() => setViewMode('grid')}
                     className={`p-2 transition-colors ${
@@ -1649,7 +1649,7 @@ const PromptMarketPage: React.FC = () => {
                 <div className="relative flex-shrink-0 hidden lg:block" ref={sortRef}>
                   <button
                     onClick={() => setSortOpen(v => !v)}
-                    className="flex items-center gap-2 bg-[var(--atlas-bg-panel)] border border-white/[0.08] px-4 py-2 text-sm text-white/60 hover:border-brand-blue/20 hover:text-white/80 transition whitespace-nowrap"
+                    className="flex items-center gap-2 rounded-lg bg-[var(--atlas-bg-panel)] border border-[rgba(201,168,76,0.16)] px-4 py-2 text-sm text-white/60 hover:border-brand-blue/20 hover:text-white/80 transition whitespace-nowrap"
                   >
                     <SlidersHorizontal className="w-3.5 h-3.5 text-white/40" />
                     {currentSortLabel}
@@ -1662,7 +1662,7 @@ const PromptMarketPage: React.FC = () => {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -6, scale: 0.97 }}
                         transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                        className="absolute right-0 top-full mt-1 z-50 bg-[var(--atlas-bg-panel)] border border-white/[0.08] overflow-hidden shadow-atlas-lg w-52"
+                        className="absolute right-0 top-full mt-1 z-50 rounded-lg bg-[var(--atlas-bg-panel)] border border-[rgba(201,168,76,0.16)] overflow-hidden shadow-atlas-lg w-52"
                       >
                         {(Object.keys(SORT_LABELS) as SortOption[]).map(opt => (
                           <button
@@ -1703,7 +1703,7 @@ const PromptMarketPage: React.FC = () => {
                   exit={{ opacity: 0 }}
                   className="flex flex-col items-center justify-center py-32 gap-4"
                 >
-                  <div className="w-16 h-16 bg-[var(--atlas-bg-panel)] border border-white/[0.08] flex items-center justify-center">
+                  <div className="w-16 h-16 bg-[var(--atlas-bg-panel)] border border-[rgba(201,168,76,0.16)] flex items-center justify-center">
                     <Package className="w-8 h-8 text-white/30" />
                   </div>
                   <p className="text-white/70 text-base font-medium">
@@ -1715,7 +1715,7 @@ const PromptMarketPage: React.FC = () => {
                   {hasActiveFilters && (
                     <button
                       onClick={resetAllFilters}
-                      className="mt-2 px-4 py-2 border border-brand-blue/[0.15] text-brand-blue/70 text-sm font-medium hover:bg-brand-blue/[0.06] transition"
+                    className="mt-2 rounded-lg px-4 py-2 border border-brand-blue/[0.15] text-brand-blue/70 text-sm font-medium hover:bg-brand-blue/[0.06] transition"
                     >
                       {t('prompt_market.clear_filters')}
                     </button>
@@ -1763,10 +1763,10 @@ const PromptMarketPage: React.FC = () => {
                       <motion.div key={ps._id ?? i} variants={itemVariants}>
                         <Link
                           to={`/prompt-market/${ps.slug}`}
-                          className="flex items-center gap-4 bg-[var(--atlas-bg-panel)] border border-white/[0.08] hover:border-brand-blue/30 p-3 sm:p-4 transition-all duration-200 hover:shadow-[0_4px_20px_rgba(201,168,76,0.06)] group"
+                          className="flex items-center gap-4 rounded-xl bg-[var(--atlas-bg-panel)] border border-[rgba(201,168,76,0.16)] hover:border-brand-blue/30 p-3 sm:p-4 transition-all duration-200 hover:shadow-[0_4px_20px_rgba(201,168,76,0.06)] group"
                         >
                           {/* Cover */}
-                          <div className="w-14 h-14 sm:w-16 sm:h-16 overflow-hidden flex-shrink-0 border border-white/[0.08]">
+                          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden flex-shrink-0 border border-[rgba(201,168,76,0.16)]">
                             {ps.coverImage ? (
                               <img src={ps.coverImage} alt="" className="w-full h-full object-cover" />
                             ) : (
@@ -1805,7 +1805,7 @@ const PromptMarketPage: React.FC = () => {
                           {/* Seller */}
                           <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
                             {sAvatar ? (
-                              <img src={sAvatar} alt="" className="w-6 h-6 rounded-full ring-1 ring-white/[0.08]" />
+                              <img src={sAvatar} alt="" className="w-6 h-6 rounded-full ring-1 ring-[rgba(201,168,76,0.16)]" />
                             ) : (
                               <div className="w-6 h-6 rounded-full bg-white/[0.04] flex items-center justify-center">
                                 <User className="w-3 h-3 text-white/50" />
@@ -1840,7 +1840,7 @@ const PromptMarketPage: React.FC = () => {
                 <button
                   disabled={urlPage <= 1}
                   onClick={() => handlePageChange(urlPage - 1)}
-                  className="px-3 py-2 border border-white/[0.08] text-sm text-white/50 hover:border-brand-blue/25 hover:text-brand-blue disabled:opacity-20 disabled:cursor-not-allowed transition"
+                  className="rounded-lg px-3 py-2 border border-[rgba(201,168,76,0.16)] text-sm text-white/50 hover:border-brand-blue/25 hover:text-brand-blue disabled:opacity-20 disabled:cursor-not-allowed transition"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
@@ -1865,7 +1865,7 @@ const PromptMarketPage: React.FC = () => {
                           className={`w-9 h-9 text-sm font-medium transition-all duration-200 ${
                             urlPage === item
                               ? 'bg-brand-blue text-white shadow-[0_0_12px_rgba(201,168,76,0.25)]'
-                              : 'border border-white/[0.08] text-white/50 hover:border-brand-blue/20 hover:text-brand-blue'
+                              : 'rounded-lg border border-[rgba(201,168,76,0.16)] text-white/50 hover:border-brand-blue/20 hover:text-brand-blue'
                           }`}
                         >
                           {item}
@@ -1877,7 +1877,7 @@ const PromptMarketPage: React.FC = () => {
                 <button
                   disabled={urlPage >= pagination.totalPages}
                   onClick={() => handlePageChange(urlPage + 1)}
-                  className="px-3 py-2 border border-white/[0.08] text-sm text-white/50 hover:border-brand-blue/25 hover:text-brand-blue disabled:opacity-20 disabled:cursor-not-allowed transition"
+                  className="rounded-lg px-3 py-2 border border-[rgba(201,168,76,0.16)] text-sm text-white/50 hover:border-brand-blue/25 hover:text-brand-blue disabled:opacity-20 disabled:cursor-not-allowed transition"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -1891,7 +1891,7 @@ const PromptMarketPage: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-14 relative overflow-hidden border border-brand-blue/[0.15]"
+              className="mt-14 relative overflow-hidden rounded-xl border border-brand-blue/[0.15]"
             >
               {/* BG glow */}
               <div className="absolute inset-0 bg-gradient-to-r from-brand-blue/[0.06] via-violet-500/[0.03] to-brand-blue/[0.06]" />
@@ -1899,7 +1899,7 @@ const PromptMarketPage: React.FC = () => {
 
               <div className="relative px-6 sm:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-5">
                 <div className="flex items-center gap-4">
-                  <div className="w-11 h-11 bg-brand-blue/[0.12] border border-brand-blue/[0.15] flex items-center justify-center shrink-0">
+                  <div className="w-11 h-11 rounded-lg bg-brand-blue/[0.12] border border-brand-blue/[0.15] flex items-center justify-center shrink-0">
                     <Crown className="w-5 h-5 text-brand-blue" />
                   </div>
                   <div>
@@ -1913,7 +1913,7 @@ const PromptMarketPage: React.FC = () => {
                 </div>
                 <Link
                   to="/prompt-market/sell"
-                  className="shrink-0 px-6 py-2.5 bg-brand-blue hover:bg-brand-blue/90 text-white text-sm font-bold transition-all duration-200 shadow-[0_2px_20px_rgba(201,168,76,0.2)] hover:shadow-[0_4px_28px_rgba(201,168,76,0.35)] active:scale-[0.97]"
+                  className="shrink-0 rounded-lg px-6 py-2.5 bg-brand-blue hover:bg-brand-blue/90 text-white text-sm font-bold transition-all duration-200 shadow-[0_2px_20px_rgba(201,168,76,0.2)] hover:shadow-[0_4px_28px_rgba(201,168,76,0.35)] active:scale-[0.97]"
                 >
                   {t('prompt_market.cta_button')}
                 </Link>

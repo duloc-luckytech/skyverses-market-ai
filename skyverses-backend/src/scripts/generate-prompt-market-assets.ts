@@ -1,7 +1,11 @@
 import "dotenv/config";
 import fs from "fs";
 import path from "path";
-import { buildPromptMarketAssetTasks, PromptMarketAssetTask } from "./prompt-market-blueprint";
+import {
+  buildPromptMarketAssetTasks,
+  PROMPT_MARKET_BLUEPRINT_STANDARD,
+  PromptMarketAssetTask,
+} from "./prompt-market-blueprint";
 
 type TaskStatus = "pending" | "processing" | "polling" | "done" | "error" | "failed" | "reject" | "cancelled" | "unknown";
 
@@ -17,6 +21,7 @@ interface AssetStateItem {
   sourceUrl?: string;
   cloudflareUrl?: string;
   cloudflareUid?: string;
+  referenceImages?: string[];
   error?: unknown;
   updatedAt: string;
 }
@@ -36,8 +41,16 @@ const VIDEO_CONCURRENCY = Number(process.env.PM_VIDEO_CONCURRENCY || "3");
 const POLL_INTERVAL_MS = Number(process.env.PM_POLL_INTERVAL_MS || "10000");
 const MAX_POLLS = Number(process.env.PM_MAX_POLLS || "240");
 const MODE = process.env.PM_ASSET_MODE || "all";
+const PACK_IDS = (process.env.PM_PACK_IDS || process.env.PM_PACK_ID || "")
+  .split(",")
+  .map((item) => item.trim())
+  .filter(Boolean);
+const TASK_ROLES = (process.env.PM_TASK_ROLES || "")
+  .split(",")
+  .map((item) => item.trim())
+  .filter(Boolean);
 
-if (!EXTERNAL_TOKEN) throw new Error("Missing SKYVERSES_EXTERNAL_API_TOKEN");
+if (MODE !== "list" && !EXTERNAL_TOKEN) throw new Error("Missing SKYVERSES_EXTERNAL_API_TOKEN");
 if ((MODE === "all" || MODE === "upload") && (!CF_ACCOUNT_ID || !CF_IMAGES_TOKEN || !CF_STREAM_TOKEN)) {
   throw new Error("Missing CF_ACCOUNT_ID, CF_IMAGES_TOKEN, or CF_STREAM_TOKEN");
 }
@@ -65,7 +78,7 @@ const saveResults = () => {
   ensureParentDir(RESULT_FILE);
   const results = Object.values(state)
     .sort((a, b) => a.id.localeCompare(b.id))
-    .map(({ id, packId, type, role, aspectRatio, jobId, status, sourceUrl, cloudflareUrl, cloudflareUid }) => ({
+    .map(({ id, packId, type, role, aspectRatio, jobId, status, sourceUrl, cloudflareUrl, cloudflareUid, referenceImages }) => ({
       id,
       packId,
       type,
@@ -76,6 +89,7 @@ const saveResults = () => {
       sourceUrl,
       cloudflareUrl,
       cloudflareUid,
+      referenceImages,
     }));
   fs.writeFileSync(RESULT_FILE, JSON.stringify(results, null, 2));
 };
@@ -95,11 +109,32 @@ async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
   return parsed as T;
 }
 
+const getVideoReferenceImages = (task: PromptMarketAssetTask): string[] => {
+  const referenceRoles = task.referenceRoles || [...PROMPT_MARKET_BLUEPRINT_STANDARD.videoReferenceRoles];
+
+  return Object.values(state)
+    .filter((item) => item.packId === task.packId && item.type === "image")
+    .filter((item) => referenceRoles.includes(item.role as (typeof referenceRoles)[number]))
+    .filter((item) => item.cloudflareUrl || item.sourceUrl)
+    .sort(
+      (a, b) =>
+        referenceRoles.indexOf(a.role as (typeof referenceRoles)[number]) -
+        referenceRoles.indexOf(b.role as (typeof referenceRoles)[number])
+    )
+    .map((item) => item.cloudflareUrl || item.sourceUrl)
+    .filter((url): url is string => Boolean(url))
+    .slice(0, 4);
+};
+
 async function submitTask(task: PromptMarketAssetTask): Promise<void> {
   const current = state[task.id];
   if (current?.jobId) return;
 
   const endpoint = task.type === "image" ? "image-task" : "video-task";
+  const referenceImages = task.type === "video" ? getVideoReferenceImages(task) : [];
+  if (task.type === "video" && !referenceImages.length) {
+    throw new Error(`Video task ${task.id} requires at least one generated image reference from the same pack`);
+  }
   const body =
     task.type === "image"
       ? {
@@ -111,6 +146,8 @@ async function submitTask(task: PromptMarketAssetTask): Promise<void> {
       : {
           type: "text-to-video",
           prompt: task.prompt,
+          startImage: referenceImages[0],
+          images: referenceImages,
           aspectRatio: task.aspectRatio,
           duration: 8,
           resolution: "720p",
@@ -139,6 +176,7 @@ async function submitTask(task: PromptMarketAssetTask): Promise<void> {
     prompt: task.prompt,
     jobId,
     status: result.data?.status || "pending",
+    referenceImages: referenceImages.length ? referenceImages : undefined,
     updatedAt: now(),
   };
   saveState();
@@ -294,13 +332,30 @@ async function runPool<T>(items: T[], concurrency: number, worker: (item: T) => 
 }
 
 async function main() {
-  const tasks = buildPromptMarketAssetTasks();
+  let tasks = buildPromptMarketAssetTasks();
+  if (PACK_IDS.length) {
+    const allowedPackIds = new Set(PACK_IDS);
+    tasks = tasks.filter((task) => allowedPackIds.has(task.packId));
+  }
+  if (TASK_ROLES.length) {
+    const allowedRoles = new Set(TASK_ROLES);
+    tasks = tasks.filter((task) => allowedRoles.has(task.role));
+  }
   const imageTasks = tasks.filter((task) => task.type === "image");
   const videoTasks = tasks.filter((task) => task.type === "video");
 
   console.log(`Prompt Market assets: ${tasks.length} tasks (${imageTasks.length} images, ${videoTasks.length} videos)`);
+  if (PACK_IDS.length) console.log(`Pack filter: ${PACK_IDS.join(", ")}`);
+  if (TASK_ROLES.length) console.log(`Role filter: ${TASK_ROLES.join(", ")}`);
   console.log(`State: ${STATE_FILE}`);
   console.log(`Results: ${RESULT_FILE}`);
+
+  if (MODE === "list") {
+    tasks.forEach((task) => {
+      console.log(`${task.id} | ${task.type} | ${task.role} | ${task.aspectRatio}`);
+    });
+    return;
+  }
 
   if (MODE === "submit" || MODE === "all") {
     await runPool(imageTasks, IMAGE_CONCURRENCY, submitTask);
@@ -318,8 +373,10 @@ async function main() {
   }
 
   saveResults();
-  const done = Object.values(state).filter((item) => item.sourceUrl).length;
-  const uploaded = Object.values(state).filter((item) => item.cloudflareUrl).length;
+  const taskIds = new Set(tasks.map((task) => task.id));
+  const scopedState = Object.values(state).filter((item) => taskIds.has(item.id));
+  const done = scopedState.filter((item) => item.sourceUrl).length;
+  const uploaded = scopedState.filter((item) => item.cloudflareUrl).length;
   console.log(`Complete. Generated: ${done}/${tasks.length}. Uploaded: ${uploaded}/${tasks.length}.`);
 }
 
