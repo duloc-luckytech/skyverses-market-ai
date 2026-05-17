@@ -50,11 +50,11 @@ const SORT_OPTIONS = [
    SKELETON CARD
 ===================================================== */
 const SkeletonCard = () => (
-  <div className="relative aspect-square rounded-xl overflow-hidden bg-slate-100 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04]">
-    <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-slate-200/50 dark:from-white/5 to-transparent" />
+  <div className="relative aspect-square rounded-xl overflow-hidden bg-white/[0.03] border border-white/[0.06]">
+    <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-white/10 to-transparent" />
     <div className="absolute bottom-3 left-3 right-3 space-y-2">
-      <div className="h-2 bg-slate-200 dark:bg-white/10 rounded-full w-3/4" />
-      <div className="h-2 bg-slate-200 dark:bg-white/10 rounded-full w-1/2" />
+      <div className="h-2 bg-white/10 rounded-full w-3/4" />
+      <div className="h-2 bg-white/10 rounded-full w-1/2" />
     </div>
   </div>
 );
@@ -479,19 +479,19 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 10 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="relative w-full h-full max-w-[1400px] max-h-[95vh] bg-white dark:bg-[var(--atlas-bg-page)] border border-black/10 dark:border-white/[0.06] flex flex-col md:rounded-lg overflow-hidden z-10 shadow-atlas-lg"
+        className="relative w-full h-full max-w-[1400px] max-h-[95vh] bg-[#0A0A0A] border border-white/[0.08] flex flex-col md:rounded-lg overflow-hidden z-10 shadow-atlas-lg"
       >
         {/* ─── HEADER ─── */}
-        <header className="px-5 py-4 md:px-8 md:py-5 border-b border-black/[0.06] dark:border-white/[0.04] bg-white/80 dark:bg-[var(--atlas-bg-page)]/80 backdrop-blur-xl shrink-0">
+        <header className="px-5 py-4 md:px-8 md:py-5 border-b border-white/[0.08] bg-[#111111]/95 backdrop-blur-xl shrink-0">
           {/* Row 1 */}
           <div className="flex items-center justify-between gap-4 mb-4">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-purple-600 flex items-center justify-center shadow-lg shadow-rose-500/20">
-                <Archive size={18} className="text-white" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-blue to-brand-blueHover flex items-center justify-center shadow-lg shadow-brand-blue/20">
+                <Archive size={18} className="text-black" />
               </div>
               <div>
-                <h2 className="text-base md:text-lg font-bold text-slate-900 dark:text-white">Thư viện tài sản</h2>
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
+                <h2 className="text-base md:text-lg font-bold text-white">Thư viện tài sản</h2>
+                <p className="text-[11px] text-white/55 font-medium">
                   {total} ảnh tổng • Đang xem {assets.length} • Chọn tối đa {maxSelect}
                 </p>
               </div>
@@ -501,24 +501,24 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
               {/* Bulk mode toggle */}
               <button
                 onClick={() => { setIsBulkMode(!isBulkMode); setBulkSelected([]); }}
-                className={`p-2 rounded-lg transition-all ${isBulkMode ? 'bg-red-500/10 text-red-500' : 'text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]'}`}
+                className={`p-2 rounded-lg transition-all ${isBulkMode ? 'bg-red-500/10 text-red-400' : 'text-white/55 hover:text-white hover:bg-white/[0.06]'}`}
                 title="Chế độ chọn hàng loạt"
               >
                 <CheckSquare size={16} />
               </button>
 
-              <button onClick={() => fetchMedia(1)} disabled={isLoading} className="p-2 text-slate-400 hover:text-rose-500 rounded-lg hover:bg-rose-500/10 transition-all disabled:opacity-30" title="Làm mới">
+              <button onClick={() => fetchMedia(1)} disabled={isLoading} className="p-2 text-white/55 hover:text-brand-blue rounded-lg hover:bg-brand-blue/10 transition-all disabled:opacity-30" title="Làm mới">
                 <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
               </button>
-              <button onClick={() => setShowQuickGen(true)} className="bg-gradient-to-r from-purple-600 to-violet-600 text-white px-4 py-2 rounded-xl text-[10px] font-bold flex items-center gap-1.5 hover:brightness-110 transition-all shadow-lg shadow-purple-500/20">
+              <button onClick={() => setShowQuickGen(true)} className="bg-gradient-to-r from-brand-blue to-brand-blueHover text-black px-4 py-2 rounded-xl text-[11px] font-bold flex items-center gap-1.5 hover:brightness-110 transition-all shadow-lg shadow-brand-blue/20">
                 <Wand2 size={12} /> Tạo AI
               </button>
-              <button onClick={() => fileInputRef.current?.click()} disabled={isUploading || uploadingJobs.length > 0} className="bg-slate-900 dark:bg-white/10 text-white px-4 py-2 rounded-xl text-[10px] font-bold flex items-center gap-1.5 hover:brightness-110 transition-all disabled:opacity-50">
+              <button onClick={() => fileInputRef.current?.click()} disabled={isUploading || uploadingJobs.length > 0} className="bg-white/[0.06] border border-white/[0.08] text-white/80 px-4 py-2 rounded-xl text-[11px] font-bold flex items-center gap-1.5 hover:bg-white/[0.1] hover:text-white transition-all disabled:opacity-50">
                 {(isUploading || uploadingJobs.length > 0) ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
                 {uploadingJobs.length > 0 ? `Đang xử lý (${uploadingJobs.length})` : 'Tải lên'}
               </button>
               <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleGCSUpload} />
-              <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 rounded-full transition-colors">
+              <button onClick={onClose} className="p-2 text-white/55 hover:text-red-400 rounded-full hover:bg-white/[0.06] transition-colors">
                 <X size={22} />
               </button>
             </div>
@@ -528,33 +528,33 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
           <div className="flex items-center gap-3 flex-wrap">
             {/* Search */}
             <div className="relative flex-grow max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/45" size={14} />
               <input
                 type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Tìm theo tên ảnh..."
-                className="w-full bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-xl pl-9 pr-8 py-2.5 text-xs outline-none focus:border-rose-500/40 focus:ring-1 focus:ring-rose-500/10 transition-all text-slate-800 dark:text-white/80"
+                className="w-full bg-white/[0.035] border border-white/[0.08] rounded-xl pl-9 pr-8 py-2.5 text-sm outline-none focus:border-brand-blue/45 focus:ring-1 focus:ring-brand-blue/10 transition-all text-white/85 placeholder:text-white/35"
               />
               {searchQuery && (
-                <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"><X size={12} /></button>
+                <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/45 hover:text-white"><X size={12} /></button>
               )}
             </div>
 
             {/* Source filter */}
-            <div className="flex bg-slate-100 dark:bg-white/[0.03] rounded-xl border border-black/[0.04] dark:border-white/[0.04] p-0.5 overflow-x-auto no-scrollbar">
+            <div className="flex bg-white/[0.03] rounded-xl border border-white/[0.08] p-0.5 overflow-x-auto no-scrollbar">
               {SOURCE_FILTERS.map(f => (
                 <button key={f.key} onClick={() => setSourceFilter(f.key)}
-                  className={`px-3 py-1.5 rounded-lg text-[10px] font-bold whitespace-nowrap transition-all ${sourceFilter === f.key ? 'bg-white dark:bg-white/10 text-rose-500 shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'}`}
+                  className={`px-3 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all ${sourceFilter === f.key ? 'bg-brand-blue/12 text-brand-blue shadow-sm' : 'text-white/55 hover:text-white'}`}
                 >{f.label}</button>
               ))}
             </div>
 
             {/* Sort */}
-            <div className="flex items-center gap-1 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04] rounded-xl px-2 py-1 ml-auto">
-              <ArrowUpDown size={12} className="text-slate-400" />
+            <div className="flex items-center gap-1 bg-white/[0.03] border border-white/[0.08] rounded-xl px-2 py-1 ml-auto">
+              <ArrowUpDown size={12} className="text-white/45" />
               <select
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value)}
-                className="bg-transparent text-[10px] font-bold text-slate-600 dark:text-slate-300 outline-none cursor-pointer appearance-none pr-2"
+                className="bg-transparent text-[11px] font-bold text-white/70 outline-none cursor-pointer appearance-none pr-2"
               >
                 {SORT_OPTIONS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
               </select>
@@ -571,7 +571,7 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
                 className="overflow-hidden"
               >
                 <div className="flex items-center gap-3 mt-3 p-3 bg-red-500/5 border border-red-500/10 rounded-xl">
-                  <button onClick={toggleBulkSelectAll} className="flex items-center gap-1.5 text-[10px] font-bold text-slate-600 dark:text-slate-300 hover:text-red-500 transition-colors">
+                  <button onClick={toggleBulkSelectAll} className="flex items-center gap-1.5 text-[11px] font-bold text-white/70 hover:text-red-400 transition-colors">
                     {bulkSelected.length === sortedAssets.length ? <CheckSquare size={14} className="text-red-500" /> : <Square size={14} />}
                     {bulkSelected.length === sortedAssets.length ? 'Bỏ chọn tất cả' : 'Chọn tất cả'}
                   </button>
@@ -595,15 +595,15 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
           {/* Gallery */}
           <div
             ref={scrollRef}
-            className={`flex-grow overflow-y-auto p-4 md:p-6 lg:p-8 no-scrollbar relative transition-all ${isDragOver ? 'ring-2 ring-inset ring-rose-500/50 bg-rose-500/5' : ''}`}
+            className={`flex-grow overflow-y-auto p-4 md:p-6 lg:p-8 no-scrollbar relative transition-all ${isDragOver ? 'ring-2 ring-inset ring-brand-blue/50 bg-brand-blue/5' : ''}`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
           >
             {/* Drag overlay */}
             {isDragOver && (
-              <div className="absolute inset-0 z-30 flex items-center justify-center bg-rose-500/10 backdrop-blur-sm rounded-xl pointer-events-none">
-                <div className="flex flex-col items-center gap-3 text-rose-500">
+              <div className="absolute inset-0 z-30 flex items-center justify-center bg-brand-blue/10 backdrop-blur-sm rounded-xl pointer-events-none">
+                <div className="flex flex-col items-center gap-3 text-brand-blue">
                   <Upload size={48} strokeWidth={1.5} />
                   <p className="text-sm font-bold">Thả ảnh vào đây</p>
                 </div>
@@ -642,8 +642,8 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
                             layout key={item._id}
                             onClick={() => toggleSelect(item)}
                             className={`relative aspect-square rounded-xl overflow-hidden cursor-pointer transition-all duration-300 group ${
-                              isBulkMode && isBulkChecked ? 'ring-2 ring-red-500 ring-offset-2 ring-offset-white dark:ring-offset-[#0a0a0d] scale-[0.97]' :
-                              isSelected ? 'ring-2 ring-rose-500 ring-offset-2 ring-offset-white dark:ring-offset-[#0a0a0d] scale-[0.97]' :
+                              isBulkMode && isBulkChecked ? 'ring-2 ring-red-500 ring-offset-2 ring-offset-[#0A0A0A] scale-[0.97]' :
+                              isSelected ? 'ring-2 ring-brand-blue ring-offset-2 ring-offset-[#0A0A0A] scale-[0.97]' :
                               'hover:ring-1 hover:ring-white/20'
                             }`}
                           >
@@ -661,7 +661,7 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
                             <div className={`absolute top-2.5 right-2.5 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all z-20 ${
                               isBulkMode
                                 ? (isBulkChecked ? 'bg-red-500 border-red-500 shadow-lg shadow-red-500/40 scale-100' : 'bg-black/30 border-white/30 scale-100')
-                                : (isSelected ? 'bg-rose-500 border-rose-500 shadow-lg shadow-rose-500/40 scale-100' : 'bg-black/30 border-white/30 opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100')
+                                : (isSelected ? 'bg-brand-blue border-brand-blue shadow-lg shadow-brand-blue/40 scale-100' : 'bg-black/30 border-white/30 opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100')
                             }`}>
                               {(isSelected || isBulkChecked) && <Check size={12} strokeWidth={4} className="text-white" />}
                             </div>
@@ -687,7 +687,7 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
                               </div>
                             )}
 
-                            {isSelected && !isBulkMode && <div className="absolute inset-0 bg-rose-500/10 pointer-events-none" />}
+                            {isSelected && !isBulkMode && <div className="absolute inset-0 bg-brand-blue/10 pointer-events-none" />}
                             {isBulkChecked && isBulkMode && <div className="absolute inset-0 bg-red-500/10 pointer-events-none" />}
                           </motion.div>
                         );
@@ -699,44 +699,44 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
                 {/* Load more */}
                 {isLoadingMore && (
                   <div className="flex items-center justify-center py-6 gap-3">
-                    <Loader2 size={16} className="animate-spin text-rose-400" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Đang tải thêm...</span>
+                    <Loader2 size={16} className="animate-spin text-brand-blue" />
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-white/55">Đang tải thêm...</span>
                   </div>
                 )}
 
                 {!hasMore && assets.length > 0 && !isLoadingMore && (
-                  <div className="flex items-center justify-center py-4 gap-2 opacity-40">
-                    <div className="h-px w-12 bg-slate-300 dark:bg-white/10" />
-                    <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Hết danh sách</span>
-                    <div className="h-px w-12 bg-slate-300 dark:bg-white/10" />
+                  <div className="flex items-center justify-center py-4 gap-2 opacity-70">
+                    <div className="h-px w-12 bg-white/10" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/45">Hết danh sách</span>
+                    <div className="h-px w-12 bg-white/10" />
                   </div>
                 )}
               </div>
             ) : (
               /* Empty state */
               <div className="h-full flex flex-col items-center justify-center text-center gap-6">
-                <div className="w-24 h-24 rounded-xl bg-slate-100 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.04] flex items-center justify-center">
-                  <ImageIcon size={40} strokeWidth={1} className="text-slate-300 dark:text-slate-600" />
+                <div className="w-24 h-24 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center">
+                  <ImageIcon size={40} strokeWidth={1} className="text-white/30" />
                 </div>
                 <div className="space-y-2">
-                  <p className="text-sm font-bold text-slate-500 dark:text-slate-400">
+                  <p className="text-base font-bold text-white/75">
                     {searchQuery || sourceFilter ? 'Không tìm thấy kết quả' : 'Kho ảnh trống'}
                   </p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500">
+                  <p className="text-xs text-white/50">
                     {searchQuery || sourceFilter ? 'Thử từ khoá hoặc bộ lọc khác' : 'Tải ảnh lên, kéo thả hoặc tạo ảnh AI'}
                   </p>
                 </div>
                 {!searchQuery && !sourceFilter ? (
                   <div className="flex gap-3">
-                    <button onClick={() => fileInputRef.current?.click()} className="px-5 py-2.5 bg-slate-900 dark:bg-white/10 text-white rounded-xl text-[10px] font-bold flex items-center gap-2">
+                    <button onClick={() => fileInputRef.current?.click()} className="px-5 py-2.5 bg-white/[0.06] border border-white/[0.08] text-white rounded-xl text-[11px] font-bold flex items-center gap-2 hover:bg-white/[0.1] transition-all">
                       <Upload size={12} /> Tải ảnh lên
                     </button>
-                    <button onClick={() => setShowQuickGen(true)} className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-xl text-[10px] font-bold flex items-center gap-2">
+                    <button onClick={() => setShowQuickGen(true)} className="px-5 py-2.5 bg-gradient-to-r from-brand-blue to-brand-blueHover text-black rounded-xl text-[11px] font-bold flex items-center gap-2">
                       <Wand2 size={12} /> Tạo AI
                     </button>
                   </div>
                 ) : (
-                  <button onClick={() => { setSearchQuery(''); setSourceFilter(''); }} className="px-5 py-2.5 bg-rose-500/10 text-rose-500 border border-rose-500/20 rounded-xl text-[10px] font-bold flex items-center gap-2 hover:bg-rose-500 hover:text-white transition-all">
+                  <button onClick={() => { setSearchQuery(''); setSourceFilter(''); }} className="px-5 py-2.5 bg-brand-blue/10 text-brand-blue border border-brand-blue/20 rounded-xl text-[11px] font-bold flex items-center gap-2 hover:bg-brand-blue hover:text-black transition-all">
                     <X size={12} /> Xoá bộ lọc
                   </button>
                 )}
@@ -752,7 +752,7 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
                 animate={{ width: 360, opacity: 1 }}
                 exit={{ width: 0, opacity: 0 }}
                 transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                className="hidden md:flex flex-col border-l border-black/[0.06] dark:border-white/[0.04] bg-slate-50 dark:bg-[var(--atlas-bg-page)] shrink-0 overflow-hidden"
+                className="hidden md:flex flex-col border-l border-white/[0.08] bg-[#111111] shrink-0 overflow-hidden"
               >
                 <div className="flex-grow overflow-y-auto no-scrollbar">
                   <div className="relative aspect-square bg-black flex items-center justify-center cursor-pointer" onClick={() => setLightboxItem(previewItem)}>
@@ -767,8 +767,8 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
 
                   <div className="p-5 space-y-5">
                     <div className="space-y-1">
-                      <p className="text-xs font-bold text-slate-800 dark:text-white truncate">{previewItem.originalName || 'Untitled Asset'}</p>
-                      <p className="text-[9px] text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+                      <p className="text-sm font-bold text-white truncate">{previewItem.originalName || 'Untitled Asset'}</p>
+                      <p className="text-[11px] text-white/50 flex items-center gap-1.5">
                         <Clock size={10} /> {formatDate(previewItem.createdAt)}
                       </p>
                     </div>
@@ -782,8 +782,8 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
 
                     {previewItem.prompt && (
                       <div className="space-y-1.5">
-                        <p className="text-[9px] font-bold uppercase text-slate-400 dark:text-slate-500 tracking-wider">Prompt</p>
-                        <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed bg-white dark:bg-white/[0.03] p-3 rounded-lg border border-black/[0.06] dark:border-white/[0.04] italic">
+                        <p className="text-[10px] font-bold uppercase text-white/55 tracking-wider">Prompt</p>
+                        <p className="text-xs text-white/70 leading-relaxed bg-white/[0.035] p-3 rounded-lg border border-white/[0.08] italic">
                           "{previewItem.prompt}"
                         </p>
                       </div>
@@ -792,20 +792,20 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
                     <div className="flex flex-col gap-2">
                       <button onClick={() => toggleSelect(previewItem)}
                         className={`w-full py-2.5 rounded-xl text-[10px] font-bold flex items-center justify-center gap-2 transition-all ${selectedAssets.some(a => a.id === previewItem._id)
-                          ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20'
-                          : 'bg-rose-500/10 text-rose-500 border border-rose-500/20 hover:bg-rose-500 hover:text-white'}`}
+                          ? 'bg-brand-blue text-black shadow-lg shadow-brand-blue/20'
+                          : 'bg-brand-blue/10 text-brand-blue border border-brand-blue/20 hover:bg-brand-blue hover:text-black'}`}
                       >
                         <Check size={12} /> {selectedAssets.some(a => a.id === previewItem._id) ? 'Đã chọn' : 'Chọn ảnh này'}
                       </button>
                       <div className="flex gap-2">
-                        <button onClick={(e) => handleDownload(e, previewItem.imageUrl, previewItem.originalName)} className="flex-1 py-2.5 bg-white dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-xl text-[10px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center gap-1.5 hover:border-slate-300 dark:hover:border-white/10 transition-all">
+                        <button onClick={(e) => handleDownload(e, previewItem.imageUrl, previewItem.originalName)} className="flex-1 py-2.5 bg-white/[0.035] border border-white/[0.08] rounded-xl text-[11px] font-bold text-white/70 flex items-center justify-center gap-1.5 hover:border-white/15 hover:text-white transition-all">
                           <Download size={12} /> Tải xuống
                         </button>
-                        <button onClick={(e) => handleCopyUrl(e, previewItem.imageUrl)} className="flex-1 py-2.5 bg-white dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-xl text-[10px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center gap-1.5 hover:border-slate-300 dark:hover:border-white/10 transition-all">
+                        <button onClick={(e) => handleCopyUrl(e, previewItem.imageUrl)} className="flex-1 py-2.5 bg-white/[0.035] border border-white/[0.08] rounded-xl text-[11px] font-bold text-white/70 flex items-center justify-center gap-1.5 hover:border-white/15 hover:text-white transition-all">
                           <Copy size={12} /> Copy URL
                         </button>
                       </div>
-                      <button onClick={(e) => handleDelete(e, previewItem._id)} className="w-full py-2.5 bg-red-500/5 border border-red-500/10 rounded-xl text-[10px] font-bold text-red-500 flex items-center justify-center gap-1.5 hover:bg-red-500 hover:text-white transition-all">
+                      <button onClick={(e) => handleDelete(e, previewItem._id)} className="w-full py-2.5 bg-red-500/5 border border-red-500/10 rounded-xl text-[11px] font-bold text-red-400 flex items-center justify-center gap-1.5 hover:bg-red-500 hover:text-white transition-all">
                         <Trash2 size={12} /> Xoá ảnh
                       </button>
                     </div>
@@ -826,37 +826,37 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
         )}
 
         {/* ─── FOOTER ─── */}
-        <div className="px-5 py-4 md:px-8 md:py-5 bg-white dark:bg-[var(--atlas-bg-page)] border-t border-black/[0.06] dark:border-white/[0.04] shrink-0 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="px-5 py-4 md:px-8 md:py-5 bg-[#111111]/95 border-t border-white/[0.08] shrink-0 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4 order-2 md:order-1">
             <div className="flex items-center gap-3">
               <div className="flex -space-x-2">
                 {selectedAssets.map((s) => (
-                  <div key={s.id} className="w-9 h-9 rounded-xl border-2 border-white dark:border-[#0c0c0f] overflow-hidden shadow-lg ring-1 ring-rose-500/20">
+                  <div key={s.id} className="w-9 h-9 rounded-xl border-2 border-[#111111] overflow-hidden shadow-lg ring-1 ring-brand-blue/25">
                     <img src={s.url} className="w-full h-full object-cover" alt="" />
                   </div>
                 ))}
               </div>
               {selectedAssets.length > 0 && (
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">{selectedAssets.length} / {maxSelect} đã chọn</span>
-                  <button onClick={() => setSelectedAssets([])} className="text-[9px] font-bold text-rose-400 hover:text-rose-500 underline underline-offset-2">Bỏ chọn</button>
+                  <span className="text-[11px] font-bold text-white/60">{selectedAssets.length} / {maxSelect} đã chọn</span>
+                  <button onClick={() => setSelectedAssets([])} className="text-[10px] font-bold text-brand-blue hover:text-brand-blueHover underline underline-offset-2">Bỏ chọn</button>
                 </div>
               )}
             </div>
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-white/[0.02] rounded-lg border border-black/[0.04] dark:border-white/[0.04]">
-              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">{assets.length} / {total}</span>
-              {hasMore && <span className="text-[8px] text-rose-400 font-bold">• cuộn để tải thêm</span>}
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-white/[0.03] rounded-lg border border-white/[0.08]">
+              <span className="text-[10px] font-bold text-white/50 uppercase tracking-wider">{assets.length} / {total}</span>
+              {hasMore && <span className="text-[9px] text-brand-blue font-bold">• cuộn để tải thêm</span>}
             </div>
           </div>
 
           <div className="flex gap-3 w-full md:w-auto order-1 md:order-2">
-            <button onClick={onClose} className="flex-grow md:flex-none px-6 py-3 rounded-xl font-bold text-[10px] uppercase tracking-wider border border-black/[0.06] dark:border-white/[0.06] hover:bg-slate-50 dark:hover:bg-white/[0.03] text-slate-600 dark:text-slate-300 transition-all">
+            <button onClick={onClose} className="flex-grow md:flex-none px-6 py-3 rounded-xl font-bold text-[11px] uppercase tracking-wider border border-white/[0.08] hover:bg-white/[0.06] text-white/75 hover:text-white transition-all">
               Huỷ
             </button>
             <button onClick={handleConfirmSelection} disabled={selectedAssets.length === 0}
-              className={`flex-grow md:flex-none px-10 py-3 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all shadow-lg ${selectedAssets.length > 0
-                ? 'bg-gradient-to-r from-rose-500 to-pink-500 text-white hover:scale-[1.02] active:scale-[0.98] shadow-rose-500/20'
-                : 'bg-slate-100 dark:bg-white/[0.03] text-slate-400 cursor-not-allowed shadow-none'
+              className={`flex-grow md:flex-none px-10 py-3 rounded-xl font-bold text-[11px] uppercase tracking-wider transition-all shadow-lg ${selectedAssets.length > 0
+                ? 'bg-gradient-to-r from-brand-blue to-brand-blueHover text-black hover:scale-[1.02] active:scale-[0.98] shadow-brand-blue/20'
+                : 'bg-white/[0.04] text-white/40 cursor-not-allowed shadow-none'
               }`}
             >
               Xác nhận ({selectedAssets.length})
@@ -890,27 +890,27 @@ const ImageLibraryModal: React.FC<ImageLibraryModalProps> = ({
 
 const DateHeader = ({ label, count }: { label: string; count?: number }) => (
   <div className="flex items-center gap-3">
-    <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-white/[0.03] rounded-lg border border-black/[0.06] dark:border-white/[0.04]">
-      <Calendar size={12} className="text-rose-400" />
-      <span className="text-[10px] font-bold text-slate-700 dark:text-white/80">{label}</span>
-      {count !== undefined && <span className="text-[9px] font-medium text-slate-400 dark:text-slate-500">({count})</span>}
+    <div className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.035] rounded-lg border border-white/[0.08]">
+      <Calendar size={12} className="text-brand-blue" />
+      <span className="text-[11px] font-bold text-white/85">{label}</span>
+      {count !== undefined && <span className="text-[10px] font-medium text-white/45">({count})</span>}
     </div>
-    <div className="h-px flex-grow bg-black/[0.04] dark:bg-white/[0.04]" />
+    <div className="h-px flex-grow bg-white/[0.08]" />
   </div>
 );
 
 const UploadPlaceholder = ({ fileName }: { fileName?: string }) => (
-  <div className="relative aspect-square rounded-xl overflow-hidden border-2 border-dashed border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02] animate-pulse flex flex-col items-center justify-center gap-2">
-    <Loader2 size={20} className="animate-spin text-rose-400" />
-    <span className="text-[8px] font-bold uppercase text-slate-400 tracking-wider">Đang xử lý...</span>
-    {fileName && <span className="text-[7px] text-slate-300 dark:text-slate-600 truncate px-2 max-w-full">{fileName}</span>}
+  <div className="relative aspect-square rounded-xl overflow-hidden border-2 border-dashed border-white/[0.08] bg-white/[0.025] animate-pulse flex flex-col items-center justify-center gap-2">
+    <Loader2 size={20} className="animate-spin text-brand-blue" />
+    <span className="text-[10px] font-bold uppercase text-white/55 tracking-wider">Đang xử lý...</span>
+    {fileName && <span className="text-[9px] text-white/35 truncate px-2 max-w-full">{fileName}</span>}
   </div>
 );
 
 const MetaCard = ({ label, value }: { label: string; value: string }) => (
-  <div className="p-2.5 bg-white dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-lg">
-    <p className="text-[8px] font-bold uppercase text-slate-400 dark:text-slate-500 tracking-wider mb-0.5">{label}</p>
-    <p className="text-[10px] font-semibold text-slate-700 dark:text-white/80 truncate">{value}</p>
+  <div className="p-2.5 bg-white/[0.025] border border-white/[0.08] rounded-lg">
+    <p className="text-[9px] font-bold uppercase text-white/45 tracking-wider mb-0.5">{label}</p>
+    <p className="text-[11px] font-semibold text-white/80 truncate">{value}</p>
   </div>
 );
 
