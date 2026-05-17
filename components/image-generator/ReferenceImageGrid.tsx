@@ -42,8 +42,8 @@ export const ReferenceImageGrid: React.FC<ReferenceImageGridProps> = ({
         className="w-full flex items-center justify-between px-0.5 group"
       >
         <div className="flex items-center gap-2">
-          <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider flex items-center gap-1.5"><ImagePlus size={11} className="text-brand-blue" /> Ảnh tham chiếu</p>
-          <span className="text-[9px] font-medium text-slate-400 dark:text-slate-500">{currentCount}/{maxRefs}</span>
+          <p className="text-[11px] font-semibold uppercase text-white/70 tracking-wider flex items-center gap-1.5"><ImagePlus size={12} className="text-brand-blue" /> Ảnh tham chiếu</p>
+          <span className="text-[10px] font-medium text-white/45">{currentCount}/{maxRefs}</span>
         </div>
         {isExpanded
           ? <ChevronUp size={12} className="text-slate-400 dark:text-slate-500 group-hover:text-brand-blue transition-colors" />
@@ -53,7 +53,7 @@ export const ReferenceImageGrid: React.FC<ReferenceImageGridProps> = ({
 
       {isExpanded && (
         <>
-          <p className="text-[8px] text-slate-400 dark:text-slate-500 px-0.5 leading-relaxed">Tải ảnh mẫu để AI tham chiếu. Có thể để trống.</p>
+        <p className="text-[10px] text-white/50 px-0.5 leading-relaxed">Tải ảnh mẫu để AI tham chiếu. Có thể để trống.</p>
 
           <div
             className="grid grid-cols-3 gap-1.5"
@@ -84,9 +84,9 @@ export const ReferenceImageGrid: React.FC<ReferenceImageGridProps> = ({
 
             {currentCount < maxRefs && (
               <div className="relative aspect-square group">
-                <div className="absolute inset-0 border border-dashed border-black/[0.08] dark:border-white/[0.06] rounded-lg flex flex-col items-center justify-center text-slate-400 dark:text-gray-500 hover:border-brand-blue/30 transition-all cursor-pointer gap-1">
+                <div className="absolute inset-0 border border-dashed border-white/[0.08] rounded-lg flex flex-col items-center justify-center text-white/45 hover:text-white/70 hover:border-brand-blue/30 transition-all cursor-pointer gap-1">
                   <Plus size={14} />
-                  <span className="text-[7px] font-medium">Drag & Drop</span>
+                  <span className="text-[8px] font-medium">Drag & Drop</span>
                 </div>
                 <div className="absolute inset-0 bg-[#1a1a1e] opacity-0 group-hover:opacity-100 transition-all flex flex-col p-0.5 gap-0.5 z-10 border border-white/[0.08] rounded-lg shadow-atlas-lg">
                   <button onClick={onUploadTrigger} className="flex-grow flex items-center justify-center gap-1 bg-white/[0.04] rounded text-[#666] hover:bg-brand-blue hover:text-white transition-all text-[8px]">
@@ -106,11 +106,11 @@ export const ReferenceImageGrid: React.FC<ReferenceImageGridProps> = ({
         <div
           onDragOver={handleDragOver}
           onDrop={handleDrop}
-          className="flex items-center gap-2 px-2.5 py-2 border border-dashed border-black/[0.06] dark:border-white/[0.06] rounded-lg cursor-pointer hover:border-brand-blue/20 transition-all"
+          className="flex items-center gap-2 px-2.5 py-2 border border-dashed border-white/[0.08] rounded-lg cursor-pointer hover:border-brand-blue/25 transition-all"
           onClick={() => setIsExpanded(true)}
         >
-          <Plus size={12} className="text-slate-400 dark:text-slate-500" />
-          <span className="text-[9px] text-slate-400 dark:text-slate-500 font-medium">Thêm ảnh tham chiếu (tùy chọn)</span>
+          <Plus size={12} className="text-white/45" />
+          <span className="text-[10px] text-white/55 font-medium">Thêm ảnh tham chiếu (tùy chọn)</span>
         </div>
       )}
     </div>

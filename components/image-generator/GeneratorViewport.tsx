@@ -162,9 +162,9 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
   const errorCount = useMemo(() => results.filter(r => r.status === 'error').length, [results]);
 
   return (
-    <main className="flex-grow min-w-0 flex flex-col relative bg-slate-50 dark:bg-[var(--atlas-bg-page)] overflow-hidden">
+    <main className="flex-grow min-w-0 flex flex-col relative bg-[#0A0A0A] text-white overflow-hidden">
       {/* ─── TOOLBAR ─── */}
-      <div className="h-12 border-b border-black/[0.06] dark:border-white/[0.08] bg-white/95 dark:bg-[var(--atlas-bg-panel)]/95 backdrop-blur-md flex items-center justify-between px-4 shrink-0 z-40">
+      <div className="h-12 border-b border-white/[0.08] bg-[#111111]/95 backdrop-blur-md flex items-center justify-between px-4 shrink-0 z-40">
         <div className="flex items-center gap-2 md:gap-4 overflow-hidden">
           <div className="flex items-center gap-1">
             {onClose && (
@@ -177,17 +177,17 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
               </button>
             )}
 
-            <div className="flex bg-black/[0.03] dark:bg-white/[0.03] rounded-lg border border-black/[0.06] dark:border-white/[0.08] overflow-hidden">
+            <div className="flex bg-white/[0.03] rounded-lg border border-white/[0.08] overflow-hidden">
               <button
                 onClick={() => setActiveTab('RESULTS')}
-                className={`px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition-all ${activeTab === 'RESULTS' ? 'bg-black/[0.05] dark:bg-white/[0.06] text-slate-800 dark:text-white' : 'text-slate-500 dark:text-slate-400'}`}
+                className={`px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider transition-all ${activeTab === 'RESULTS' ? 'bg-white/[0.08] text-white' : 'text-white/55 hover:text-white/75'}`}
               >
                 <LayoutGrid size={14} className="md:hidden" />
                 <span className="hidden md:flex items-center gap-1.5"><ImageIcon size={12} /> Kết quả</span>
               </button>
               <button
                 onClick={() => setActiveTab('HISTORY')}
-                className={`px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition-all ${activeTab === 'HISTORY' ? 'bg-black/[0.05] dark:bg-white/[0.06] text-slate-800 dark:text-white' : 'text-slate-500 dark:text-slate-400'}`}
+                className={`px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider transition-all ${activeTab === 'HISTORY' ? 'bg-white/[0.08] text-white' : 'text-white/55 hover:text-white/75'}`}
               >
                 <HistoryIcon size={14} className="md:hidden" />
                 <span className="hidden md:flex items-center gap-1.5"><Database size={12} /> Lịch sử</span>
@@ -228,9 +228,9 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
             </button>
           ) : (
             <div className="flex items-center gap-2 md:gap-3">
-              <div className="flex items-center gap-1.5 bg-black/[0.03] dark:bg-white/[0.03] px-2.5 py-1.5 rounded-lg border border-black/[0.06] dark:border-white/[0.08]">
-                <span className="text-[9px] font-medium text-slate-500 dark:text-slate-400 hidden xs:inline">Auto DL</span>
-                <span className="text-[9px] font-medium text-slate-500 dark:text-slate-400 xs:hidden">Auto</span>
+              <div className="flex items-center gap-1.5 bg-white/[0.03] px-2.5 py-1.5 rounded-lg border border-white/[0.08]">
+                <span className="text-[10px] font-medium text-white/60 hidden xs:inline">Auto DL</span>
+                <span className="text-[10px] font-medium text-white/60 xs:hidden">Auto</span>
                 <button
                   onClick={() => setAutoDownload(!autoDownload)}
                   className={`w-7 h-3.5 rounded-full relative transition-colors ${autoDownload ? 'bg-brand-blue' : 'bg-slate-300 dark:bg-white/[0.1]'}`}
@@ -245,17 +245,17 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
               <button
                 onClick={handleManualDownload}
                 title="Tải xuống"
-                className="p-2 bg-brand-blue/10 text-brand-blue dark:text-brand-blue rounded-lg hover:bg-brand-blue hover:text-white transition-all border border-brand-blue/20"
+                className="p-2 bg-brand-blue/10 text-brand-blue rounded-lg hover:bg-brand-blue hover:text-black transition-all border border-brand-blue/25"
               >
                 <Download size={14} />
               </button>
 
               <div className="hidden md:flex items-center gap-3 pl-2 border-l border-slate-200 dark:border-white/10">
-                <ImageIcon size={14} className="text-slate-400 dark:text-slate-500" />
+                <ImageIcon size={14} className="text-white/45" />
                 <input
                   type="range" min="1" max="10"
                   value={zoomLevel} onChange={e => setZoomLevel(parseInt(e.target.value))}
-                  className="w-16 md:w-28 h-1 bg-slate-200 dark:bg-white/10 appearance-none rounded-full accent-brand-blue cursor-pointer"
+                  className="w-16 md:w-28 h-1 bg-white/10 appearance-none rounded-full accent-brand-blue cursor-pointer"
                 />
               </div>
             </div>
@@ -341,10 +341,10 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
               </div>
               {serverResults.length === 0 && !isFetchingServer ? (
                 <div className="py-20 text-center flex flex-col items-center gap-6 select-none">
-                  <HistoryIcon size={60} strokeWidth={1} className="text-slate-300 dark:text-slate-600" />
+                  <HistoryIcon size={60} strokeWidth={1} className="text-white/25" />
                   <div className="space-y-2">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">Chưa có lịch sử</p>
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500">Tạo hình ảnh đầu tiên để bắt đầu xây dựng lịch sử.</p>
+                    <p className="text-sm font-semibold uppercase tracking-widest text-white/60">Chưa có lịch sử</p>
+                    <p className="text-xs text-white/45">Tạo hình ảnh đầu tiên để bắt đầu xây dựng lịch sử.</p>
                   </div>
                 </div>
               ) : (
@@ -390,10 +390,10 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1">
                   <div className="space-y-4">
                     <div className="flex items-center gap-3 text-brand-blue"><Sparkles size={20} /></div>
-                    <h2 className="text-3xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
+                    <h2 className="text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
                       Bắt đầu <br /><span className="text-brand-blue">sáng tạo</span>
                     </h2>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium max-w-xl leading-relaxed">Chọn gợi ý prompt bên dưới hoặc nhập kịch bản riêng ở cột trái để bắt đầu tạo ảnh AI.</p>
+                    <p className="text-sm text-white/65 font-medium max-w-xl leading-relaxed">Chọn gợi ý prompt bên dưới hoặc nhập kịch bản riêng ở cột trái để bắt đầu tạo ảnh AI.</p>
                   </div>
                   {loadingExplorer && (
                     <div className="flex items-center gap-3 px-5 py-2.5 bg-brand-blue/10 rounded-full border border-brand-blue/20">
@@ -410,27 +410,27 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                     { icon: '🖼️', title: 'Tải ảnh tham chiếu', desc: 'Upload ảnh mẫu để AI tham chiếu phong cách, bố cục hoặc chủ thể của bạn.' },
                     { icon: '⚙️', title: 'Chọn cấu hình', desc: 'Chọn model, tỷ lệ, độ phân giải, chế độ phù hợp với nhu cầu tạo ảnh.' },
                   ].map((tip, i) => (
-                    <div key={i} className="p-4 rounded-xl border border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-white/[0.015]">
+                    <div key={i} className="p-4 rounded-xl border border-white/[0.08] bg-white/[0.025]">
                       <span className="text-lg">{tip.icon}</span>
-                      <p className="text-[11px] font-semibold text-slate-700 dark:text-white/80 mt-2">{tip.title}</p>
-                      <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{tip.desc}</p>
+                      <p className="text-sm font-semibold text-white mt-2">{tip.title}</p>
+                      <p className="text-xs text-white/60 mt-1 leading-relaxed">{tip.desc}</p>
                     </div>
                   ))}
                 </div>
 
                 {/* PROMPT SUGGESTION TILES */}
                 <div>
-                  <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider mb-3 px-1">💡 Gợi ý prompt</p>
+                  <p className="text-xs font-semibold uppercase text-white/60 tracking-wider mb-3 px-1">💡 Gợi ý prompt</p>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     {PROMPT_SUGGESTIONS.map(s => (
                       <button
                         key={s.label}
                         onClick={() => onApplyExample({ prompt: s.prompt })}
-                        className="p-4 rounded-xl border border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-white/[0.015] hover:border-brand-blue/20 hover:bg-brand-blue/[0.03] transition-all text-left group shadow-sm dark:shadow-none"
+                        className="p-4 rounded-xl border border-white/[0.08] bg-white/[0.025] hover:border-brand-blue/30 hover:bg-brand-blue/[0.04] transition-all text-left group"
                       >
                         <span className="text-lg">{s.emoji}</span>
-                        <p className="text-[11px] font-semibold text-slate-700 dark:text-white/70 mt-2">{s.label}</p>
-                        <p className="text-[9px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed group-hover:text-slate-600 dark:group-hover:text-white/50 transition-colors">{s.prompt}</p>
+                        <p className="text-sm font-semibold text-white/85 mt-2">{s.label}</p>
+                        <p className="text-xs text-white/55 mt-1 line-clamp-2 leading-relaxed group-hover:text-white/70 transition-colors">{s.prompt}</p>
                       </button>
                     ))}
                   </div>
@@ -439,7 +439,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                 {/* EXPLORER GALLERY */}
                 {explorerItems.length > 0 && (
                   <div>
-                    <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider mb-4 px-1">🎨 Showcase Gallery</p>
+                    <p className="text-xs font-semibold uppercase text-white/60 tracking-wider mb-4 px-1">🎨 Showcase Gallery</p>
                     <div className="columns-2 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 md:gap-6 space-y-4 md:space-y-6 pb-40">
                       {explorerItems.map((item, idx) => {
                         const isLast = idx === explorerItems.length - 1;
@@ -463,7 +463,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                                 <p className="text-[10px] md:text-[11px] text-white/60 font-medium italic line-clamp-2 pr-6 leading-relaxed uppercase">
                                   "{item.prompt}"
                                 </p>
-                                <div className="flex items-center gap-4 text-[9px] font-semibold text-white/30 uppercase tracking-widest">
+                                <div className="flex items-center gap-4 text-[10px] font-semibold text-white/45 uppercase tracking-widest">
                                   <span className="flex items-center gap-1.5"><Eye size={12} className="text-brand-blue" /> {stats.views}</span>
                                   <span className="flex items-center gap-1.5"><Heart size={12} className="text-brand-blue" /> {stats.likes}</span>
                                 </div>

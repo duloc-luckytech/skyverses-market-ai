@@ -87,22 +87,22 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
         ${props.isMobileExpanded ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0 fixed lg:relative inset-y-0 left-0 z-[150]
         w-[320px] lg:w-[340px] xl:w-[360px] shrink-0
-        bg-white dark:bg-[var(--atlas-bg-panel)] border-r border-black/[0.06] dark:border-white/[0.08]
+        bg-[#111111] border-r border-white/[0.08]
         flex flex-col transition-transform duration-300
       `}>
 
         {/* ─── HEADER ─── */}
-        <div className="px-4 pt-3 pb-2.5 border-b border-black/[0.06] dark:border-white/[0.08] shrink-0">
+        <div className="px-4 pt-3 pb-2.5 border-b border-white/[0.08] bg-[#111111] shrink-0">
           <div className="flex items-center justify-between mb-2.5">
             <div className="flex items-center gap-2.5">
-              <button onClick={props.onClose} className="p-1 text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors rounded-lg hover:bg-black/[0.03] dark:hover:bg-white/[0.04]">
+              <button onClick={props.onClose} className="p-1 text-white/55 hover:text-white transition-colors rounded-lg hover:bg-white/[0.06]">
                 <ChevronLeft size={16} />
               </button>
               <div className="flex items-center gap-1.5">
                 <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-brand-blue to-brand-blueHover flex items-center justify-center">
                   <ImageIcon size={12} className="text-black" />
                 </div>
-                <span className="text-xs font-bold text-slate-800 dark:text-white">Image Studio</span>
+                <span className="text-sm font-bold text-white">Image Studio</span>
               </div>
             </div>
             <button
@@ -112,21 +112,21 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
           </div>
 
           {/* Mode tabs */}
-          <div className="flex bg-black/[0.02] dark:bg-white/[0.02] rounded-lg border border-black/[0.06] dark:border-white/[0.08] overflow-hidden">
+          <div className="flex bg-white/[0.03] rounded-lg border border-white/[0.08] overflow-hidden">
             <button
               onClick={() => props.setActiveMode('SINGLE')}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold uppercase tracking-wider transition-all ${props.activeMode === 'SINGLE'
-                ? 'bg-black/[0.04] dark:bg-white/[0.06] text-slate-900 dark:text-white'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white/60'
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[11px] font-semibold uppercase tracking-wider transition-all ${props.activeMode === 'SINGLE'
+                ? 'bg-white/[0.08] text-white'
+                : 'text-white/55 hover:text-white/75'
                 }`}
             >
               <ImageIcon size={10} /> Đơn lẻ
             </button>
             <button
               onClick={() => props.setActiveMode('BATCH')}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold uppercase tracking-wider transition-all ${props.activeMode === 'BATCH'
-                ? 'bg-black/[0.04] dark:bg-white/[0.06] text-slate-900 dark:text-white'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white/60'
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[11px] font-semibold uppercase tracking-wider transition-all ${props.activeMode === 'BATCH'
+                ? 'bg-white/[0.08] text-white'
+                : 'text-white/55 hover:text-white/75'
                 }`}
             >
               <Layers size={10} /> Batch
@@ -135,7 +135,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
         </div>
 
         {/* ─── CONTENT ─── */}
-        <div className="flex-grow overflow-y-auto no-scrollbar px-4 py-3 space-y-3">
+        <div className="flex-grow overflow-y-auto no-scrollbar px-4 py-3 space-y-4 bg-[#111111]">
           {/* Reference images — collapsible */}
           <ReferenceImageGrid
             references={props.references}
@@ -179,7 +179,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
         </div>
 
         {/* ─── FOOTER ─── */}
-        <div className="shrink-0 border-t border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-[var(--atlas-bg-panel)]/80 backdrop-blur-lg">
+        <div className="shrink-0 border-t border-white/[0.08] bg-[#111111]/95 backdrop-blur-lg">
           {/* Credits / Free badge */}
           <div className="px-4 py-2.5 flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -190,11 +190,11 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
                 <div className="flex items-center gap-1.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" style={{ boxShadow: '0 0 6px rgba(52,211,153,0.8)' }} />
                   <span className="text-[11px] font-bold text-emerald-500">{freeLeft} ảnh free</span>
-                  <span className="text-[9px] text-slate-400 dark:text-slate-500">·</span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400">{credits.toLocaleString()} CR</span>
+                  <span className="text-[10px] text-white/35">·</span>
+                  <span className="text-[11px] text-white/65">{credits.toLocaleString()} CR</span>
                 </div>
               ) : (
-                <span className={`text-[11px] font-medium ${props.usagePreference === 'key' ? 'text-brand-blue' : 'text-slate-600 dark:text-slate-400'}`}>
+                <span className={`text-[12px] font-medium ${props.usagePreference === 'key' ? 'text-brand-blue' : 'text-white/70'}`}>
                   {props.usagePreference === 'credits' ? `${credits.toLocaleString()} CR` : props.usagePreference === 'key' ? 'API Key' : '—'}
                 </span>
               )}
@@ -210,12 +210,12 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
               {freeLeft > 0 ? (
                 <>
                   <Gift size={10} className="text-emerald-400" />
-                  <span className="text-[11px] font-bold text-emerald-400">MIỄN PHÍ</span>
+                  <span className="text-[12px] font-bold text-emerald-400">MIỄN PHÍ</span>
                 </>
               ) : (
                 <>
                   <Zap size={10} fill="currentColor" className="text-amber-500/80" />
-                  <span className="text-[11px] font-semibold text-amber-500/80">{props.usagePreference === 'key' ? '0' : props.totalCost}</span>
+                  <span className="text-[12px] font-semibold text-amber-400">{props.usagePreference === 'key' ? '0' : props.totalCost}</span>
                 </>
               )}
             </div>
@@ -227,8 +227,8 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
               <button
                 onClick={onGenerateClick}
                 disabled={props.isGenerateDisabled}
-                className={`w-full py-3.5 rounded-xl font-semibold uppercase text-[11px] tracking-widest shadow-lg transition-all flex items-center justify-center gap-2.5 ${props.isGenerateDisabled
-                  ? 'bg-slate-200 dark:bg-white/[0.04] text-slate-400 dark:text-slate-600 cursor-not-allowed'
+                className={`w-full py-3.5 rounded-xl font-semibold uppercase text-[12px] tracking-widest shadow-lg transition-all flex items-center justify-center gap-2.5 ${props.isGenerateDisabled
+                  ? 'bg-white/[0.06] text-white/45 cursor-not-allowed'
                   : 'bg-gradient-to-r from-brand-blue to-brand-blueHover text-black hover:brightness-110 active:scale-[0.98] shadow-brand-blue/20'
                   }`}
               >

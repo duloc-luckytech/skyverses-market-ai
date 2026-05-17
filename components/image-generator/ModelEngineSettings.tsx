@@ -33,9 +33,9 @@ const Pill = ({ label, active, onClick, disabled }: { label: string; active: boo
   <button
     onClick={onClick}
     disabled={disabled}
-    className={`px-2.5 py-1 rounded-md text-[10px] font-semibold transition-all border ${active
+    className={`px-2.5 py-1.5 rounded-md text-[11px] font-semibold transition-all border ${active
       ? 'bg-brand-blue/10 text-brand-blue dark:text-brand-blue border-brand-blue/25'
-      : 'bg-transparent border-black/[0.06] dark:border-white/[0.04] text-slate-600 dark:text-gray-300 hover:text-slate-800 dark:hover:text-white/70 hover:border-black/10 dark:hover:border-white/10'
+      : 'bg-white/[0.02] border-white/[0.06] text-white/65 hover:text-white hover:border-white/12'
       }`}
   >
     {label}
@@ -89,7 +89,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
 
   return (
     <>
-      <div className="border-t border-black/[0.06] dark:border-white/[0.04]">
+      <div className="border-t border-white/[0.06]">
 
         {/* ─── COLLAPSIBLE HEADER ─── */}
         <button
@@ -97,9 +97,9 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
           className="w-full flex items-center justify-between py-2.5 px-0.5 group"
         >
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider flex items-center gap-1.5"><Settings2 size={12} className="text-brand-blue" /> Cấu hình AI</span>
+            <span className="text-[11px] font-semibold uppercase text-white/70 tracking-wider flex items-center gap-1.5"><Settings2 size={12} className="text-brand-blue" /> Cấu hình AI</span>
             {!isExpanded && summaryText && (
-              <span className="text-[9px] font-medium text-brand-blue/70 truncate max-w-[140px]">{summaryText}</span>
+              <span className="text-[10px] font-medium text-brand-blue/80 truncate max-w-[140px]">{summaryText}</span>
             )}
           </div>
           {isExpanded
@@ -122,14 +122,14 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
             {/* MODEL FAMILY */}
             {hasFamilyData && (
               <div className="space-y-1.5">
-                <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1.5"><Brain size={11} className="text-cyan-500" /> Model</p>
+                <p className="text-[11px] font-semibold uppercase text-white/70 tracking-wider px-0.5 flex items-center gap-1.5"><Brain size={11} className="text-cyan-400" /> Model</p>
                 <div className="flex gap-1.5">
                   <div className="relative flex-grow">
                     <select
                       value={selectedFamily || ''}
                       onChange={e => setSelectedFamily?.(e.target.value)}
                       disabled={isGenerating}
-                      className="w-full bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] px-2.5 py-2 rounded-lg text-xs font-medium outline-none appearance-none focus:border-brand-blue/40 transition-all cursor-pointer text-slate-800 dark:text-white/80"
+                      className="w-full bg-white/[0.035] border border-white/[0.08] px-2.5 py-2.5 rounded-lg text-sm font-medium outline-none appearance-none focus:border-brand-blue/40 transition-all cursor-pointer text-white/85"
                     >
                       {familyList!.map(f => <option key={f} value={f}>{f}</option>)}
                     </select>
@@ -138,7 +138,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
                   <button
                     onClick={() => setIsDetailOpen(true)}
                     disabled={isGenerating}
-                    className="shrink-0 px-2 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-lg text-[10px] font-medium text-slate-500 dark:text-slate-400 hover:text-brand-blue dark:hover:text-brand-blue hover:border-brand-blue/30 transition-all flex items-center gap-1"
+                    className="shrink-0 px-2 py-1.5 bg-white/[0.035] border border-white/[0.08] rounded-lg text-[11px] font-medium text-white/60 hover:text-brand-blue hover:border-brand-blue/30 transition-all flex items-center gap-1"
                     title="Xem chi tiết"
                   >
                     <List size={10} />
@@ -150,8 +150,8 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
             {/* VARIANTS */}
             {allVariants.length > 1 && (
               <div className="space-y-1.5">
-                <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1.5">
-                  <GitBranch size={11} className="text-violet-400" /> Phiên bản {hasMoreVariants && <span className="text-[9px] text-slate-400 dark:text-slate-500 normal-case font-normal">({allVariants.length})</span>}
+                <p className="text-[11px] font-semibold uppercase text-white/70 tracking-wider px-0.5 flex items-center gap-1.5">
+                  <GitBranch size={11} className="text-brand-blue" /> Phiên bản {hasMoreVariants && <span className="text-[10px] text-white/45 normal-case font-normal">({allVariants.length})</span>}
                 </p>
                 <div className="flex flex-wrap gap-1">
                   {visibleVariants.map((m: any) => (
@@ -178,7 +178,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
                     />
                   )}
                   {hasMoreVariants && (
-                    <button onClick={() => setShowAllVariants(!showAllVariants)} className="px-1.5 py-1 text-[9px] font-medium text-slate-500 dark:text-gray-300 hover:text-brand-blue transition-colors">
+                    <button onClick={() => setShowAllVariants(!showAllVariants)} className="px-1.5 py-1 text-[10px] font-medium text-white/60 hover:text-brand-blue transition-colors">
                       {showAllVariants ? '↑ Thu gọn' : `+${allVariants.length - MAX_VARIANTS}`}
                     </button>
                   )}
@@ -198,12 +198,12 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
                 const hiddenCount = modes.length - MAX;
                 return (
                   <div className="space-y-1">
-                    <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1.5"><SlidersHorizontal size={11} className="text-amber-400" /> Chế độ</p>
+                    <p className="text-[11px] font-semibold uppercase text-white/70 tracking-wider px-0.5 flex items-center gap-1.5"><SlidersHorizontal size={11} className="text-amber-400" /> Chế độ</p>
                     <div className="flex flex-wrap gap-1">
                       {visibleItems.map((m: string) => <Pill key={m} label={m} active={selectedMode === m} onClick={() => setSelectedMode(m)} disabled={isGenerating} />)}
                       {activeOutside && <Pill label={selectedMode} active={true} onClick={() => {}} disabled={isGenerating} />}
                       {hiddenCount > 0 && (
-                        <button onClick={() => toggleGroup('modes')} className="px-1.5 py-1 text-[9px] font-medium text-slate-500 dark:text-gray-300 hover:text-brand-blue transition-colors">
+                        <button onClick={() => toggleGroup('modes')} className="px-1.5 py-1 text-[10px] font-medium text-white/60 hover:text-brand-blue transition-colors">
                           {isGroupExpanded ? '↑ Thu gọn' : `+${hiddenCount}`}
                         </button>
                       )}
@@ -223,12 +223,12 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
                   const hiddenCount = ratios.length - MAX;
                   return (
                     <div className="space-y-0.5">
-                      <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1"><Ratio size={10} className="text-emerald-400" /> Tỷ lệ</p>
+                      <p className="text-[10px] font-semibold uppercase text-white/65 tracking-wider px-0.5 flex items-center gap-1"><Ratio size={10} className="text-emerald-400" /> Tỷ lệ</p>
                       <div className="flex flex-wrap gap-0.5">
                         {visibleItems.map((r: string) => <Pill key={r} label={r} active={selectedRatio === r} onClick={() => setSelectedRatio(r)} disabled={isGenerating} />)}
                         {activeOutside && <Pill label={selectedRatio} active={true} onClick={() => {}} disabled={isGenerating} />}
                         {hiddenCount > 0 && (
-                          <button onClick={() => toggleGroup('ratios')} className="px-1.5 py-0.5 text-[9px] font-medium text-slate-500 dark:text-gray-300 hover:text-brand-blue transition-colors">
+                          <button onClick={() => toggleGroup('ratios')} className="px-1.5 py-0.5 text-[10px] font-medium text-white/60 hover:text-brand-blue transition-colors">
                             {isGroupExpanded ? '↑' : `+${hiddenCount}`}
                           </button>
                         )}
@@ -245,12 +245,12 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
                   const hiddenCount = resolutions.length - MAX;
                   return (
                     <div className="space-y-0.5">
-                      <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1"><MonitorUp size={10} className="text-blue-400" /> P.Giải</p>
+                      <p className="text-[10px] font-semibold uppercase text-white/65 tracking-wider px-0.5 flex items-center gap-1"><MonitorUp size={10} className="text-blue-400" /> P.Giải</p>
                       <div className="flex flex-wrap gap-0.5">
                         {visibleItems.map((r: string) => <Pill key={r} label={r} active={selectedRes === r} onClick={() => setSelectedRes(r)} disabled={isGenerating} />)}
                         {activeOutside && <Pill label={selectedRes} active={true} onClick={() => {}} disabled={isGenerating} />}
                         {hiddenCount > 0 && (
-                          <button onClick={() => toggleGroup('res')} className="px-1.5 py-0.5 text-[9px] font-medium text-slate-500 dark:text-gray-300 hover:text-brand-blue transition-colors">
+                          <button onClick={() => toggleGroup('res')} className="px-1.5 py-0.5 text-[10px] font-medium text-white/60 hover:text-brand-blue transition-colors">
                             {isGroupExpanded ? '↑' : `+${hiddenCount}`}
                           </button>
                         )}
@@ -263,10 +263,10 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
               {/* Quantity (Single mode only) */}
               {activeMode === 'SINGLE' && (
                 <div className="flex items-center gap-2">
-                  <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider flex items-center gap-1"><Hash size={10} className="text-orange-400" /> SL</p>
-                  <div className="flex bg-black/[0.02] dark:bg-white/[0.02] rounded-md border border-black/[0.06] dark:border-white/[0.04] overflow-hidden">
+                  <p className="text-[10px] font-semibold uppercase text-white/65 tracking-wider flex items-center gap-1"><Hash size={10} className="text-orange-400" /> SL</p>
+                  <div className="flex bg-white/[0.025] rounded-md border border-white/[0.06] overflow-hidden">
                     {[1, 2, 3, 4].map(n => (
-                      <button key={n} onClick={() => setQuantity(n)} className={`w-8 py-1 text-[10px] font-semibold transition-all ${quantity === n ? 'bg-brand-blue/15 text-brand-blue' : 'text-slate-500 dark:text-gray-300 hover:text-white/70'}`}>{n}</button>
+                      <button key={n} onClick={() => setQuantity(n)} className={`w-8 py-1.5 text-[11px] font-semibold transition-all ${quantity === n ? 'bg-brand-blue/15 text-brand-blue' : 'text-white/60 hover:text-white'}`}>{n}</button>
                     ))}
                   </div>
                 </div>
@@ -275,8 +275,8 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
 
             {/* MODEL INFO — compact */}
             {selectedModel && (
-              <p className="text-[9px] text-slate-400 dark:text-gray-500 truncate px-0.5">
-                → {selectedModel.raw?.name || selectedModel.name} <span className="text-slate-400 dark:text-[#333]">({selectedModel.raw?.modelKey || selectedModel.id})</span>
+              <p className="text-[10px] text-white/45 truncate px-0.5">
+                → {selectedModel.raw?.name || selectedModel.name} <span className="text-white/30">({selectedModel.raw?.modelKey || selectedModel.id})</span>
               </p>
             )}
           </div>

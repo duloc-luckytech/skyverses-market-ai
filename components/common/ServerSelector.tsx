@@ -95,15 +95,15 @@ export const ServerSelector: React.FC<ServerSelectorProps> = ({
     return (
       <div className="space-y-1.5">
         {showLabel && (
-          <label className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 tracking-widest pl-1 flex items-center gap-1.5">
-            <Cpu size={11} className="text-rose-400" /> {labelText}
+          <label className="text-[11px] font-bold uppercase text-white/70 tracking-widest pl-1 flex items-center gap-1.5">
+            <Cpu size={12} className="text-brand-blue" /> {labelText}
           </label>
         )}
         <select
           value={selected}
           onChange={e => onChange(e.target.value)}
           disabled={disabled}
-          className="w-full bg-white dark:bg-[var(--atlas-bg-panel)] border border-slate-200 dark:border-white/10 p-3 rounded-lg text-[11px] font-bold uppercase outline-none appearance-none focus:border-purple-500 text-slate-800 dark:text-white transition-colors cursor-pointer disabled:opacity-50"
+          className="w-full bg-white/[0.035] border border-white/10 p-3 rounded-lg text-[12px] font-bold uppercase outline-none appearance-none focus:border-brand-blue text-white transition-colors cursor-pointer disabled:opacity-50"
         >
           {SERVER_OPTIONS.map(s => {
             const isLive = statusMap[s.key] !== false;
@@ -122,8 +122,8 @@ export const ServerSelector: React.FC<ServerSelectorProps> = ({
   return (
     <div className="space-y-1.5">
       {showLabel && (
-        <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1.5">
-          <Cpu size={11} className="text-rose-400" /> {labelText}
+        <p className="text-[11px] font-semibold uppercase text-white/70 tracking-wider px-0.5 flex items-center gap-1.5">
+          <Cpu size={12} className="text-brand-blue" /> {labelText}
         </p>
       )}
       <div className="flex gap-1.5">
@@ -136,12 +136,12 @@ export const ServerSelector: React.FC<ServerSelectorProps> = ({
               key={s.key}
               onClick={() => onChange(s.key)}
               disabled={disabled || isDisabledServer}
-              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all border relative ${
+              className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all border relative ${
                 isDisabledServer
                   ? 'bg-red-500/5 text-red-400/50 border-red-500/10 cursor-not-allowed opacity-60'
                   : isActive
-                    ? 'bg-rose-500/10 text-rose-500 border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/20'
-                    : 'bg-black/[0.02] dark:bg-white/[0.03] text-slate-500 dark:text-slate-400 border-black/[0.04] dark:border-white/[0.04] hover:text-slate-800 dark:hover:text-white hover:border-slate-300 dark:hover:border-white/10'
+                    ? 'bg-brand-blue/12 text-brand-blue border-brand-blue/25'
+                    : 'bg-white/[0.03] text-white/60 border-white/[0.06] hover:text-white hover:border-white/12'
               } disabled:cursor-not-allowed`}
             >
               {isDisabledServer && (

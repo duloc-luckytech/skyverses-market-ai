@@ -193,7 +193,7 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   }, [g, showToast, refreshUserInfo, user]);
 
   return (
-    <div className="h-full w-full flex flex-col lg:flex-row bg-slate-50 dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-500 relative">
+    <div className="h-full w-full flex flex-col lg:flex-row bg-[#0A0A0A] text-white font-sans overflow-hidden transition-colors duration-500 relative">
 
       {/* Mobile Backdrop */}
       <AnimatePresence>
