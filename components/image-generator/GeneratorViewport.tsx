@@ -170,7 +170,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
             {onClose && (
               <button
                 onClick={onClose}
-                className="lg:hidden p-2 -ml-2 text-slate-500 dark:text-slate-400 hover:text-rose-400 transition-colors flex items-center gap-1"
+                className="lg:hidden p-2 -ml-2 text-slate-500 dark:text-slate-400 hover:text-brand-blue transition-colors flex items-center gap-1"
               >
               <ChevronLeft size={20} />
               <span className="text-[10px] font-semibold uppercase tracking-widest hidden xs:block">Back</span>
@@ -221,7 +221,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
           {activePreviewUrl ? (
             <button
               onClick={() => setActivePreviewUrl(null)}
-              className="flex items-center gap-2 px-4 py-1.5 bg-black/[0.06] dark:bg-white/[0.06] border border-black/[0.06] dark:border-white/10 rounded-full text-[10px] font-semibold uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all shadow-sm"
+              className="flex items-center gap-2 px-4 py-1.5 bg-black/[0.06] dark:bg-white/[0.06] border border-black/[0.06] dark:border-white/10 rounded-full text-[10px] font-semibold uppercase tracking-widest hover:bg-brand-blue hover:text-white transition-all shadow-sm"
             >
               <ArrowLeft size={14} />
               <span className="hidden sm:inline">Trở lại lưới</span>
@@ -233,7 +233,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                 <span className="text-[9px] font-medium text-slate-500 dark:text-slate-400 xs:hidden">Auto</span>
                 <button
                   onClick={() => setAutoDownload(!autoDownload)}
-                  className={`w-7 h-3.5 rounded-full relative transition-colors ${autoDownload ? 'bg-rose-500' : 'bg-slate-300 dark:bg-white/[0.1]'}`}
+                  className={`w-7 h-3.5 rounded-full relative transition-colors ${autoDownload ? 'bg-brand-blue' : 'bg-slate-300 dark:bg-white/[0.1]'}`}
                 >
                   <motion.div
                     animate={{ left: autoDownload ? 14 : 2 }}
@@ -245,7 +245,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
               <button
                 onClick={handleManualDownload}
                 title="Tải xuống"
-                className="p-2 bg-rose-500/10 text-rose-500 dark:text-rose-400 rounded-lg hover:bg-rose-500 hover:text-white transition-all border border-rose-500/20"
+                className="p-2 bg-brand-blue/10 text-brand-blue dark:text-brand-blue rounded-lg hover:bg-brand-blue hover:text-white transition-all border border-brand-blue/20"
               >
                 <Download size={14} />
               </button>
@@ -255,7 +255,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                 <input
                   type="range" min="1" max="10"
                   value={zoomLevel} onChange={e => setZoomLevel(parseInt(e.target.value))}
-                  className="w-16 md:w-28 h-1 bg-slate-200 dark:bg-white/10 appearance-none rounded-full accent-rose-500 cursor-pointer"
+                  className="w-16 md:w-28 h-1 bg-slate-200 dark:bg-white/10 appearance-none rounded-full accent-brand-blue cursor-pointer"
                 />
               </div>
             </div>
@@ -282,7 +282,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                 <div className="absolute top-6 right-6 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
                   <button
                     onClick={() => onEdit(activePreviewUrl)}
-                    className="p-4 bg-rose-500 text-white rounded-full shadow-atlas-lg hover:scale-110 active:scale-95 transition-all"
+                    className="p-4 bg-brand-blue text-black rounded-full shadow-atlas-lg hover:scale-110 active:scale-95 transition-all"
                   >
                     <Edit3 size={18} />
                   </button>
@@ -336,7 +336,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
               className="w-full h-full pb-32 lg:pb-10"
             >
               <div className="flex items-center gap-3 mb-8">
-                <Database size={18} className="text-purple-500" />
+                <Database size={18} className="text-brand-blue" />
                 <h4 className="text-sm font-bold uppercase tracking-widest text-slate-700 dark:text-white/80">Lịch sử từ Cloud</h4>
               </div>
               {serverResults.length === 0 && !isFetchingServer ? (
@@ -371,7 +371,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
               )}
               {isFetchingServer && (
                 <div className="py-10 flex justify-center">
-                  <Loader2 className="animate-spin text-rose-400" size={32} />
+                  <Loader2 className="animate-spin text-brand-blue" size={32} />
                 </div>
               )}
             </motion.div>
@@ -389,16 +389,16 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                 {/* HERO + TIPS */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1">
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-rose-400"><Sparkles size={20} /></div>
+                    <div className="flex items-center gap-3 text-brand-blue"><Sparkles size={20} /></div>
                     <h2 className="text-3xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
-                      Bắt đầu <br /><span className="text-rose-400">sáng tạo</span>
+                      Bắt đầu <br /><span className="text-brand-blue">sáng tạo</span>
                     </h2>
                     <p className="text-xs text-slate-500 dark:text-slate-400 font-medium max-w-xl leading-relaxed">Chọn gợi ý prompt bên dưới hoặc nhập kịch bản riêng ở cột trái để bắt đầu tạo ảnh AI.</p>
                   </div>
                   {loadingExplorer && (
-                    <div className="flex items-center gap-3 px-5 py-2.5 bg-rose-500/10 rounded-full border border-rose-500/20">
-                      <Loader2 className="animate-spin text-rose-400" size={14} />
-                      <span className="text-[10px] font-semibold uppercase tracking-widest text-rose-400 animate-pulse">Loading...</span>
+                    <div className="flex items-center gap-3 px-5 py-2.5 bg-brand-blue/10 rounded-full border border-brand-blue/20">
+                      <Loader2 className="animate-spin text-brand-blue" size={14} />
+                      <span className="text-[10px] font-semibold uppercase tracking-widest text-brand-blue animate-pulse">Loading...</span>
                     </div>
                   )}
                 </div>
@@ -426,7 +426,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                       <button
                         key={s.label}
                         onClick={() => onApplyExample({ prompt: s.prompt })}
-                        className="p-4 rounded-xl border border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-white/[0.015] hover:border-rose-500/20 hover:bg-rose-500/[0.03] transition-all text-left group shadow-sm dark:shadow-none"
+                        className="p-4 rounded-xl border border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-white/[0.015] hover:border-brand-blue/20 hover:bg-brand-blue/[0.03] transition-all text-left group shadow-sm dark:shadow-none"
                       >
                         <span className="text-lg">{s.emoji}</span>
                         <p className="text-[11px] font-semibold text-slate-700 dark:text-white/70 mt-2">{s.label}</p>
@@ -450,7 +450,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                             key={item._id || item.id}
                             ref={isLast ? lastItemRef : null}
                             onClick={() => onApplyExample(item)}
-                            className="break-inside-avoid relative overflow-hidden bg-white dark:bg-[var(--atlas-bg-panel)] group cursor-pointer border border-black/[0.06] dark:border-white/[0.08] transition-all duration-500 rounded-lg hover:border-rose-500/20 shadow-sm dark:shadow-none"
+                            className="break-inside-avoid relative overflow-hidden bg-white dark:bg-[var(--atlas-bg-panel)] group cursor-pointer border border-black/[0.06] dark:border-white/[0.08] transition-all duration-500 rounded-lg hover:border-brand-blue/20 shadow-sm dark:shadow-none"
                           >
                             <img
                               src={item.thumbnailUrl}
@@ -464,13 +464,13 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                                   "{item.prompt}"
                                 </p>
                                 <div className="flex items-center gap-4 text-[9px] font-semibold text-white/30 uppercase tracking-widest">
-                                  <span className="flex items-center gap-1.5"><Eye size={12} className="text-rose-400" /> {stats.views}</span>
-                                  <span className="flex items-center gap-1.5"><Heart size={12} className="text-rose-400" /> {stats.likes}</span>
+                                  <span className="flex items-center gap-1.5"><Eye size={12} className="text-brand-blue" /> {stats.views}</span>
+                                  <span className="flex items-center gap-1.5"><Heart size={12} className="text-brand-blue" /> {stats.likes}</span>
                                 </div>
                                 <div className="flex gap-2 pt-2">
                                   <button
                                     onClick={(e) => { e.stopPropagation(); onApplyExample(item); }}
-                                    className="flex-grow bg-rose-500 text-white px-4 py-2.5 rounded-full text-[10px] font-semibold uppercase tracking-widest shadow-atlas-lg flex items-center justify-center gap-2 scale-95 hover:scale-100 transition-transform"
+                                    className="flex-grow bg-brand-blue text-black px-4 py-2.5 rounded-full text-[10px] font-semibold uppercase tracking-widest shadow-atlas-lg flex items-center justify-center gap-2 scale-95 hover:scale-100 transition-transform"
                                   >
                                     <Zap size={12} fill="currentColor" /> Sử dụng kịch bản
                                   </button>
@@ -483,7 +483,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                                 </div>
                               </div>
                               <div className="mt-2 flex items-center gap-2 group-hover:opacity-0 transition-opacity">
-                                <span className="text-[10px] font-bold text-rose-400 uppercase tracking-widest italic">{item.title}</span>
+                                <span className="text-[10px] font-bold text-brand-blue uppercase tracking-widest italic">{item.title}</span>
                               </div>
                             </div>
                           </motion.div>
@@ -500,7 +500,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
                         <AlertCircle size={60} className="text-red-400" />
                         <div className="space-y-2">
                           <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">{error}</p>
-                          <button onClick={() => fetchExplorer(1, true)} className="text-[10px] font-semibold text-rose-400 uppercase underline">Thử lại</button>
+                          <button onClick={() => fetchExplorer(1, true)} className="text-[10px] font-semibold text-brand-blue uppercase underline">Thử lại</button>
                         </div>
                       </>
                     ) : (
@@ -514,7 +514,7 @@ export const GeneratorViewport: React.FC<GeneratorViewportProps> = ({
 
                 {isFetchingMore && (
                   <div className="flex justify-center py-10">
-                    <Loader2 className="animate-spin text-rose-400" size={32} />
+                    <Loader2 className="animate-spin text-brand-blue" size={32} />
                   </div>
                 )}
               </div>

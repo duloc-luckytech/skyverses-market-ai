@@ -34,7 +34,7 @@ const Pill = ({ label, active, onClick, disabled }: { label: string; active: boo
     onClick={onClick}
     disabled={disabled}
     className={`px-2.5 py-1 rounded-md text-[10px] font-semibold transition-all border ${active
-      ? 'bg-rose-500/10 text-rose-500 dark:text-rose-400 border-rose-500/25'
+      ? 'bg-brand-blue/10 text-brand-blue dark:text-brand-blue border-brand-blue/25'
       : 'bg-transparent border-black/[0.06] dark:border-white/[0.04] text-slate-600 dark:text-gray-300 hover:text-slate-800 dark:hover:text-white/70 hover:border-black/10 dark:hover:border-white/10'
       }`}
   >
@@ -97,14 +97,14 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
           className="w-full flex items-center justify-between py-2.5 px-0.5 group"
         >
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider flex items-center gap-1.5"><Settings2 size={12} className="text-rose-400" /> Cấu hình AI</span>
+            <span className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider flex items-center gap-1.5"><Settings2 size={12} className="text-brand-blue" /> Cấu hình AI</span>
             {!isExpanded && summaryText && (
-              <span className="text-[9px] font-medium text-rose-400/70 truncate max-w-[140px]">{summaryText}</span>
+              <span className="text-[9px] font-medium text-brand-blue/70 truncate max-w-[140px]">{summaryText}</span>
             )}
           </div>
           {isExpanded
-            ? <ChevronUp size={12} className="text-slate-400 dark:text-slate-500 group-hover:text-rose-400 transition-colors" />
-            : <ChevronDown size={12} className="text-slate-400 dark:text-slate-500 group-hover:text-rose-400 transition-colors" />
+            ? <ChevronUp size={12} className="text-slate-400 dark:text-slate-500 group-hover:text-brand-blue transition-colors" />
+            : <ChevronDown size={12} className="text-slate-400 dark:text-slate-500 group-hover:text-brand-blue transition-colors" />
           }
         </button>
 
@@ -129,7 +129,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
                       value={selectedFamily || ''}
                       onChange={e => setSelectedFamily?.(e.target.value)}
                       disabled={isGenerating}
-                      className="w-full bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] px-2.5 py-2 rounded-lg text-xs font-medium outline-none appearance-none focus:border-rose-500/40 transition-all cursor-pointer text-slate-800 dark:text-white/80"
+                      className="w-full bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] px-2.5 py-2 rounded-lg text-xs font-medium outline-none appearance-none focus:border-brand-blue/40 transition-all cursor-pointer text-slate-800 dark:text-white/80"
                     >
                       {familyList!.map(f => <option key={f} value={f}>{f}</option>)}
                     </select>
@@ -138,7 +138,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
                   <button
                     onClick={() => setIsDetailOpen(true)}
                     disabled={isGenerating}
-                    className="shrink-0 px-2 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-lg text-[10px] font-medium text-slate-500 dark:text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 hover:border-rose-500/30 transition-all flex items-center gap-1"
+                    className="shrink-0 px-2 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-lg text-[10px] font-medium text-slate-500 dark:text-slate-400 hover:text-brand-blue dark:hover:text-brand-blue hover:border-brand-blue/30 transition-all flex items-center gap-1"
                     title="Xem chi tiết"
                   >
                     <List size={10} />
@@ -178,7 +178,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
                     />
                   )}
                   {hasMoreVariants && (
-                    <button onClick={() => setShowAllVariants(!showAllVariants)} className="px-1.5 py-1 text-[9px] font-medium text-slate-500 dark:text-gray-300 hover:text-rose-400 transition-colors">
+                    <button onClick={() => setShowAllVariants(!showAllVariants)} className="px-1.5 py-1 text-[9px] font-medium text-slate-500 dark:text-gray-300 hover:text-brand-blue transition-colors">
                       {showAllVariants ? '↑ Thu gọn' : `+${allVariants.length - MAX_VARIANTS}`}
                     </button>
                   )}
@@ -203,7 +203,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
                       {visibleItems.map((m: string) => <Pill key={m} label={m} active={selectedMode === m} onClick={() => setSelectedMode(m)} disabled={isGenerating} />)}
                       {activeOutside && <Pill label={selectedMode} active={true} onClick={() => {}} disabled={isGenerating} />}
                       {hiddenCount > 0 && (
-                        <button onClick={() => toggleGroup('modes')} className="px-1.5 py-1 text-[9px] font-medium text-slate-500 dark:text-gray-300 hover:text-rose-400 transition-colors">
+                        <button onClick={() => toggleGroup('modes')} className="px-1.5 py-1 text-[9px] font-medium text-slate-500 dark:text-gray-300 hover:text-brand-blue transition-colors">
                           {isGroupExpanded ? '↑ Thu gọn' : `+${hiddenCount}`}
                         </button>
                       )}
@@ -228,7 +228,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
                         {visibleItems.map((r: string) => <Pill key={r} label={r} active={selectedRatio === r} onClick={() => setSelectedRatio(r)} disabled={isGenerating} />)}
                         {activeOutside && <Pill label={selectedRatio} active={true} onClick={() => {}} disabled={isGenerating} />}
                         {hiddenCount > 0 && (
-                          <button onClick={() => toggleGroup('ratios')} className="px-1.5 py-0.5 text-[9px] font-medium text-slate-500 dark:text-gray-300 hover:text-rose-400 transition-colors">
+                          <button onClick={() => toggleGroup('ratios')} className="px-1.5 py-0.5 text-[9px] font-medium text-slate-500 dark:text-gray-300 hover:text-brand-blue transition-colors">
                             {isGroupExpanded ? '↑' : `+${hiddenCount}`}
                           </button>
                         )}
@@ -250,7 +250,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
                         {visibleItems.map((r: string) => <Pill key={r} label={r} active={selectedRes === r} onClick={() => setSelectedRes(r)} disabled={isGenerating} />)}
                         {activeOutside && <Pill label={selectedRes} active={true} onClick={() => {}} disabled={isGenerating} />}
                         {hiddenCount > 0 && (
-                          <button onClick={() => toggleGroup('res')} className="px-1.5 py-0.5 text-[9px] font-medium text-slate-500 dark:text-gray-300 hover:text-rose-400 transition-colors">
+                          <button onClick={() => toggleGroup('res')} className="px-1.5 py-0.5 text-[9px] font-medium text-slate-500 dark:text-gray-300 hover:text-brand-blue transition-colors">
                             {isGroupExpanded ? '↑' : `+${hiddenCount}`}
                           </button>
                         )}
@@ -266,7 +266,7 @@ export const ModelEngineSettings: React.FC<ModelEngineSettingsProps> = ({
                   <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider flex items-center gap-1"><Hash size={10} className="text-orange-400" /> SL</p>
                   <div className="flex bg-black/[0.02] dark:bg-white/[0.02] rounded-md border border-black/[0.06] dark:border-white/[0.04] overflow-hidden">
                     {[1, 2, 3, 4].map(n => (
-                      <button key={n} onClick={() => setQuantity(n)} className={`w-8 py-1 text-[10px] font-semibold transition-all ${quantity === n ? 'bg-rose-500/15 text-rose-400' : 'text-slate-500 dark:text-gray-300 hover:text-white/70'}`}>{n}</button>
+                      <button key={n} onClick={() => setQuantity(n)} className={`w-8 py-1 text-[10px] font-semibold transition-all ${quantity === n ? 'bg-brand-blue/15 text-brand-blue' : 'text-slate-500 dark:text-gray-300 hover:text-white/70'}`}>{n}</button>
                     ))}
                   </div>
                 </div>

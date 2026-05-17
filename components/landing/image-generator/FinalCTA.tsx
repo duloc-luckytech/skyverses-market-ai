@@ -14,7 +14,7 @@ export const FinalCTA: React.FC<FinalCTAProps> = ({ onStartStudio }) => (
       </p>
       <button
         onClick={onStartStudio}
-        className="px-10 py-4 bg-gradient-to-r from-rose-600 to-fuchsia-600 text-white rounded-xl font-semibold text-sm shadow-lg shadow-rose-500/20 hover:brightness-110 active:scale-[0.98] transition-all inline-flex items-center gap-3"
+        className="px-10 py-4 bg-gradient-to-r from-brand-blue to-brand-blueHover text-black rounded-xl font-semibold text-sm shadow-lg shadow-brand-blue/20 hover:brightness-110 active:scale-[0.98] transition-all inline-flex items-center gap-3"
       >
         <Sparkles size={18} />
         Bắt đầu ngay

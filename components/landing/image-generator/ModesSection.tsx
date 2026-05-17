@@ -21,9 +21,9 @@ const MODES = [
 ];
 
 export const ModesSection: React.FC = () => (
-  <section className="px-6 lg:px-16 py-16 border-t border-black/[0.06] dark:border-white/[0.04]">
+  <section id="image-generator-modes" className="px-6 lg:px-16 py-16 border-t border-black/[0.06] dark:border-white/[0.04]">
     <div className="max-w-6xl mx-auto">
-      <p className="text-[10px] font-semibold uppercase tracking-widest text-rose-500/60 dark:text-rose-400/60 mb-2">CHẾ ĐỘ TẠO ẢNH</p>
+      <p className="text-[10px] font-semibold uppercase tracking-widest text-brand-blue/60 dark:text-brand-blue/60 mb-2">CHẾ ĐỘ TẠO ẢNH</p>
       <h2 className="text-2xl lg:text-3xl font-bold mb-10">3 chế độ sáng tạo</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {MODES.map((m, i) => (
@@ -34,7 +34,7 @@ export const ModesSection: React.FC = () => (
             viewport={{ once: true }}
             transition={{ delay: i * 0.08, duration: 0.5 }}
             whileHover={{ scale: 1.015 }}
-            className="rounded-xl border border-black/[0.06] dark:border-white/[0.04] bg-black/[0.01] dark:bg-white/[0.015] hover:border-rose-500/20 transition-all overflow-hidden group"
+            className="rounded-xl border border-black/[0.06] dark:border-white/[0.04] bg-black/[0.01] dark:bg-white/[0.015] hover:border-brand-blue/20 transition-all overflow-hidden group"
           >
             {/* Thumbnail */}
             <div className="relative w-full overflow-hidden" style={{ aspectRatio: '2/1' }}>
@@ -46,8 +46,8 @@ export const ModesSection: React.FC = () => (
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
               {/* Icon badge */}
-              <div className="absolute top-3 left-3 w-7 h-7 rounded-lg bg-rose-500/80 backdrop-blur flex items-center justify-center">
-                <m.icon size={13} className="text-white" />
+              <div className="absolute top-3 left-3 w-7 h-7 rounded-lg bg-brand-blue/80 backdrop-blur flex items-center justify-center">
+                <m.icon size={13} className="text-black" />
               </div>
             </div>
 
@@ -57,7 +57,7 @@ export const ModesSection: React.FC = () => (
               <ul className="space-y-2">
                 {m.features.map((f, j) => (
                   <li key={j} className="text-[11px] text-slate-500 dark:text-white/30 leading-relaxed flex items-start gap-2">
-                    <span className="text-rose-500/50 mt-0.5 shrink-0">▸</span> {f}
+                    <span className="text-brand-blue/50 mt-0.5 shrink-0">▸</span> {f}
                   </li>
                 ))}
               </ul>

@@ -42,7 +42,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
   return (
     <div
       className={`group relative p-2.5 rounded-lg border transition-all flex flex-col gap-2 cursor-pointer h-full ${isSelected
-        ? 'border-rose-500/40 bg-rose-500/5'
+        ? 'border-brand-blue/40 bg-brand-blue/5'
         : isError
           ? 'border-red-500/20 bg-red-900/5 hover:border-red-500/30'
           : 'border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-[var(--atlas-bg-panel)] hover:border-black/10 dark:hover:border-white/10'
@@ -61,10 +61,10 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
         {isProcessing ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/40 backdrop-blur-sm z-10">
             <div className="relative">
-              <Loader2 size={40} className="text-rose-400 animate-spin" />
-              <Sparkles size={16} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-rose-400/30 animate-pulse" />
+              <Loader2 size={40} className="text-brand-blue animate-spin" />
+              <Sparkles size={16} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-brand-blue/30 animate-pulse" />
             </div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-rose-400 animate-pulse">Rendering...</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-brand-blue animate-pulse">Rendering...</p>
           </div>
         ) : isError ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/60 backdrop-blur-sm z-10 p-6 text-center">
@@ -114,7 +114,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
         {upscaleInfo && (
           <div className={`absolute top-3 left-3 z-30 flex items-center gap-1.5 px-2 py-1 rounded-lg backdrop-blur-md border shadow-lg ${
             upscaleInfo.status === 'processing'
-              ? 'bg-purple-500/20 border-purple-500/30 text-purple-300'
+              ? 'bg-brand-blue/20 border-brand-blue/30 text-brand-blue'
               : upscaleInfo.status === 'done'
                 ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300'
                 : 'bg-red-500/20 border-red-500/30 text-red-300'
@@ -134,14 +134,14 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
             <>
               <button
                 onClick={(e) => { e.stopPropagation(); onFullscreen(displayUrl!); }}
-                className="p-2 bg-white/90 backdrop-blur-sm text-black rounded-lg hover:scale-110 transition-transform shadow-lg hover:bg-rose-500 hover:text-white"
+                className="p-2 bg-white/90 backdrop-blur-sm text-black rounded-lg hover:scale-110 transition-transform shadow-lg hover:bg-brand-blue hover:text-white"
                 title="Xem toàn màn hình"
               >
                 <Maximize2 size={14} />
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); onEdit(displayUrl!); }}
-                className="p-2 bg-white/90 backdrop-blur-sm text-rose-500 rounded-lg hover:scale-110 transition-transform shadow-lg hover:bg-rose-500 hover:text-white"
+                className="p-2 bg-white/90 backdrop-blur-sm text-brand-blue rounded-lg hover:scale-110 transition-transform shadow-lg hover:bg-brand-blue hover:text-white"
                 title="Chỉnh sửa"
               >
                 <Edit3 size={14} />
@@ -166,15 +166,15 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
                 <div className="flex items-center bg-white/90 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
                   <button
                     onClick={() => onUpscale(res.id, '2K')}
-                    className="px-2 py-2 text-[9px] font-bold text-purple-600 hover:bg-purple-600 hover:text-white transition-all"
+                    className="px-2 py-2 text-[9px] font-bold text-brand-blueHover hover:bg-brand-blueHover hover:text-white transition-all"
                     title="Upscale 2K"
                   >
                     2K
                   </button>
-                  <div className="w-px h-4 bg-purple-200" />
+                  <div className="w-px h-4 bg-brand-blue/20" />
                   <button
                     onClick={() => onUpscale(res.id, '4K')}
-                    className="px-2 py-2 text-[9px] font-bold text-purple-600 hover:bg-purple-600 hover:text-white transition-all"
+                    className="px-2 py-2 text-[9px] font-bold text-brand-blueHover hover:bg-brand-blueHover hover:text-white transition-all"
                     title="Upscale 4K"
                   >
                     4K
@@ -199,7 +199,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
           <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 z-40 p-4">
             <button
               onClick={(e) => { e.stopPropagation(); onRetry(); }}
-              className="w-full py-3 bg-rose-500 text-white rounded-xl shadow-atlas-lg flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95"
+              className="w-full py-3 bg-brand-blue text-black rounded-xl shadow-atlas-lg flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95"
             >
               <RefreshCw size={14} />
               <span className="text-[10px] font-bold uppercase">Tạo lại</span>
@@ -217,7 +217,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
         {!isError && (
           <div
             onClick={(e) => { e.stopPropagation(); onToggleSelect(); }}
-            className={`absolute top-3 right-3 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all z-50 ${isSelected ? 'bg-rose-500 border-rose-500 shadow-lg' : 'bg-black/40 border-white/20 hover:bg-black/60'}`}
+            className={`absolute top-3 right-3 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all z-50 ${isSelected ? 'bg-brand-blue border-brand-blue shadow-lg' : 'bg-black/40 border-white/20 hover:bg-black/60'}`}
           >
             {isSelected && <Check size={14} strokeWidth={4} className="text-white" />}
           </div>
@@ -235,7 +235,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
               <span className="bg-black/[0.06] dark:bg-white/[0.06] px-1.5 py-0.5 rounded font-mono text-slate-500 dark:text-slate-400">
                 ID: {res.id.length > 10 ? `${res.id.slice(0, 6)}...` : res.id.toUpperCase()}
               </span>
-              <button onClick={handleCopyId} className="hover:text-rose-400 transition-colors">
+              <button onClick={handleCopyId} className="hover:text-brand-blue transition-colors">
                 <Copy size={10} />
               </button>
             </div>

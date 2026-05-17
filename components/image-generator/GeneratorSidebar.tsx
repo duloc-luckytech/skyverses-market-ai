@@ -78,7 +78,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
       {/* Mobile toggle */}
       <button
         onClick={() => props.setIsMobileExpanded(true)}
-        className="lg:hidden fixed bottom-6 left-4 z-[130] w-12 h-12 bg-gradient-to-r from-rose-500 to-fuchsia-500 rounded-full shadow-atlas-lg flex items-center justify-center text-white active:scale-95 transition-transform"
+        className="lg:hidden fixed bottom-6 left-4 z-[130] w-12 h-12 bg-gradient-to-r from-brand-blue to-brand-blueHover rounded-full shadow-atlas-lg flex items-center justify-center text-black active:scale-95 transition-transform"
       >
         <Menu size={20} />
       </button>
@@ -99,8 +99,8 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
                 <ChevronLeft size={16} />
               </button>
               <div className="flex items-center gap-1.5">
-                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-rose-500 to-fuchsia-500 flex items-center justify-center">
-                  <ImageIcon size={12} className="text-white" />
+                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-brand-blue to-brand-blueHover flex items-center justify-center">
+                  <ImageIcon size={12} className="text-black" />
                 </div>
                 <span className="text-xs font-bold text-slate-800 dark:text-white">Image Studio</span>
               </div>
@@ -183,7 +183,7 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
           {/* Credits / Free badge */}
           <div className="px-4 py-2.5 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <button onClick={() => props.setShowResourceModal(true)} className="p-1 text-slate-400 dark:text-slate-500 hover:text-rose-400 transition-colors rounded-md hover:bg-black/[0.03] dark:hover:bg-white/[0.04]">
+              <button onClick={() => props.setShowResourceModal(true)} className="p-1 text-slate-400 dark:text-slate-500 hover:text-brand-blue transition-colors rounded-md hover:bg-black/[0.03] dark:hover:bg-white/[0.04]">
                 <Settings size={12} />
               </button>
               {freeLeft > 0 ? (
@@ -194,13 +194,13 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
                   <span className="text-[10px] text-slate-500 dark:text-slate-400">{credits.toLocaleString()} CR</span>
                 </div>
               ) : (
-                <span className={`text-[11px] font-medium ${props.usagePreference === 'key' ? 'text-fuchsia-500' : 'text-slate-600 dark:text-slate-400'}`}>
+                <span className={`text-[11px] font-medium ${props.usagePreference === 'key' ? 'text-brand-blue' : 'text-slate-600 dark:text-slate-400'}`}>
                   {props.usagePreference === 'credits' ? `${credits.toLocaleString()} CR` : props.usagePreference === 'key' ? 'API Key' : '—'}
                 </span>
               )}
               <Link
                 to="/credits"
-                className="flex items-center gap-0.5 px-2 py-0.5 bg-gradient-to-r from-rose-500 to-fuchsia-500 text-white rounded-full text-[9px] font-semibold uppercase tracking-wider hover:brightness-110 hover:scale-105 active:scale-95 transition-all shadow-sm shadow-rose-500/20"
+                className="flex items-center gap-0.5 px-2 py-0.5 bg-gradient-to-r from-brand-blue to-brand-blueHover text-black rounded-full text-[9px] font-semibold uppercase tracking-wider hover:brightness-110 hover:scale-105 active:scale-95 transition-all shadow-sm shadow-brand-blue/20"
               >
                 <Plus size={10} />
                 Nạp
@@ -227,9 +227,9 @@ export const GeneratorSidebar: React.FC<GeneratorSidebarProps> = (props) => {
               <button
                 onClick={onGenerateClick}
                 disabled={props.isGenerateDisabled}
-                className={`w-full py-3.5 rounded-xl text-white font-semibold uppercase text-[11px] tracking-widest shadow-lg transition-all flex items-center justify-center gap-2.5 ${props.isGenerateDisabled
+                className={`w-full py-3.5 rounded-xl font-semibold uppercase text-[11px] tracking-widest shadow-lg transition-all flex items-center justify-center gap-2.5 ${props.isGenerateDisabled
                   ? 'bg-slate-200 dark:bg-white/[0.04] text-slate-400 dark:text-slate-600 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-rose-500 to-fuchsia-500 hover:brightness-110 active:scale-[0.98] shadow-rose-500/20'
+                  : 'bg-gradient-to-r from-brand-blue to-brand-blueHover text-black hover:brightness-110 active:scale-[0.98] shadow-brand-blue/20'
                   }`}
               >
                 {props.isGenerating ? <Loader2 className="animate-spin" size={14} /> : <ImageIcon size={14} />}

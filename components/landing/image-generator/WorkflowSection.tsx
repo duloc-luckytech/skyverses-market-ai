@@ -30,7 +30,7 @@ const STEPS = [
 export const WorkflowSection: React.FC = () => (
   <section className="px-6 lg:px-16 py-16 border-t border-black/[0.06] dark:border-white/[0.04]">
     <div className="max-w-6xl mx-auto">
-      <p className="text-[10px] font-semibold uppercase tracking-widest text-rose-500/60 dark:text-rose-400/60 mb-2">QUY TRÌNH</p>
+      <p className="text-[10px] font-semibold uppercase tracking-widest text-brand-blue/60 dark:text-brand-blue/60 mb-2">QUY TRÌNH</p>
       <h2 className="text-2xl lg:text-3xl font-bold mb-10">4 bước tạo hình ảnh AI</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {STEPS.map((s, i) => (
@@ -41,7 +41,7 @@ export const WorkflowSection: React.FC = () => (
             viewport={{ once: true }}
             transition={{ delay: i * 0.1, duration: 0.5 }}
             whileHover={{ scale: 1.012 }}
-            className="rounded-xl border border-black/[0.06] dark:border-white/[0.04] bg-black/[0.01] dark:bg-white/[0.015] hover:border-rose-500/15 transition-all overflow-hidden group"
+            className="rounded-xl border border-black/[0.06] dark:border-white/[0.04] bg-black/[0.01] dark:bg-white/[0.015] hover:border-brand-blue/15 transition-all overflow-hidden group"
           >
             {/* Thumbnail */}
             <div className="relative w-full overflow-hidden" style={{ height: '140px' }}>
@@ -55,7 +55,7 @@ export const WorkflowSection: React.FC = () => (
 
               {/* Step number + icon */}
               <div className="absolute bottom-3 left-4 flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-rose-500 flex items-center justify-center shadow-lg shadow-rose-500/30">
+                <div className="w-7 h-7 rounded-lg bg-brand-blue flex items-center justify-center shadow-lg shadow-brand-blue/30">
                   <s.icon size={13} className="text-white" />
                 </div>
                 <span className="text-white/50 text-[10px] font-bold tracking-widest">{s.num}</span>

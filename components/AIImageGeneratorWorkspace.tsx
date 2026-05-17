@@ -287,8 +287,8 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
                 <p className="text-sm text-slate-500 dark:text-slate-400">Số dư không đủ để tạo ảnh. Nạp thêm để tiếp tục.</p>
               </div>
               <div className="flex flex-col gap-3">
-                <Link to="/credits" className="bg-gradient-to-r from-rose-500 to-fuchsia-500 text-white py-3.5 rounded-xl text-sm font-semibold shadow-lg hover:scale-[1.02] transition-all text-center">Nạp Credits</Link>
-                <button onClick={() => g.setShowLowCreditAlert(false)} className="text-xs font-medium text-slate-400 hover:text-rose-400 transition-colors">Bỏ qua</button>
+                <Link to="/credits" className="bg-gradient-to-r from-brand-blue to-brand-blueHover text-black py-3.5 rounded-xl text-sm font-semibold shadow-lg hover:scale-[1.02] transition-all text-center">Nạp Credits</Link>
+                <button onClick={() => g.setShowLowCreditAlert(false)} className="text-xs font-medium text-slate-400 hover:text-brand-blue transition-colors">Bỏ qua</button>
               </div>
             </motion.div>
           </motion.div>

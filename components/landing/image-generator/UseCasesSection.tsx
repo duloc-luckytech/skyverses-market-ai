@@ -38,7 +38,7 @@ const FEATURES = [
 export const UseCasesSection: React.FC = () => (
   <section className="px-6 lg:px-16 py-16 border-t border-black/[0.06] dark:border-white/[0.04]">
     <div className="max-w-6xl mx-auto">
-      <p className="text-[10px] font-semibold uppercase tracking-widest text-rose-500/60 dark:text-rose-400/60 mb-2">TÍNH NĂNG</p>
+      <p className="text-[10px] font-semibold uppercase tracking-widest text-brand-blue/60 dark:text-brand-blue/60 mb-2">TÍNH NĂNG</p>
       <h2 className="text-2xl lg:text-3xl font-bold mb-10">Công cụ chuyên nghiệp</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {FEATURES.map((f, i) => (
@@ -49,7 +49,7 @@ export const UseCasesSection: React.FC = () => (
             viewport={{ once: true }}
             transition={{ delay: i * 0.07, duration: 0.45 }}
             whileHover={{ scale: 1.015 }}
-            className="rounded-xl border border-black/[0.06] dark:border-white/[0.04] bg-black/[0.01] dark:bg-white/[0.015] hover:border-rose-500/15 transition-all overflow-hidden group"
+            className="rounded-xl border border-black/[0.06] dark:border-white/[0.04] bg-black/[0.01] dark:bg-white/[0.015] hover:border-brand-blue/15 transition-all overflow-hidden group"
           >
             {/* Thumbnail */}
             <div className="relative w-full overflow-hidden" style={{ height: '120px' }}>
@@ -61,8 +61,8 @@ export const UseCasesSection: React.FC = () => (
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
               <div className="absolute bottom-2.5 left-3 flex items-center gap-2">
-                <div className="w-5 h-5 rounded-md bg-rose-500/80 flex items-center justify-center">
-                  <f.icon size={11} className="text-white" />
+                <div className="w-5 h-5 rounded-md bg-brand-blue/80 flex items-center justify-center">
+                  <f.icon size={11} className="text-black" />
                 </div>
               </div>
             </div>

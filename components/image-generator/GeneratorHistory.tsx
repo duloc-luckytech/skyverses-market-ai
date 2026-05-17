@@ -73,13 +73,13 @@ export const GeneratorHistory: React.FC<GeneratorHistoryProps> = ({
       <div className="h-14 border-b border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-black/20 p-1 flex">
         <button
           onClick={() => setActiveTab('MY_HISTORY')}
-          className={`flex-1 flex items-center justify-center gap-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'MY_HISTORY' ? 'bg-white dark:bg-[var(--atlas-bg-panel)] text-rose-500 shadow-sm' : 'text-slate-400 dark:text-gray-500'}`}
+          className={`flex-1 flex items-center justify-center gap-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'MY_HISTORY' ? 'bg-white dark:bg-[var(--atlas-bg-panel)] text-brand-blue shadow-sm' : 'text-slate-400 dark:text-gray-500'}`}
         >
           <HistoryIcon size={14} /> Lịch sử
         </button>
         <button
           onClick={() => setActiveTab('COMMUNITY')}
-          className={`flex-1 flex items-center justify-center gap-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'COMMUNITY' ? 'bg-white dark:bg-[var(--atlas-bg-panel)] text-rose-500 shadow-sm' : 'text-slate-400 dark:text-gray-500'}`}
+          className={`flex-1 flex items-center justify-center gap-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === 'COMMUNITY' ? 'bg-white dark:bg-[var(--atlas-bg-panel)] text-brand-blue shadow-sm' : 'text-slate-400 dark:text-gray-500'}`}
         >
           <Sparkles size={14} /> Cộng đồng
         </button>
@@ -99,7 +99,7 @@ export const GeneratorHistory: React.FC<GeneratorHistoryProps> = ({
               {results.length > 0 && (
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 px-1">
-                    <div className="w-1 h-3 bg-rose-500"></div>
+                    <div className="w-1 h-3 bg-brand-blue"></div>
                     <span className="text-[9px] font-bold uppercase text-gray-500 tracking-widest">Phiên hiện tại</span>
                   </div>
                   <div className="space-y-4">
@@ -123,7 +123,7 @@ export const GeneratorHistory: React.FC<GeneratorHistoryProps> = ({
               {/* Server Results */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2 px-1">
-                  <div className="w-1 h-3 bg-purple-500"></div>
+                  <div className="w-1 h-3 bg-brand-blue"></div>
                   <span className="text-[9px] font-bold uppercase text-gray-500 tracking-widest">Đã lưu trên Cloud</span>
                 </div>
 
@@ -150,7 +150,7 @@ export const GeneratorHistory: React.FC<GeneratorHistoryProps> = ({
                     ))}
                     {isFetchingServer && (
                       <div className="py-6 flex justify-center">
-                        <Loader2 className="animate-spin text-rose-500" size={20} />
+                        <Loader2 className="animate-spin text-brand-blue" size={20} />
                       </div>
                     )}
                   </div>
@@ -166,19 +166,19 @@ export const GeneratorHistory: React.FC<GeneratorHistoryProps> = ({
               className="space-y-4"
             >
               <div className="flex items-center gap-2 px-1">
-                <div className="w-1 h-3 bg-rose-500"></div>
+                <div className="w-1 h-3 bg-brand-blue"></div>
                 <span className="text-[9px] font-bold uppercase text-gray-500 tracking-widest">Khám phá ý tưởng</span>
               </div>
 
               {loadingExplorer ? (
                 <div className="py-10 flex flex-col items-center justify-center gap-3 opacity-40">
-                  <Loader2 className="animate-spin text-rose-500" size={20} />
+                  <Loader2 className="animate-spin text-brand-blue" size={20} />
                   <p className="text-[8px] font-bold uppercase tracking-widest">Syncing Nodes...</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {explorerItems.map(item => (
-                    <div key={item._id} className="group relative bg-slate-50 dark:bg-white/[0.02] border border-black/5 dark:border-white/[0.06] rounded-lg overflow-hidden transition-all hover:border-rose-500/30 shadow-sm">
+                    <div key={item._id} className="group relative bg-slate-50 dark:bg-white/[0.02] border border-black/5 dark:border-white/[0.06] rounded-lg overflow-hidden transition-all hover:border-brand-blue/30 shadow-sm">
                       <div className="aspect-[16/10] overflow-hidden relative">
                         <img src={item.thumbnailUrl} className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" alt="" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -186,7 +186,7 @@ export const GeneratorHistory: React.FC<GeneratorHistoryProps> = ({
                           onClick={() => onUsePrompt(item.prompt)}
                           className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
                         >
-                          <div className="bg-rose-500 text-white px-5 py-2 rounded-full text-[9px] font-bold uppercase tracking-widest shadow-atlas-lg scale-90 group-hover:scale-100 transition-transform flex items-center gap-2">
+                          <div className="bg-brand-blue text-black px-5 py-2 rounded-full text-[9px] font-bold uppercase tracking-widest shadow-atlas-lg scale-90 group-hover:scale-100 transition-transform flex items-center gap-2">
                             <Wand2 size={12} /> Sử dụng Prompt
                           </div>
                         </button>
