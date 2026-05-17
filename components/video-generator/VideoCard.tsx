@@ -89,8 +89,8 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   const resBadgeLabel = res.resolution?.toUpperCase();
 
   const cardClass = `group relative p-3 rounded-lg border transition-all flex flex-col gap-3 ${isSelected
-    ? 'border-brand-blue/45 bg-brand-blue/5'
-    : 'border-white/[0.08] bg-white/[0.025] hover:border-brand-blue/25'
+    ? 'border-brand-blue/45 bg-brand-blue/[0.08]'
+    : 'border-white/[0.08] bg-[#111111] hover:border-brand-blue/25'
     }`;
 
   return (
@@ -138,12 +138,12 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         {res.status === 'done' && res.url && (
           <div
             onClick={togglePlay}
-            className={`absolute inset-0 flex items-center justify-center bg-black/20 dark:bg-black/40 transition-opacity ${isPlaying ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}
+            className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity ${isPlaying ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}
           >
             {isPlaying ? (
-              <Pause size={48} className="text-white dark:text-white drop-shadow-atlas-lg" fill="currentColor" />
+              <Pause size={48} className="text-white drop-shadow-atlas-lg" fill="currentColor" />
             ) : (
-              <Play size={48} className="text-white dark:text-white drop-shadow-atlas-lg ml-2" fill="currentColor" />
+              <Play size={48} className="text-white drop-shadow-atlas-lg ml-2" fill="currentColor" />
             )}
           </div>
         )}
@@ -151,7 +151,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all z-20">
           <button
             onClick={(e) => { e.stopPropagation(); onViewLogs?.(res); }}
-            className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-brand-blue shadow-atlas-lg transition-all"
+            className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-brand-blue hover:text-black shadow-atlas-lg transition-all"
             title="Xem nhật ký tiến trình"
           >
             <Terminal size={16} />
@@ -159,7 +159,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
 
           <button
             onClick={handleReport}
-            className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-orange-500 shadow-atlas-lg transition-all"
+            className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-orange-500 hover:text-black shadow-atlas-lg transition-all"
             title="Báo lỗi"
           >
             <AlertTriangle size={16} />
