@@ -45,12 +45,12 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
         ? 'border-brand-blue/40 bg-brand-blue/5'
         : isError
           ? 'border-red-500/20 bg-red-900/5 hover:border-red-500/30'
-          : 'border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-[var(--atlas-bg-panel)] hover:border-black/10 dark:hover:border-white/10'
+          : 'border-white/[0.08] bg-white/[0.025] hover:border-brand-blue/25'
         }`}
       onClick={() => displayUrl ? onFullscreen(displayUrl) : null}
     >
       {/* Visual Area */}
-      <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-100 dark:bg-black border border-black/[0.06] dark:border-white/[0.08] flex items-center justify-center">
+      <div className="relative aspect-video rounded-xl overflow-hidden bg-black border border-white/[0.08] flex items-center justify-center">
 
         {displayUrl && !isProcessing && !isError && (
           <div className="absolute inset-0 z-0">
@@ -71,7 +71,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
             <AlertCircle size={36} className="text-red-500/50" />
             <div className="space-y-1">
               <p className="text-[11px] font-bold uppercase tracking-widest text-red-500">LỖI TỔNG HỢP</p>
-              <p className="text-[9px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-tighter">Vui lòng kiểm tra lại kịch bản</p>
+              <p className="text-[10px] font-bold text-white/45 uppercase tracking-tighter">Vui lòng kiểm tra lại kịch bản</p>
             </div>
           </div>
         ) : displayUrl ? (
@@ -134,21 +134,21 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
             <>
               <button
                 onClick={(e) => { e.stopPropagation(); onFullscreen(displayUrl!); }}
-                className="p-2 bg-white/90 backdrop-blur-sm text-black rounded-lg hover:scale-110 transition-transform shadow-lg hover:bg-brand-blue hover:text-white"
+                className="p-2 bg-black/60 backdrop-blur-sm text-white rounded-lg hover:scale-110 transition-transform shadow-lg hover:bg-brand-blue hover:text-black"
                 title="Xem toàn màn hình"
               >
                 <Maximize2 size={14} />
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); onEdit(displayUrl!); }}
-                className="p-2 bg-white/90 backdrop-blur-sm text-brand-blue rounded-lg hover:scale-110 transition-transform shadow-lg hover:bg-brand-blue hover:text-white"
+                className="p-2 bg-black/60 backdrop-blur-sm text-brand-blue rounded-lg hover:scale-110 transition-transform shadow-lg hover:bg-brand-blue hover:text-black"
                 title="Chỉnh sửa"
               >
                 <Edit3 size={14} />
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); onDownload(displayUrl!, `image_${res.id}.png`); }}
-                className="p-2 bg-white/90 backdrop-blur-sm text-emerald-600 rounded-lg hover:scale-110 transition-transform shadow-lg hover:bg-emerald-600 hover:text-white"
+                className="p-2 bg-black/60 backdrop-blur-sm text-emerald-300 rounded-lg hover:scale-110 transition-transform shadow-lg hover:bg-emerald-600 hover:text-white"
                 title="Tải xuống"
               >
                 <Download size={14} />
@@ -156,25 +156,25 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
               {onAddReference && (
                 <button
                   onClick={(e) => { e.stopPropagation(); onAddReference(displayUrl!); }}
-                  className="p-2 bg-white/90 backdrop-blur-sm text-cyan-600 rounded-lg hover:scale-110 transition-transform shadow-lg hover:bg-cyan-600 hover:text-white"
+                  className="p-2 bg-black/60 backdrop-blur-sm text-cyan-300 rounded-lg hover:scale-110 transition-transform shadow-lg hover:bg-cyan-600 hover:text-white"
                   title="Thêm ảnh tham chiếu"
                 >
                   <ImagePlus size={14} />
                 </button>
               )}
               {onUpscale && (
-                <div className="flex items-center bg-white/90 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center bg-black/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden border border-white/10" onClick={(e) => e.stopPropagation()}>
                   <button
                     onClick={() => onUpscale(res.id, '2K')}
-                    className="px-2 py-2 text-[9px] font-bold text-brand-blueHover hover:bg-brand-blueHover hover:text-white transition-all"
+                    className="px-2 py-2 text-[9px] font-bold text-brand-blue hover:bg-brand-blueHover hover:text-black transition-all"
                     title="Upscale 2K"
                   >
                     2K
                   </button>
-                  <div className="w-px h-4 bg-brand-blue/20" />
+                  <div className="w-px h-4 bg-white/10" />
                   <button
                     onClick={() => onUpscale(res.id, '4K')}
-                    className="px-2 py-2 text-[9px] font-bold text-brand-blueHover hover:bg-brand-blueHover hover:text-white transition-all"
+                    className="px-2 py-2 text-[9px] font-bold text-brand-blue hover:bg-brand-blueHover hover:text-black transition-all"
                     title="Upscale 4K"
                   >
                     4K
@@ -187,7 +187,7 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
           {(isError || isProcessing || res.url) && (
             <button
               onClick={(e) => { e.stopPropagation(); onViewLogs?.(res); }}
-              className="p-2 bg-white/90 backdrop-blur-sm text-slate-500 rounded-lg hover:scale-110 transition-transform shadow-lg hover:bg-slate-800 hover:text-white"
+              className="p-2 bg-black/60 backdrop-blur-sm text-white/65 rounded-lg hover:scale-110 transition-transform shadow-lg hover:bg-brand-blue hover:text-black"
               title="Xem log"
             >
               <Terminal size={14} />
@@ -219,20 +219,20 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
             onClick={(e) => { e.stopPropagation(); onToggleSelect(); }}
             className={`absolute top-3 right-3 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all z-50 ${isSelected ? 'bg-brand-blue border-brand-blue shadow-lg' : 'bg-black/40 border-white/20 hover:bg-black/60'}`}
           >
-            {isSelected && <Check size={14} strokeWidth={4} className="text-white" />}
+            {isSelected && <Check size={14} strokeWidth={4} className="text-black" />}
           </div>
         )}
       </div>
 
       <div className={`px-1 space-y-3 mt-auto ${isProcessing ? 'opacity-60' : ''}`}>
         <div className="space-y-1.5">
-          <h4 className="text-[10px] font-semibold text-slate-700 dark:text-white/80 truncate leading-tight">
+          <h4 className="text-sm font-semibold text-white/85 truncate leading-tight">
             {res.prompt}
           </h4>
-          <div className="flex justify-between items-center text-[7px] font-medium text-slate-400 dark:text-gray-500">
+          <div className="flex justify-between items-center text-[10px] font-medium text-white/45">
             <span className="flex items-center gap-1.5"><Clock size={10} /> {res.fullTimestamp}</span>
             <div className="flex items-center gap-2">
-              <span className="bg-black/[0.06] dark:bg-white/[0.06] px-1.5 py-0.5 rounded font-mono text-slate-500 dark:text-slate-400">
+              <span className="bg-white/[0.04] px-1.5 py-0.5 rounded font-mono text-white/45">
                 ID: {res.id.length > 10 ? `${res.id.slice(0, 6)}...` : res.id.toUpperCase()}
               </span>
               <button onClick={handleCopyId} className="hover:text-brand-blue transition-colors">
@@ -242,12 +242,12 @@ export const ImageResultCard: React.FC<ImageResultCardProps> = ({
           </div>
         </div>
 
-        <div className="pt-2 border-t border-black/[0.06] dark:border-white/[0.08] flex items-center justify-between">
+        <div className="pt-2 border-t border-white/[0.08] flex items-center justify-between">
           <div className="flex flex-wrap gap-1.5">
-            <div className="px-1.5 py-0.5 bg-black/[0.03] dark:bg-white/[0.03] rounded text-[7px] font-medium text-slate-500 dark:text-gray-400 border border-black/[0.06] dark:border-white/[0.08]">
+            <div className="px-1.5 py-0.5 bg-white/[0.03] rounded text-[9px] font-medium text-white/55 border border-white/[0.08]">
               {res.resolution.toUpperCase()}
             </div>
-            <div className="px-1.5 py-0.5 bg-black/[0.03] dark:bg-white/[0.03] rounded text-[7px] font-medium text-slate-500 dark:text-gray-400 border border-black/[0.06] dark:border-white/[0.08]">
+            <div className="px-1.5 py-0.5 bg-white/[0.03] rounded text-[9px] font-medium text-white/55 border border-white/[0.08]">
               {res.aspectRatio}
             </div>
           </div>

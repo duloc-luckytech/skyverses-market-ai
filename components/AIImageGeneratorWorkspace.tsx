@@ -278,17 +278,17 @@ const AIImageGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[1100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
             <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
-              className="max-w-md w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-10 border border-slate-200 dark:border-white/10 rounded-lg text-center space-y-6 shadow-atlas-lg">
+              className="max-w-md w-full bg-[#111111] p-10 border border-white/10 rounded-lg text-center space-y-6 shadow-atlas-lg">
               <div className="w-20 h-20 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto text-amber-500">
                 <Coins size={36} />
               </div>
               <div className="space-y-2">
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white">Hết credits</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Số dư không đủ để tạo ảnh. Nạp thêm để tiếp tục.</p>
+                <h3 className="text-xl font-bold text-white">Hết credits</h3>
+                <p className="text-sm text-white/60">Số dư không đủ để tạo ảnh. Nạp thêm để tiếp tục.</p>
               </div>
               <div className="flex flex-col gap-3">
                 <Link to="/credits" className="bg-gradient-to-r from-brand-blue to-brand-blueHover text-black py-3.5 rounded-xl text-sm font-semibold shadow-lg hover:scale-[1.02] transition-all text-center">Nạp Credits</Link>
-                <button onClick={() => g.setShowLowCreditAlert(false)} className="text-xs font-medium text-slate-400 hover:text-brand-blue transition-colors">Bỏ qua</button>
+                <button onClick={() => g.setShowLowCreditAlert(false)} className="text-xs font-medium text-white/45 hover:text-brand-blue transition-colors">Bỏ qua</button>
               </div>
             </motion.div>
           </motion.div>
