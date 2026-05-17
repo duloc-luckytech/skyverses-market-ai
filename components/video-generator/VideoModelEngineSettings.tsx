@@ -55,10 +55,10 @@ const Pill = ({
   <button
     onClick={onClick}
     disabled={disabled}
-    className={`px-2.5 py-1 rounded-md text-[10px] font-semibold transition-all border ${
+    className={`px-2.5 py-1.5 rounded-md text-[11px] font-semibold transition-all border ${
       active
-        ? 'bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 border-indigo-500/25'
-        : 'bg-transparent border-black/[0.06] dark:border-white/[0.04] text-slate-600 dark:text-gray-300 hover:text-slate-800 dark:hover:text-white/70 hover:border-black/10 dark:hover:border-white/10'
+        ? 'bg-brand-blue/12 text-brand-blue border-brand-blue/25'
+        : 'bg-white/[0.02] border-white/[0.06] text-white/65 hover:text-white hover:border-white/12'
     }`}
   >
     {label}
@@ -116,8 +116,8 @@ export const VideoModelEngineSettings: React.FC<VideoModelEngineSettingsProps> =
         {/* ─── MODEL FAMILY ─── */}
         {familyList.length > 0 && (
           <div className="space-y-1">
-            <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1.5">
-              <Brain size={11} className="text-cyan-500" /> Model
+            <p className="text-[11px] font-semibold uppercase text-white/70 tracking-wider px-0.5 flex items-center gap-1.5">
+              <Brain size={11} className="text-cyan-400" /> Model
             </p>
             <div className="flex gap-1.5">
               <div className="relative flex-grow">
@@ -125,16 +125,16 @@ export const VideoModelEngineSettings: React.FC<VideoModelEngineSettingsProps> =
                   value={selectedFamily}
                   onChange={e => setSelectedFamily(e.target.value)}
                   disabled={isGenerating}
-                  className="w-full bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] px-2.5 py-2 rounded-lg text-xs font-medium outline-none appearance-none focus:border-indigo-500/40 transition-all cursor-pointer text-slate-700 dark:text-white/80"
+                  className="w-full bg-white/[0.035] border border-white/[0.08] px-2.5 py-2.5 rounded-lg text-sm font-medium outline-none appearance-none focus:border-brand-blue/40 transition-all cursor-pointer text-white/85"
                 >
                   {familyList.map(f => <option key={f} value={f}>{f}</option>)}
                 </select>
-                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-400 pointer-events-none" size={11} />
+                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-white/45 pointer-events-none" size={11} />
               </div>
               <button
                 onClick={() => setIsDetailModalOpen(true)}
                 disabled={isGenerating}
-                className="shrink-0 px-2 py-1.5 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded-lg text-[10px] font-medium text-slate-500 dark:text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-400 hover:border-indigo-500/30 transition-all flex items-center gap-1"
+                className="shrink-0 px-2 py-1.5 bg-white/[0.035] border border-white/[0.08] rounded-lg text-[11px] font-medium text-white/60 hover:text-brand-blue hover:border-brand-blue/30 transition-all flex items-center gap-1"
                 title="Xem tất cả models"
               >
                 <List size={10} />
@@ -146,10 +146,10 @@ export const VideoModelEngineSettings: React.FC<VideoModelEngineSettingsProps> =
         {/* ─── VARIANTS (phiên bản trong family) ─── */}
         {allVariants.length > 1 && (
           <div className="space-y-1">
-            <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1.5">
-              <GitBranch size={11} className="text-violet-400" /> Phiên bản
+            <p className="text-[11px] font-semibold uppercase text-white/70 tracking-wider px-0.5 flex items-center gap-1.5">
+              <GitBranch size={11} className="text-brand-blue" /> Phiên bản
               {hasMoreVariants && (
-                <span className="text-[9px] text-slate-400 dark:text-slate-500 normal-case font-normal">
+                <span className="text-[10px] text-white/45 normal-case font-normal">
                   ({allVariants.length})
                 </span>
               )}
@@ -175,7 +175,7 @@ export const VideoModelEngineSettings: React.FC<VideoModelEngineSettingsProps> =
               {hasMoreVariants && (
                 <button
                   onClick={() => setShowAllVariants(!showAllVariants)}
-                  className="px-1.5 py-1 text-[9px] font-medium text-slate-500 dark:text-gray-300 hover:text-indigo-400 transition-colors"
+                  className="px-1.5 py-1 text-[10px] font-medium text-white/60 hover:text-brand-blue transition-colors"
                 >
                   {showAllVariants ? '↑ Thu gọn' : `+${allVariants.length - MAX_VARIANTS}`}
                 </button>
@@ -194,7 +194,7 @@ export const VideoModelEngineSettings: React.FC<VideoModelEngineSettingsProps> =
           const hiddenCount = modes.length - MAX;
           return (
             <div className="space-y-1">
-              <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1.5">
+              <p className="text-[11px] font-semibold uppercase text-white/70 tracking-wider px-0.5 flex items-center gap-1.5">
                 <SlidersHorizontal size={11} className="text-amber-400" /> Chế độ
               </p>
               <div className="flex flex-wrap gap-1">
@@ -205,7 +205,7 @@ export const VideoModelEngineSettings: React.FC<VideoModelEngineSettingsProps> =
                   <Pill label={selectedMode} active onClick={() => {}} disabled={isGenerating} />
                 )}
                 {hiddenCount > 0 && (
-                  <button onClick={() => toggleGroup('modes')} className="px-1.5 py-1 text-[9px] font-medium text-slate-500 dark:text-gray-300 hover:text-indigo-400 transition-colors">
+                  <button onClick={() => toggleGroup('modes')} className="px-1.5 py-1 text-[10px] font-medium text-white/60 hover:text-brand-blue transition-colors">
                     {isGroupExpanded ? '↑ Thu gọn' : `+${hiddenCount}`}
                   </button>
                 )}
@@ -226,7 +226,7 @@ export const VideoModelEngineSettings: React.FC<VideoModelEngineSettingsProps> =
             const hiddenCount = ratios.length - MAX;
             return (
               <div className="space-y-0.5">
-                <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1">
+                <p className="text-[10px] font-semibold uppercase text-white/65 tracking-wider px-0.5 flex items-center gap-1">
                   <Ratio size={10} className="text-emerald-400" /> Tỷ lệ
                 </p>
                 <div className="flex flex-wrap gap-0.5">
@@ -235,7 +235,7 @@ export const VideoModelEngineSettings: React.FC<VideoModelEngineSettingsProps> =
                   ))}
                   {activeOutside && <Pill label={ratio} active onClick={() => {}} />}
                   {hiddenCount > 0 && (
-                    <button onClick={() => toggleGroup('ratios')} className="px-1.5 py-0.5 text-[9px] font-medium text-slate-500 dark:text-gray-300 hover:text-indigo-400 transition-colors">
+                    <button onClick={() => toggleGroup('ratios')} className="px-1.5 py-0.5 text-[10px] font-medium text-white/60 hover:text-brand-blue transition-colors">
                       {isGroupExpanded ? '↑' : `+${hiddenCount}`}
                     </button>
                   )}
@@ -254,7 +254,7 @@ export const VideoModelEngineSettings: React.FC<VideoModelEngineSettingsProps> =
             const hiddenCount = resolutions.length - MAX;
             return (
               <div className="space-y-0.5">
-                <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1">
+                <p className="text-[10px] font-semibold uppercase text-white/65 tracking-wider px-0.5 flex items-center gap-1">
                   <MonitorUp size={10} className="text-blue-400" /> P.Giải
                 </p>
                 <div className="flex flex-wrap gap-0.5">
@@ -263,7 +263,7 @@ export const VideoModelEngineSettings: React.FC<VideoModelEngineSettingsProps> =
                   ))}
                   {activeOutside && <Pill label={resolution} active onClick={() => {}} />}
                   {hiddenCount > 0 && (
-                    <button onClick={() => toggleGroup('res')} className="px-1.5 py-0.5 text-[9px] font-medium text-slate-500 dark:text-gray-300 hover:text-indigo-400 transition-colors">
+                    <button onClick={() => toggleGroup('res')} className="px-1.5 py-0.5 text-[10px] font-medium text-white/60 hover:text-brand-blue transition-colors">
                       {isGroupExpanded ? '↑' : `+${hiddenCount}`}
                     </button>
                   )}
@@ -275,7 +275,7 @@ export const VideoModelEngineSettings: React.FC<VideoModelEngineSettingsProps> =
           {/* Duration (chỉ khi không phải mode-based) */}
           {!isModeBased && (
             <div className="space-y-0.5">
-              <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1">
+              <p className="text-[10px] font-semibold uppercase text-white/65 tracking-wider px-0.5 flex items-center gap-1">
                 <Clock size={10} className="text-teal-400" /> Thời lượng
               </p>
               <Pill label={duration} active onClick={cycleDuration} disabled={isGenerating} />
@@ -284,10 +284,10 @@ export const VideoModelEngineSettings: React.FC<VideoModelEngineSettingsProps> =
 
           {/* Sound */}
           <div className="space-y-0.5">
-            <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1">
+            <p className="text-[10px] font-semibold uppercase text-white/65 tracking-wider px-0.5 flex items-center gap-1">
               {soundEnabled
                 ? <Volume2 size={10} className="text-pink-400" />
-                : <VolumeX size={10} className="text-slate-400" />}
+                : <VolumeX size={10} className="text-white/45" />}
               Âm thanh
             </p>
             <Pill
@@ -302,19 +302,19 @@ export const VideoModelEngineSettings: React.FC<VideoModelEngineSettingsProps> =
         {/* ─── SỐ LƯỢNG ─── */}
         {showQuantity && setQuantity && (
           <div className="flex items-center gap-2">
-            <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider flex items-center gap-1">
+            <p className="text-[10px] font-semibold uppercase text-white/65 tracking-wider flex items-center gap-1">
               <Hash size={10} className="text-orange-400" /> SL
             </p>
-            <div className="flex bg-black/[0.02] dark:bg-white/[0.02] rounded-md border border-black/[0.06] dark:border-white/[0.04] overflow-hidden">
+            <div className="flex bg-white/[0.025] rounded-md border border-white/[0.06] overflow-hidden">
               {[1, 2, 3, 4].map(n => (
                 <button
                   key={n}
                   onClick={() => setQuantity(n)}
                   disabled={isGenerating}
-                  className={`w-8 py-1 text-[10px] font-semibold transition-all ${
+                  className={`w-8 py-1.5 text-[11px] font-semibold transition-all ${
                     quantity === n
-                      ? 'bg-indigo-500/15 text-indigo-500 dark:text-indigo-400'
-                      : 'text-slate-500 dark:text-gray-300 hover:text-slate-700 dark:hover:text-white/70'
+                      ? 'bg-brand-blue/15 text-brand-blue'
+                      : 'text-white/60 hover:text-white'
                   }`}
                 >
                   {n}
@@ -326,9 +326,9 @@ export const VideoModelEngineSettings: React.FC<VideoModelEngineSettingsProps> =
 
         {/* ─── MODEL INFO ─── */}
         {selectedModelObj && (
-          <p className="text-[9px] text-slate-400 dark:text-gray-500 truncate px-0.5">
+          <p className="text-[10px] text-white/45 truncate px-0.5">
             → {selectedModelObj.name}{' '}
-            <span className="text-slate-400 dark:text-[#333]">({selectedModelObj.modelKey})</span>
+            <span className="text-white/30">({selectedModelObj.modelKey})</span>
           </p>
         )}
       </div>

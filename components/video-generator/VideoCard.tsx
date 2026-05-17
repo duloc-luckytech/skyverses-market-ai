@@ -89,8 +89,8 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   const resBadgeLabel = res.resolution?.toUpperCase();
 
   const cardClass = `group relative p-3 rounded-lg border transition-all flex flex-col gap-3 ${isSelected
-    ? 'border-indigo-500/40 bg-indigo-500/5'
-    : 'border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-[var(--atlas-bg-panel)] hover:border-black/[0.1] dark:hover:border-white/[0.08] shadow-sm dark:shadow-none'
+    ? 'border-brand-blue/45 bg-brand-blue/5'
+    : 'border-white/[0.08] bg-white/[0.025] hover:border-brand-blue/25'
     }`;
 
   return (
@@ -101,9 +101,9 @@ export const VideoCard: React.FC<VideoCardProps> = ({
       className={cardClass}
       onClick={() => onToggleSelect()}
     >
-      <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-100 dark:bg-black border border-black/[0.06] dark:border-white/[0.08] flex items-center justify-center">
+      <div className="relative aspect-video rounded-xl overflow-hidden bg-black border border-white/[0.08] flex items-center justify-center">
         {res.status === 'processing' ? (
-          <div className="w-full h-full flex flex-col items-center justify-center relative bg-slate-200 dark:bg-black/60">
+          <div className="w-full h-full flex flex-col items-center justify-center relative bg-black/60">
             <div className="absolute inset-0 opacity-10 pointer-events-none">
               <div className="absolute top-0 left-0 w-full h-[1px] bg-[#D4A017] animate-[scan_2s_infinite_linear]"></div>
             </div>
@@ -111,7 +111,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
             <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#D4A017] animate-pulse">Rendering...</p>
           </div>
         ) : (res.status === 'error' || (!res.url && res.status === 'done')) ? (
-          <div className="w-full h-full flex flex-col items-center justify-center text-center p-4 gap-2 bg-red-50 dark:bg-red-950/20">
+          <div className="w-full h-full flex flex-col items-center justify-center text-center p-4 gap-2 bg-red-950/20">
             <AlertCircle size={24} className="text-red-500/60 shrink-0" />
             <p className="text-red-500/80 font-bold uppercase text-[9px] tracking-wider">Lỗi tạo video</p>
             {res.errorMessage && (
@@ -169,14 +169,14 @@ export const VideoCard: React.FC<VideoCardProps> = ({
             <>
               <button
                 onClick={(e) => { e.stopPropagation(); onDownload(res.url!, `video_${res.id}.mp4`); }}
-                className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-purple-600 shadow-atlas-lg"
+                className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-brand-blue hover:text-black shadow-atlas-lg"
                 title="Tải xuống"
               >
                 <Download size={16} />
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); onFullscreen(res.url!, res.hasSound, res.id); }}
-                className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-purple-600 shadow-atlas-lg"
+                className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:bg-brand-blue hover:text-black shadow-atlas-lg"
                 title="Phóng to"
               >
                 <Maximize2 size={16} />
@@ -204,9 +204,9 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         </div>
 
         <div
-          className={`absolute top-3 left-3 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${isSelected ? 'bg-purple-600 border-purple-500 shadow-atlas-lg scale-110' : 'border-white/20 bg-black/40 hover:bg-black/60'}`}
+          className={`absolute top-3 left-3 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${isSelected ? 'bg-brand-blue border-brand-blue shadow-atlas-lg scale-110' : 'border-white/25 bg-black/40 hover:bg-black/60'}`}
         >
-          {isSelected && <Check size={14} strokeWidth={4} className="text-white" />}
+          {isSelected && <Check size={14} strokeWidth={4} className="text-black" />}
         </div>
 
         {res.status === 'done' && !res.hasSound && (
@@ -227,31 +227,31 @@ export const VideoCard: React.FC<VideoCardProps> = ({
 
       <div className={`px-1 pb-1 space-y-2 ${res.status === 'processing' ? 'opacity-50' : ''}`}>
         <div className="space-y-1">
-          <h4 className="text-[11px] font-semibold text-slate-700 dark:text-white/80 truncate leading-tight">{res.prompt}</h4>
+          <h4 className="text-sm font-semibold text-white/85 truncate leading-tight">{res.prompt}</h4>
           <div className="flex justify-between items-center">
-            <p className="text-[8px] font-medium text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
-              <Clock size={9} className="text-[#333]" /> {res.fullTimestamp}
+            <p className="text-[10px] font-medium text-white/45 flex items-center gap-1.5">
+              <Clock size={9} className="text-white/35" /> {res.fullTimestamp}
             </p>
             <div className="flex items-center gap-1.5">
-              <span className="text-[7px] font-mono text-slate-400 dark:text-gray-500 bg-black/[0.03] dark:bg-white/[0.03] px-1.5 py-0.5 rounded">
+              <span className="text-[9px] font-mono text-white/45 bg-white/[0.03] px-1.5 py-0.5 rounded">
                 {res.id.length > 12 ? res.id.slice(0, 6) + '…' + res.id.slice(-3) : res.id}
               </span>
-              <button onClick={handleCopyId} className="p-0.5 text-[#444] hover:text-indigo-400 transition-colors"><Copy size={9} /></button>
+              <button onClick={handleCopyId} className="p-0.5 text-white/35 hover:text-brand-blue transition-colors"><Copy size={9} /></button>
             </div>
           </div>
         </div>
-        <div className="flex justify-between items-center pt-1.5 border-t border-black/[0.06] dark:border-white/[0.08]">
+        <div className="flex justify-between items-center pt-1.5 border-t border-white/[0.08]">
           <div className="flex flex-col gap-0.5">
             <div className="flex flex-wrap items-center gap-1">
-              <span className="text-[8px] font-medium text-indigo-400/80">{res.duration}</span>
-              <span className="text-[7px] text-slate-300 dark:text-[#333]">·</span>
-              <span className="text-[8px] font-medium text-indigo-400/80">{res.aspectRatio}</span>
-              <span className="text-[7px] text-slate-300 dark:text-[#333]">·</span>
-              <span className="text-[8px] font-medium text-indigo-400/80">{res.mode}</span>
+              <span className="text-[9px] font-medium text-brand-blue/85">{res.duration}</span>
+              <span className="text-[8px] text-white/25">·</span>
+              <span className="text-[9px] font-medium text-brand-blue/85">{res.aspectRatio}</span>
+              <span className="text-[8px] text-white/25">·</span>
+              <span className="text-[9px] font-medium text-brand-blue/85">{res.mode}</span>
               {res.resolution && (
                 <>
-                  <span className="text-[7px] text-slate-300 dark:text-[#333]">·</span>
-                  <span className={`text-[8px] font-bold ${isHighRes ? 'text-amber-500' : 'text-indigo-400/80'}`}>{res.resolution}</span>
+                  <span className="text-[8px] text-white/25">·</span>
+                  <span className={`text-[9px] font-bold ${isHighRes ? 'text-amber-500' : 'text-brand-blue/85'}`}>{res.resolution}</span>
                 </>
               )}
             </div>
@@ -261,9 +261,9 @@ export const VideoCard: React.FC<VideoCardProps> = ({
             </div>
           </div>
           <div className="flex flex-col items-end gap-0.5">
-            <span className="text-[7px] font-medium text-slate-400 dark:text-[#333] text-right">{res.model}</span>
+            <span className="text-[9px] font-medium text-white/45 text-right">{res.model}</span>
             {res.engine && (
-              <span className="text-[7px] font-medium text-slate-400/60 dark:text-[#2a2a2a] uppercase">{res.engine === 'gommo' ? 'SV1' : res.engine === 'fxflow' ? 'SV2' : res.engine === 'grok' ? 'SV3' : res.engine}</span>
+              <span className="text-[9px] font-medium text-white/30 uppercase">{res.engine === 'gommo' ? 'SV1' : res.engine === 'fxflow' ? 'SV2' : res.engine === 'grok' ? 'SV3' : res.engine}</span>
             )}
           </div>
         </div>

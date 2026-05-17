@@ -647,7 +647,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
   };
 
   return (
-    <div className="h-full w-full flex flex-col lg:flex-row bg-white dark:bg-[var(--atlas-bg-page)] text-slate-900 dark:text-white font-sans overflow-hidden transition-colors duration-300 relative">
+    <div className="h-full w-full flex flex-col lg:flex-row bg-[#0A0A0A] text-white font-sans overflow-hidden transition-colors duration-300 relative">
 
       <AnimatePresence>
         {isMobileExpanded && (
@@ -747,7 +747,7 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
         {fullscreenVideo && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] bg-black/95 flex flex-col items-center justify-center p-6 md:p-12">
             <button onClick={() => setFullscreenVideo(null)} className="absolute top-8 right-8 p-3 bg-white/10 rounded-full text-white hover:bg-white/20 transition-all z-50 backdrop-blur-md"><X size={28} /></button>
-            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="w-full max-w-6xl aspect-video bg-black rounded-xl overflow-hidden shadow-[0_0_150px_rgba(147,51,234,0.3)] border border-white/10 relative"><video src={fullscreenVideo.url} autoPlay controls className="w-full h-full object-contain" /></motion.div>
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="w-full max-w-6xl aspect-video bg-black rounded-xl overflow-hidden shadow-[0_0_150px_rgba(201,168,76,0.22)] border border-white/10 relative"><video src={fullscreenVideo.url} autoPlay controls className="w-full h-full object-contain" /></motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -778,15 +778,15 @@ const AIVideoGeneratorWorkspace: React.FC<{ onClose: () => void }> = ({ onClose 
       <AnimatePresence>
         {showLowCreditAlert && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
-            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="max-w-md w-full bg-white dark:bg-[var(--atlas-bg-panel)] p-12 border border-slate-200 dark:border-white/10 rounded-xl text-center space-y-8 shadow-atlas-xl transition-colors">
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="max-w-md w-full bg-[#111111] p-12 border border-white/10 rounded-xl text-center space-y-8 shadow-atlas-xl transition-colors">
               <div className="w-24 h-24 bg-orange-500/10 border border-orange-500/20 rounded-full flex items-center justify-center mx-auto text-orange-500 shadow-atlas-lg dark:shadow-[0_0_40px_rgba(245,158,11,0.2)]"><AlertTriangle size={40} /></div>
               <div className="space-y-4">
-                <h3 className="text-3xl font-bold uppercase tracking-tighter italic text-slate-900 dark:text-white">Quota Depleted</h3>
-                <p className="text-sm text-slate-500 dark:text-gray-400 font-bold leading-relaxed uppercase tracking-tight">Video synthesis requires ít nhất **{currentUnitCost} credits** per take. <br />Your current node balance is too low.</p>
+                <h3 className="text-3xl font-bold uppercase tracking-tighter italic text-white">Quota Depleted</h3>
+                <p className="text-sm text-white/60 font-bold leading-relaxed uppercase tracking-tight">Video synthesis requires ít nhất **{currentUnitCost} credits** per take. <br />Your current node balance is too low.</p>
               </div>
               <div className="flex flex-col gap-4">
-                <Link to="/credits" className="bg-purple-600 text-white py-5 rounded-lg font-bold uppercase tracking-[0.4em] shadow-atlas-lg hover:scale-105 transition-all text-center">Nạp thêm Credits</Link>
-                <button onClick={() => setShowLowCreditAlert(false)} className="text-[10px] font-bold uppercase text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white transition-colors tracking-widest underline underline-offset-8">Để sau</button>
+                <Link to="/credits" className="bg-brand-blue text-black py-5 rounded-lg font-bold uppercase tracking-[0.4em] shadow-atlas-lg hover:scale-105 transition-all text-center">Nạp thêm Credits</Link>
+                <button onClick={() => setShowLowCreditAlert(false)} className="text-[10px] font-bold uppercase text-white/45 hover:text-white transition-colors tracking-widest underline underline-offset-8">Để sau</button>
               </div>
             </motion.div>
           </motion.div>

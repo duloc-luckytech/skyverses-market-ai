@@ -54,22 +54,22 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => 
   ].filter(Boolean).join(' · ');
 
   return (
-    <div className={`shrink-0 border-t border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-[var(--atlas-bg-panel)]/80 backdrop-blur-lg ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
+    <div className={`shrink-0 border-t border-white/[0.08] bg-[#111111]/95 backdrop-blur-lg ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
       <div className="px-4 py-3 space-y-2.5">
 
         {/* ─── COLLAPSIBLE HEADER ─── */}
         <button onClick={() => setIsExpanded(!isExpanded)} className="w-full flex items-center justify-between group">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider flex items-center gap-1.5">
-              <Settings2 size={12} className="text-indigo-400" /> Cấu hình AI
+            <span className="text-[11px] font-semibold uppercase text-white/70 tracking-wider flex items-center gap-1.5">
+              <Settings2 size={12} className="text-brand-blue" /> Cấu hình AI
             </span>
             {!isExpanded && summaryText && (
-              <span className="text-[9px] font-medium text-indigo-400/70 truncate max-w-[140px]">{summaryText}</span>
+              <span className="text-[10px] font-medium text-brand-blue/80 truncate max-w-[140px]">{summaryText}</span>
             )}
           </div>
           {isExpanded
-            ? <ChevronUp size={12} className="text-slate-400 dark:text-slate-500 group-hover:text-indigo-400 transition-colors" />
-            : <ChevronDown size={12} className="text-slate-400 dark:text-slate-500 group-hover:text-indigo-400 transition-colors" />
+            ? <ChevronUp size={12} className="text-white/45 group-hover:text-brand-blue transition-colors" />
+            : <ChevronDown size={12} className="text-white/45 group-hover:text-brand-blue transition-colors" />
           }
         </button>
 
@@ -107,17 +107,17 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => 
         )}
 
         {/* ─── COST BAR ─── */}
-        <div className="flex items-center justify-between pt-1 border-t border-black/[0.06] dark:border-white/[0.08]">
+        <div className="flex items-center justify-between pt-1 border-t border-white/[0.08]">
           <div className="flex items-center gap-2">
-            <button onClick={() => props.setShowResourceModal(true)} className="p-1 text-slate-400 dark:text-slate-500 hover:text-indigo-400 transition-colors rounded-md hover:bg-black/[0.03] dark:hover:bg-white/[0.04]">
+            <button onClick={() => props.setShowResourceModal(true)} className="p-1 text-white/45 hover:text-brand-blue transition-colors rounded-md hover:bg-white/[0.06]">
               <Settings size={12} />
             </button>
-            <span className={`text-[11px] font-medium ${props.usagePreference === 'key' ? 'text-violet-500 dark:text-violet-400' : 'text-slate-600 dark:text-slate-400'}`}>
+            <span className={`text-[12px] font-medium ${props.usagePreference === 'key' ? 'text-brand-blue' : 'text-white/70'}`}>
               {props.usagePreference === 'credits' ? `${props.credits.toLocaleString()} CR` : props.usagePreference === 'key' ? 'API Key' : '—'}
             </span>
             <Link
               to="/credits"
-              className="flex items-center gap-0.5 px-2 py-0.5 bg-gradient-to-r from-indigo-500 to-violet-500 text-white rounded-full text-[9px] font-semibold uppercase tracking-wider hover:brightness-110 hover:scale-105 active:scale-95 transition-all shadow-sm shadow-indigo-500/20"
+              className="flex items-center gap-0.5 px-2 py-0.5 bg-gradient-to-r from-brand-blue to-brand-blueHover text-black rounded-full text-[10px] font-semibold uppercase tracking-wider hover:brightness-110 hover:scale-105 active:scale-95 transition-all shadow-sm shadow-brand-blue/20"
             >
               <Plus size={10} /> Nạp
             </Link>
@@ -137,10 +137,10 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => 
           <button
             onClick={props.handleGenerate}
             disabled={props.isGenerateDisabled}
-            className={`w-full py-3.5 rounded-xl text-white font-semibold uppercase text-[11px] tracking-widest shadow-lg transition-all flex items-center justify-center gap-2.5 ${
+            className={`w-full py-3.5 rounded-xl font-semibold uppercase text-[12px] tracking-widest shadow-lg transition-all flex items-center justify-center gap-2.5 ${
               props.isGenerateDisabled
-                ? 'bg-slate-200 dark:bg-white/[0.04] text-slate-400 dark:text-slate-600 cursor-not-allowed'
-                : 'bg-gradient-to-r from-indigo-500 to-violet-500 hover:brightness-110 active:scale-[0.98] shadow-indigo-500/20'
+                ? 'bg-white/[0.06] text-white/45 cursor-not-allowed'
+                : 'bg-gradient-to-r from-brand-blue to-brand-blueHover text-black hover:brightness-110 active:scale-[0.98] shadow-brand-blue/20'
             }`}
           >
             {props.isGenerating ? <Loader2 className="animate-spin" size={14} /> : <Video size={14} />}
@@ -152,7 +152,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = (props) => 
           </button>
           {props.generateTooltip && (
             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover/btn:opacity-100 pointer-events-none transition-all z-50">
-              <div className="bg-slate-900 dark:bg-white text-white dark:text-black px-3 py-1.5 rounded-lg text-[9px] font-semibold whitespace-nowrap shadow-atlas-lg">
+              <div className="bg-white text-black px-3 py-1.5 rounded-lg text-[10px] font-semibold whitespace-nowrap shadow-atlas-lg">
                 {props.generateTooltip}
               </div>
             </div>

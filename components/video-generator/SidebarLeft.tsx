@@ -57,13 +57,13 @@ interface SidebarLeftProps {
 
 /* ─── FRAME SLOT ─── */
 const Slot = ({ url, uploading, onUp, onLib }: { url: string | null; uploading: boolean; onUp: () => void; onLib: () => void }) => (
-  <div className={`relative aspect-video bg-slate-100 dark:bg-white/[0.02] border rounded-lg overflow-hidden group cursor-pointer transition-all ${url ? 'border-black/[0.06] dark:border-white/[0.06]' : 'border-dashed border-black/[0.08] dark:border-white/[0.06] hover:border-indigo-500/30'}`}>
-    {uploading ? <div className="flex items-center justify-center h-full"><Loader2 size={14} className="text-indigo-400 animate-spin" /></div>
+  <div className={`relative aspect-video bg-white/[0.025] border rounded-lg overflow-hidden group cursor-pointer transition-all ${url ? 'border-white/[0.08]' : 'border-dashed border-white/[0.08] hover:border-brand-blue/30'}`}>
+    {uploading ? <div className="flex items-center justify-center h-full"><Loader2 size={14} className="text-brand-blue animate-spin" /></div>
       : url ? <img src={url} className="w-full h-full object-cover" alt="" />
-        : <div className="flex items-center justify-center h-full opacity-15"><ImageIcon size={16} /></div>}
+        : <div className="flex items-center justify-center h-full text-white/20"><ImageIcon size={16} /></div>}
     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
-      <button onClick={e => { e.stopPropagation(); onUp(); }} className="p-1.5 bg-white/10 backdrop-blur rounded-md text-white/80 hover:bg-indigo-500 transition-all"><Upload size={10} /></button>
-      <button onClick={e => { e.stopPropagation(); onLib(); }} className="p-1.5 bg-white/10 backdrop-blur rounded-md text-white/80 hover:bg-indigo-500 transition-all"><FolderOpen size={10} /></button>
+      <button onClick={e => { e.stopPropagation(); onUp(); }} className="p-1.5 bg-white/10 backdrop-blur rounded-md text-white/80 hover:bg-brand-blue hover:text-black transition-all"><Upload size={10} /></button>
+      <button onClick={e => { e.stopPropagation(); onLib(); }} className="p-1.5 bg-white/10 backdrop-blur rounded-md text-white/80 hover:bg-brand-blue hover:text-black transition-all"><FolderOpen size={10} /></button>
     </div>
   </div>
 );
@@ -77,7 +77,7 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
       {/* Mobile FAB */}
       <button
         onClick={() => props.setIsMobileExpanded(true)}
-        className="lg:hidden fixed bottom-6 left-4 z-[130] w-12 h-12 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full shadow-atlas-lg flex items-center justify-center text-white active:scale-95 transition-transform"
+        className="lg:hidden fixed bottom-6 left-4 z-[130] w-12 h-12 bg-gradient-to-r from-brand-blue to-brand-blueHover rounded-full shadow-atlas-lg flex items-center justify-center text-black active:scale-95 transition-transform"
       >
         <Menu size={20} />
       </button>
@@ -86,7 +86,7 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
         ${props.isMobileExpanded ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0 fixed lg:relative inset-y-0 left-0 z-[150]
         w-[320px] lg:w-[340px] xl:w-[360px] shrink-0
-        bg-white dark:bg-[var(--atlas-bg-panel)] border-r border-black/[0.06] dark:border-white/[0.08]
+        bg-[#111111] border-r border-white/[0.08]
         flex flex-col transition-transform duration-300
       `}>
 
@@ -102,30 +102,30 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
         />
 
         {/* ─── HEADER ─── */}
-        <div className={`px-4 pt-3 pb-2.5 border-b border-black/[0.06] dark:border-white/[0.08] shrink-0 ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
+        <div className={`px-4 pt-3 pb-2.5 border-b border-white/[0.08] bg-[#111111] shrink-0 ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
           <div className="flex items-center justify-between mb-2.5">
             <div className="flex items-center gap-2.5">
-              <button onClick={e => { stop(e); props.onClose(); }} className="p-1 text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors rounded-lg hover:bg-black/[0.03] dark:hover:bg-white/[0.04]">
+              <button onClick={e => { stop(e); props.onClose(); }} className="p-1 text-white/55 hover:text-white transition-colors rounded-lg hover:bg-white/[0.06]">
                 <ChevronLeft size={16} />
               </button>
               <div className="flex items-center gap-1.5">
-                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center">
-                  <Video size={12} className="text-white" />
+                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-brand-blue to-brand-blueHover flex items-center justify-center">
+                  <Video size={12} className="text-black" />
                 </div>
-                <span className="text-xs font-bold text-slate-800 dark:text-white">Video Studio</span>
+                <span className="text-sm font-bold text-white">Video Studio</span>
               </div>
             </div>
             <button
               onClick={() => props.setIsMobileExpanded(false)}
-              className="lg:hidden p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+              className="lg:hidden p-1 text-white/55 hover:text-white transition-colors"
             >✕</button>
           </div>
 
           {/* Mode tabs */}
-          <div className="flex bg-black/[0.02] dark:bg-white/[0.02] rounded-lg border border-black/[0.06] dark:border-white/[0.08] overflow-hidden">
+          <div className="flex bg-white/[0.03] rounded-lg border border-white/[0.08] overflow-hidden">
             {(['SINGLE', 'MULTI', 'AUTO'] as const).map(m => (
               <button key={m} onClick={e => { stop(e); props.setActiveMode(m); }}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold uppercase tracking-wider transition-all ${props.activeMode === m ? 'bg-black/[0.04] dark:bg-white/[0.06] text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white/60'
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[11px] font-semibold uppercase tracking-wider transition-all ${props.activeMode === m ? 'bg-white/[0.08] text-white' : 'text-white/55 hover:text-white/75'
                   }`}>
                 {m === 'SINGLE' ? <Play size={10} /> : m === 'MULTI' ? <Layers size={10} /> : <Zap size={10} />}
                 {m === 'SINGLE' ? 'Đơn' : m === 'MULTI' ? 'Multi' : 'Auto'}
@@ -135,37 +135,37 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
         </div>
 
         {/* ─── CONTENT ─── */}
-        <div className={`flex-grow overflow-y-auto no-scrollbar px-4 py-3 space-y-3 ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
+        <div className={`flex-grow overflow-y-auto no-scrollbar px-4 py-3 space-y-4 bg-[#111111] ${!props.isMobileExpanded ? 'hidden lg:block' : 'block'}`}>
           <AnimatePresence mode="wait">
             {/* SINGLE */}
             {props.activeMode === 'SINGLE' && (
               <motion.div key="s" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
                 <div className="space-y-1.5">
-                  <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider px-0.5 flex items-center gap-1.5">
-                    <PenLine size={11} className="text-indigo-400" /> Kịch bản
+                  <p className="text-[11px] font-semibold uppercase text-white/70 tracking-wider px-0.5 flex items-center gap-1.5">
+                    <PenLine size={12} className="text-brand-blue" /> Kịch bản
                   </p>
-                  <p className="text-[9px] text-slate-400 dark:text-slate-500 px-0.5 leading-relaxed">Mô tả chi tiết nội dung video. Càng chi tiết, kết quả càng chính xác.</p>
+                  <p className="text-[10px] text-white/50 px-0.5 leading-relaxed">Mô tả chi tiết nội dung video. Càng chi tiết, kết quả càng chính xác.</p>
                   <textarea
                     value={props.prompt} onChange={e => props.setPrompt(e.target.value)}
-                    className="w-full min-h-[100px] bg-slate-50 dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.08] rounded-lg p-3 text-xs font-medium focus:border-indigo-500/30 outline-none transition-all resize-y text-slate-800 dark:text-white/80 placeholder:text-slate-300 dark:placeholder:text-[#333] leading-relaxed"
+                    className="w-full min-h-[100px] bg-white/[0.035] border border-white/[0.08] rounded-lg p-3 text-sm font-medium focus:border-brand-blue/40 outline-none transition-all resize-y text-white/85 placeholder:text-white/25 leading-relaxed"
                     placeholder="VD: Một chú mèo đang nhảy qua hàng rào trong vườn hoa, ánh nắng chiều, phong cách cinematic 4K..."
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-1">
-                    <p className="text-[9px] font-medium text-slate-500 dark:text-slate-400 px-0.5 flex items-center gap-1">
-                      <Film size={9} className="text-emerald-400" /> Start <span className="font-normal text-slate-400 dark:text-slate-500">(Đầu)</span>
+                    <p className="text-[10px] font-medium text-white/65 px-0.5 flex items-center gap-1">
+                      <Film size={10} className="text-emerald-400" /> Start <span className="font-normal text-white/40">(Đầu)</span>
                     </p>
                     <Slot url={props.startFrame} uploading={props.isUploadingImage === 'START'} onUp={() => props.handleSingleFrameClick('START', 'UPLOAD')} onLib={() => props.handleSingleFrameClick('START', 'LIBRARY')} />
                   </div>
                   <div className="space-y-1">
-                    <p className="text-[9px] font-medium text-slate-500 dark:text-slate-400 px-0.5 flex items-center gap-1">
-                      <Clapperboard size={9} className="text-amber-400" /> End <span className="font-normal text-slate-400 dark:text-slate-500">(Cuối)</span>
+                    <p className="text-[10px] font-medium text-white/65 px-0.5 flex items-center gap-1">
+                      <Clapperboard size={10} className="text-amber-400" /> End <span className="font-normal text-white/40">(Cuối)</span>
                     </p>
                     <Slot url={props.endFrame} uploading={props.isUploadingImage === 'END'} onUp={() => props.handleSingleFrameClick('END', 'UPLOAD')} onLib={() => props.handleSingleFrameClick('END', 'LIBRARY')} />
                   </div>
                 </div>
-                <p className="text-[8px] text-slate-400 dark:text-slate-500 px-0.5 leading-relaxed">Tải ảnh bắt đầu & kết thúc để AI tạo chuyển động. Có thể để trống.</p>
+                <p className="text-[10px] text-white/45 px-0.5 leading-relaxed">Tải ảnh bắt đầu & kết thúc để AI tạo chuyển động. Có thể để trống.</p>
               </motion.div>
             )}
 
@@ -173,28 +173,28 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
             {props.activeMode === 'MULTI' && (
               <motion.div key="m" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider flex items-center gap-1.5">
-                    <Layers size={11} className="text-violet-400" /> {props.multiFrames.length} frames
+                  <p className="text-[11px] font-semibold uppercase text-white/70 tracking-wider flex items-center gap-1.5">
+                    <Layers size={11} className="text-brand-blue" /> {props.multiFrames.length} frames
                   </p>
-                  <button onClick={e => { stop(e); props.handleAddFrame(); }} className="text-indigo-400 text-[10px] font-semibold flex items-center gap-1 hover:brightness-125"><Plus size={12} strokeWidth={3} /> Add</button>
+                  <button onClick={e => { stop(e); props.handleAddFrame(); }} className="text-brand-blue text-[11px] font-semibold flex items-center gap-1 hover:brightness-125"><Plus size={12} strokeWidth={3} /> Add</button>
                 </div>
                 <div className="grid grid-cols-3 gap-1.5">
                   {props.multiFrames.map((f, i) => (
                     <div key={f.id} className="space-y-1">
-                      <div className={`relative aspect-[16/10] bg-slate-100 dark:bg-white/[0.02] border rounded-lg overflow-hidden group ${f.url ? 'border-black/[0.06] dark:border-white/[0.06]' : 'border-dashed border-black/[0.08] dark:border-white/[0.06]'}`}>
-                        {props.isUploadingImage === f.id ? <div className="flex items-center justify-center h-full"><Loader2 size={12} className="text-indigo-400 animate-spin" /></div>
+                      <div className={`relative aspect-[16/10] bg-white/[0.025] border rounded-lg overflow-hidden group ${f.url ? 'border-white/[0.08]' : 'border-dashed border-white/[0.08]'}`}>
+                        {props.isUploadingImage === f.id ? <div className="flex items-center justify-center h-full"><Loader2 size={12} className="text-brand-blue animate-spin" /></div>
                           : f.url ? <img src={f.url} className="w-full h-full object-cover" alt="" />
-                            : <div className="flex items-center justify-center h-full opacity-15"><ImageIcon size={12} /></div>}
-                        <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-indigo-600/80 rounded text-[8px] font-bold flex items-center justify-center text-white">{i + 1}</div>
+                            : <div className="flex items-center justify-center h-full text-white/20"><ImageIcon size={12} /></div>}
+                        <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-brand-blue/90 rounded text-[8px] font-bold flex items-center justify-center text-black">{i + 1}</div>
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
-                          <button onClick={e => { stop(e); props.handleFrameClick(f.id, 'UPLOAD'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-indigo-500 transition-all"><Upload size={8} /></button>
-                          <button onClick={e => { stop(e); props.handleFrameClick(f.id, 'LIBRARY'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-indigo-500 transition-all"><FolderOpen size={8} /></button>
+                          <button onClick={e => { stop(e); props.handleFrameClick(f.id, 'UPLOAD'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-brand-blue hover:text-black transition-all"><Upload size={8} /></button>
+                          <button onClick={e => { stop(e); props.handleFrameClick(f.id, 'LIBRARY'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-brand-blue hover:text-black transition-all"><FolderOpen size={8} /></button>
                         </div>
                         {props.multiFrames.length > 2 && <button onClick={e => { stop(e); props.removeFrame(f.id); }} className="absolute top-0.5 right-0.5 p-0.5 bg-black/50 rounded text-white/30 hover:text-red-400 transition-all"><Trash2 size={7} /></button>}
                       </div>
                       {i < props.multiFrames.length - 1
-                        ? <textarea value={f.prompt} onChange={e => props.handleFramePromptChange(f.id, e.target.value)} placeholder="..." className="w-full h-9 bg-slate-50 dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.08] rounded p-1.5 text-[9px] font-medium text-slate-700 dark:text-white/60 focus:border-indigo-500/30 outline-none resize-none" />
-                        : <div className="h-9 flex items-center justify-center border border-dashed border-black/[0.06] dark:border-white/[0.08] rounded opacity-30"><span className="text-[8px] font-semibold uppercase text-slate-400 dark:text-gray-400">End</span></div>
+                        ? <textarea value={f.prompt} onChange={e => props.handleFramePromptChange(f.id, e.target.value)} placeholder="..." className="w-full h-9 bg-white/[0.035] border border-white/[0.08] rounded p-1.5 text-[10px] font-medium text-white/65 focus:border-brand-blue/40 outline-none resize-none placeholder:text-white/25" />
+                        : <div className="h-9 flex items-center justify-center border border-dashed border-white/[0.08] rounded opacity-50"><span className="text-[9px] font-semibold uppercase text-white/45">End</span></div>
                       }
                     </div>
                   ))}
@@ -206,48 +206,48 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = (props) => {
             {props.activeMode === 'AUTO' && (
               <motion.div key="a" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <p className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider flex items-center gap-1.5">
+                  <p className="text-[11px] font-semibold uppercase text-white/70 tracking-wider flex items-center gap-1.5">
                     <Zap size={11} className="text-amber-400" /> Batch
                   </p>
-                  <button onClick={e => { stop(e); props.setIsBulkImporting(!props.isBulkImporting); }} className="text-indigo-400 text-[10px] font-semibold flex items-center gap-1 hover:brightness-125">
+                  <button onClick={e => { stop(e); props.setIsBulkImporting(!props.isBulkImporting); }} className="text-brand-blue text-[11px] font-semibold flex items-center gap-1 hover:brightness-125">
                     {props.isBulkImporting ? <><X size={12} /> Hủy</> : <><ListPlus size={12} /> Nhập</>}
                   </button>
                 </div>
                 <AnimatePresence>
                   {props.isBulkImporting && (
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                      <div className="p-2 bg-indigo-500/5 border border-indigo-500/10 rounded-lg space-y-1.5">
-                        <textarea value={props.bulkText} onChange={e => props.setBulkText(e.target.value)} className="w-full h-20 bg-slate-50 dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06] rounded p-2.5 text-[10px] font-medium text-slate-700 dark:text-white/70 focus:border-indigo-500/30 outline-none resize-none" placeholder="Mỗi dòng = 1 kịch bản..." />
-                        <button onClick={e => { stop(e); props.handleBulkImport(); }} className="w-full py-2 bg-indigo-600 text-white rounded text-[10px] font-semibold uppercase tracking-wider">Phân tách</button>
+                      <div className="p-2 bg-brand-blue/5 border border-brand-blue/15 rounded-lg space-y-1.5">
+                        <textarea value={props.bulkText} onChange={e => props.setBulkText(e.target.value)} className="w-full h-20 bg-white/[0.035] border border-white/[0.08] rounded p-2.5 text-[11px] font-medium text-white/70 focus:border-brand-blue/40 outline-none resize-none placeholder:text-white/30" placeholder="Mỗi dòng = 1 kịch bản..." />
+                        <button onClick={e => { stop(e); props.handleBulkImport(); }} className="w-full py-2 bg-brand-blue text-black rounded text-[11px] font-semibold uppercase tracking-wider">Phân tách</button>
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
                 <div className="space-y-1.5">
                   {props.autoTasks.map((t, i) => (
-                    <div key={t.id} className="p-2 bg-black/[0.01] dark:bg-white/[0.015] border border-black/[0.06] dark:border-white/[0.08] rounded-lg space-y-1.5 group hover:border-indigo-500/20 transition-all">
+                    <div key={t.id} className="p-2 bg-white/[0.025] border border-white/[0.08] rounded-lg space-y-1.5 group hover:border-brand-blue/25 transition-all">
                       <div className="flex justify-between items-center">
-                        <span className="text-[9px] font-semibold text-indigo-400">#{i + 1}</span>
-                        <button onClick={e => { stop(e); props.removeAutoTask(t.id); }} className="text-slate-300 dark:text-[#333] hover:text-red-400 transition-colors"><Trash2 size={9} /></button>
+                        <span className="text-[10px] font-semibold text-brand-blue">#{i + 1}</span>
+                        <button onClick={e => { stop(e); props.removeAutoTask(t.id); }} className="text-white/30 hover:text-red-400 transition-colors"><Trash2 size={9} /></button>
                       </div>
-                      <textarea value={t.prompt} onChange={e => props.handleAutoPromptChange(t.id, e.target.value)} placeholder="Kịch bản..." className="w-full h-9 bg-transparent border-b border-black/[0.06] dark:border-white/[0.08] text-[10px] font-medium outline-none focus:border-indigo-500/20 resize-none text-slate-700 dark:text-white/70" />
+                      <textarea value={t.prompt} onChange={e => props.handleAutoPromptChange(t.id, e.target.value)} placeholder="Kịch bản..." className="w-full h-9 bg-transparent border-b border-white/[0.08] text-[11px] font-medium outline-none focus:border-brand-blue/30 resize-none text-white/70 placeholder:text-white/30" />
                       <div className="grid grid-cols-2 gap-1.5">
-                        <div className="aspect-video bg-slate-100 dark:bg-white/[0.02] border border-dashed border-black/[0.08] dark:border-white/[0.06] rounded flex items-center justify-center overflow-hidden relative group/s">
-                          {props.isUploadingImage === `${t.id}-START` ? <Loader2 size={10} className="text-indigo-400 animate-spin" />
+                        <div className="aspect-video bg-white/[0.025] border border-dashed border-white/[0.08] rounded flex items-center justify-center overflow-hidden relative group/s">
+                          {props.isUploadingImage === `${t.id}-START` ? <Loader2 size={10} className="text-brand-blue animate-spin" />
                             : t.startUrl ? <img src={t.startUrl} className="w-full h-full object-cover" alt="" />
-                              : <span className="text-[8px] font-medium text-slate-400 dark:text-[#333]">Start</span>}
+                              : <span className="text-[9px] font-medium text-white/35">Start</span>}
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/s:opacity-100 transition-opacity flex items-center justify-center gap-1">
-                            <button onClick={e => { stop(e); props.handleAutoFileUploadClick(t.id, 'START', 'UPLOAD'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-indigo-500"><Upload size={7} /></button>
-                            <button onClick={e => { stop(e); props.handleAutoFileUploadClick(t.id, 'START', 'LIBRARY'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-indigo-500"><FolderOpen size={7} /></button>
+                            <button onClick={e => { stop(e); props.handleAutoFileUploadClick(t.id, 'START', 'UPLOAD'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-brand-blue hover:text-black"><Upload size={7} /></button>
+                            <button onClick={e => { stop(e); props.handleAutoFileUploadClick(t.id, 'START', 'LIBRARY'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-brand-blue hover:text-black"><FolderOpen size={7} /></button>
                           </div>
                         </div>
-                        <div className="aspect-video bg-slate-100 dark:bg-white/[0.02] border border-dashed border-black/[0.08] dark:border-white/[0.06] rounded flex items-center justify-center overflow-hidden relative group/e">
-                          {props.isUploadingImage === `${t.id}-END` ? <Loader2 size={10} className="text-indigo-400 animate-spin" />
+                        <div className="aspect-video bg-white/[0.025] border border-dashed border-white/[0.08] rounded flex items-center justify-center overflow-hidden relative group/e">
+                          {props.isUploadingImage === `${t.id}-END` ? <Loader2 size={10} className="text-brand-blue animate-spin" />
                             : t.endUrl ? <img src={t.endUrl} className="w-full h-full object-cover" alt="" />
-                              : <span className="text-[8px] font-medium text-slate-400 dark:text-[#333]">End</span>}
+                              : <span className="text-[9px] font-medium text-white/35">End</span>}
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/e:opacity-100 transition-opacity flex items-center justify-center gap-1">
-                            <button onClick={e => { stop(e); props.handleAutoFileUploadClick(t.id, 'END', 'UPLOAD'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-indigo-500"><Upload size={7} /></button>
-                            <button onClick={e => { stop(e); props.handleAutoFileUploadClick(t.id, 'END', 'LIBRARY'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-indigo-500"><FolderOpen size={7} /></button>
+                            <button onClick={e => { stop(e); props.handleAutoFileUploadClick(t.id, 'END', 'UPLOAD'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-brand-blue hover:text-black"><Upload size={7} /></button>
+                            <button onClick={e => { stop(e); props.handleAutoFileUploadClick(t.id, 'END', 'LIBRARY'); }} className="p-1 bg-white/10 rounded text-white/80 hover:bg-brand-blue hover:text-black"><FolderOpen size={7} /></button>
                           </div>
                         </div>
                       </div>
