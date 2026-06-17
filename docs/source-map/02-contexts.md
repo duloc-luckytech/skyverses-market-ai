@@ -13,7 +13,6 @@
 - `AuthContext` map `user.avatar → user.picture` cho legacy UI.
 - `tier` được derive từ `user.plan` field từ backend.
 - `LanguageContext` lưu `lang` vào localStorage.
-- `LanguageContext` chứa i18n cho homepage hero/enterprise AI product messaging (`landing.hero.*`).
 - `ThemeContext` watch `prefers-color-scheme` lần đầu mount.
 - `useAuth` re-fetch credits khi `refreshCredits()` được gọi (sau khi gen job xong).
 - `refreshSkyTokenBalance()` fetch SKT balance riêng qua `skytokenApi.getBalance()`. Gọi sau khi mua/rút SKT.

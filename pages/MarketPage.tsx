@@ -2,14 +2,15 @@ import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform, useInView, useSpring, AnimatePresence } from 'framer-motion';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { HOME_SEO } from '../constants/seo';
 import { marketApi } from '../apis/market';
 import { systemConfigApi } from '../apis/config';
 import { Solution, HomeBlock, Language } from '../types';
 import {
   X, SearchX, Search, ArrowRight, ChevronRight, ChevronDown, ChevronUp, Check,
-  Cpu, Boxes, Zap, ExternalLink, Shield, Sparkles, Quote,
-  ChevronLeft, Play, Globe, Server, Code2,
-  Maximize2, Eye, Heart,
+  Zap, Sparkles,
+  Play,
+  Maximize2, Heart,
 } from 'lucide-react';
 
 import { useLanguage } from '../context/LanguageContext';
@@ -273,12 +274,12 @@ const MarketPage = () => {
   const navigate = useNavigate();
 
   usePageMeta({
-    title: 'Skyverses — AI Tools Marketplace & Custom AI App Development',
-    description: 'Access 50+ premium AI tools and build custom AI applications for business. Skyverses delivers AI integration, enterprise AI agents, workflow automation, AI consulting, and apps for iOS, Android, macOS, and Windows.',
+    title: HOME_SEO.title,
+    description: HOME_SEO.description,
     canonical: '/',
     jsonLd: {
       '@type': 'ItemList',
-      name: 'Top AI Tools and Custom AI Development — Skyverses',
+      name: 'Top AI Tools — Skyverses Marketplace',
       url: 'https://skyverses.com',
       numberOfItems: 12,
     },
@@ -691,37 +692,6 @@ const MarketPage = () => {
               })}
               {/* Gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-b from-[#1a2330]/50 via-[#1a2330]/30 to-[#1a2330]/80 pointer-events-none" />
-              <div className="pointer-events-none absolute inset-0 hidden md:block overflow-hidden">
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.9, delay: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  className="absolute right-[5%] top-28 w-[360px] lg:w-[460px] xl:w-[540px]"
-                >
-                  <div className="relative aspect-[1.2/1]">
-                    <div className="absolute inset-8 rounded-full border border-[#C9A84C]/15 bg-[#C9A84C]/[0.04] blur-sm" />
-                    <div className="absolute inset-0 rounded-full bg-[#C9A84C]/10 blur-[80px]" />
-                    <div className="absolute left-[10%] top-[12%] h-24 w-24 rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-2xl shadow-black/20 flex items-center justify-center">
-                      <Cpu className="h-8 w-8 text-[#E5C767]" />
-                    </div>
-                    <div className="absolute right-[12%] top-[20%] h-20 w-20 rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-2xl shadow-black/20 flex items-center justify-center">
-                      <Server className="h-7 w-7 text-[#E5C767]" />
-                    </div>
-                    <div className="absolute left-[22%] bottom-[16%] h-20 w-20 rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-2xl shadow-black/20 flex items-center justify-center">
-                      <Code2 className="h-7 w-7 text-[#E5C767]" />
-                    </div>
-                    <div className="absolute right-[24%] bottom-[8%] h-24 w-24 rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-2xl shadow-black/20 flex items-center justify-center">
-                      <Shield className="h-8 w-8 text-[#E5C767]" />
-                    </div>
-                    <div className="absolute left-[26%] top-[28%] h-px w-[42%] rotate-12 bg-gradient-to-r from-transparent via-[#E5C767]/45 to-transparent" />
-                    <div className="absolute left-[30%] bottom-[34%] h-px w-[38%] -rotate-[28deg] bg-gradient-to-r from-transparent via-[#E5C767]/40 to-transparent" />
-                    <div className="absolute left-[45%] top-[24%] h-[42%] w-px bg-gradient-to-b from-transparent via-[#E5C767]/35 to-transparent" />
-                    <div className="absolute left-[39%] top-[36%] rounded-full border border-[#E5C767]/25 bg-[#111111]/70 px-5 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-[#E5C767] backdrop-blur-md">
-                      {t('landing.hero.enterprise_core')}
-                    </div>
-                  </div>
-                </motion.div>
-              </div>
 
               <div className="relative max-w-[1300px] mx-auto px-5 md:px-8 py-32 md:py-40">
                 {/* Sale badge — cinematic drop-in */}
@@ -770,31 +740,6 @@ const MarketPage = () => {
                     {t('landing.hero.subtitle')}
                   </motion.p>
                   <motion.div
-                    initial={{ opacity: 0, y: 22 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.65, delay: 0.82, ease: [0.25, 0.46, 0.45, 0.94] }}
-                    className="mt-5 mx-auto max-w-3xl"
-                  >
-                    <div className="inline-flex flex-col items-center gap-3 rounded-xl border border-[#C9A84C]/25 bg-[#0A0A0A]/35 px-5 py-4 backdrop-blur-md md:flex-row md:gap-4 md:px-6">
-                      <span className="inline-flex items-center gap-2 rounded-full bg-[#C9A84C]/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[#E5C767]">
-                        <Sparkles size={12} /> {t('landing.hero.enterprise_badge')}
-                      </span>
-                      <span className="text-sm leading-relaxed text-[#ebf4fb]/70">
-                        {t('landing.hero.enterprise_desc')}
-                      </span>
-                    </div>
-                    <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-                      {[t('landing.hero.enterprise_chip1'), t('landing.hero.enterprise_chip2'), t('landing.hero.enterprise_chip3'), t('landing.hero.enterprise_chip4')].map(chip => (
-                        <span key={chip} className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-[11px] font-medium text-white/65 backdrop-blur-sm">
-                          {chip}
-                        </span>
-                      ))}
-                    </div>
-                    <p className="mt-3 text-xs font-medium uppercase tracking-[0.18em] text-[#ebf4fb]/45">
-                      {t('landing.hero.enterprise_platforms')}
-                    </p>
-                  </motion.div>
-                  <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -811,12 +756,6 @@ const MarketPage = () => {
                       className="inline-flex items-center gap-2.5 bg-transparent text-[#ebf4fb] px-8 py-3.5 rounded-lg text-sm font-semibold border border-[#ebf4fb]/20 hover:border-[#ebf4fb]/40 hover:bg-white/[0.06] transition-all duration-200 hover:-translate-y-0.5"
                     >
                       {t('landing.hero.cta2')}
-                    </button>
-                    <button
-                      onClick={() => navigate('/booking')}
-                      className="inline-flex items-center gap-2.5 bg-white/[0.08] text-[#ebf4fb] px-8 py-3.5 rounded-lg text-sm font-semibold border border-[#C9A84C]/35 hover:border-[#C9A84C]/60 hover:bg-[#C9A84C]/10 transition-all duration-200 hover:-translate-y-0.5"
-                    >
-                      {t('landing.hero.cta3')} <ArrowRight size={15} />
                     </button>
                   </motion.div>
                 </div>
