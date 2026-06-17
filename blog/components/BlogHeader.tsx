@@ -128,7 +128,7 @@ const BlogHeader: React.FC = () => {
               className="flex items-center gap-2.5 shrink-0 group"
             >
               <img
-                src="https://ai.skyverses.com/assets/skyverses-logo.png"
+                src="https://skyverses.com/assets/skyverses-logo.png"
                 alt="Skyverses"
                 className="w-7 h-7 object-contain group-hover:scale-110 transition-transform duration-200"
               />
@@ -220,13 +220,13 @@ const BlogHeader: React.FC = () => {
               </div>
 
               {/* Desktop CTA */}
-              <a href="https://ai.skyverses.com" target="_blank" rel="noopener noreferrer"
+              <a href="https://skyverses.com" target="_blank" rel="noopener noreferrer"
                 className="hidden md:flex items-center gap-1.5 px-4 py-1.5 bg-brand-blue text-white text-[12px] font-bold rounded-xl hover:brightness-110 active:scale-[0.97] transition-all shadow-lg shadow-brand-blue/20 ml-1">
                 <Sparkles size={11} fill="currentColor" /> Try Skyverses AI
               </a>
 
               {/* Mobile CTA — compact */}
-              <a href="https://ai.skyverses.com" target="_blank" rel="noopener noreferrer"
+              <a href="https://skyverses.com" target="_blank" rel="noopener noreferrer"
                 className="md:hidden flex items-center gap-1 px-3 py-1.5 bg-brand-blue text-white text-[11px] font-bold rounded-xl ml-1">
                 <Sparkles size={10} fill="currentColor" /> Try AI
               </a>

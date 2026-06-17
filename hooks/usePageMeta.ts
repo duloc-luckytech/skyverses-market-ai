@@ -10,8 +10,8 @@ interface PageMetaOptions {
   jsonLd?: Record<string, any>; // Optional extra JSON-LD
 }
 
-const DEFAULT_OG_IMAGE = 'https://ai.skyverses.com/assets/seo/seo-og-thumbnail-v2.png';
-const BASE_URL = 'https://ai.skyverses.com';
+const DEFAULT_OG_IMAGE = 'https://skyverses.com/assets/seo/seo-og-thumbnail-v2.png';
+const BASE_URL = 'https://skyverses.com';
 
 /**
  * Hook to dynamically update page meta tags for SEO.

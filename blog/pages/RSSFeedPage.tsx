@@ -61,7 +61,7 @@ ${tags}${image ? `\n    <enclosure url="${esc(image)}" type="image/jpeg" length=
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <atom:link href="${BASE_URL}/rss.xml" rel="self" type="application/rss+xml" />
     <image>
-      <url>https://ai.skyverses.com/assets/seo/seo-og-thumbnail-v2.png</url>
+      <url>https://skyverses.com/assets/seo/seo-og-thumbnail-v2.png</url>
       <title>${esc(SITE_TITLE)}</title>
       <link>${BASE_URL}</link>
       <width>144</width>

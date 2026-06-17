@@ -92,7 +92,7 @@ const SolutionDetail = () => {
             price: solution.isFree ? 0 : solution.priceCredits ?? 0,
             priceCurrency: 'CREDIT',
             availability: 'https://schema.org/InStock',
-            url: `https://ai.skyverses.com/product/${slug}`,
+            url: `https://skyverses.com/product/${slug}`,
           },
         }
       : undefined,

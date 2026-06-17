@@ -124,7 +124,7 @@ const BOT_META_HTML = (post: any, lang: string = "en") => {
   const description = post.seo?.metaDescription?.[lang] || post.seo?.metaDescription?.en
     || post.excerpt?.[lang] || post.excerpt?.en || "";
   const ogImage = post.seo?.ogImage?.trim() || post.coverImage?.trim()
-    || "https://ai.skyverses.com/assets/seo/seo-og-thumbnail-v2.png";
+    || "https://skyverses.com/assets/seo/seo-og-thumbnail-v2.png";
   const url = `https://insights.skyverses.com/${post.slug}`;
   const metaTitle = post.seo?.metaTitle?.[lang] || post.seo?.metaTitle?.en || title;
 

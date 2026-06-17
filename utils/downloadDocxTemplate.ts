@@ -78,7 +78,7 @@ const SAMPLE_SLIDES = [
     bullets: [
       'Đăng ký miễn phí — nhận Credits chào mừng ngay hôm nay',
       'Không cần thẻ quốc tế, không cần đăng ký nhiều nền tảng',
-      'Truy cập: ai.skyverses.com',
+      'Truy cập: skyverses.com',
     ],
   },
 ];

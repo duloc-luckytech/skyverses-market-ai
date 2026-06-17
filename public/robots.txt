@@ -6,4 +6,4 @@ Disallow: /favorites
 Disallow: /credits
 Disallow: /auth/
 
-Sitemap: https://ai.skyverses.com/sitemap.xml
+Sitemap: https://skyverses.com/sitemap.xml

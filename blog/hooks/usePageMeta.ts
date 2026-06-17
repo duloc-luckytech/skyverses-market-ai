@@ -20,7 +20,7 @@ interface PageMetaOptions {
   jsonLd?: Record<string, any>;
 }
 
-const DEFAULT_OG_IMAGE = 'https://ai.skyverses.com/assets/seo/seo-og-thumbnail-v2.png';
+const DEFAULT_OG_IMAGE = 'https://skyverses.com/assets/seo/seo-og-thumbnail-v2.png';
 const BASE_URL = 'https://insights.skyverses.com';
 
 export function usePageMeta({ title, description, keywords, ogImage, canonical, type, lang = 'en', noindex = false, articleMeta, jsonLd }: PageMetaOptions) {

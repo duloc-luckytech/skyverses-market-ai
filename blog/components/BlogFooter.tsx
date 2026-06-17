@@ -4,11 +4,11 @@ import { ExternalLink, Sparkles, Twitter, MessageCircle, Mail, Send, ArrowRight,
 import { useLanguage } from '../context/LanguageContext';
 
 const FOOTER_PLATFORM = [
-  { label: 'AI Marketplace', href: 'https://ai.skyverses.com/markets' },
-  { label: 'AI Models', href: 'https://ai.skyverses.com/models' },
-  { label: 'Buy Credits', href: 'https://ai.skyverses.com/credits' },
-  { label: 'Enterprise', href: 'https://ai.skyverses.com/booking' },
-  { label: 'Referral Program', href: 'https://ai.skyverses.com/referral' },
+  { label: 'AI Marketplace', href: 'https://skyverses.com/markets' },
+  { label: 'AI Models', href: 'https://skyverses.com/models' },
+  { label: 'Buy Credits', href: 'https://skyverses.com/credits' },
+  { label: 'Enterprise', href: 'https://skyverses.com/booking' },
+  { label: 'Referral Program', href: 'https://skyverses.com/referral' },
 ];
 
 const FOOTER_INSIGHTS = [
@@ -112,7 +112,7 @@ const BlogFooter: React.FC = () => {
           {/* Brand col */}
           <div className="col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
-              <img src="https://ai.skyverses.com/assets/skyverses-logo.png" alt="Skyverses" className="w-8 h-8 object-contain" />
+              <img src="https://skyverses.com/assets/skyverses-logo.png" alt="Skyverses" className="w-8 h-8 object-contain" />
               <div>
                 <p className="text-[15px] font-black text-slate-900 dark:text-white tracking-tight leading-none">Skyverses</p>
                 <p className="text-[11px] font-bold text-brand-blue">Insights</p>
@@ -132,7 +132,7 @@ const BlogFooter: React.FC = () => {
                 className="w-9 h-9 rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-black/[0.07] dark:border-white/[0.07] flex items-center justify-center text-slate-400 hover:text-brand-blue hover:border-brand-blue/30 hover:bg-brand-blue/[0.04] transition-all">
                 <MessageCircle size={14} />
               </a>
-              <a href="https://ai.skyverses.com" target="_blank" rel="noopener noreferrer"
+              <a href="https://skyverses.com" target="_blank" rel="noopener noreferrer"
                 className="flex items-center gap-1.5 h-9 px-3 rounded-xl bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-[11px] font-bold hover:bg-brand-blue/15 transition-all">
                 <ArrowRight size={12} /> Visit App
               </a>
@@ -188,12 +188,12 @@ const BlogFooter: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 py-5 border-t border-black/[0.05] dark:border-white/[0.05]">
           <p className="text-[11px] text-slate-400 dark:text-gray-600">{t('footer.copyright')}</p>
           <div className="flex items-center gap-4 text-[11px]">
-            <a href="https://ai.skyverses.com" target="_blank" rel="noopener noreferrer"
+            <a href="https://skyverses.com" target="_blank" rel="noopener noreferrer"
               className="text-slate-400 dark:text-gray-600 hover:text-brand-blue transition-colors flex items-center gap-1">
               Skyverses AI <ExternalLink size={9} />
             </a>
             <span className="text-slate-200 dark:text-gray-800">·</span>
-            <a href="https://ai.skyverses.com/booking" target="_blank" rel="noopener noreferrer"
+            <a href="https://skyverses.com/booking" target="_blank" rel="noopener noreferrer"
               className="text-slate-400 dark:text-gray-600 hover:text-brand-blue transition-colors">
               Contact Us
             </a>
@@ -213,7 +213,7 @@ const BlogFooter: React.FC = () => {
         <div className="flex items-center justify-between mb-4">
           {/* Mini logo */}
           <div className="flex items-center gap-2">
-            <img src="https://ai.skyverses.com/assets/skyverses-logo.png" alt="Skyverses" className="w-6 h-6 object-contain" />
+            <img src="https://skyverses.com/assets/skyverses-logo.png" alt="Skyverses" className="w-6 h-6 object-contain" />
             <div>
               <p className="text-[13px] font-black text-slate-900 dark:text-white leading-none">Skyverses</p>
               <p className="text-[10px] font-bold text-brand-blue">Insights</p>
@@ -229,7 +229,7 @@ const BlogFooter: React.FC = () => {
               className="w-8 h-8 rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-black/[0.07] dark:border-white/[0.07] flex items-center justify-center text-slate-400 hover:text-brand-blue transition-all">
               <MessageCircle size={13} />
             </a>
-            <a href="https://ai.skyverses.com" target="_blank" rel="noopener noreferrer"
+            <a href="https://skyverses.com" target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-1 h-8 px-3 rounded-xl bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-[11px] font-bold">
               <ArrowRight size={11} /> Try AI
             </a>

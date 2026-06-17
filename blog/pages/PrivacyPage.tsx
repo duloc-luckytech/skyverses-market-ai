@@ -521,7 +521,7 @@ const SECTIONS: Section[] = [
           <p>If you have questions, concerns, or requests regarding this Privacy Policy or your personal data, please reach us through:</p>
           <ul>
             <li><strong>Email:</strong> <a href="mailto:privacy@skyverses.com" className="text-brand-blue hover:underline">privacy@skyverses.com</a></li>
-            <li><strong>Booking/Support:</strong> <a href="https://ai.skyverses.com/booking" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline inline-flex items-center gap-1">ai.skyverses.com/booking <ExternalLink size={12} /></a></li>
+            <li><strong>Booking/Support:</strong> <a href="https://skyverses.com/booking" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline inline-flex items-center gap-1">skyverses.com/booking <ExternalLink size={12} /></a></li>
             <li><strong>Telegram:</strong> <a href="https://t.me/skyverses" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline">t.me/skyverses</a></li>
           </ul>
           <p>We are committed to resolving any privacy concerns promptly and transparently. Changes to this policy will be announced via our blog with at least 7 days notice.</p>
@@ -532,7 +532,7 @@ const SECTIONS: Section[] = [
           <p>Nếu bạn có câu hỏi, mối quan ngại hoặc yêu cầu liên quan đến Chính sách Bảo mật này hoặc dữ liệu cá nhân của bạn, vui lòng liên hệ với chúng tôi qua:</p>
           <ul>
             <li><strong>Email:</strong> <a href="mailto:privacy@skyverses.com" className="text-brand-blue hover:underline">privacy@skyverses.com</a></li>
-            <li><strong>Đặt lịch/Hỗ trợ:</strong> <a href="https://ai.skyverses.com/booking" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline inline-flex items-center gap-1">ai.skyverses.com/booking <ExternalLink size={12} /></a></li>
+            <li><strong>Đặt lịch/Hỗ trợ:</strong> <a href="https://skyverses.com/booking" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline inline-flex items-center gap-1">skyverses.com/booking <ExternalLink size={12} /></a></li>
             <li><strong>Telegram:</strong> <a href="https://t.me/skyverses" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline">t.me/skyverses</a></li>
           </ul>
           <p>Chúng tôi cam kết giải quyết mọi mối quan ngại về quyền riêng tư một cách nhanh chóng và minh bạch. Các thay đổi đối với chính sách này sẽ được thông báo qua blog của chúng tôi với ít nhất 7 ngày trước.</p>
@@ -543,7 +543,7 @@ const SECTIONS: Section[] = [
           <p>이 개인정보 처리방침 또는 귀하의 개인 데이터에 관한 질문, 우려 또는 요청이 있으시면 다음을 통해 문의하세요:</p>
           <ul>
             <li><strong>이메일:</strong> <a href="mailto:privacy@skyverses.com" className="text-brand-blue hover:underline">privacy@skyverses.com</a></li>
-            <li><strong>예약/지원:</strong> <a href="https://ai.skyverses.com/booking" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline inline-flex items-center gap-1">ai.skyverses.com/booking <ExternalLink size={12} /></a></li>
+            <li><strong>예약/지원:</strong> <a href="https://skyverses.com/booking" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline inline-flex items-center gap-1">skyverses.com/booking <ExternalLink size={12} /></a></li>
             <li><strong>텔레그램:</strong> <a href="https://t.me/skyverses" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline">t.me/skyverses</a></li>
           </ul>
           <p>당사는 모든 개인정보 관련 우려 사항을 신속하고 투명하게 해결하겠습니다. 이 정책의 변경 사항은 최소 7일 전에 블로그를 통해 공지됩니다.</p>
@@ -554,7 +554,7 @@ const SECTIONS: Section[] = [
           <p>このプライバシーポリシーまたはお客様の個人データに関するご質問、懸念、またはリクエストがある場合は、以下からお問い合わせください:</p>
           <ul>
             <li><strong>メール:</strong> <a href="mailto:privacy@skyverses.com" className="text-brand-blue hover:underline">privacy@skyverses.com</a></li>
-            <li><strong>予約/サポート:</strong> <a href="https://ai.skyverses.com/booking" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline inline-flex items-center gap-1">ai.skyverses.com/booking <ExternalLink size={12} /></a></li>
+            <li><strong>予約/サポート:</strong> <a href="https://skyverses.com/booking" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline inline-flex items-center gap-1">skyverses.com/booking <ExternalLink size={12} /></a></li>
             <li><strong>Telegram:</strong> <a href="https://t.me/skyverses" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline">t.me/skyverses</a></li>
           </ul>
           <p>当社はすべてのプライバシーに関する懸念を迅速かつ透明に解決することをお約束します。このポリシーの変更は、少なくとも7日前にブログでお知らせします。</p>

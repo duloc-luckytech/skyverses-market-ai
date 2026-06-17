@@ -401,7 +401,7 @@ const BlogPostPage: React.FC = () => {
       publisher: {
         '@type': 'Organization',
         name: 'Skyverses',
-        url: 'https://ai.skyverses.com',
+        url: 'https://skyverses.com',
         logo: {
           '@type': 'ImageObject',
           url: 'https://framerusercontent.com/images/EIgpJkAezmTH65ZZbHE7BDbzD60.png',

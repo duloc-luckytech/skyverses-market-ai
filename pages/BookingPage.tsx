@@ -14,10 +14,29 @@ import { usePageMeta } from '../hooks/usePageMeta';
 const BookingPage = () => {
   const { t } = useLanguage();
   usePageMeta({
-    title: 'Contact & Booking | Skyverses',
-    description: 'Schedule a consultation or book a strategy call with the Skyverses team.',
-    keywords: 'booking, contact, consultation',
-    canonical: '/booking'
+    title: 'Phát triển & Tích hợp AI cho Doanh nghiệp | Skyverses',
+    description: 'Skyverses xây dựng app & sản phẩm AI theo yêu cầu, tích hợp AI vào hệ thống sẵn có, phát triển AI Agent tự động hoá quy trình và tư vấn chiến lược AI cho doanh nghiệp. Đặt lịch tư vấn miễn phí.',
+    keywords: 'xây dựng app AI, phát triển ứng dụng AI theo yêu cầu, tích hợp AI cho doanh nghiệp, custom AI development, AI integration, AI agent doanh nghiệp, tự động hoá workflow AI, tư vấn chiến lược AI, AI consulting, dịch vụ AI doanh nghiệp, booking, đặt lịch tư vấn AI',
+    canonical: '/booking',
+    type: 'website',
+    jsonLd: {
+      '@type': 'ProfessionalService',
+      name: 'Skyverses — Dịch vụ AI cho Doanh nghiệp',
+      url: 'https://skyverses.com/booking',
+      description: 'Xây dựng ứng dụng & sản phẩm AI theo yêu cầu, tích hợp AI vào hệ thống sẵn có, AI Agent tự động hoá và tư vấn chiến lược AI cho doanh nghiệp.',
+      areaServed: ['VN', 'US', 'KR', 'JP'],
+      provider: { '@type': 'Organization', name: 'Skyverses', url: 'https://skyverses.com' },
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: 'Giải pháp AI Doanh nghiệp',
+        itemListElement: [
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Xây dựng app & sản phẩm AI theo yêu cầu' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Tích hợp AI vào hệ thống sẵn có' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'AI Agent & Tự động hoá Workflow' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Tư vấn chiến lược AI' } },
+        ],
+      },
+    },
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);

@@ -78,7 +78,7 @@ const NoCodeExportPage: React.FC = () => {
       description: 'Export any website to clean, deployable source code with auto framework detection and one-click deploy.',
       category: 'No-Code / Developer Tools',
       brand: { '@type': 'Brand', name: 'Skyverses AI' },
-      offers: { '@type': 'Offer', priceCurrency: 'CREDIT', availability: 'https://schema.org/InStock', url: 'https://ai.skyverses.com/product/nocode-export' },
+      offers: { '@type': 'Offer', priceCurrency: 'CREDIT', availability: 'https://schema.org/InStock', url: 'https://skyverses.com/product/nocode-export' },
     },
   });
 
