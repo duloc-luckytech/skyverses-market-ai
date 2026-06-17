@@ -193,7 +193,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                 onMouseEnter={() => setShowExploreMenu(true)}
                 aria-expanded={showExploreMenu}
                 aria-haspopup="true"
-                className={`${navLinkCls(location.pathname.startsWith('/explorer') || location.pathname.startsWith('/use-cases') || location.pathname.startsWith('/solutions'))} flex items-center gap-1`}
+                className={`${navLinkCls(location.pathname.startsWith('/explorer') || location.pathname.startsWith('/use-cases') || location.pathname.startsWith('/booking'))} flex items-center gap-1`}
               >
                 Explore
                 <ChevronDown size={11} className={`transition-transform duration-200 ${showExploreMenu ? 'rotate-180' : ''}`} />
@@ -216,11 +216,12 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                     role="menu"
                   >
                     <div className="grid grid-cols-2 gap-x-8 gap-y-1">
-                      <DropdownNavLink to="/explorer" label="Explorer Gallery" desc="Browse AI-generated artworks" onClick={() => setShowExploreMenu(false)} />
-                      <DropdownNavLink to="/use-cases" label="Use Cases" desc="Real-world AI applications" onClick={() => setShowExploreMenu(false)} />
-                      <DropdownNavLink to="/solutions" label="Solutions" desc="Industry-specific tools" onClick={() => setShowExploreMenu(false)} />
+                      <DropdownNavLink to="/markets" label="Creator Tools" desc="AI video, image, music & voice" onClick={() => setShowExploreMenu(false)} />
+                      <DropdownNavLink to="/booking" label="AI for Business" desc="AI solutions for teams & enterprises" onClick={() => setShowExploreMenu(false)} />
+                      <DropdownNavLink to="/product/nocode-export" label="App Development" desc="Build mobile & desktop apps faster" onClick={() => setShowExploreMenu(false)} />
                       <DropdownNavLink to="/models" label="AI Models" desc="Explore all available models" onClick={() => setShowExploreMenu(false)} />
-                      <DropdownNavLink to="/booking" label="Enterprise" desc="Custom AI solutions for teams" onClick={() => setShowExploreMenu(false)} />
+                      <DropdownNavLink to="/use-cases" label="Use Cases" desc="Real-world AI applications" onClick={() => setShowExploreMenu(false)} />
+                      <DropdownNavLink to="/explorer" label="Explorer Gallery" desc="Browse AI-generated artworks" onClick={() => setShowExploreMenu(false)} />
                       {isAuthenticated && (
                         <DropdownNavLink to="/apps" label="My Workspace" desc="Your creative dashboard" onClick={() => setShowExploreMenu(false)} />
                       )}
@@ -581,12 +582,13 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
               <div className="space-y-1">
                 {[
                   { label: 'Home', to: '/' },
-                  { label: 'Models', to: '/markets' },
-                  { label: 'Explorer', to: '/explorer' },
+                  { label: 'Creator Tools', to: '/markets' },
+                  { label: 'AI for Business', to: '/booking' },
+                  { label: 'App Development', to: '/product/nocode-export' },
                   { label: 'Use Cases', to: '/use-cases' },
+                  { label: 'Explorer', to: '/explorer' },
                   { label: 'Prompts', to: '/prompt-market' },
                   { label: 'Pricing', to: '/credits' },
-                  { label: 'Enterprise', to: '/booking' },
                 ].map(link => (
                   <Link key={link.to} to={link.to} onClick={() => setIsOpen(false)}
                     className="flex items-center justify-between px-3 py-3 rounded-lg transition-all"

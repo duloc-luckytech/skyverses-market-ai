@@ -61,7 +61,9 @@ const Footer: React.FC = () => {
         {/* Links grid */}
         <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-[12px]">
           {[
-            { label: t('footer.ai_products') || 'AI Products', to: '/apps' },
+            { label: 'Creator Tools', to: '/markets' },
+            { label: 'AI for Business', to: '/booking' },
+            { label: 'App Development', to: '/product/nocode-export' },
             { label: 'Credits & Pricing', to: '/credits' },
             { label: 'Prompt Market', to: '/prompt-market' },
             { label: 'Explorer', to: '/explorer' },
@@ -98,7 +100,7 @@ const Footer: React.FC = () => {
                 <span className="text-lg font-bold tracking-tight" style={{ color: '#faf7f8' }}>Skyverses</span>
               </Link>
               <p className="text-[13px] max-w-xs leading-relaxed" style={{ color: 'rgba(250,247,248,0.4)' }}>
-                AI-powered creative platform for image, video, 3D, and content generation.
+                AI tools for creators, AI solutions for businesses, and a faster, cheaper way to build mobile &amp; desktop apps.
               </p>
             </div>
           </div>
@@ -109,10 +111,10 @@ const Footer: React.FC = () => {
           {/* 5-column links */}
           <div className="grid grid-cols-5 gap-10 lg:gap-20">
             {/* PRODUCTS */}
-            <FooterCol title="Products">
-              <FooterLink to="/product/ai-image-generator" onHover={handleLinkHover}>Image Models</FooterLink>
-              <FooterLink to="/product/ai-video-generator" onHover={handleLinkHover}>Video Models</FooterLink>
-              <FooterLink to="/product/qwen-chat-ai" onHover={handleLinkHover}>LLMs</FooterLink>
+            <FooterCol title="Platform">
+              <FooterLink to="/markets">Creator Tools</FooterLink>
+              <FooterLink to="/booking">AI for Business</FooterLink>
+              <FooterLink to="/product/nocode-export" onHover={handleLinkHover}>App Development</FooterLink>
             </FooterCol>
 
             {/* MODELS */}
