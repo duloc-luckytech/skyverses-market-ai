@@ -227,15 +227,41 @@ router.get("/chat/stats", authenticate, async (req: any, res: any) => {
 });
 
 /* ============================================================
-   DeepSeek Client
-=============================================================== */
-const client = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY,
-  baseURL: "https://api.deepseek.com",
-});
+   AI Client — Ollama Cloud (lazy, resolved per-request from DB)
 
-// Model tên DeepSeek
-const MODEL = "deepseek-chat";
+   Mirrors the /chat resolution: prefer Ollama Cloud config from
+   SystemSetting, fall back to legacy ezaiapi keys for backward
+   compat. Built lazily so a missing key never crashes at import.
+=============================================================== */
+async function getAiClient(): Promise<{ client: OpenAI; model: string }> {
+  const ollama = await getOllamaSettings();
+
+  let apiKey: string | undefined = ollama.apiKey;
+  let baseUrl = ollama.baseUrl || "https://ollama.com/v1";
+  let model: string | undefined;
+
+  if (!apiKey) {
+    // Legacy fallback: random key → ezaiapi.com
+    const activeKeys = listKeyGommoGenmini.filter((k: any) => k.isActive && k.key);
+    if (activeKeys.length === 0) {
+      throw new Error(
+        "Ollama API key chưa được cấu hình. Vào CMS Admin → AI Provider Settings để thêm key."
+      );
+    }
+    apiKey = activeKeys[Math.floor(Math.random() * activeKeys.length)].key;
+    baseUrl = "https://ezaiapi.com/v1";
+    model = "claude-sonnet-4-6";
+  } else {
+    // Ollama Cloud: dùng model active đầu tiên trong whitelist
+    if (ollama.models && ollama.models.length > 0) {
+      const activeModels = ollama.models.filter(m => m.isActive !== false);
+      if (activeModels.length > 0) model = activeModels[0].id;
+    }
+    if (!model) model = "qwen3.5";
+  }
+
+  return { client: new OpenAI({ apiKey, baseURL: baseUrl }), model };
+}
 
 /* ============================================================
    1) REFINE PROMPT
@@ -279,8 +305,9 @@ Camera: ${camera || "Không có"}
 Thời lượng: ${duration}s
 `.trim();
 
+      const { client, model } = await getAiClient();
       const completion = await client.chat.completions.create({
-        model: MODEL,
+        model,
         temperature: isStrict ? 0.0 : 0.5,
         max_tokens: 300,
         messages: [
@@ -326,8 +353,9 @@ Cảnh: ${scene}
 Style: ${style}
 `;
 
+      const { client, model } = await getAiClient();
       const completion = await client.chat.completions.create({
-        model: MODEL,
+        model,
         max_tokens: 50,
         messages: [
           { role: "system", content: systemInstruction },
@@ -370,8 +398,9 @@ Mục tiêu: ${goal}
 Cảnh: ${scene}
 `;
 
+      const { client, model } = await getAiClient();
       const completion = await client.chat.completions.create({
-        model: MODEL,
+        model,
         temperature: 0.8,
         max_tokens: 20,
         messages: [
@@ -405,7 +434,7 @@ router.post(
         return res.status(400).json({ error: "Thiếu trường 'idea'" });
       }
 
-      const ai = client;
+      const { client: ai, model } = await getAiClient();
 
       /* ============================================================
            1) Tải system config từ DB
@@ -446,7 +475,7 @@ router.post(
            4) CALL AI
         ============================================================ */
       const completion = await ai.chat.completions.create({
-        model: MODEL,
+        model,
         temperature: 0.4,
         max_tokens: 4000,
         messages: [

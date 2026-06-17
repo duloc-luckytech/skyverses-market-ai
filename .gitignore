@@ -45,3 +45,7 @@ cms/.env
 
 # Landing clone (reference only)
 landing-clone/
+
+# Local secrets (SSH creds, deploy info — DO NOT commit)
+.secrets/
+.secrets
