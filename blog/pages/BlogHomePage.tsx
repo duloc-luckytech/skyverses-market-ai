@@ -194,16 +194,16 @@ const BlogHomePage: React.FC = () => {
       : 'Skyverses Insights — Tin tức AI mới nhất mọi lĩnh vực | Hướng dẫn & Case Study',
     description: catSeo?.description ?? (urlCategory
       ? `Tổng hợp tin tức & bài viết AI chuyên mục ${urlCategory}: cập nhật mới nhất, hướng dẫn thực chiến và case study từ đội ngũ Skyverses. Bao gồm mọi lĩnh vực ứng dụng AI.`
-      : 'Cập nhật tin tức AI mới nhất 2026 cho mọi lĩnh vực: Video, Ảnh, Âm nhạc, Giọng nói, Y tế, Giáo dục, Tài chính, Bất động sản & Doanh nghiệp. Hướng dẫn thực chiến Veo3, Kling, Gemini, GPT-4o, Midjourney, Flux từ đội ngũ Skyverses.'),
+      : 'Cập nhật tin tức AI mới nhất 2026 cho mọi lĩnh vực: Video, Ảnh, Âm nhạc, Giọng nói, Y tế, Giáo dục, Tài chính, Bất động sản & Doanh nghiệp. Hướng dẫn thực chiến Veo3, Kling, Gemini, GPT, Midjourney, Flux từ đội ngũ Skyverses.'),
     keywords: catSeo?.keywords ?? (urlCategory
       ? `${urlCategory}, tin tức AI, AI news, Skyverses insights, hướng dẫn AI, ${urlCategory} AI 2026`
-      : 'tin tức AI mới nhất, AI news 2026, AI mọi lĩnh vực, video AI mới, ảnh AI, âm nhạc AI, giọng nói AI, AI y tế, AI giáo dục, AI tài chính, AI bất động sản, AI doanh nghiệp, Veo3 news, Kling AI, Gemini update, GPT-4o, Midjourney, Flux AI, hướng dẫn AI, case study AI, Skyverses insights'),
+      : 'tin tức AI mới nhất, AI news 2026, AI mọi lĩnh vực, video AI mới, ảnh AI, âm nhạc AI, giọng nói AI, AI y tế, AI giáo dục, AI tài chính, AI bất động sản, AI doanh nghiệp, Veo3 news, Kling AI, Gemini update, GPT, Midjourney, Flux AI, hướng dẫn AI, case study AI, Skyverses insights'),
     canonical: urlCategory ? `/category/${urlCategory}` : '/',
     lang: currentLang,
     jsonLd: urlCategory ? undefined : {
       '@type': 'Blog',
       name: 'Skyverses Insights',
-      description: 'Tin tức AI mới nhất mọi lĩnh vực — hướng dẫn thực chiến, case study & cập nhật về Veo3, Kling, Gemini, GPT-4o, Midjourney và 50+ AI model từ Skyverses.',
+      description: 'Tin tức AI mới nhất mọi lĩnh vực — hướng dẫn thực chiến, case study & cập nhật về Veo3, Kling, Gemini, GPT, Midjourney và 50+ AI model từ Skyverses.',
       url: 'https://insights.skyverses.com',
       inLanguage: ['vi', 'en'],
       about: [

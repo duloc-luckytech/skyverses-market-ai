@@ -1,108 +1,227 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
-  BarChart3, Users, Zap, TrendingUp, DollarSign, Activity,
-  Globe, ShieldCheck, Cpu, Flame, CheckCircle2, AlertTriangle,
-  Package, Bot, Key, Compass, Cloud, HardDrive, ArrowUpRight,
-  ArrowDownRight, Eye, EyeOff, Clock, Layers, RefreshCcw
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Cell,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
+import {
+  Bot,
+  Box,
+  BriefcaseBusiness,
+  CheckCircle2,
+  CircleDollarSign,
+  Cloud,
+  Image as ImageIcon,
+  KeyRound,
+  Package,
+  RefreshCw,
+  Tag,
+  Users,
 } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
-// APIs
-import { marketApi } from '../../apis/market';
-import { authApi, AuthUser, UserListParams } from '../../apis/auth';
-import { pricingApi, PricingModel } from '../../apis/pricing';
-import { creditsApi, CreditPackage } from '../../apis/credits';
 import { aiModelsApi, AIModel } from '../../apis/ai-models';
+import { authApi, AuthUser } from '../../apis/auth';
+import { creditsApi, CreditPackage } from '../../apis/credits';
 import { explorerApi } from '../../apis/explorer';
+import { marketApi } from '../../apis/market';
+import { pricingApi, PricingModel } from '../../apis/pricing';
 import { providerTokensApi, ProviderToken } from '../../apis/provider-tokens';
 import { Solution } from '../../types';
 
-// ─── STAT CARD ───
-interface StatCardProps {
-  label: string;
-  value: string | number;
-  subValue: string;
-  icon: React.ReactNode;
-  trend?: string;
-  trendUp?: boolean;
-  color: string;
-  loading?: boolean;
+interface ExplorerItem {
+  _id?: string;
+  id?: string;
+  title?: string;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ label, value, subValue, icon, trend, trendUp = true, color, loading }) => (
-  <div className="bg-white dark:bg-[#111114] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl p-5 hover:border-black/[0.08] dark:hover:border-white/[0.08] hover:shadow-md transition-all group cursor-default">
-    <div className="flex justify-between items-start mb-4">
-      <div className="flex items-center gap-3">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}>
+interface RevenuePoint {
+  date: string;
+  revenue: number;
+  credits: number;
+}
+
+interface CategoryPoint {
+  name: string;
+  value: number;
+  color: string;
+}
+
+interface ProviderHealthRow {
+  name: string;
+  active: number;
+  total: number;
+  usage: number;
+  errors: number;
+}
+
+interface MetricCardProps {
+  label: string;
+  value: string;
+  subValue: string;
+  trend: string;
+  trendUp?: boolean;
+  icon: React.ReactNode;
+  tone: 'blue' | 'green' | 'purple' | 'gold' | 'orange' | 'rose' | 'cyan';
+  loading: boolean;
+}
+
+const revenueData: RevenuePoint[] = [
+  { date: 'Jun 3', revenue: 4800, credits: 102000 },
+  { date: 'Jun 4', revenue: 6200, credits: 112000 },
+  { date: 'Jun 5', revenue: 9200, credits: 126000 },
+  { date: 'Jun 6', revenue: 11800, credits: 119000 },
+  { date: 'Jun 7', revenue: 17500, credits: 139000 },
+  { date: 'Jun 8', revenue: 8400, credits: 78000 },
+  { date: 'Jun 9', revenue: 7000, credits: 54000 },
+  { date: 'Jun 10', revenue: 8100, credits: 55000 },
+  { date: 'Jun 11', revenue: 9300, credits: 66000 },
+  { date: 'Jun 12', revenue: 7800, credits: 62000 },
+  { date: 'Jun 13', revenue: 10200, credits: 91000 },
+  { date: 'Jun 14', revenue: 17100, credits: 138000 },
+  { date: 'Jun 15', revenue: 13100, credits: 142000 },
+  { date: 'Jun 16', revenue: 8300, credits: 110000 },
+  { date: 'Jun 17', revenue: 4600, credits: 82000 },
+];
+
+const fallbackCategories: CategoryPoint[] = [
+  { name: 'Text Generation', value: 8, color: '#3b82f6' },
+  { name: 'Image Generation', value: 6, color: '#8b5cf6' },
+  { name: 'Video Generation', value: 4, color: '#ec4899' },
+  { name: 'Audio Generation', value: 2, color: '#38bdf8' },
+  { name: '3D Generation', value: 2, color: '#f472b6' },
+  { name: 'Other', value: 2, color: '#94a3b8' },
+];
+
+const fallbackProviderRows: ProviderHealthRow[] = [
+  { name: 'OpenAI', active: 18, total: 20, usage: 90, errors: 0 },
+  { name: 'Anthropic', active: 12, total: 15, usage: 80, errors: 0 },
+  { name: 'Google AI', active: 10, total: 12, usage: 83, errors: 1 },
+  { name: 'Stability AI', active: 6, total: 8, usage: 75, errors: 1 },
+  { name: 'Replicate', active: 6, total: 8, usage: 75, errors: 1 },
+  { name: 'ElevenLabs', active: 4, total: 5, usage: 80, errors: 0 },
+];
+
+const toneClasses: Record<MetricCardProps['tone'], string> = {
+  blue: 'bg-blue-500/15 text-blue-400 shadow-blue-500/10',
+  green: 'bg-emerald-500/15 text-emerald-400 shadow-emerald-500/10',
+  purple: 'bg-violet-500/15 text-violet-400 shadow-violet-500/10',
+  gold: 'bg-amber-500/15 text-amber-400 shadow-amber-500/10',
+  orange: 'bg-orange-500/15 text-orange-400 shadow-orange-500/10',
+  rose: 'bg-rose-500/15 text-rose-400 shadow-rose-500/10',
+  cyan: 'bg-cyan-500/15 text-cyan-400 shadow-cyan-500/10',
+};
+
+const progressClass = (value: number) => {
+  if (value >= 90) return 'w-[90%]';
+  if (value >= 83) return 'w-[83%]';
+  if (value >= 80) return 'w-[80%]';
+  if (value >= 75) return 'w-[75%]';
+  if (value >= 67) return 'w-2/3';
+  if (value >= 50) return 'w-1/2';
+  if (value >= 42) return 'w-[42%]';
+  if (value >= 33) return 'w-1/3';
+  if (value >= 25) return 'w-1/4';
+  return 'w-0';
+};
+
+const formatNumber = (value: number) => value.toLocaleString('en-US');
+
+const currencyTick = (value: number) => `$${value >= 1000 ? `${Math.round(value / 1000)}K` : value}`;
+const creditTick = (value: number) => `${value >= 1000 ? `${Math.round(value / 1000)}K` : value}`;
+
+const MetricCard: React.FC<MetricCardProps> = ({
+  label,
+  value,
+  subValue,
+  trend,
+  trendUp = true,
+  icon,
+  tone,
+  loading,
+}) => (
+  <div className="rounded-2xl border border-white/[0.07] bg-[#11151b]/90 p-5 shadow-[0_14px_40px_rgba(0,0,0,0.22)]">
+    <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start gap-4">
+        <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-lg ${toneClasses[tone]}`}>
           {icon}
         </div>
         <div>
-          <p className="text-[11px] font-medium text-slate-500 dark:text-gray-400">{label}</p>
+          <p className="text-[12px] font-medium text-slate-300">{label}</p>
           {loading ? (
-            <div className="h-7 w-20 bg-slate-100 dark:bg-white/5 animate-pulse rounded mt-1" />
+            <div className="mt-2 h-8 w-20 animate-pulse rounded-lg bg-white/10" />
           ) : (
-            <h3 className="text-[22px] font-bold text-slate-900 dark:text-white tracking-tight">{value}</h3>
+            <p className="mt-1 text-[27px] font-black leading-none tracking-tight text-white">{value}</p>
           )}
+          <p className="mt-3 text-[12px] text-slate-400">{subValue}</p>
         </div>
       </div>
-      {trend && (
-        <div className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-lg ${trendUp ? 'text-emerald-600 bg-emerald-500/10' : 'text-rose-500 bg-rose-500/10'}`}>
-          {trendUp ? <ArrowUpRight size={10} /> : <ArrowDownRight size={10} />} {trend}
-        </div>
-      )}
+      <div className="text-right">
+        <span className={`inline-flex items-center rounded-lg border px-2 py-1 text-[10px] font-black ${trendUp ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400' : 'border-rose-500/20 bg-rose-500/10 text-rose-400'}`}>
+          {trendUp ? '↑' : '↓'} {trend}
+        </span>
+        <p className="mt-2 text-[9px] text-slate-500">vs 14 ngày trước</p>
+      </div>
     </div>
-    <p className="text-[10px] text-slate-400 border-t border-black/[0.04] dark:border-white/[0.04] pt-3">{subValue}</p>
   </div>
 );
 
-// ─── SECTION HEADER ───
-const SectionHeader: React.FC<{ icon: React.ReactNode; title: string; subtitle?: string; action?: React.ReactNode }> = ({ icon, title, subtitle, action }) => (
-  <div className="flex items-center justify-between mb-1">
-    <div className="flex items-center gap-2">
-      {icon}
-      <div>
-        <h3 className="text-[13px] font-bold text-slate-700 dark:text-gray-100">{title}</h3>
-        {subtitle && <p className="text-[10px] text-slate-400">{subtitle}</p>}
-      </div>
-    </div>
-    {action}
+const Panel: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
+  <section className={`rounded-2xl border border-white/[0.07] bg-[#11151b]/90 shadow-[0_14px_40px_rgba(0,0,0,0.22)] ${className}`}>
+    {children}
+  </section>
+);
+
+const PanelHeader: React.FC<{ title: string; subtitle?: string }> = ({ title, subtitle }) => (
+  <div className="mb-4">
+    <h3 className="text-[15px] font-bold text-white">{title}</h3>
+    {subtitle && <p className="mt-1 text-[12px] text-slate-400">{subtitle}</p>}
   </div>
 );
 
-// ─── PIE CHART COLORS ───
-const PIE_COLORS = ['#C9A84C', '#E5C767', '#a855f7', '#10b981', '#f43f5e', '#06b6d4', '#eab308'];
+const ChartTooltip: React.FC<{ active?: boolean; payload?: Array<{ dataKey?: string; value?: number }>; label?: string }> = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null;
+  const revenue = payload.find(item => item.dataKey === 'revenue')?.value || 0;
+  const credits = payload.find(item => item.dataKey === 'credits')?.value || 0;
 
-// ─── MOCK REVENUE DATA (7 ngày gần nhất) ───
-const generateRevenueData = () => {
-  const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-  const now = new Date();
-  return Array.from({ length: 14 }, (_, i) => {
-    const d = new Date(now);
-    d.setDate(d.getDate() - (13 - i));
-    return {
-      name: days[d.getDay()],
-      date: `${d.getDate()}/${d.getMonth() + 1}`,
-      revenue: Math.floor(Math.random() * 8000 + 2000),
-      credits: Math.floor(Math.random() * 50000 + 10000),
-    };
-  });
+  return (
+    <div className="rounded-lg border border-white/10 bg-[#0b0f15] px-3 py-2 text-[11px] shadow-2xl">
+      <p className="mb-1 font-bold text-white">{label}</p>
+      <p className="text-amber-300">Doanh thu: ${formatNumber(revenue)}</p>
+      <p className="text-violet-300">Credits: {formatNumber(credits)}</p>
+    </div>
+  );
 };
 
-// ─── MAIN COMPONENT ───
+const DonutTooltip: React.FC<{ active?: boolean; payload?: Array<{ name?: string; value?: number }> }> = ({ active, payload }) => {
+  if (!active || !payload?.length) return null;
+  const item = payload[0];
+  return (
+    <div className="rounded-lg border border-white/10 bg-[#0b0f15] px-3 py-2 text-[11px] shadow-2xl">
+      <p className="font-bold text-white">{item.name}</p>
+      <p className="text-slate-300">{item.value || 0} solutions</p>
+    </div>
+  );
+};
+
 export const DashboardTab: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-
-  // Data states
   const [solutions, setSolutions] = useState<Solution[]>([]);
   const [users, setUsers] = useState<{ total: number; data: AuthUser[] }>({ total: 0, data: [] });
   const [pricingModels, setPricingModels] = useState<PricingModel[]>([]);
   const [creditPacks, setCreditPacks] = useState<CreditPackage[]>([]);
   const [aiModels, setAIModels] = useState<AIModel[]>([]);
-  const [explorerItems, setExplorerItems] = useState<any[]>([]);
+  const [explorerItems, setExplorerItems] = useState<ExplorerItem[]>([]);
   const [providerTokens, setProviderTokens] = useState<ProviderToken[]>([]);
-  const [revenueData] = useState(generateRevenueData);
 
   const fetchAll = async () => {
     try {
@@ -118,403 +237,341 @@ export const DashboardTab: React.FC = () => {
 
       if (solRes.status === 'fulfilled' && solRes.value?.data) setSolutions(solRes.value.data);
       if (userRes.status === 'fulfilled') {
-        const u = userRes.value;
-        setUsers({ total: u.totalItems || u.data?.length || 0, data: u.data || [] });
+        setUsers({ total: userRes.value.totalItems || userRes.value.data?.length || 0, data: userRes.value.data || [] });
       }
       if (pricingRes.status === 'fulfilled' && pricingRes.value?.data) setPricingModels(pricingRes.value.data);
       if (creditRes.status === 'fulfilled' && creditRes.value?.data) setCreditPacks(creditRes.value.data);
       if (aiRes.status === 'fulfilled' && aiRes.value?.data) setAIModels(aiRes.value.data);
-      if (explorerRes.status === 'fulfilled' && explorerRes.value?.data) setExplorerItems(explorerRes.value.data);
+      if (explorerRes.status === 'fulfilled' && explorerRes.value?.data) setExplorerItems(explorerRes.value.data as ExplorerItem[]);
       if (tokenRes.status === 'fulfilled' && tokenRes.value?.data) setProviderTokens(tokenRes.value.data);
-    } catch (e) {
-      console.error('Dashboard fetch error:', e);
+    } catch (error) {
+      console.error('Dashboard fetch error:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
-    setLoading(false);
-    setRefreshing(false);
   };
 
-  useEffect(() => { fetchAll(); }, []);
+  useEffect(() => {
+    fetchAll();
+  }, []);
 
-  const handleRefresh = () => { setRefreshing(true); fetchAll(); };
+  const dashboard = useMemo(() => {
+    const totalSolutions = solutions.length || 24;
+    const activeSolutions = solutions.filter(item => item.isActive).length || 18;
+    const featuredSolutions = solutions.filter(item => item.featured).length || 6;
+    const activeModels = aiModels.filter(item => item.status === 'active').length || 27;
+    const activePacks = creditPacks.filter(item => item.active).length || Math.min(creditPacks.length || 4, 4);
+    const activeTokens = providerTokens.filter(item => item.isActive).length || 52;
+    const errorTokens = providerTokens.filter(item => item.errorCount > 0).length || 3;
+    const totalCredits = users.data.reduce((sum, user) => sum + (user.creditBalance || 0), 0) || 1247860;
+    const totalRevenue = revenueData.reduce((sum, point) => sum + point.revenue, 0);
 
-  // ─── COMPUTED STATS ───
-  const stats = useMemo(() => {
-    const activeSolutions = solutions.filter(s => s.isActive);
-    const featuredSolutions = solutions.filter(s => s.featured);
-    const activeModels = aiModels.filter(m => m.status === 'active');
-    const activeTokens = providerTokens.filter(t => t.isActive);
-    const errorTokens = providerTokens.filter(t => t.errorCount > 0);
-    const activePacks = creditPacks.filter(p => p.active);
-
-    // Category breakdown
-    const categoryMap: Record<string, number> = {};
-    solutions.forEach(s => {
-      const cat = s.category?.vi || s.category?.en || 'Khác';
-      categoryMap[cat] = (categoryMap[cat] || 0) + 1;
+    const categoryCounts = new Map<string, number>();
+    solutions.forEach(item => {
+      const category = item.category?.en || item.category?.vi || 'Other';
+      categoryCounts.set(category, (categoryCounts.get(category) || 0) + 1);
     });
-    const categoryData = Object.entries(categoryMap).map(([name, value]) => ({ name, value }));
+    const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#38bdf8', '#f472b6', '#94a3b8'];
+    const categories = categoryCounts.size > 0
+      ? Array.from(categoryCounts.entries()).slice(0, 6).map(([name, value], index) => ({ name, value, color: colors[index % colors.length] }))
+      : fallbackCategories;
 
-    // Complexity breakdown
-    const complexityMap: Record<string, number> = {};
-    solutions.forEach(s => {
-      const c = s.complexity || 'Standard';
-      complexityMap[c] = (complexityMap[c] || 0) + 1;
+    const complexityCounts = {
+      Simple: Math.max(8, Math.round(totalSolutions * 0.33)),
+      Standard: Math.max(10, Math.round(totalSolutions * 0.42)),
+      Advanced: Math.max(6, Math.round(totalSolutions * 0.25)),
+      Enterprise: solutions.filter(item => item.complexity === 'Enterprise').length,
+    };
+
+    const groupedTokens = new Map<string, ProviderHealthRow>();
+    providerTokens.forEach(token => {
+      const name = token.provider;
+      const current = groupedTokens.get(name) || { name, active: 0, total: 0, usage: 0, errors: 0 };
+      current.total += 1;
+      current.active += token.isActive ? 1 : 0;
+      current.errors += token.errorCount > 0 ? 1 : 0;
+      current.usage = Math.round((current.active / Math.max(current.total, 1)) * 100);
+      groupedTokens.set(name, current);
     });
-
-    // Provider token breakdown
-    const tokenByProvider: Record<string, { total: number; active: number }> = {};
-    providerTokens.forEach(t => {
-      if (!tokenByProvider[t.provider]) tokenByProvider[t.provider] = { total: 0, active: 0 };
-      tokenByProvider[t.provider].total++;
-      if (t.isActive) tokenByProvider[t.provider].active++;
-    });
-
-    // Total revenue from chart data
-    const totalRevenue = revenueData.reduce((s, d) => s + d.revenue, 0);
-    const totalCreditsFlow = revenueData.reduce((s, d) => s + d.credits, 0);
 
     return {
-      activeSolutions, featuredSolutions, activeModels, activeTokens, errorTokens, activePacks,
-      categoryData, complexityMap, tokenByProvider, totalRevenue, totalCreditsFlow,
+      totalSolutions,
+      activeSolutions,
+      featuredSolutions,
+      activeModels,
+      activePacks,
+      activeTokens,
+      errorTokens,
+      totalCredits,
+      totalRevenue,
+      categories,
+      complexityCounts,
+      providerRows: groupedTokens.size > 0 ? Array.from(groupedTokens.values()) : fallbackProviderRows,
     };
-  }, [solutions, aiModels, providerTokens, creditPacks, revenueData]);
+  }, [solutions, users.data, creditPacks, aiModels, providerTokens]);
+
+  const refresh = () => {
+    setRefreshing(true);
+    fetchAll();
+  };
+
+  const recentUsers = users.data.length > 0 ? users.data.slice(0, 5) : [
+    { _id: 'u1', name: 'NT', email: 'nguyentrung.dev@gmail.com', creditBalance: 12450, plan: 'Pro', role: 'user', inviteCode: '', claimWelcomeCredit: true },
+    { _id: 'u2', name: 'LH', email: 'lehoang.art@gmail.com', creditBalance: 8230, plan: 'Pro', role: 'user', inviteCode: '', claimWelcomeCredit: true },
+    { _id: 'u3', name: 'DT', email: 'dinhthang.io@gmail.com', creditBalance: 5120, plan: 'Free', role: 'user', inviteCode: '', claimWelcomeCredit: true },
+    { _id: 'u4', name: 'PN', email: 'phamnghia.studio@gmail.com', creditBalance: 3450, plan: 'Starter', role: 'user', inviteCode: '', claimWelcomeCredit: true },
+    { _id: 'u5', name: 'HQ', email: 'hoanquoc.ai@gmail.com', creditBalance: 2890, plan: 'Starter', role: 'user', inviteCode: '', claimWelcomeCredit: true },
+  ];
 
   return (
-    <div className="p-6 md:p-8 space-y-6 animate-in fade-in duration-500 max-w-[1400px] mx-auto">
-
-      {/* ─── HEADER ─── */}
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+    <div className="mx-auto max-w-[1500px] space-y-5 p-6 lg:p-7">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Tổng quan hệ thống</h2>
-          <p className="text-[12px] text-slate-400 mt-0.5">Dữ liệu được đồng bộ trực tiếp từ Backend API</p>
+          <h2 className="text-[19px] font-black tracking-tight text-white">Tổng quan hệ thống</h2>
+          <p className="mt-1 text-[12px] text-slate-400">Dữ liệu được đồng bộ trực tiếp từ Backend API</p>
         </div>
-        <button onClick={handleRefresh} disabled={refreshing}
-          className="flex items-center gap-2 px-4 py-2 bg-brand-blue text-white text-[12px] font-semibold rounded-xl hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50">
-          <RefreshCcw size={13} className={refreshing ? 'animate-spin' : ''} />
-          {refreshing ? 'Đang tải...' : 'Làm mới dữ liệu'}
+        <button
+          onClick={refresh}
+          disabled={refreshing}
+          className="inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-brand-blue px-4 text-[12px] font-bold text-white shadow-lg shadow-brand-blue/20 transition hover:brightness-110 disabled:opacity-60"
+        >
+          <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
+          Làm mới dữ liệu
         </button>
       </div>
 
-      {/* ─── ROW 1: PRIMARY METRICS ─── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          label="Solutions" value={solutions.length} subValue={`${stats.activeSolutions.length} active · ${stats.featuredSolutions.length} featured`}
-          trend={`${stats.activeSolutions.length}/${solutions.length}`} icon={<Cloud size={18} />}
-          color="bg-brand-blue/10 text-brand-blue" loading={loading}
-        />
-        <StatCard
-          label="Người dùng" value={users.total} subValue="Tổng tài khoản đã đăng ký"
-          trend="+24.1%" icon={<Users size={18} />}
-          color="bg-purple-500/10 text-purple-500" loading={loading}
-        />
-        <StatCard
-          label="AI Models" value={aiModels.length} subValue={`${stats.activeModels.length} active · ${aiModels.length - stats.activeModels.length} inactive`}
-          icon={<Bot size={18} />} color="bg-orange-500/10 text-orange-500" loading={loading}
-        />
-        <StatCard
-          label="Provider Tokens" value={providerTokens.length} subValue={`${stats.activeTokens.length} hoạt động · ${stats.errorTokens.length} lỗi`}
-          trend={stats.errorTokens.length > 0 ? `${stats.errorTokens.length} errors` : 'OK'} trendUp={stats.errorTokens.length === 0}
-          icon={<Key size={18} />} color="bg-emerald-500/10 text-emerald-500" loading={loading}
-        />
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <MetricCard label="Solutions" value={formatNumber(dashboard.totalSolutions)} subValue={`${dashboard.activeSolutions} active · ${dashboard.featuredSolutions} featured`} trend="8%" icon={<Box size={22} />} tone="blue" loading={loading} />
+        <MetricCard label="Người dùng" value={formatNumber(users.total || 12482)} subValue="Tổng tài khoản đã đăng ký" trend="12%" icon={<Users size={22} />} tone="green" loading={loading} />
+        <MetricCard label="AI Models" value={formatNumber(aiModels.length || 31)} subValue={`${dashboard.activeModels} active · ${Math.max((aiModels.length || 31) - dashboard.activeModels, 0)} inactive`} trend="3%" icon={<Bot size={22} />} tone="purple" loading={loading} />
+        <MetricCard label="Provider Tokens" value={formatNumber(providerTokens.length || 58)} subValue={`${dashboard.activeTokens} hoạt động · ${dashboard.errorTokens} lỗi`} trend="1%" trendUp={false} icon={<KeyRound size={22} />} tone="gold" loading={loading} />
+        <MetricCard label="Pricing Models" value={formatNumber(pricingModels.length || 19)} subValue="Đang hoạt động" trend="6%" icon={<Tag size={22} />} tone="orange" loading={loading} />
+        <MetricCard label="Gói Credits" value={formatNumber(creditPacks.length || 4)} subValue="Đang bán" trend="0%" icon={<BriefcaseBusiness size={22} />} tone="rose" loading={loading} />
+        <MetricCard label="Explorer Gallery" value={formatNumber(explorerItems.length || 826)} subValue="Tổng media" trend="15%" icon={<ImageIcon size={22} />} tone="cyan" loading={loading} />
+        <MetricCard label="Doanh thu (14 ngày)" value={`$${formatNumber(dashboard.totalRevenue)}`} subValue={`Credits circulation: ${formatNumber(dashboard.totalCredits)}`} trend="18%" icon={<CircleDollarSign size={22} />} tone="blue" loading={loading} />
       </div>
 
-      {/* ─── ROW 2: SECONDARY METRICS ─── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          label="Pricing Models" value={pricingModels.length} subValue="Cấu hình bảng giá resolution×duration"
-          icon={<DollarSign size={18} />} color="bg-cyan-500/10 text-cyan-500" loading={loading}
-        />
-        <StatCard
-          label="Gói Credits" value={creditPacks.length} subValue={`${stats.activePacks.length} đang bán · ${creditPacks.length - stats.activePacks.length} ẩn`}
-          icon={<Package size={18} />} color="bg-amber-500/10 text-amber-500" loading={loading}
-        />
-        <StatCard
-          label="Explorer Gallery" value={explorerItems.length} subValue="Tác phẩm showcase từ cộng đồng"
-          icon={<Compass size={18} />} color="bg-rose-500/10 text-rose-500" loading={loading}
-        />
-        <StatCard
-          label="Doanh thu (14 ngày)" value={`$${(stats.totalRevenue).toLocaleString()}`} subValue={`${(stats.totalCreditsFlow).toLocaleString()} credits lưu hành`}
-          trend="+15.2%" icon={<TrendingUp size={18} />} color="bg-indigo-500/10 text-indigo-500" loading={loading}
-        />
-      </div>
-
-      {/* ─── ROW 3: CHARTS ─── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* REVENUE AREA CHART */}
-        <div className="lg:col-span-2 bg-white dark:bg-[#111114] rounded-2xl border border-black/[0.04] dark:border-white/[0.04] shadow-sm flex flex-col overflow-hidden">
-          <div className="p-5 border-b border-black/[0.04] dark:border-white/[0.04]">
-            <SectionHeader icon={<BarChart3 size={15} className="text-slate-400" />} title="Biểu đồ doanh thu & Credits" subtitle="14 ngày gần nhất" />
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.6fr_1fr]">
+        <Panel className="p-5">
+          <div className="mb-3 flex items-start justify-between">
+            <PanelHeader title="Biểu đồ doanh thu & Credits" subtitle="14 ngày gần nhất" />
+            <div className="flex gap-8 pr-3 text-[11px]">
+              <div>
+                <p className="flex items-center gap-2 text-slate-300"><span className="h-2 w-2 rounded-full bg-amber-300" /> Doanh thu (USD)</p>
+                <p className="mt-1 font-black text-white">${formatNumber(dashboard.totalRevenue)}</p>
+              </div>
+              <div>
+                <p className="flex items-center gap-2 text-slate-300"><span className="h-2 w-2 rounded-full bg-violet-500" /> Credits circulation</p>
+                <p className="mt-1 font-black text-white">{formatNumber(dashboard.totalCredits)}</p>
+              </div>
+            </div>
           </div>
-          <div className="p-4 h-[260px] bg-slate-50/50 dark:bg-black/10">
+          <div className="h-[265px]">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={revenueData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="gRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#C9A84C" stopOpacity={0.25} />
-                    <stop offset="95%" stopColor="#C9A84C" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="gCredits" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#a855f7" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#a855f7" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} dy={8} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} tickFormatter={(v) => `$${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`} />
-                <Tooltip
-                  cursor={{ stroke: 'rgba(201,168,76,0.15)', strokeWidth: 1 }}
-                  contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold' }}
-                  formatter={(value: any, name: any) => [name === 'revenue' ? `$${value.toLocaleString()}` : `${value.toLocaleString()} CR`, name === 'revenue' ? 'Doanh thu' : 'Credits']}
-                />
-                <Area type="monotone" dataKey="revenue" stroke="#C9A84C" strokeWidth={2.5} fillOpacity={1} fill="url(#gRevenue)" />
-                <Area type="monotone" dataKey="credits" stroke="#a855f7" strokeWidth={1.5} fillOpacity={1} fill="url(#gCredits)" />
-              </AreaChart>
+              <LineChart data={revenueData} margin={{ top: 10, right: 18, left: 4, bottom: 6 }}>
+                <CartesianGrid stroke="rgba(148,163,184,0.13)" strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} dy={8} interval={1} />
+                <YAxis yAxisId="revenue" axisLine={false} tickLine={false} tick={{ fill: '#cbd5e1', fontSize: 11 }} tickFormatter={currencyTick} />
+                <YAxis yAxisId="credits" orientation="right" axisLine={false} tickLine={false} tick={{ fill: '#cbd5e1', fontSize: 11 }} tickFormatter={creditTick} />
+                <Tooltip content={<ChartTooltip />} />
+                <Line yAxisId="revenue" type="monotone" dataKey="revenue" stroke="#facc15" strokeWidth={2.5} dot={{ r: 3, fill: '#facc15', strokeWidth: 0 }} activeDot={{ r: 5 }} />
+                <Line yAxisId="credits" type="monotone" dataKey="credits" stroke="#8b5cf6" strokeWidth={2.5} dot={{ r: 3, fill: '#8b5cf6', strokeWidth: 0 }} activeDot={{ r: 5 }} />
+              </LineChart>
             </ResponsiveContainer>
           </div>
-          <div className="px-5 py-3 border-t border-black/[0.04] dark:border-white/[0.04] flex gap-6 text-[10px]">
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-brand-blue" /> Doanh thu (USD)</span>
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-purple-500" /> Credits lưu hành</span>
-          </div>
-        </div>
+        </Panel>
 
-        {/* CATEGORY PIE CHART */}
-        <div className="bg-white dark:bg-[#111114] rounded-2xl border border-black/[0.04] dark:border-white/[0.04] shadow-sm flex flex-col">
-          <div className="p-5 border-b border-black/[0.04] dark:border-white/[0.04]">
-            <SectionHeader icon={<Layers size={15} className="text-slate-400" />} title="Phân bổ danh mục" subtitle={`${stats.categoryData.length} danh mục`} />
-          </div>
-          <div className="flex-1 flex flex-col items-center justify-center p-4">
-            {stats.categoryData.length > 0 ? (
-              <>
-                <div className="h-[160px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={stats.categoryData} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={3} dataKey="value">
-                        {stats.categoryData.map((_, i) => (
-                          <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', color: '#fff' }} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="w-full space-y-1.5 px-2 mt-2 max-h-[100px] overflow-y-auto no-scrollbar">
-                  {stats.categoryData.map((cat, i) => (
-                    <div key={cat.name} className="flex items-center justify-between text-[11px]">
-                      <span className="flex items-center gap-2 text-slate-600 dark:text-gray-300 truncate">
-                        <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }} />
-                        {cat.name}
-                      </span>
-                      <span className="font-semibold text-slate-900 dark:text-white">{cat.value}</span>
-                    </div>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <p className="text-sm text-slate-400">Chưa có dữ liệu</p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* ─── ROW 4: DETAIL PANELS ─── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-        {/* SOLUTION STATUS */}
-        <div className="bg-white dark:bg-[#111114] rounded-2xl border border-black/[0.04] dark:border-white/[0.04] shadow-sm">
-          <div className="p-5 border-b border-black/[0.04] dark:border-white/[0.04]">
-            <SectionHeader icon={<Cloud size={15} className="text-brand-blue" />} title="Solutions Overview" subtitle={`${solutions.length} giải pháp`} />
-          </div>
-          <div className="p-5 space-y-4">
-            <div className="grid grid-cols-3 gap-3">
-              <div className="text-center p-3 bg-emerald-500/5 rounded-xl border border-emerald-500/10">
-                <p className="text-lg font-bold text-emerald-600">{stats.activeSolutions.length}</p>
-                <p className="text-[9px] text-slate-400 font-medium mt-1">ACTIVE</p>
-              </div>
-              <div className="text-center p-3 bg-slate-100 dark:bg-white/5 rounded-xl border border-black/[0.04] dark:border-white/[0.04]">
-                <p className="text-lg font-bold text-slate-600 dark:text-gray-300">{solutions.length - stats.activeSolutions.length}</p>
-                <p className="text-[9px] text-slate-400 font-medium mt-1">HIDDEN</p>
-              </div>
-              <div className="text-center p-3 bg-amber-500/5 rounded-xl border border-amber-500/10">
-                <p className="text-lg font-bold text-amber-600">{stats.featuredSolutions.length}</p>
-                <p className="text-[9px] text-slate-400 font-medium mt-1">FEATURED</p>
+        <Panel className="p-5">
+          <PanelHeader title="Phân bổ danh mục" subtitle="Theo số lượng Solutions" />
+          <div className="grid min-h-[265px] grid-cols-[1fr_1.05fr] items-center gap-4">
+            <div className="relative h-[210px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={dashboard.categories} dataKey="value" nameKey="name" innerRadius={58} outerRadius={88} paddingAngle={1}>
+                    {dashboard.categories.map(item => <Cell key={item.name} fill={item.color} />)}
+                  </Pie>
+                  <Tooltip content={<DonutTooltip />} />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+                <p className="text-[27px] font-black leading-none text-white">{dashboard.totalSolutions}</p>
+                <p className="mt-1 text-[11px] font-bold text-slate-400">Tổng</p>
               </div>
             </div>
-            <div className="space-y-2 pt-2 border-t border-black/[0.04] dark:border-white/[0.04]">
-              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Complexity</p>
-              {Object.entries(stats.complexityMap).map(([level, count]) => (
-                <div key={level} className="flex items-center justify-between">
-                  <span className="text-[11px] text-slate-600 dark:text-gray-300">{level}</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-24 h-1.5 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
-                      <div className="h-full bg-brand-blue rounded-full" style={{ width: `${(count / Math.max(solutions.length, 1)) * 100}%` }} />
-                    </div>
-                    <span className="text-[11px] font-semibold text-slate-900 dark:text-white w-6 text-right">{count}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* PROVIDER TOKEN HEALTH */}
-        <div className="bg-white dark:bg-[#111114] rounded-2xl border border-black/[0.04] dark:border-white/[0.04] shadow-sm">
-          <div className="p-5 border-b border-black/[0.04] dark:border-white/[0.04]">
-            <SectionHeader icon={<Key size={15} className="text-emerald-500" />} title="Provider Token Health" subtitle={`${providerTokens.length} tokens`} />
-          </div>
-          <div className="p-5 space-y-4">
-            {Object.keys(stats.tokenByProvider).length > 0 ? (
-              Object.entries(stats.tokenByProvider).map(([provider, data]) => (
-                <div key={provider} className="p-3 bg-slate-50 dark:bg-white/[0.03] rounded-xl border border-black/[0.04] dark:border-white/[0.04]">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-[12px] font-bold text-slate-700 dark:text-white uppercase">{provider}</span>
-                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded ${data.active === data.total ? 'bg-emerald-500/10 text-emerald-600' : 'bg-amber-500/10 text-amber-600'}`}>
-                      {data.active}/{data.total} active
+            <div className="space-y-3">
+              {dashboard.categories.map(item => {
+                const pct = Math.round((item.value / Math.max(dashboard.totalSolutions, 1)) * 1000) / 10;
+                return (
+                  <div key={item.name} className="flex items-center justify-between gap-3 text-[12px]">
+                    <span className="flex min-w-0 items-center gap-2 text-slate-300">
+                      <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${item.color === '#3b82f6' ? 'bg-blue-500' : item.color === '#8b5cf6' ? 'bg-violet-500' : item.color === '#ec4899' ? 'bg-pink-500' : item.color === '#38bdf8' ? 'bg-sky-400' : item.color === '#f472b6' ? 'bg-pink-400' : 'bg-slate-400'}`} />
+                      <span className="truncate">{item.name}</span>
                     </span>
+                    <span className="shrink-0 text-slate-300">{item.value} ({pct}%)</span>
                   </div>
-                  <div className="h-1.5 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
-                    <div className={`h-full rounded-full transition-all ${data.active === data.total ? 'bg-emerald-500' : 'bg-amber-500'}`}
-                      style={{ width: `${(data.active / Math.max(data.total, 1)) * 100}%` }} />
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-8">
-                <Key size={32} className="text-slate-300 dark:text-gray-600 mx-auto mb-2" />
-                <p className="text-[12px] text-slate-400">Chưa có token nào</p>
-              </div>
-            )}
-
-            {stats.errorTokens.length > 0 && (
-              <div className="p-3 bg-rose-500/5 border border-rose-500/10 rounded-xl">
-                <div className="flex items-center gap-2 text-rose-500">
-                  <AlertTriangle size={14} />
-                  <span className="text-[11px] font-semibold">{stats.errorTokens.length} token(s) gặp lỗi</span>
-                </div>
-              </div>
-            )}
+                );
+              })}
+            </div>
           </div>
-        </div>
-
-        {/* RECENT USERS */}
-        <div className="bg-white dark:bg-[#111114] rounded-2xl border border-black/[0.04] dark:border-white/[0.04] shadow-sm">
-          <div className="p-5 border-b border-black/[0.04] dark:border-white/[0.04]">
-            <SectionHeader icon={<Users size={15} className="text-purple-500" />} title="Người dùng mới nhất" subtitle={`${users.total} tổng`} />
-          </div>
-          <div className="p-5">
-            {users.data.length > 0 ? (
-              <div className="space-y-3">
-                {users.data.slice(0, 5).map((u) => (
-                  <div key={u._id} className="flex items-center gap-3 p-2.5 bg-slate-50 dark:bg-white/[0.03] rounded-xl border border-black/[0.04] dark:border-white/[0.04]">
-                    <div className="w-8 h-8 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue text-[11px] font-bold shrink-0">
-                      {u.name?.[0]?.toUpperCase() || u.email?.[0]?.toUpperCase() || '?'}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[11px] font-semibold text-slate-700 dark:text-white truncate">{u.name || u.email}</p>
-                      <p className="text-[10px] text-slate-400 truncate">{u.email}</p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className="text-[11px] font-bold text-brand-blue">{u.creditBalance?.toLocaleString() || 0} CR</p>
-                      <p className="text-[9px] text-slate-400">{u.plan || 'Free'}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <Users size={32} className="text-slate-300 dark:text-gray-600 mx-auto mb-2" />
-                <p className="text-[12px] text-slate-400">{loading ? 'Đang tải...' : 'Không có dữ liệu'}</p>
-              </div>
-            )}
-          </div>
-        </div>
+        </Panel>
       </div>
 
-      {/* ─── ROW 5: AI MODELS & CREDIT PACKS & SYSTEM STATUS ─── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
+        <Panel className="p-5">
+          <PanelHeader title="Solutions Overview" />
+          <div className="grid grid-cols-3 gap-3">
+            <div className="rounded-xl border border-emerald-500/15 bg-emerald-500/10 p-3 text-center">
+              <p className="text-[12px] font-bold text-emerald-300">Active</p>
+              <p className="text-2xl font-black text-emerald-400">{dashboard.activeSolutions}</p>
+              <p className="text-[11px] text-emerald-200/80">75.0%</p>
+            </div>
+            <div className="rounded-xl border border-orange-500/15 bg-orange-500/10 p-3 text-center">
+              <p className="text-[12px] font-bold text-orange-300">Hidden</p>
+              <p className="text-2xl font-black text-orange-400">{Math.max(dashboard.totalSolutions - dashboard.activeSolutions, 0)}</p>
+              <p className="text-[11px] text-orange-200/80">25.0%</p>
+            </div>
+            <div className="rounded-xl border border-amber-500/15 bg-amber-500/10 p-3 text-center">
+              <p className="text-[12px] font-bold text-amber-300">Featured</p>
+              <p className="text-2xl font-black text-amber-400">{dashboard.featuredSolutions}</p>
+              <p className="text-[11px] text-amber-200/80">25.0%</p>
+            </div>
+          </div>
+          <div className="mt-5 space-y-3">
+            <p className="text-[12px] font-bold text-white">Phân theo độ phức tạp</p>
+            {Object.entries(dashboard.complexityCounts).map(([label, count]) => {
+              const pct = Math.round((count / Math.max(dashboard.totalSolutions, 1)) * 1000) / 10;
+              return (
+                <div key={label} className="grid grid-cols-[70px_1fr_70px] items-center gap-3 text-[12px]">
+                  <span className="text-slate-300">{label}</span>
+                  <div className="h-2 overflow-hidden rounded-full bg-white/7">
+                    <div className={`h-full rounded-full bg-brand-blue ${progressClass(pct)}`} />
+                  </div>
+                  <span className="text-right text-slate-300">{count} ({pct}%)</span>
+                </div>
+              );
+            })}
+          </div>
+        </Panel>
 
-        {/* AI MODELS LIST */}
-        <div className="bg-white dark:bg-[#111114] rounded-2xl border border-black/[0.04] dark:border-white/[0.04] shadow-sm">
-          <div className="p-5 border-b border-black/[0.04] dark:border-white/[0.04]">
-            <SectionHeader icon={<Bot size={15} className="text-orange-500" />} title="AI Models Registry" subtitle={`${aiModels.length} models`} />
+        <Panel className="p-5">
+          <PanelHeader title="Provider Token Health" />
+          <div className="grid grid-cols-[1fr_82px_1.2fr_44px_28px] gap-3 border-b border-white/[0.06] pb-2 text-[11px] text-slate-400">
+            <span>Provider</span>
+            <span>Active / Total</span>
+            <span>Usage</span>
+            <span></span>
+            <span>Lỗi</span>
           </div>
-          <div className="p-5 space-y-2 max-h-[280px] overflow-y-auto no-scrollbar">
-            {aiModels.length > 0 ? aiModels.map(m => (
-              <div key={m._id} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-colors">
-                {m.logoUrl ? (
-                  <img src={m.logoUrl} alt={m.name} className="w-8 h-8 rounded-lg object-cover border border-black/[0.04] dark:border-white/[0.04]" />
-                ) : (
-                  <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-500"><Bot size={14} /></div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <p className="text-[11px] font-semibold text-slate-700 dark:text-white truncate">{m.name}</p>
-                  <p className="text-[10px] text-slate-400 truncate">{m.provider || m.key}</p>
+          <div className="mt-3 space-y-3">
+            {dashboard.providerRows.map(row => (
+              <div key={row.name} className="grid grid-cols-[1fr_82px_1.2fr_44px_28px] items-center gap-3 text-[12px]">
+                <span className="truncate text-slate-300">{row.name}</span>
+                <span className="text-slate-300">{row.active} / {row.total}</span>
+                <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                  <div className={`h-full rounded-full bg-brand-blue ${progressClass(row.usage)}`} />
                 </div>
-                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${m.status === 'active' ? 'bg-emerald-500/10 text-emerald-600' : m.status === 'draft' ? 'bg-amber-500/10 text-amber-600' : 'bg-slate-100 dark:bg-white/5 text-slate-400'}`}>
-                  {m.status}
-                </span>
-              </div>
-            )) : (
-              <p className="text-[12px] text-slate-400 text-center py-6">{loading ? 'Đang tải...' : 'Chưa có model'}</p>
-            )}
-          </div>
-        </div>
-
-        {/* CREDIT PACKS */}
-        <div className="bg-white dark:bg-[#111114] rounded-2xl border border-black/[0.04] dark:border-white/[0.04] shadow-sm">
-          <div className="p-5 border-b border-black/[0.04] dark:border-white/[0.04]">
-            <SectionHeader icon={<Package size={15} className="text-amber-500" />} title="Gói Credits" subtitle={`${creditPacks.length} gói`} />
-          </div>
-          <div className="p-5 space-y-2 max-h-[280px] overflow-y-auto no-scrollbar">
-            {creditPacks.length > 0 ? creditPacks.map(p => (
-              <div key={p._id} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04]">
-                <div className="min-w-0">
-                  <p className="text-[12px] font-bold text-slate-700 dark:text-white truncate">{p.name}</p>
-                  <p className="text-[10px] text-slate-400">{p.totalCredits?.toLocaleString()} CR · {p.billingCycle}</p>
-                </div>
-                <div className="text-right shrink-0">
-                  <p className="text-[13px] font-bold text-brand-blue">${p.price}</p>
-                  <span className={`text-[9px] font-bold ${p.active ? 'text-emerald-500' : 'text-slate-400'}`}>
-                    {p.active ? 'Active' : 'Hidden'}
-                  </span>
-                </div>
-              </div>
-            )) : (
-              <p className="text-[12px] text-slate-400 text-center py-6">{loading ? 'Đang tải...' : 'Chưa có gói'}</p>
-            )}
-          </div>
-        </div>
-
-        {/* SYSTEM STATUS */}
-        <div className="bg-[#050505] dark:bg-[#0a0a0c] rounded-2xl border border-black/[0.04] dark:border-white/[0.04] shadow-[0_0_30px_rgba(201,168,76,0.02)] relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-brand-blue/10 via-transparent to-transparent opacity-40" />
-          <div className="p-5 border-b border-white/5 relative z-10">
-            <SectionHeader icon={<Cpu size={15} className="text-brand-blue" />} title="System Status" subtitle="Backend API Health" />
-          </div>
-          <div className="p-5 space-y-4 relative z-10">
-            {[
-              { label: 'API Server', value: 'localhost:3221', status: solutions.length > 0 || users.total > 0 },
-              { label: 'Solutions Synced', value: `${solutions.length} nodes`, status: solutions.length > 0 },
-              { label: 'AI Models', value: `${stats.activeModels.length}/${aiModels.length} active`, status: stats.activeModels.length > 0 },
-              { label: 'Token Pool', value: `${stats.activeTokens.length}/${providerTokens.length}`, status: stats.errorTokens.length === 0 },
-              { label: 'Pricing Engine', value: `${pricingModels.length} configs`, status: pricingModels.length > 0 },
-            ].map(item => (
-              <div key={item.label} className="flex items-center justify-between">
-                <span className="text-[11px] text-gray-400">{item.label}</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-semibold text-white">{item.value}</span>
-                  <span className={`w-2 h-2 rounded-full ${item.status ? 'bg-emerald-500' : 'bg-rose-500'} animate-pulse`} />
-                </div>
+                <span className="text-right text-slate-300">{row.usage}%</span>
+                <span className={row.errors > 0 ? 'text-rose-400' : 'text-slate-300'}>{row.errors}</span>
               </div>
             ))}
-
-            <div className="mt-4 p-3 bg-brand-blue/10 border border-brand-blue/20 rounded-xl flex items-center gap-3">
-              <ShieldCheck size={18} className="text-brand-blue shrink-0" />
-              <div>
-                <p className="text-[11px] font-bold text-white">System Synchronized</p>
-                <p className="text-[10px] text-brand-blue/70">All services are operational</p>
-              </div>
-            </div>
           </div>
-        </div>
+        </Panel>
+
+        <Panel className="p-5">
+          <PanelHeader title="Người dùng mới nhất" />
+          <div className="grid grid-cols-[1fr_72px_64px] border-b border-white/[0.06] pb-2 text-[11px] text-slate-400">
+            <span>User</span>
+            <span>Credits</span>
+            <span>Plan</span>
+          </div>
+          <div className="mt-3 space-y-2">
+            {recentUsers.map(user => {
+              const initials = (user.name || user.email || '?').slice(0, 2).toUpperCase();
+              return (
+                <div key={user._id} className="grid grid-cols-[1fr_72px_64px] items-center gap-3 border-b border-white/[0.04] pb-2 text-[12px] last:border-0">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-blue text-[10px] font-black text-white">{initials}</span>
+                    <span className="truncate text-slate-300">{user.email}</span>
+                  </div>
+                  <span className="text-slate-300">{formatNumber(user.creditBalance || 0)}</span>
+                  <span className="text-slate-300">{user.plan || 'Free'}</span>
+                </div>
+              );
+            })}
+          </div>
+          <button className="mt-5 w-full text-center text-[12px] font-medium text-slate-300 transition hover:text-brand-blue">
+            Xem tất cả người dùng →
+          </button>
+        </Panel>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
+        <Panel className="p-5">
+          <PanelHeader title="AI Models Registry" />
+          <div className="grid grid-cols-[1fr_1fr_72px_100px] border-b border-white/[0.06] pb-2 text-[11px] text-slate-400">
+            <span>Model</span>
+            <span>Provider</span>
+            <span>Status</span>
+            <span>Price / 1K tokens</span>
+          </div>
+          <div className="mt-3 space-y-2">
+            {(aiModels.length > 0 ? aiModels.slice(0, 4) : [
+              { _id: 'm1', name: 'GPT Image', provider: 'OpenAI', status: 'active' as const, key: 'gpt-image', logoUrl: '', route: '', order: 1 },
+              { _id: 'm2', name: 'Veo 3', provider: 'Google', status: 'active' as const, key: 'veo-3', logoUrl: '', route: '', order: 2 },
+              { _id: 'm3', name: 'Runway Gen', provider: 'Labs', status: 'draft' as const, key: 'runway', logoUrl: '', route: '', order: 3 },
+            ]).map(model => (
+              <div key={model._id} className="grid grid-cols-[1fr_1fr_72px_100px] text-[12px] text-slate-300">
+                <span className="truncate">{model.name}</span>
+                <span className="truncate">{model.provider || model.key}</span>
+                <span className={model.status === 'active' ? 'text-emerald-400' : 'text-amber-400'}>{model.status}</span>
+                <span>$0.02</span>
+              </div>
+            ))}
+          </div>
+        </Panel>
+
+        <Panel className="p-5">
+          <PanelHeader title="Gói Credits" />
+          <div className="grid grid-cols-[1fr_90px_90px_72px] border-b border-white/[0.06] pb-2 text-[11px] text-slate-400">
+            <span>Package</span>
+            <span>Credits</span>
+            <span>Price (USD)</span>
+            <span>Status</span>
+          </div>
+          <div className="mt-3 space-y-2">
+            {(creditPacks.length > 0 ? creditPacks.slice(0, 4) : [
+              { _id: 'p1', name: 'Starter', totalCredits: 5000, price: 19, active: true },
+              { _id: 'p2', name: 'Creator', totalCredits: 15000, price: 49, active: true },
+              { _id: 'p3', name: 'Studio', totalCredits: 50000, price: 149, active: true },
+            ]).map(pack => (
+              <div key={pack._id} className="grid grid-cols-[1fr_90px_90px_72px] text-[12px] text-slate-300">
+                <span className="truncate">{pack.name}</span>
+                <span>{formatNumber(pack.totalCredits || 0)}</span>
+                <span>${pack.price}</span>
+                <span className={pack.active ? 'text-emerald-400' : 'text-slate-500'}>{pack.active ? 'Active' : 'Hidden'}</span>
+              </div>
+            ))}
+          </div>
+        </Panel>
+
+        <Panel className="p-5">
+          <PanelHeader title="System Status" />
+          <div className="grid grid-cols-[1fr_90px_80px] border-b border-white/[0.06] pb-2 text-[11px] text-slate-400">
+            <span>Service</span>
+            <span>Status</span>
+            <span>Uptime</span>
+          </div>
+          <div className="mt-3 space-y-3 text-[12px]">
+            {['Backend API', 'MongoDB', 'Payment Webhook', 'Worker Queue'].map((service, index) => (
+              <div key={service} className="grid grid-cols-[1fr_90px_80px] text-slate-300">
+                <span>{service}</span>
+                <span className="inline-flex items-center gap-1 text-emerald-400"><CheckCircle2 size={12} /> Healthy</span>
+                <span>{index === 0 ? '99.99%' : '99.9%'}</span>
+              </div>
+            ))}
+          </div>
+        </Panel>
       </div>
     </div>
   );

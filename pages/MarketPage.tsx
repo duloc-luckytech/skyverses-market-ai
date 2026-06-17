@@ -316,7 +316,7 @@ const MarketPage = () => {
   const heroVideoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   /* ── Hero rotating keywords ── */
-  const heroRotatingWords = useMemo(() => [t('landing.hero.rotate1'), t('landing.hero.rotate2'), t('landing.hero.rotate3'), t('landing.hero.rotate4'), t('landing.hero.rotate5')], [t]);
+  const heroRotatingWords = useMemo(() => [t('landing.hero.rotate1'), t('landing.hero.rotate2'), t('landing.hero.rotate3')], [t]);
   const [heroWordIdx, setHeroWordIdx] = useState(0);
   useEffect(() => {
     const t = setInterval(() => setHeroWordIdx(prev => (prev + 1) % heroRotatingWords.length), 2800);

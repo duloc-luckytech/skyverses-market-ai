@@ -17,12 +17,18 @@ cms/
 ├── constants/             market-config.tsx, media-presets.ts
 ├── context/               AuthContext, LanguageContext, ThemeContext, ToastContext (subset)
 ├── hooks/                 useSettingsLogic.ts
-├── pages/                 AdminCmsProPage.tsx (grouped searchable Control Center + lazy tabs), LoginPage.tsx
+├── pages/                 AdminCmsProPage.tsx (`/` Control Center + lazy tabs), LoginPage.tsx (`/login`)
 ├── services/              gemini.ts, storage.ts
 └── utils/                 adminAuth.ts, pricing-helpers.ts
 ```
 
 **Lưu ý:** CMS có `services/gemini.ts` (main app không có) — gọi `@google/genai` trực tiếp cho admin AI helpers.
+
+**CMS routes:** `/` mở Control Center, `/login` mở admin login; alias cũ `/cms-admin-pro` đã bỏ.
+
+**CMS theme:** `cms/context/ThemeContext.tsx` default `dark` để Control Center khớp dark admin shell.
+
+**CMS dashboard:** `cms/components/admin-pro/DashboardTab.tsx` dùng dark KPI grid + Recharts line/donut theo Control Center.
 
 **Dọn admin-pro:** bỏ các tab legacy/mồ côi `ProductsTab`, `SolutionManagerTab`, `ApiSandboxTab`; shell hiện dùng `NodeRegistryTab` cho Market Products.
 

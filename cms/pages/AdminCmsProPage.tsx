@@ -8,7 +8,7 @@ import {
   Compass, Bot, Key, Zap, Inbox, Sparkles,
   ShieldCheck, ChevronLeft, ChevronRight,
   Sun, Moon, LogOut, Plus, CreditCard, FileText, Webhook, Cpu,
-  Search, LayoutGrid, Settings2, RefreshCw, Megaphone, ArrowDownToLine
+  Search, LayoutGrid, Settings2, RefreshCw, Megaphone, ArrowDownToLine, Menu
 } from 'lucide-react';
 
 import { marketApi } from '../apis/market';
@@ -403,7 +403,14 @@ const AdminCmsProPage = () => {
         <header className="shrink-0 h-16 flex items-center justify-between px-5 lg:px-8 bg-white/70 dark:bg-[#0a0a0c]/70 backdrop-blur-xl border-b border-black/[0.04] dark:border-white/[0.04]">
           <div className="min-w-0">
             <div className="flex items-center gap-3">
-              <h1 className="text-sm font-bold text-slate-900 dark:text-white truncate">{currentLabel}</h1>
+              <button
+                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                title="Toggle sidebar"
+                className="hidden h-8 w-8 items-center justify-center rounded-lg border border-black/[0.06] bg-white text-slate-600 transition hover:text-brand-blue dark:border-white/[0.06] dark:bg-white/[0.04] dark:text-gray-300 md:flex"
+              >
+                <Menu size={15} />
+              </button>
+              <h1 className="text-base font-black text-slate-900 dark:text-white truncate">{currentLabel}</h1>
               <span className="text-[9px] text-slate-400 font-medium bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded">{activeTab}</span>
             </div>
             {currentTab?.description && (
@@ -430,10 +437,13 @@ const AdminCmsProPage = () => {
             )}
             {user && (
               <div className="flex items-center gap-2 text-xs text-slate-400">
-                <div className="w-6 h-6 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue text-[10px] font-bold">
+                <div className="w-8 h-8 rounded-full bg-brand-blue flex items-center justify-center text-white text-[12px] font-black shadow-lg shadow-brand-blue/20">
                   {user.email?.[0]?.toUpperCase() || 'A'}
                 </div>
-                <span className="text-[10px] font-medium hidden lg:block">{user.email}</span>
+                <div className="hidden text-right leading-tight lg:block">
+                  <p className="text-[12px] font-bold text-slate-800 dark:text-white">{user.email}</p>
+                  <p className="text-[11px] text-slate-400">Super Administrator</p>
+                </div>
               </div>
             )}
             <button onClick={handleLogout} title="Đăng xuất"

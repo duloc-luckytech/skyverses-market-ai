@@ -21,6 +21,11 @@ export default defineConfig(({ mode }) => {
       port: 3001,
       host: true
     },
+    preview: {
+      port: 5301,
+      host: true,
+      allowedHosts: ['cms-market.skyverses.com']
+    },
     build: {
       outDir: 'dist',
       sourcemap: true,

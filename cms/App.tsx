@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -22,7 +22,6 @@ const App: React.FC = () => {
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/" element={<AdminCmsProPage />} />
-                <Route path="/cms-admin-pro" element={<AdminCmsProPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Router>

@@ -36,7 +36,7 @@ const SAMPLE_SLIDES = [
     title: 'Slide 1: Giới thiệu — Skyverses AI Marketplace',
     bullets: [
       'Nền tảng all-in-one: 30+ ứng dụng AI trong một tài khoản',
-      'Hỗ trợ 50+ model hàng đầu: Veo3, Kling, Gemini, GPT-4o, Midjourney',
+      'Hỗ trợ 50+ model hàng đầu: Veo3, Kling, Gemini, GPT, Midjourney',
       'Thanh toán nội địa, không cần thẻ quốc tế',
     ],
   },
@@ -62,7 +62,7 @@ const SAMPLE_SLIDES = [
       '🎬 AI Video: Veo3, Kling, Seedance, Sora',
       '🖼️ AI Image: Midjourney, Flux, Stable Diffusion',
       '🎵 AI Music & Voice: Suno, ElevenLabs, Fish Audio',
-      '🤖 AI Chat: Gemini, GPT-4o, Grok, DeepSeek',
+      '🤖 AI Chat: Gemini, GPT, Grok, DeepSeek',
     ],
   },
   {

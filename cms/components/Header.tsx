@@ -512,7 +512,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                           {(user?.role === "admin" ||
                             user?.email === "duloc2708@gmail.com") && (
                             <DropdownLink
-                              to="/cms-admin-pro"
+                              to="/"
                               icon={<Database size={16} />}
                               label={t("user.menu.admin")}
                               onClick={() => setShowUserMenu(false)}

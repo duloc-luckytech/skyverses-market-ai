@@ -118,7 +118,7 @@ const SearchPage: React.FC = () => {
       : 'Tìm kiếm bài viết AI — Skyverses Insights',
     description: activeQuery
       ? `Kết quả tìm kiếm cho "${activeQuery}" trên Skyverses Insights — hướng dẫn AI, tin tức và case study.`
-      : 'Tìm kiếm hướng dẫn AI, tin tức và case study trên Skyverses Insights. Khám phá bài viết về Veo3, Kling, Gemini, GPT-4o, Midjourney và 50+ AI model.',
+      : 'Tìm kiếm hướng dẫn AI, tin tức và case study trên Skyverses Insights. Khám phá bài viết về Veo3, Kling, Gemini, GPT, Midjourney và 50+ AI model.',
     keywords: activeQuery
       ? `${activeQuery}, hướng dẫn AI, Skyverses insights, tìm kiếm AI`
       : 'tìm kiếm AI, hướng dẫn AI, Skyverses insights',

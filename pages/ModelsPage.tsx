@@ -221,7 +221,7 @@ const ModelsPage: React.FC = () => {
               AI <span className="atlas-text-gradient">Models</span>
             </h1>
             <p className="text-base md:text-lg text-[var(--atlas-text-secondary)] max-w-2xl leading-relaxed">
-              Khám phá bộ sưu tập {models.length}+ model AI hàng đầu thế giới — Veo3, Kling, Sora, Midjourney, Flux, GPT-4o, Gemini, Claude — cho sản xuất hình ảnh, video, nhạc và giọng nói.
+              Khám phá bộ sưu tập {models.length}+ model AI hàng đầu thế giới — Veo3, Kling, Sora, Midjourney, Flux, GPT, Gemini, Claude — cho sản xuất hình ảnh, video, nhạc và giọng nói.
             </p>
           </div>
 
