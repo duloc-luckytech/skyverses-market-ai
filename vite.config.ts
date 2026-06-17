@@ -24,7 +24,7 @@ export default defineConfig(({ mode }) => {
     preview: {
       port: 5300,
       host: true,
-      allowedHosts: ['ai.skyverses.com']
+      allowedHosts: ['ai.skyverses.com', 'skyverses.com', 'www.skyverses.com']
     },
     build: {
       outDir: 'dist',
