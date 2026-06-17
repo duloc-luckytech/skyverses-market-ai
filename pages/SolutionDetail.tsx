@@ -7,6 +7,7 @@ import { SOLUTIONS as LOCAL_SOLUTIONS } from '../data';
 import DemoModal from '../components/DemoModal';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { 
   ArrowRight, 
   ChevronLeft, 
@@ -59,6 +60,43 @@ const SolutionDetail = () => {
   useEffect(() => {
     if (solution) setActiveImage(solution.imageUrl);
   }, [solution]);
+
+  // ── Per-product SEO meta (must run before early returns — React hook rules) ──
+  const metaDesc = solution
+    ? (solution.description?.[lang] || solution.description?.en || '').replace(/\s+/g, ' ').trim().slice(0, 200)
+    : 'Explore production-grade AI solutions on the Skyverses AI marketplace.';
+  const metaImage = solution ? (solution.bannerUrl || solution.imageUrl) : undefined;
+  usePageMeta({
+    title: solution
+      ? `${solution.name?.[lang] || solution.name?.en} — Skyverses AI`
+      : 'Skyverses AI Marketplace',
+    description: metaDesc,
+    keywords: solution
+      ? [...(solution.tags || []), ...(solution.models || []), solution.category?.[lang]]
+          .filter(Boolean)
+          .join(', ')
+      : undefined,
+    ogImage: metaImage,
+    canonical: `/product/${slug}`,
+    type: 'product',
+    jsonLd: solution
+      ? {
+          '@type': 'Product',
+          name: solution.name?.[lang] || solution.name?.en,
+          description: metaDesc,
+          image: metaImage,
+          category: solution.category?.[lang],
+          brand: { '@type': 'Brand', name: 'Skyverses AI' },
+          offers: {
+            '@type': 'Offer',
+            price: solution.isFree ? 0 : solution.priceCredits ?? 0,
+            priceCurrency: 'CREDIT',
+            availability: 'https://schema.org/InStock',
+            url: `https://ai.skyverses.com/product/${slug}`,
+          },
+        }
+      : undefined,
+  });
 
   if (loading) {
     return (
