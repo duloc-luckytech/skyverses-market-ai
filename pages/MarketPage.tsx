@@ -712,8 +712,9 @@ const MarketPage = () => {
                 {/* Hero Text — Cinematic entrance with rotating keyword */}
                 <div className="text-center max-w-4xl mx-auto mb-14">
                   <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold tracking-[-0.03em] leading-[1.08] text-[#ebf4fb]">
-                    <BlurTextReveal text={t('landing.hero.line1')} as="span" delay={0.3} charDelay={0.035} style={{ justifyContent: 'center', fontSize: 'inherit', fontWeight: 'inherit', lineHeight: 'inherit' }} />
-                    <br className="hidden sm:block" />
+                    <span className="block text-base md:text-xl font-semibold tracking-normal text-[#ebf4fb]/50 mb-4 md:mb-5">
+                      <BlurTextReveal text={t('landing.hero.line1')} as="span" delay={0.3} charDelay={0.035} style={{ justifyContent: 'center', fontSize: 'inherit', fontWeight: 'inherit', lineHeight: 'inherit' }} />
+                    </span>
                     <BlurTextReveal text={t('landing.hero.line2')} as="span" delay={0.7} charDelay={0.035} style={{ justifyContent: 'center', display: 'inline-flex', fontSize: 'inherit', fontWeight: 'inherit', lineHeight: 'inherit' }} />
                     {' '}
                     <span className="inline-flex items-baseline overflow-hidden" style={{ height: '1.3em', verticalAlign: 'baseline' }}>
