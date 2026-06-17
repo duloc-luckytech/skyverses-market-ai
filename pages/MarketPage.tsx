@@ -1750,6 +1750,52 @@ const MarketPage = () => {
             </LazySection>
 
             {/* ═══════════════════════════════════════════════════════════
+             * SECTION 2C: BUILD APPS — Pillar 3 (faster & cheaper app dev)
+             * ═══════════════════════════════════════════════════════════ */}
+            <section style={{ width: '100vw', marginLeft: 'calc(-50vw + 50%)', background: '#fff', padding: '88px 0', position: 'relative', zIndex: 2, boxSizing: 'border-box' }}>
+              <div style={{ padding: '0 64px', boxSizing: 'border-box', maxWidth: 1200, margin: '0 auto' }}>
+                <AnimatedSectionHeader
+                  label={t('landing.buildapps.label')}
+                  title={t('landing.buildapps.title')}
+                  desc={t('landing.buildapps.desc')}
+                  style={{ marginBottom: 48 }}
+                />
+
+                <StaggerContainer style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, marginBottom: 40 }}>
+                  {[
+                    { t: 'landing.buildapps.f1_title', d: 'landing.buildapps.f1_desc' },
+                    { t: 'landing.buildapps.f2_title', d: 'landing.buildapps.f2_desc' },
+                    { t: 'landing.buildapps.f3_title', d: 'landing.buildapps.f3_desc' },
+                  ].map((card) => (
+                    <StaggerItem key={card.t}>
+                      <div style={{ height: '100%', boxSizing: 'border-box', padding: '28px 28px 30px', borderRadius: 16, border: '1px solid rgba(0,0,0,0.08)', background: '#fafbfc' }}>
+                        <h3 style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 700, fontSize: 20, lineHeight: 1.3, color: '#0a0f1a', margin: '0 0 12px' }}>
+                          {t(card.t)}
+                        </h3>
+                        <p style={{ fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 400, fontSize: 15, lineHeight: 1.6, color: 'rgba(10,15,26,0.62)', margin: 0 }}>
+                          {t(card.d)}
+                        </p>
+                      </div>
+                    </StaggerItem>
+                  ))}
+                </StaggerContainer>
+
+                <FadeInUp style={{ textAlign: 'center' }}>
+                  <button
+                    onClick={() => navigate('/booking')}
+                    style={{
+                      fontFamily: 'var(--font-manrope, Manrope, sans-serif)', fontWeight: 600, fontSize: 15,
+                      color: '#0a0f1a', background: '#C9A84C', border: 'none', borderRadius: 999,
+                      padding: '14px 32px', cursor: 'pointer',
+                    }}
+                  >
+                    {t('landing.buildapps.cta')}
+                  </button>
+                </FadeInUp>
+              </div>
+            </section>
+
+            {/* ═══════════════════════════════════════════════════════════
              * SECTIONS 3-7: TEMPORARILY HIDDEN (sẽ bổ sung sau)
              * ═══════════════════════════════════════════════════════════ */}
             {false && (<>
