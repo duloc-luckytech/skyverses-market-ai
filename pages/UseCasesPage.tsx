@@ -131,7 +131,7 @@ const UseCasesPage = () => {
   usePageMeta({
     title: 'Use Cases | Skyverses - AI for Every Industry',
     description: 'Discover how businesses use Skyverses AI tools across content creation, e-commerce, marketing, fashion, real estate, and education.',
-    keywords: 'AI use cases, Skyverses industries, AI content creation, AI marketing, AI fashion, xây dựng app AI cho doanh nghiệp, tích hợp AI vào hệ thống, custom AI development, enterprise AI solutions, AI agent tự động hoá quy trình',
+    keywords: 'AI use cases, Skyverses industries, AI content creation, AI marketing, AI fashion, xây dựng app AI cho doanh nghiệp, tích hợp AI vào hệ thống, custom AI development, enterprise AI solutions, AI agent tự động hoá quy trình, AI outsourcing, outsource AI development, thuê ngoài phát triển AI',
     canonical: '/use-cases'
   });
 

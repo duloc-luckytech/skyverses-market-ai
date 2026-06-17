@@ -16,7 +16,7 @@ const BookingPage = () => {
   usePageMeta({
     title: 'Phát triển & Tích hợp AI cho Doanh nghiệp | Skyverses',
     description: 'Skyverses xây dựng app & sản phẩm AI theo yêu cầu, tích hợp AI vào hệ thống sẵn có, phát triển AI Agent tự động hoá quy trình và tư vấn chiến lược AI cho doanh nghiệp. Đặt lịch tư vấn miễn phí.',
-    keywords: 'xây dựng app AI, phát triển ứng dụng AI theo yêu cầu, tích hợp AI cho doanh nghiệp, custom AI development, AI integration, AI agent doanh nghiệp, tự động hoá workflow AI, tư vấn chiến lược AI, AI consulting, dịch vụ AI doanh nghiệp, booking, đặt lịch tư vấn AI',
+    keywords: 'xây dựng app AI, phát triển ứng dụng AI theo yêu cầu, tích hợp AI cho doanh nghiệp, custom AI development, AI integration, AI agent doanh nghiệp, tự động hoá workflow AI, tư vấn chiến lược AI, AI consulting, dịch vụ AI doanh nghiệp, AI outsourcing, outsource AI development, dịch vụ outsource AI, thuê ngoài phát triển AI, AI development outsourcing company, đối tác AI outsourcing, booking, đặt lịch tư vấn AI',
     canonical: '/booking',
     type: 'website',
     jsonLd: {
@@ -34,6 +34,7 @@ const BookingPage = () => {
           { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Tích hợp AI vào hệ thống sẵn có' } },
           { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'AI Agent & Tự động hoá Workflow' } },
           { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Tư vấn chiến lược AI' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Outsource phát triển & vận hành AI (AI outsourcing)' } },
         ],
       },
     },
