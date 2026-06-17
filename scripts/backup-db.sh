@@ -6,7 +6,16 @@
 # ═══════════════════════════════════════════════════
 
 # ─── Config ───
-MONGO_URI="mongodb://sky_admin:SkyVerses%402026%21Secure@127.0.0.1:27017/skyverses-dev?authSource=admin"
+# MONGO_URI is read from the (gitignored) backend .env so the credential is
+# never hardcoded in version control. Override by exporting MONGO_URI first.
+ENV_FILE="/root/skyverses-market-ai/skyverses-backend/.env"
+if [ -z "$MONGO_URI" ] && [ -f "$ENV_FILE" ]; then
+  MONGO_URI=$(grep '^MONGO_URI=' "$ENV_FILE" | cut -d'=' -f2-)
+fi
+if [ -z "$MONGO_URI" ]; then
+  echo "❌ MONGO_URI not set and not found in $ENV_FILE" >&2
+  exit 1
+fi
 DB_NAME="skyverses-dev"
 BACKUP_DIR="/root/skyverses-market-ai/backups/mongodb"
 RETENTION_DAYS=7
