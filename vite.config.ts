@@ -21,6 +21,11 @@ export default defineConfig(({ mode }) => {
       port: 3001,
       host: true
     },
+    preview: {
+      port: 5300,
+      host: true,
+      allowedHosts: ['ai.skyverses.com']
+    },
     build: {
       outDir: 'dist',
       sourcemap: mode !== 'production',
