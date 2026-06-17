@@ -17,7 +17,8 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { marketApi } from '../apis/market';
-import { Solution, Language } from '../types';
+import { promptMarketApi } from '../apis/prompt-market';
+import { Solution, Language, PromptSet } from '../types';
 
 // ═══════ TYPES ═══════
 interface RecentlyViewedItem {
@@ -26,6 +27,22 @@ interface RecentlyViewedItem {
   name: { en: string; vi: string; ko: string; ja: string };
   imageUrl: string;
   category: { en: string; vi: string; ko: string; ja: string };
+}
+
+interface MarketHeroItem {
+  id: string;
+  slug: string;
+  navigateTo: string;
+  name: Partial<Record<Language, string>>;
+  category: Partial<Record<Language, string>>;
+  description: Partial<Record<Language, string>>;
+  imageUrl: string;
+  bannerUrl?: string;
+  thumbnailUrl?: string;
+  priceLabel: string;
+  metaLabel: string;
+  badge: string;
+  source: 'app' | 'prompt';
 }
 
 // ═══════ CONSTANTS ═══════
@@ -152,6 +169,58 @@ const getSolutionThumbnailImage = (sol: Solution) => {
     return sol.imageUrl.replace('-banner/', '-thumbnail/');
   }
   return sol.imageUrl;
+};
+
+const getPromptHeroImage = (promptSet: PromptSet) => {
+  const videoExample = (promptSet.examples ?? []).find(example => example.video && example.image);
+  const imageExample = (promptSet.examples ?? []).find(example => example.image);
+  return videoExample?.image || imageExample?.image || promptSet.coverImage || '';
+};
+
+const normalizeLocalized = (value: Partial<Record<Language, string>> | undefined, fallback: string): Partial<Record<Language, string>> => ({
+  en: value?.en || fallback,
+  vi: value?.vi || value?.en || fallback,
+  ko: value?.ko || value?.en || fallback,
+  ja: value?.ja || value?.en || fallback,
+});
+
+const solutionToHeroItem = (sol: Solution): MarketHeroItem => ({
+  id: `app-${sol.id || sol.slug}`,
+  slug: sol.slug,
+  navigateTo: `/product/${sol.slug}`,
+  name: sol.name,
+  category: sol.category,
+  description: sol.description,
+  imageUrl: sol.imageUrl,
+  bannerUrl: getSolutionBannerImage(sol),
+  thumbnailUrl: getSolutionThumbnailImage(sol),
+  priceLabel: sol.priceCredits ? `${sol.priceCredits} CR` : sol.isFree ? 'Free' : sol.priceReference || 'Freemium',
+  metaLabel: sol.models?.slice(0, 2).join(' / ') || sol.tags?.slice(0, 2).join(' / ') || 'Market App',
+  badge: sol.isFree ? 'FREE' : 'PRO',
+  source: 'app',
+});
+
+const promptSetToHeroItem = (promptSet: PromptSet): MarketHeroItem | null => {
+  const imageUrl = getPromptHeroImage(promptSet);
+  if (!imageUrl) return null;
+  const title = normalizeLocalized(promptSet.title, promptSet.title?.en || 'Prompt Kit');
+  const description = normalizeLocalized(promptSet.description, promptSet.description?.en || promptSet.previewText || 'Ready-to-use creative prompt kit.');
+  const category = normalizeLocalized({ en: promptSet.category, vi: promptSet.category }, 'Prompt Kit');
+  return {
+    id: `prompt-${promptSet._id}`,
+    slug: promptSet.slug,
+    navigateTo: `/prompt-market/${promptSet.slug}`,
+    name: title,
+    category,
+    description,
+    imageUrl,
+    bannerUrl: imageUrl,
+    thumbnailUrl: imageUrl,
+    priceLabel: promptSet.isFree ? 'Free' : `${promptSet.priceSKT} SKT`,
+    metaLabel: `${promptSet.promptCount || promptSet.prompts?.length || 0} prompts`,
+    badge: 'PROMPT',
+    source: 'prompt',
+  };
 };
 
 const matchesMenuCategory = (sol: Solution, key: string, lang: Language): boolean => {
@@ -357,7 +426,7 @@ const SuggestedSection: React.FC<{ solutions: Solution[]; lang: Language; onNavi
 
 // ═══════ FEATURED STUDIO HERO ═══════
 const FeaturedStudioStage: React.FC<{
-  items: Solution[];
+  items: MarketHeroItem[];
   lang: Language;
   activeIndex: number;
   onNavigate: (target: string) => void;
@@ -368,12 +437,12 @@ const FeaturedStudioStage: React.FC<{
   const stageItems = items.slice(0, 5);
   const stageIndex = stageItems.length > 0 ? activeIndex % stageItems.length : 0;
   const spotlight = stageItems.length > 0 ? stageItems[stageIndex] : undefined;
-  const heroImage = spotlight ? getSolutionBannerImage(spotlight) : undefined;
+  const heroImage = spotlight?.bannerUrl || spotlight?.imageUrl;
   const spotlightName = spotlight?.name[lang] || spotlight?.name.en || 'Đang tải studio';
   const spotlightDesc = spotlight?.description[lang] || spotlight?.description.en || 'Marketplace sẽ tự lấy danh sách app thật từ hệ thống và chọn ngẫu nhiên mỗi lần tải trang.';
   const spotlightCategory = spotlight?.category[lang] || spotlight?.category.en || 'Apps';
-  const spotlightPrice = spotlight ? (spotlight.priceCredits ? `${spotlight.priceCredits} CR` : spotlight.isFree ? 'Free' : spotlight.priceReference || 'Freemium') : 'Loading';
-  const spotlightMeta = spotlight?.models?.slice(0, 2).join(' / ') || spotlight?.tags?.slice(0, 2).join(' / ') || 'Studio';
+  const spotlightPrice = spotlight?.priceLabel || 'Loading';
+  const spotlightMeta = spotlight?.metaLabel || 'Studio';
 
   return (
     <motion.section
@@ -387,7 +456,7 @@ const FeaturedStudioStage: React.FC<{
         {heroImage && (
           <motion.button
             key={spotlight?.id || heroImage}
-            onClick={() => spotlight && onNavigate(spotlight.slug)}
+            onClick={() => spotlight && onNavigate(spotlight.navigateTo)}
             disabled={!spotlight}
             className="group absolute bottom-5 right-0 top-5 w-full overflow-hidden rounded-l-[20px] text-left disabled:pointer-events-none disabled:opacity-60 md:right-7 md:w-[68%]"
             aria-label={`Preview ${spotlightName}`}
@@ -408,7 +477,7 @@ const FeaturedStudioStage: React.FC<{
             <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#050505] via-[#050505]/72 to-transparent" />
             <div className="absolute left-[34%] top-0 h-full w-px bg-gradient-to-b from-transparent via-[#E5C767]/48 to-transparent" />
             <div className="absolute bottom-5 left-[17%] hidden text-[58px] font-black uppercase leading-none tracking-tight text-white/[0.045] md:block">
-              {spotlightCategory}
+              {spotlight?.source === 'prompt' ? 'PROMPT KIT' : spotlightCategory}
             </div>
           </motion.button>
         )}
@@ -435,7 +504,7 @@ const FeaturedStudioStage: React.FC<{
               {spotlightName}
             </h1>
             <span className="rounded-md border border-[#E5C767]/45 bg-[#E5C767]/8 px-2.5 py-1 text-[10px] font-semibold text-[#E5C767]">
-              {spotlight?.isFree ? 'FREE' : 'PRO'}
+              {spotlight?.badge || 'PRO'}
             </span>
           </div>
           <p className="mt-5 max-w-[430px] text-[14px] leading-6 text-white/72">
@@ -449,7 +518,7 @@ const FeaturedStudioStage: React.FC<{
           </div>
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <button
-              onClick={() => spotlight && onNavigate(spotlight.slug)}
+              onClick={() => spotlight && onNavigate(spotlight.navigateTo)}
               disabled={!spotlight}
               className="inline-flex h-10 items-center gap-2 rounded-lg border border-[#E5C767]/70 bg-[#E5C767]/10 px-4 text-[13px] font-medium text-[#E5C767] transition-colors hover:bg-[#E5C767] hover:text-black disabled:pointer-events-none disabled:opacity-50"
             >
@@ -785,9 +854,13 @@ const MarketsPage: React.FC = () => {
 
   const [solutions, setSolutions] = useState<Solution[]>([]);
   const [featuredSolutions, setFeaturedSolutions] = useState<Solution[]>([]);
+  const [heroItems, setHeroItems] = useState<MarketHeroItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [gridSettling, setGridSettling] = useState(false);
-  const heroStageItems = useMemo(() => (featuredSolutions.length > 0 ? featuredSolutions : solutions).slice(0, 5), [featuredSolutions, solutions]);
+  const heroStageItems = useMemo(
+    () => (heroItems.length > 0 ? heroItems : (featuredSolutions.length > 0 ? featuredSolutions : solutions).map(solutionToHeroItem)).slice(0, 5),
+    [heroItems, featuredSolutions, solutions]
+  );
   const heroCycleCount = heroStageItems.length;
 
   // Auto-slide every 6s
@@ -1000,6 +1073,10 @@ const MarketsPage: React.FC = () => {
 
   const handleNavigate = useCallback((slug: string) => {
     navigate(`/product/${slug}`);
+  }, [navigate]);
+
+  const handleHeroNavigate = useCallback((target: string) => {
+    navigate(target);
   }, [navigate]);
 
   // Quick path: set category + smooth scroll to grid (delay để đợi render xong)
