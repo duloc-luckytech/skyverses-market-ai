@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
+import { usePageMeta } from '../hooks/usePageMeta';
 import {
   Code2, Globe, Zap, ArrowRight, ExternalLink, Sparkles,
   Download, GitBranch, Rocket, Shield, Monitor, Layers,
@@ -65,9 +66,21 @@ const USE_CASES = [
 ];
 
 const NoCodeExportPage: React.FC = () => {
-  useEffect(() => {
-    document.title = 'NoCodeExport — Export Any Website to Code | Skyverses';
-  }, []);
+  usePageMeta({
+    title: 'NoCodeExport — Export Any Website to Code | Skyverses',
+    description: 'Paste any website URL and export clean, production-ready source code. Auto-detect framework, push to GitHub, and one-click deploy to Vercel, Netlify or Cloudflare Pages.',
+    keywords: 'nocode export, website to code, html export, source code generator, github export, vercel deploy, Skyverses',
+    canonical: '/product/nocode-export',
+    type: 'product',
+    jsonLd: {
+      '@type': 'Product',
+      name: 'NoCodeExport',
+      description: 'Export any website to clean, deployable source code with auto framework detection and one-click deploy.',
+      category: 'No-Code / Developer Tools',
+      brand: { '@type': 'Brand', name: 'Skyverses AI' },
+      offers: { '@type': 'Offer', priceCurrency: 'CREDIT', availability: 'https://schema.org/InStock', url: 'https://ai.skyverses.com/product/nocode-export' },
+    },
+  });
 
   return (
     <div className="pt-20 bg-[var(--atlas-bg-page)] dark:bg-[var(--atlas-bg-page)] min-h-screen text-slate-900 dark:text-white font-sans selection:bg-brand-blue/30 overflow-x-hidden transition-colors duration-500">
