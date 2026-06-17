@@ -306,11 +306,11 @@ const MarketPage = () => {
 
   /* ─────────── Hero Video Slideshow ─────────── */
   const heroVideos = useMemo(() => [
-    { src: 'https://cdn.higgsfield.ai/superhero-gen-preset/b799a9e9-cbe8-4425-b3dd-5115d89cec71.mp4', label: 'VEO 3.1', icon: '/assets/model-icons/google.svg' },
-    { src: 'https://cdn.higgsfield.ai/superhero-gen-preset/d69e53e6-0caa-4516-a715-1add43e1167b.mp4', label: 'Kling 3.0', icon: '/assets/model-icons/kling.svg' },
-    { src: 'https://cdn.higgsfield.ai/superhero-gen-preset/da5ed91e-0138-405f-a06f-8ed0491e0dd0.mp4', label: 'Nano Banana Pro', icon: '/assets/model-icons/google.svg' },
-    { src: 'https://cdn.higgsfield.ai/superhero-gen-preset/a57ad0e2-02f9-4e7e-ac38-cea5b489653b.mp4', label: 'Seedance 2.0', icon: '/assets/model-icons/bytedance.svg' },
-    { src: 'https://cdn.higgsfield.ai/superhero-gen-preset/0c6cd833-d2e3-41a1-bf88-a6d1b4a82060.mp4', label: 'WAN 2.5', icon: '/assets/model-icons/qwen.svg' },
+    { src: 'https://cdn.higgsfield.ai/superhero-gen-preset/b799a9e9-cbe8-4425-b3dd-5115d89cec71.mp4', label: 'iOS', icon: '/assets/model-icons/apple.svg' },
+    { src: 'https://cdn.higgsfield.ai/superhero-gen-preset/d69e53e6-0caa-4516-a715-1add43e1167b.mp4', label: 'Android', icon: '/assets/model-icons/android.svg' },
+    { src: 'https://cdn.higgsfield.ai/superhero-gen-preset/da5ed91e-0138-405f-a06f-8ed0491e0dd0.mp4', label: 'macOS', icon: '/assets/model-icons/apple.svg' },
+    { src: 'https://cdn.higgsfield.ai/superhero-gen-preset/a57ad0e2-02f9-4e7e-ac38-cea5b489653b.mp4', label: 'Windows', icon: '/assets/model-icons/windows.svg' },
+    { src: 'https://cdn.higgsfield.ai/superhero-gen-preset/0c6cd833-d2e3-41a1-bf88-a6d1b4a82060.mp4', label: 'Unity', icon: '/assets/model-icons/unity.svg' },
   ], []);
   const heroSlideInterval = 8000;
   const heroVideoRefs = useRef<(HTMLVideoElement | null)[]>([]);
