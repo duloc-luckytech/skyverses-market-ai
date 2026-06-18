@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../../../context/LanguageContext';
@@ -35,9 +35,13 @@ const CmsBlockSection: React.FC<CmsBlockSectionProps> = ({
   onQuickView,
   getStats,
 }) => {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   const navigate = useNavigate();
   const currentLang = lang as Language;
+  const scrollRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const scrollBlock = (idx: number, dir: -1 | 1) => {
+    scrollRefs.current[idx]?.scrollBy({ left: dir * 360, behavior: 'smooth' });
+  };
 
   return (
     <LazySection rootMargin="300px" minHeight={420}>
@@ -54,7 +58,7 @@ const CmsBlockSection: React.FC<CmsBlockSectionProps> = ({
               <div key={block.key} className={blockIdx > 0 ? 'mt-14' : ''}>
                 <div className="mb-7 flex items-end justify-between gap-5">
                   <div>
-                    <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-brand-blue">CMS HomeBlock</span>
+                    <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-brand-blue">{t('landing.cms.label')}</span>
                     <h3 className="mt-2 text-2xl font-bold tracking-tight text-[#1a2330] md:text-3xl">
                       {block.title?.[currentLang] || block.title?.en}
                     </h3>
@@ -63,14 +67,14 @@ const CmsBlockSection: React.FC<CmsBlockSectionProps> = ({
                     )}
                   </div>
                   <div className="hidden items-center gap-2 md:flex">
-                    <button className="rounded-full border border-black/10 p-2 text-[#1a2330]/60"><ChevronLeft size={16} /></button>
-                    <button className="rounded-full border border-black/10 p-2 text-[#1a2330]/60"><ChevronRight size={16} /></button>
+                    <button aria-label="Scroll left" onClick={() => scrollBlock(blockIdx, -1)} className="rounded-full border border-black/10 p-2 text-[#1a2330]/60 transition hover:border-brand-blue/40 hover:text-brand-blue"><ChevronLeft size={16} /></button>
+                    <button aria-label="Scroll right" onClick={() => scrollBlock(blockIdx, 1)} className="rounded-full border border-black/10 p-2 text-[#1a2330]/60 transition hover:border-brand-blue/40 hover:text-brand-blue"><ChevronRight size={16} /></button>
                     <button onClick={() => navigate('/markets')} className="ml-2 inline-flex items-center gap-1.5 text-sm font-bold text-brand-blue hover:gap-2.5">
-                      View All <ArrowRight size={14} />
+                      {t('landing.cms.viewall')} <ArrowRight size={14} />
                     </button>
                   </div>
                 </div>
-                <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-4 no-scrollbar -mx-5 px-5 md:mx-0 md:px-0">
+                <div ref={(el) => { scrollRefs.current[blockIdx] = el; }} className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-4 no-scrollbar -mx-5 px-5 md:mx-0 md:px-0">
                   {loading
                     ? Array.from({ length: 6 }).map((_, i) => <CardSkeleton key={i} />)
                     : blockSols.slice(0, block.limit || 8).map((sol, idx) => (

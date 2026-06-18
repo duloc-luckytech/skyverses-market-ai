@@ -120,11 +120,13 @@ export const DrawIcon: React.FC<{ icon: React.ComponentType<{ size?: number; cla
   </motion.div>
 );
 
-export const HoverCard: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
+export const HoverCard: React.FC<{ children: React.ReactNode; className?: string; dark?: boolean }> = ({ children, className = '', dark = false }) => (
   <motion.div
     whileHover={{ y: -4 }}
     transition={{ duration: 0.2, ease: EASE }}
-    className={`rounded-2xl border border-black/[0.06] bg-white shadow-[0_10px_40px_rgba(26,35,48,0.05)] transition-colors hover:border-brand-blue/35 hover:shadow-[0_16px_50px_rgba(201,168,76,0.14)] ${className}`}
+    className={`rounded-2xl border shadow-[0_10px_40px_rgba(26,35,48,0.05)] transition-colors hover:border-brand-blue/35 hover:shadow-[0_16px_50px_rgba(201,168,76,0.14)] ${
+      dark ? 'border-white/[0.08] bg-white/[0.04]' : 'border-black/[0.06] bg-white'
+    } ${className}`}
   >
     {children}
   </motion.div>

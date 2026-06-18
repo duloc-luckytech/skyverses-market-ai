@@ -20,7 +20,7 @@ const FinalCtaSection: React.FC = () => {
           <OutlineButton dark onClick={() => navigate('/booking')}>{t('landing.cta.secondary')}</OutlineButton>
         </div>
         <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-white/40">
-          Pay-as-you-go · No international card · Deploy on your own infrastructure
+          {t('landing.cta.tagline')}
         </p>
       </Reveal>
     </section>

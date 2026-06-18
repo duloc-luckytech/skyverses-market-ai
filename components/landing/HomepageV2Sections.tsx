@@ -2,18 +2,12 @@ import React from 'react';
 import { HomeBlock, Solution } from '../../types';
 import type { ShowcaseImage, ShowcaseVideo } from '../../src/constants/showcase-cdn';
 import { HomepageKeyframes } from './homepage/shared';
-import SocialProofSection from './homepage/SocialProofSection';
-import HubSection from './homepage/HubSection';
-import BusinessSection from './homepage/BusinessSection';
-import EnterpriseSection from './homepage/EnterpriseSection';
-import HowItWorksSection from './homepage/HowItWorksSection';
 import CreatorsShowcaseSection from './homepage/CreatorsShowcaseSection';
 import PromptDemoSection from './homepage/PromptDemoSection';
-import BuildAppsSection from './homepage/BuildAppsSection';
-import StatsBandSection from './homepage/StatsBandSection';
-import OsStripSection from './homepage/OsStripSection';
-import WhySection from './homepage/WhySection';
 import CmsBlockSection from './homepage/CmsBlockSection';
+import SolutionSection from './homepage/SolutionSection';
+import AppGameSection from './homepage/AppGameSection';
+import TrustStripSection from './homepage/TrustStripSection';
 import FinalCtaSection from './homepage/FinalCtaSection';
 
 type HomepageV2SectionsProps = {
@@ -32,6 +26,11 @@ type HomepageV2SectionsProps = {
   getStats: (id: string) => { users: string; likes: string };
 };
 
+/**
+ * Homepage narrative (Option C — visual-first, A→Z):
+ * Hero (HomePage) → ② Creators showcase → demo → catalog (pillar ②)
+ * → ① Business AI solutions → ③ App & Game → trust band → final CTA.
+ */
 const HomepageV2Sections: React.FC<HomepageV2SectionsProps> = ({
   solutions,
   homeBlocks,
@@ -49,17 +48,8 @@ const HomepageV2Sections: React.FC<HomepageV2SectionsProps> = ({
 }) => (
   <>
     <HomepageKeyframes />
-    <SocialProofSection />
-    <HubSection />
-    <BusinessSection />
-    <EnterpriseSection />
-    <HowItWorksSection />
     <CreatorsShowcaseSection showcaseImages={showcaseImages} showcaseVideos={showcaseVideos} />
     <PromptDemoSection showcaseImages={showcaseImages} />
-    <BuildAppsSection />
-    <StatsBandSection />
-    <OsStripSection />
-    <WhySection />
     <CmsBlockSection
       solutions={solutions}
       homeBlocks={homeBlocks}
@@ -73,6 +63,9 @@ const HomepageV2Sections: React.FC<HomepageV2SectionsProps> = ({
       onQuickView={onQuickView}
       getStats={getStats}
     />
+    <SolutionSection />
+    <AppGameSection />
+    <TrustStripSection />
     <FinalCtaSection />
   </>
 );

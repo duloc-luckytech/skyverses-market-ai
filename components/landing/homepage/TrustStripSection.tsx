@@ -3,15 +3,18 @@ import { motion } from 'framer-motion';
 import { useLanguage } from '../../../context/LanguageContext';
 import { AnimatedStat, EASE, MotionChip } from './shared';
 
-/** Animated headline metrics band on a dark surface. */
-const StatsBandSection: React.FC = () => {
+/**
+ * Consolidated trust band on a dark surface — replaces the old StatsBand + Why
+ * sections. Honest, factual proof points only (no on-prem / ~70% / "one codebase").
+ */
+const TrustStripSection: React.FC = () => {
   const { t } = useLanguage();
 
   const stats = useMemo(() => [
-    { value: t('landing.stats.s1_value'), label: t('landing.stats.s1_label') },
-    { value: t('landing.stats.s2_value'), label: t('landing.stats.s2_label') },
-    { value: t('landing.stats.s3_value'), label: t('landing.stats.s3_label') },
-    { value: t('landing.stats.s4_value'), label: t('landing.stats.s4_label') },
+    { value: t('landing.trust.s1_value'), label: t('landing.trust.s1_label') },
+    { value: t('landing.trust.s2_value'), label: t('landing.trust.s2_label') },
+    { value: t('landing.trust.s3_value'), label: t('landing.trust.s3_label') },
+    { value: t('landing.trust.s4_value'), label: t('landing.trust.s4_label') },
   ], [t]);
 
   return (
@@ -19,8 +22,8 @@ const StatsBandSection: React.FC = () => {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(201,168,76,0.12),transparent_55%),radial-gradient(circle_at_85%_70%,rgba(201,168,76,0.1),transparent_50%)]" />
       <div className="relative mx-auto max-w-[1300px]">
         <div className="mb-8 flex flex-col items-center gap-4 text-center">
-          <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-blue">{t('landing.stats.label')}</span>
-          <h2 className="max-w-2xl text-2xl font-bold leading-tight tracking-tight text-white md:text-3xl">{t('landing.stats.title')}</h2>
+          <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-blue">{t('landing.trust.label')}</span>
+          <h2 className="max-w-2xl text-2xl font-bold leading-tight tracking-tight text-white md:text-3xl">{t('landing.trust.title')}</h2>
           <MotionChip name="count-up" />
         </div>
         <motion.div
@@ -46,4 +49,4 @@ const StatsBandSection: React.FC = () => {
   );
 };
 
-export default StatsBandSection;
+export default TrustStripSection;
