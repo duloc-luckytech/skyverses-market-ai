@@ -1,6 +1,6 @@
 # Skyverses — Project Summary
 
-> 🏷️ **Về cái tên:** repo/package tên là `skyverses-market` (folder `skyverses-market-ai`) và một số chỗ trong code vẫn ghi "Skyverses **Marketplace**" (SEO title ở `MarketPage.tsx`, chatbot `AISupportChat.tsx`, `SubmissionHero.tsx`…). Chữ **"Market" chỉ là tên kỹ thuật/lịch sử — KHÔNG phản ánh định vị**. Skyverses **không** phải marketplace bán prompt/credit; đây là **nhà cung cấp giải pháp & công cụ AI** (xem section 1). Các chuỗi "Marketplace" còn sót là *debt cần dọn dần*, đừng coi là định vị.
+> 🏷️ **Về cái tên:** repo/package tên là `skyverses-market` (folder `skyverses-market-ai`) và một số tên kỹ thuật trong code vẫn dùng "market" (route `/markets`, `MarketPage.tsx`, `market.ts`, `MarketItem.model.ts`…). Chữ **"Market" chỉ là tên kỹ thuật/lịch sử — KHÔNG phản ánh định vị**. Skyverses **không** phải marketplace bán prompt/credit; đây là **nhà cung cấp giải pháp & công cụ AI** (xem section 1) — chatbot `AISupportChat.tsx` nay đã nói rõ điều này. Copy người dùng thấy đã dọn sạch chữ "Marketplace" mang nghĩa định vị. Chỗ còn dùng "Marketplace" hợp lệ là **tính năng Prompt Marketplace** (mua/bán prompt bằng SkyToken — `prompt_market.*`, `SkyTokenPage`, `PromptCreate/Wishlist/Purchases`), giữ nguyên.
 
 > **Mục đích file này:** Cho một AI/dev mới đọc và hiểu *project này là gì, làm gì, cho ai, và được tổ chức ra sao* — chỉ trong vài phút, trước khi đào sâu vào `docs/source-map/`.
 > Nội dung dưới đây được rút ra từ chính homepage (`components/landing/homepage/`) + i18n (`context/LanguageContext.tsx`), nên nó phản ánh đúng định vị sản phẩm hiện tại, không phải mô tả kỹ thuật suông.
@@ -119,7 +119,7 @@ HubSection (3 pillars, white)
 ## 7. Stack & quy ước (tóm tắt — chi tiết ở CLAUDE.md)
 
 - **Frontend:** React 19 + TypeScript (no `any`) + Vite 5 · Tailwind 3 (no inline styles) · **Atlas design system**, màu nhấn vàng gold `#C9A84C` (alias legacy = `brand-blue`, cùng màu) · Manrope (sans) + Fragment Mono (mono) · react-router-dom 7 (lazy) · framer-motion · lucide-react · three · @xyflow/react · @google/genai.
-- **Cấu trúc:** `pages/` (~69) · `components/` (~340, có sub-folder `atlas/`, `landing/`, `market/`…) · `context/` (Auth/Theme/Lang/Search/Toast) · `apis/` (23) · `hooks/` (31). Sub-projects: `cms/`, `blog/`, `skyverses-backend/`.
+- **Cấu trúc:** `pages/` (~72) · `components/` (~350, có sub-folder `atlas/`, `landing/`, `market/`…) · `context/` (Auth/Theme/Lang/Search/Toast) · `apis/` (23) · `hooks/` (31). Sub-projects: `cms/`, `blog/`, `skyverses-backend/`.
 - **Vòng đời job AI:** `<api>.create()` → `useJobPoller(jobId)` → `refreshCredits()`.
 - **Auth/tier:** `{isAuthenticated && …}` + `useFeatureAccess` để check tier.
 - **i18n:** `t('key')` từ `useLanguage()`.

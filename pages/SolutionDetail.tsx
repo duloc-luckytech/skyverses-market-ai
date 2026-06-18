@@ -64,7 +64,7 @@ const SolutionDetail = () => {
   // ── Per-product SEO meta (must run before early returns — React hook rules) ──
   const metaDesc = solution
     ? (solution.description?.[lang] || solution.description?.en || '').replace(/\s+/g, ' ').trim().slice(0, 200)
-    : 'Explore production-grade AI solutions on the Skyverses AI marketplace.';
+    : 'Explore production-grade AI solutions and creator tools from Skyverses.';
   const metaImage = solution ? (solution.bannerUrl || solution.imageUrl) : undefined;
   usePageMeta({
     title: solution
