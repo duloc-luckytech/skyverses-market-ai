@@ -13,7 +13,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   };
 
   const handleResetSearch = () => {
-    // Phát ra event để MarketPage lắng nghe và reset
+    // Phát ra event để HomePage lắng nghe và reset
     window.dispatchEvent(new CustomEvent("resetMarketSearch"));
   };
 

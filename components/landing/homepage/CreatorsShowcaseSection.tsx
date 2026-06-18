@@ -44,7 +44,7 @@ const CreatorShowcasePanel: React.FC<{
               {type === 'video' && (item as ShowcaseVideo).videoUrl ? (
                 <video src={(item as ShowcaseVideo).videoUrl} muted playsInline preload="metadata" className="h-full w-full object-cover opacity-85 transition duration-700 group-hover:scale-105 group-hover:opacity-100" />
               ) : (
-                <img src={source} alt="" loading="lazy" className="h-full w-full object-cover opacity-85 transition duration-700 group-hover:scale-105 group-hover:opacity-100" />
+                <img src={source} alt={`${title} — Skyverses AI ${type} #${index + 1}`} loading="lazy" className="h-full w-full object-cover opacity-85 transition duration-700 group-hover:scale-105 group-hover:opacity-100" />
               )}
               <div className="absolute inset-0 ring-1 ring-inset ring-white/10 transition group-hover:ring-brand-blue/60" />
               {type === 'video' && (

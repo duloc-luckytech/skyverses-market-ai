@@ -14,7 +14,7 @@ import { ToastProvider } from './context/ToastContext';
 // ═══ Lazy-loaded Pages (code-splitting) ═══
 // Store import functions for prefetching
 const pageImports = {
-  market: () => import('./pages/MarketPage'),
+  home: () => import('./pages/HomePage'),
   category: () => import('./pages/CategoryPage'),
   explorer: () => import('./pages/ExplorerPage'),
   models: () => import('./pages/ModelsPage'),
@@ -84,7 +84,7 @@ const pageImports = {
 };
 
 // Core pages
-const MarketPage = React.lazy(pageImports.market);
+const HomePage = React.lazy(pageImports.home);
 const CategoryPage = React.lazy(pageImports.category);
 const ExplorerPage = React.lazy(pageImports.explorer);
 const ModelsPage = React.lazy(pageImports.models);
@@ -228,7 +228,7 @@ const App: React.FC = () => {
                   <Layout>
                     <Suspense fallback={<PageLoader />}>
                     <Routes>
-                      <Route path="/" element={<Suspense fallback={<HomepageSkeleton />}><MarketPage /></Suspense>} />
+                      <Route path="/" element={<Suspense fallback={<HomepageSkeleton />}><HomePage /></Suspense>} />
                       <Route path="/category/:id" element={<CategoryPage />} />
                       <Route path="/explorer" element={<ExplorerPage />} />
                       <Route path="/markets" element={<MarketsPage />} />

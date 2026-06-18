@@ -264,10 +264,10 @@ const HOVER_STYLES = `
 `;
 
 /* ═══════════════════════════════════════════════════════════════════
- * MarketPage — Clone 1:1 from atlascloud.ai
+ * HomePage — landing page tại route `/` (trước đây tên MarketPage)
  * ═══════════════════════════════════════════════════════════════════ */
 
-const MarketPage = () => {
+const HomePage = () => {
   const { lang, t } = useLanguage();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -787,4 +787,4 @@ const MarketPage = () => {
   );
 };
 
-export default MarketPage;
+export default HomePage;
