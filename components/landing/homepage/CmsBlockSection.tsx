@@ -6,7 +6,6 @@ import { HomeBlock, Language, Solution } from '../../../types';
 import { CardSkeleton } from '../../market/MarketSkeleton';
 import { SolutionCard } from '../../market/SolutionCard';
 import LazySection from '../LazySection';
-import { MotionChip } from './shared';
 
 type CmsBlockSectionProps = {
   solutions: Solution[];
@@ -43,14 +42,16 @@ const CmsBlockSection: React.FC<CmsBlockSectionProps> = ({
     scrollRefs.current[idx]?.scrollBy({ left: dir * 360, behavior: 'smooth' });
   };
 
+  // Collapse the whole section (no empty white frame) when there's nothing to show.
+  const hasVisibleBlock = homeBlocks.some((block) =>
+    solutions.some((solution) => solution.homeBlocks?.includes(block.key)),
+  );
+  if (!loading && !hasVisibleBlock) return null;
+
   return (
     <LazySection rootMargin="300px" minHeight={420}>
       <section className="bg-white px-5 py-16 md:px-8 lg:px-16">
         <div className="mx-auto max-w-[1300px]">
-          <div className="mb-5 flex flex-wrap gap-2">
-            <MotionChip name="hover-lift" />
-            <MotionChip name="stagger-children" />
-          </div>
           {homeBlocks.map((block, blockIdx) => {
             const blockSols = solutions.filter((solution) => solution.homeBlocks?.includes(block.key));
             if (blockSols.length === 0 && !loading) return null;
