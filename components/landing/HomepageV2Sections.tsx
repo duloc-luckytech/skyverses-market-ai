@@ -2,6 +2,7 @@ import React from 'react';
 import { HomeBlock, Solution } from '../../types';
 import type { ShowcaseImage, ShowcaseVideo } from '../../src/constants/showcase-cdn';
 import { HomepageKeyframes } from './homepage/shared';
+import SocialProofSection from './homepage/SocialProofSection';
 import HubSection from './homepage/HubSection';
 import BusinessSection from './homepage/BusinessSection';
 import EnterpriseSection from './homepage/EnterpriseSection';
@@ -48,6 +49,7 @@ const HomepageV2Sections: React.FC<HomepageV2SectionsProps> = ({
 }) => (
   <>
     <HomepageKeyframes />
+    <SocialProofSection />
     <HubSection />
     <BusinessSection />
     <EnterpriseSection />
