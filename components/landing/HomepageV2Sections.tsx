@@ -29,7 +29,7 @@ type HomepageV2SectionsProps = {
 /**
  * Homepage narrative (Option C — visual-first, A→Z):
  * Hero (HomePage) → ② Creators showcase → catalog (pillar ②)
- * → ① Business AI solutions → ③ App & Game → trust band → final CTA.
+ * → ① Business AI solutions → ③ App & Game → trust band → blog → final CTA.
  */
 const HomepageV2Sections: React.FC<HomepageV2SectionsProps> = ({
   solutions,
@@ -62,10 +62,10 @@ const HomepageV2Sections: React.FC<HomepageV2SectionsProps> = ({
       onQuickView={onQuickView}
       getStats={getStats}
     />
-    <LatestUpdatesSection />
     <SolutionSection />
     <AppGameSection />
     <TrustStripSection />
+    <LatestUpdatesSection />
     <FinalCtaSection />
   </>
 );
