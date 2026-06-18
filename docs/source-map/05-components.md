@@ -179,7 +179,7 @@ Pattern mỗi sub-folder: `HeroSection`, `FeaturesSection`, `ShowcaseSection`, `
 | Sub-folder | Files |
 |------------|-------|
 | `_shared/` | `ProHeroVisuals.tsx`, `SectionAnimations.tsx` |
-| _(root)_ | `LazySection.tsx` (IntersectionObserver viewport-defer wrapper), `LazyImage.tsx` (shimmer skeleton + fade-in image), `LandingSectionSkeletons.tsx` (skeleton placeholders for MarketPage sections), `LatestModelsSection.tsx` (full-width model slider carousel — 10 seeded models, hero + sub-model grid, used in MarketPage) |
+| _(root)_ | `LazySection.tsx` (IntersectionObserver viewport-defer wrapper), `LazyImage.tsx` (shimmer skeleton + fade-in image), `LandingSectionSkeletons.tsx` (skeleton placeholders for MarketPage sections), `LatestModelsSection.tsx` (full-width model slider carousel — 10 seeded models, hero + sub-model grid, used in MarketPage), `HomepageV2Sections.tsx` (redesigned post-hero homepage sections with motion, CMS HomeBlocks, and final CTA) |
 | `ai-slide-creator/` | FAQ, Features, FinalCTA, Hero, LiveStatsBar, Showcase, UseCases, Workflow, `index.ts` |
 | `image-generator/` | FinalCTA, Hero, Modes, UseCases, Workflow |
 | `image-restoration/` | Features, FinalCTA, Hero, Showcase, Workflow |
