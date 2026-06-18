@@ -604,6 +604,12 @@ const HomePage = () => {
                     >
                       {t('landing.hero.cta2')}
                     </button>
+                    <button
+                      onClick={() => navigate('/booking')}
+                      className="inline-flex items-center gap-2 bg-transparent text-[#ebf4fb]/60 px-4 py-3.5 text-sm font-semibold hover:text-[#C9A84C] transition-colors duration-200"
+                    >
+                      {t('landing.hero.cta3')} <ArrowRight size={14} />
+                    </button>
                   </motion.div>
                 </div>
 
