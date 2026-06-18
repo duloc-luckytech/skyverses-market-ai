@@ -222,7 +222,7 @@ const FibusVideoStudio: React.FC = () => {
           {/* Back link */}
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
             <Link to="/markets" className="inline-flex items-center gap-2 text-[11px] font-mono font-semibold text-purple-500/50 hover:text-purple-400 transition-colors mb-6">
-              <ChevronLeft size={14} /> ← Trở về Marketplace
+              <ChevronLeft size={14} /> ← Trở về Skyverses
             </Link>
           </motion.div>
 

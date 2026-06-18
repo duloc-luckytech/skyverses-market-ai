@@ -51,7 +51,7 @@ const ProductGame1 = () => {
               <div className="space-y-10">
                 <Link to="/" className="inline-flex items-center gap-3 px-6 py-2 border border-black/10 dark:border-white/10 text-gray-500 hover:text-emerald-500 transition-all group rounded-full">
                   <ChevronLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.4em]">Back to Marketplace</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.4em]">Back to Skyverses</span>
                 </Link>
 
                 <div className="space-y-6">

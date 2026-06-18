@@ -34,7 +34,7 @@ const START_TEMPLATES = [
   {
     title: "Quảng Cáo Sôi Động",
     prompt: "Giọng nam trẻ, năng động, hào hứng, giọng miền Nam, tốc độ hơi nhanh.",
-    text: "Sẵn sàng bứt phá giới hạn cùng Skyverses Market! Đăng ký ngay hôm nay để nhận ưu đãi cực khủng!",
+    text: "Sẵn sàng bứt phá giới hạn cùng Skyverses! Đăng ký ngay hôm nay để nhận ưu đãi cực khủng!",
     color: "from-orange-500/10 to-amber-500/10"
   }
 ];

@@ -439,7 +439,7 @@ const FeaturedStudioStage: React.FC<{
   const spotlight = stageItems.length > 0 ? stageItems[stageIndex] : undefined;
   const heroImage = spotlight?.bannerUrl || spotlight?.imageUrl;
   const spotlightName = spotlight?.name[lang] || spotlight?.name.en || 'Đang tải studio';
-  const spotlightDesc = spotlight?.description[lang] || spotlight?.description.en || 'Marketplace sẽ tự lấy danh sách app thật từ hệ thống và chọn ngẫu nhiên mỗi lần tải trang.';
+  const spotlightDesc = spotlight?.description[lang] || spotlight?.description.en || 'Skyverses sẽ tự lấy danh sách app thật từ hệ thống và chọn ngẫu nhiên mỗi lần tải trang.';
   const spotlightCategory = spotlight?.category[lang] || spotlight?.category.en || 'Apps';
   const spotlightPrice = spotlight?.priceLabel || 'Loading';
   const spotlightMeta = spotlight?.metaLabel || 'Studio';
@@ -834,8 +834,8 @@ const MarketsPage: React.FC = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   usePageMeta({
-    title: 'Marketplace AI | Skyverses — 30+ ứng dụng, 50+ model, tiết kiệm ~70%',
-    description: 'Khám phá Marketplace với 30+ ứng dụng AI & 50+ model: VEO3, Kling, Sora, Midjourney, Flux. Chi phí rẻ hơn ~70% so với nền tảng khác. Video, Image, Voice, Music & Automation.',
+    title: 'Skyverses AI | 30+ ứng dụng, 50+ model, tiết kiệm ~70%',
+    description: 'Khám phá Skyverses với 30+ ứng dụng AI & 50+ model: VEO3, Kling, Sora, Midjourney, Flux. Chi phí rẻ hơn ~70% so với nền tảng khác. Video, Image, Voice, Music & Automation.',
     keywords: 'AI marketplace, kho ứng dụng AI, 50+ model AI, AI giá rẻ, Skyverses, VEO3, Kling, Midjourney, Flux, video AI, image AI, AI automation, tiết kiệm chi phí AI',
     canonical: '/markets'
   });

@@ -27,9 +27,9 @@ export const SubmissionHero: React.FC = () => {
           transition={{ delay: 0.1 }}
           className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1]"
         >
-          Đưa sản phẩm vào{' '}
+          Đưa sản phẩm lên{' '}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-purple-500">
-            Skyverses Marketplace
+            Skyverses
           </span>
         </motion.h1>
         
@@ -39,7 +39,7 @@ export const SubmissionHero: React.FC = () => {
           transition={{ delay: 0.2 }}
           className="text-sm md:text-base text-slate-400 dark:text-gray-500 max-w-2xl mx-auto leading-relaxed"
         >
-          Điền thông tin sản phẩm AI của bạn — đội ngũ Skyverses sẽ review và đưa sản phẩm lên Marketplace. 
+          Điền thông tin sản phẩm AI của bạn — đội ngũ Skyverses sẽ review và đưa sản phẩm lên nền tảng.
           Tiếp cận hàng ngàn người dùng tiềm năng.
         </motion.p>
 

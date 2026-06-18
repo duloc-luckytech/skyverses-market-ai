@@ -307,7 +307,7 @@ export const Step3Technical: React.FC<StepProps> = ({ formData, updateField }) =
     <div className="flex items-start gap-3 p-3.5 bg-brand-blue/5 dark:bg-brand-blue/10 border border-brand-blue/10 dark:border-brand-blue/[0.15] rounded-xl">
       <AlertCircle size={16} className="text-brand-blue shrink-0 mt-0.5" />
       <p className="text-xs text-slate-500 dark:text-gray-400 leading-relaxed">
-        Các thông tin kỹ thuật giúp đội ngũ Skyverses hiểu rõ sản phẩm của bạn và tích hợp nhanh hơn vào Marketplace.
+        Các thông tin kỹ thuật giúp đội ngũ Skyverses hiểu rõ sản phẩm của bạn và tích hợp nhanh hơn vào nền tảng.
       </p>
     </div>
   </motion.div>

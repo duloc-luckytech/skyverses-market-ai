@@ -17,7 +17,7 @@
 
 | File | Role |
 |------|------|
-| `Header.tsx` | Main nav: Logo→Home→Marketplace→Explore↓→Insights→Create. Right: Search, Credits, Theme, Lang, User, Deploy CTA. Shrinks `h-16→h-14` khi scroll>20px. |
+| `Header.tsx` | Main nav: Logo→Home→Apps(`/markets`)→Explore↓(Creator Tools…)→Insights→Create. Right: Search, Credits, Theme, Lang, User, Deploy CTA. Shrinks `h-16→h-14` khi scroll>20px. |
 | `Footer.tsx` | Site footer (links + i18n) |
 | `Layout.tsx` | Page wrapper: Header + outlet + Footer |
 | `LoadingScreen.tsx` | Initial app boot loader |
@@ -179,7 +179,8 @@ Pattern mỗi sub-folder: `HeroSection`, `FeaturesSection`, `ShowcaseSection`, `
 | Sub-folder | Files |
 |------------|-------|
 | `_shared/` | `ProHeroVisuals.tsx`, `SectionAnimations.tsx` |
-| _(root)_ | `LazySection.tsx` (IntersectionObserver viewport-defer wrapper), `LazyImage.tsx` (shimmer skeleton + fade-in image), `LandingSectionSkeletons.tsx` (skeleton placeholders for MarketPage sections), `LatestModelsSection.tsx` (full-width model slider carousel — 10 seeded models, hero + sub-model grid, used in MarketPage), `HomepageV2Sections.tsx` (redesigned post-hero homepage sections with motion, CMS HomeBlocks, and final CTA) |
+| _(root)_ | `LazySection.tsx` (IntersectionObserver viewport-defer wrapper), `LazyImage.tsx` (shimmer skeleton + fade-in image), `LandingSectionSkeletons.tsx` (skeleton placeholders for MarketPage sections), `LatestModelsSection.tsx` (full-width model slider carousel — 10 seeded models, hero + sub-model grid, used in MarketPage), `HomepageV2Sections.tsx` (thin composer rendering the `homepage/` sections in order + `HomepageKeyframes`) |
+| `homepage/` | `shared.tsx` (motion primitives: EASE, MotionChip, SectionHeader, Reveal, GoldButton/OutlineButton, DrawIcon, HoverCard, `AnimatedStat` count-up, `CostDrop`, `HomepageKeyframes`), `HubSection`, `BusinessSection`, `EnterpriseSection`, `HowItWorksSection` (two-flow how-to: creator self-serve steps + business booking steps), `CreatorsShowcaseSection` (image/video panels), `PromptDemoSection` (live prompt→result typewriter demo), `BuildAppsSection` (+ CostDrop panel + go-to-store publishing strip), `StatsBandSection` (animated metrics band), `OsStripSection` (draw-line OS fan-out), `WhySection`, `CmsBlockSection` (CMS HomeBlocks), `FinalCtaSection` |
 | `ai-slide-creator/` | FAQ, Features, FinalCTA, Hero, LiveStatsBar, Showcase, UseCases, Workflow, `index.ts` |
 | `image-generator/` | FinalCTA, Hero, Modes, UseCases, Workflow |
 | `image-restoration/` | Features, FinalCTA, Hero, Showcase, Workflow |

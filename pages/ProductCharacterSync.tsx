@@ -225,7 +225,7 @@ const ProductCharacterSync = () => {
 
           <motion.div {...fadeUp(0)}>
             <Link to="/market" className="inline-flex items-center gap-2 text-[11px] font-semibold text-white/50 hover:text-purple-400 transition-colors">
-              <ChevronLeft size={14} /> Quay lại Marketplace
+              <ChevronLeft size={14} /> Quay lại Skyverses
             </Link>
           </motion.div>
 

@@ -69,7 +69,7 @@ const SolutionDetail = () => {
   usePageMeta({
     title: solution
       ? `${solution.name?.[lang] || solution.name?.en} — Skyverses AI`
-      : 'Skyverses AI Marketplace',
+      : 'Skyverses AI',
     description: metaDesc,
     keywords: solution
       ? [...(solution.tags || []), ...(solution.models || []), solution.category?.[lang]]

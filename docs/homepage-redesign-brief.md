@@ -107,7 +107,7 @@
   4. **Marketing & Automation AI** (business) — img: marketing
   5. **Custom AI for Business** (business) — img: business/dashboard ⟵ *changed from "upscale"*
   6. **Build into Your App (API)** (app builders) — img: code/API ⟵ *changed from "3D"*
-- **Featured card copy:** label `ALL-IN-ONE` · title `AI Platform for Creators, Business & Apps` · desc `50+ AI models for content creation, business automation, and app building — all pay-as-you-go.` · CTA `Explore All Tools →`.
+- **Featured card copy:** label `SKYVERSES` · title `AI solutions & tools for Creators, Business & Apps` · desc `50+ AI models for content creation, business automation, and faster app building — pay-as-you-go.` · CTA `Explore All Tools →`. *(Avoid "all-in-one platform / marketplace" framing — Skyverses is a solutions & tools provider, not a marketplace.)*
 - **Header:** label `TOOLS & SOLUTIONS` · title `AI Tools & Solutions` · desc `50+ AI models for creators, teams, and app developers. One dashboard for content, automation, and custom AI.`
 - **🎬 Animation:** header `fade-up`; the 6 cards reveal with `stagger-children` (left→right, top→bottom). Each card `hover-lift` + image subtle zoom (scale 1→1.04). Featured card image has a slow `parallax-float` / Ken-Burns drift.
 

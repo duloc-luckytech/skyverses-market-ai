@@ -15,5 +15,5 @@ export const SEO_BUSINESS_MODELS = 'GPT, Claude, Codex';
 /** Title + description homepage `/` — dùng chung cho MarketPage usePageMeta */
 export const HOME_SEO = {
   title: 'Skyverses — Giải Pháp AI & Xây App cho Creator, Doanh Nghiệp',
-  description: `Công cụ AI cho creator (${SEO_CREATOR_MODELS}) và giải pháp AI doanh nghiệp (${SEO_BUSINESS_MODELS}). Xây app mobile & desktop nhanh hơn, chi phí rẻ hơn. Dùng thử miễn phí.`,
+  description: `Công cụ AI cho creator (${SEO_CREATOR_MODELS}) và giải pháp AI doanh nghiệp (${SEO_BUSINESS_MODELS}). Xây app iOS, Android, macOS & Windows nhanh hơn, chi phí rẻ hơn. Dùng thử miễn phí.`,
 } as const;

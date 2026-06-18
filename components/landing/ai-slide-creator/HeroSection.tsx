@@ -119,7 +119,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartStudio }) => {
               className="inline-flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-white/40 hover:text-brand-blue transition-colors mb-2"
             >
               <ChevronLeft size={13} />
-              Trở lại Marketplace
+              Trở lại Skyverses
             </Link>
 
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-blue/[0.08] border border-brand-blue/20 text-brand-blue text-[11px] font-bold">

@@ -278,7 +278,7 @@ const MarketPage = () => {
     canonical: '/',
     jsonLd: {
       '@type': 'ItemList',
-      name: 'Top AI Tools — Skyverses Marketplace',
+      name: 'Top AI Tools — Skyverses',
       url: 'https://skyverses.com',
       numberOfItems: 12,
     },

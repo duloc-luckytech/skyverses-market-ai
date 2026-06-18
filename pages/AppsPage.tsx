@@ -65,7 +65,7 @@ const AppsPage: React.FC = () => {
               <div className="space-y-2">
                 <h3 className="text-lg font-bold">Đăng nhập để tiếp tục</h3>
                 <p className="text-sm text-slate-400 dark:text-gray-500 leading-relaxed">
-                  Bạn cần đăng nhập để gửi thông tin sản phẩm lên Marketplace. 
+                  Bạn cần đăng nhập để gửi thông tin sản phẩm lên nền tảng.
                   Thông tin tài khoản sẽ được tự động điền vào form.
                 </p>
               </div>
@@ -256,7 +256,7 @@ const AppsPage: React.FC = () => {
                   
                   <p className="text-sm text-white/40 max-w-lg leading-relaxed">
                     Tích hợp sức mạnh AI vào ứng dụng của bạn qua quy trình đơn giản: Submit → Review → Deploy. 
-                    Sản phẩm được duyệt sẽ hiển thị trên Marketplace cho hàng ngàn người dùng.
+                    Sản phẩm được duyệt sẽ hiển thị trên nền tảng cho hàng ngàn người dùng.
                   </p>
                 </div>
 
@@ -298,7 +298,7 @@ const AppsPage: React.FC = () => {
                   {[
                     { step: '01', title: 'Submit Product', desc: 'Điền form thông tin sản phẩm', status: 'active' },
                     { step: '02', title: 'Admin Review', desc: 'Đội ngũ Skyverses kiểm duyệt', status: 'pending' },
-                    { step: '03', title: 'Integration', desc: 'Tích hợp vào Marketplace', status: 'pending' },
+                    { step: '03', title: 'Integration', desc: 'Tích hợp vào nền tảng', status: 'pending' },
                     { step: '04', title: 'Go Live!', desc: 'Sản phẩm lên sàn cho users', status: 'pending' },
                   ].map((item, i) => (
                     <div key={i} className="flex items-center gap-4">
