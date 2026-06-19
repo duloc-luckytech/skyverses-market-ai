@@ -22,6 +22,7 @@ import {
 import LazySection from '../LazySection';
 import LazyImage from '../LazyImage';
 import AppGameBuildList from './AppGameBuildList';
+import { useLanguage } from '../../../context/LanguageContext';
 import { EASE } from './shared';
 
 type IconType = React.ComponentType<{ size?: number; className?: string }>;
@@ -48,40 +49,40 @@ type FeatureCard = {
 };
 
 const timelineSteps: TimelineStep[] = [
-  { number: '01', title: 'Concept', desc: 'Ý tưởng, thị trường và gameplay cốt lõi.', icon: Sparkles },
-  { number: '02', title: 'UI', desc: 'Thiết kế UI/UX và hệ thống trải nghiệm.', icon: Smartphone },
-  { number: '03', title: 'Build', desc: 'Phát triển, tích hợp AI và kiểm thử.', icon: Code2 },
-  { number: '04', title: 'Launch', desc: 'Phát hành lên store và tối ưu vận hành.', icon: Rocket },
+  { number: '01', title: 'Concept', desc: 'landing.appgame.ag_tl1_d', icon: Sparkles },
+  { number: '02', title: 'UI', desc: 'landing.appgame.ag_tl2_d', icon: Smartphone },
+  { number: '03', title: 'Build', desc: 'landing.appgame.ag_tl3_d', icon: Code2 },
+  { number: '04', title: 'Launch', desc: 'landing.appgame.ag_tl4_d', icon: Rocket },
 ];
 
 const appScreens: AppScreen[] = [
   { title: 'Dashboard', image: '/assets/showcase/album-terra-packaging.webp', accent: '125.8M' },
-  { title: 'Khám phá', image: '/assets/showcase/bp-kora-environment.webp', accent: 'Đà Nẵng' },
-  { title: 'Hôm nay', image: '/assets/showcase/album-voss-yoga.webp', accent: '7,852' },
+  { title: 'landing.appgame.ag_screen2', image: '/assets/showcase/bp-kora-environment.webp', accent: 'Đà Nẵng' },
+  { title: 'landing.appgame.ag_screen3', image: '/assets/showcase/album-voss-yoga.webp', accent: '7,852' },
 ];
 
 const featureCards: FeatureCard[] = [
   {
-    title: 'AI NPC',
-    desc: 'Hành vi thông minh',
+    title: 'landing.appgame.ag_f1_t',
+    desc: 'landing.appgame.ag_f1_d',
     image: '/assets/showcase/bp-kora-3d.webp',
     icon: Bot,
   },
   {
-    title: 'AI tạo hình ảnh',
-    desc: 'Concept & assets',
+    title: 'landing.appgame.ag_f2_t',
+    desc: 'landing.appgame.ag_f2_d',
     image: '/assets/showcase/bp-malachar-arena.webp',
     icon: ImageIcon,
   },
   {
-    title: 'AI viết thoại',
-    desc: 'Tự nhiên & phù hợp',
+    title: 'landing.appgame.ag_f3_t',
+    desc: 'landing.appgame.ag_f3_d',
     icon: MessageCircle,
     wide: true,
   },
   {
-    title: 'AI cân bằng game',
-    desc: 'Dữ liệu & phân tích',
+    title: 'landing.appgame.ag_f4_t',
+    desc: 'landing.appgame.ag_f4_d',
     icon: BarChart3,
   },
 ];
@@ -90,7 +91,7 @@ const launchItems: { title: string; desc: string; icon: IconType }[] = [
   { title: 'App Store', desc: 'iOS', icon: Smartphone },
   { title: 'Google Play', desc: 'Android', icon: PlayCircle },
   { title: 'Web', desc: 'Cross-platform', icon: Globe2 },
-  { title: 'Analytics', desc: 'Theo dõi & tối ưu', icon: BarChart3 },
+  { title: 'Analytics', desc: 'landing.appgame.ag_launch4_d', icon: BarChart3 },
 ];
 
 const HoverPanel: React.FC<{
@@ -116,6 +117,7 @@ const HoverPanel: React.FC<{
 };
 
 const PhoneMockup: React.FC<{ screen: AppScreen; index: number }> = ({ screen, index }) => {
+  const { t } = useLanguage();
   const reduceMotion = useReducedMotion();
 
   return (
@@ -139,9 +141,9 @@ const PhoneMockup: React.FC<{ screen: AppScreen; index: number }> = ({ screen, i
             <span className={index === 2 ? 'text-white/70' : 'text-slate-500'}>●●●</span>
           </div>
           <div className="px-3 pb-3">
-            <p className="text-sm font-bold">{screen.title}</p>
+            <p className="text-sm font-bold">{t(screen.title)}</p>
             <div className="relative mt-3 overflow-hidden rounded-xl">
-              <LazyImage src={screen.image} alt={`${screen.title} app screen`} className="aspect-[4/5] transition duration-700 group-hover:scale-110" />
+              <LazyImage src={screen.image} alt={`${t(screen.title)} app screen`} className="aspect-[4/5] transition duration-700 group-hover:scale-110" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/66 via-transparent to-transparent" />
               <div className="absolute bottom-3 left-3 right-3">
                 <p className="text-2xl font-bold text-white">{screen.accent}</p>
@@ -169,6 +171,7 @@ const PhoneMockup: React.FC<{ screen: AppScreen; index: number }> = ({ screen, i
 };
 
 const AppGameSection: React.FC = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const reduceMotion = useReducedMotion();
 
@@ -194,10 +197,10 @@ const AppGameSection: React.FC = () => {
                   </span>
                 </div>
                 <h2 className="max-w-[620px] text-balance text-4xl font-bold leading-[1.08] tracking-tight md:text-6xl xl:text-[64px]">
-                  Tạo MVP app và game trong <span className="text-brand-blue">vài tuần.</span>
+                  {t('landing.appgame.ag_head')} <span className="text-brand-blue">{t('landing.appgame.ag_head_accent')}</span>
                 </h2>
                 <p className="mt-5 max-w-md text-base leading-relaxed text-white/68 md:text-lg">
-                  AI tăng tốc thiết kế, gameplay, UI và phát hành.
+                  {t('landing.appgame.ag_sub')}
                 </p>
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                   <button
@@ -206,7 +209,7 @@ const AppGameSection: React.FC = () => {
                     className="group inline-flex items-center justify-center gap-3 rounded-xl bg-brand-blue px-7 py-4 text-base font-bold text-[#05080d] shadow-[0_18px_44px_rgba(201,168,76,0.38)] transition duration-300 hover:-translate-y-1 hover:bg-[#e4c160] hover:shadow-[0_24px_58px_rgba(201,168,76,0.48)]"
                   >
                     <Rocket size={20} />
-                    Bắt đầu MVP
+                    {t('landing.appgame.ag_cta1')}
                   </button>
                   <button
                     type="button"
@@ -214,7 +217,7 @@ const AppGameSection: React.FC = () => {
                     className="group inline-flex items-center justify-center gap-3 rounded-xl border border-brand-blue/40 bg-black/20 px-7 py-4 text-base font-bold text-white transition duration-300 hover:-translate-y-1 hover:border-brand-blue/70 hover:bg-brand-blue/[0.08]"
                   >
                     <PlayCircle size={21} />
-                    Xem case study
+                    {t('landing.appgame.ag_cta2')}
                   </button>
                 </div>
               </motion.div>
@@ -251,7 +254,7 @@ const AppGameSection: React.FC = () => {
                           <span className="font-mono text-2xl font-bold text-brand-blue">{step.number}</span>
                           <div>
                             <p className="text-lg font-bold">{step.title}</p>
-                            <p className="mt-2 text-sm leading-relaxed text-white/60">{step.desc}</p>
+                            <p className="mt-2 text-sm leading-relaxed text-white/60">{t(step.desc)}</p>
                           </div>
                         </div>
                       </motion.div>
@@ -280,16 +283,16 @@ const AppGameSection: React.FC = () => {
                       <div className="absolute inset-0 bg-gradient-to-r from-black/58 via-transparent to-black/10" />
                       <div className="absolute left-5 top-1/2 flex -translate-y-1/2 flex-col gap-3 rounded-xl border border-[#5a461d] bg-black/42 p-3 backdrop-blur-md">
                         {[
-                          { label: 'Nhiệm vụ', icon: Rocket },
-                          { label: 'Trang bị', icon: Boxes },
-                          { label: 'Kỹ năng', icon: Sparkles },
-                          { label: 'Bản đồ', icon: ShieldCheck },
+                          { label: 'landing.appgame.ag_menu1', icon: Rocket },
+                          { label: 'landing.appgame.ag_menu2', icon: Boxes },
+                          { label: 'landing.appgame.ag_menu3', icon: Sparkles },
+                          { label: 'landing.appgame.ag_menu4', icon: ShieldCheck },
                         ].map((item) => {
                           const Icon = item.icon;
                           return (
                             <span key={item.label} className="flex items-center gap-2 text-xs font-bold text-brand-blue">
                               <Icon size={17} />
-                              <span>{item.label}</span>
+                              <span>{t(item.label)}</span>
                             </span>
                           );
                         })}
@@ -352,8 +355,8 @@ const AppGameSection: React.FC = () => {
                           ) : null}
                           <div className="relative z-10 min-h-[108px]">
                             <Icon size={22} className="mb-3 text-brand-blue" />
-                            <p className="text-base font-bold">{item.title}</p>
-                            <p className="mt-1 text-sm text-white/58">{item.desc}</p>
+                            <p className="text-base font-bold">{t(item.title)}</p>
+                            <p className="mt-1 text-sm text-white/58">{t(item.desc)}</p>
                             {item.wide ? (
                               <div className="mt-4 flex items-center gap-3">
                                 <motion.span
@@ -361,7 +364,7 @@ const AppGameSection: React.FC = () => {
                                   animate={reduceMotion ? undefined : { opacity: [0.45, 1, 0.45] }}
                                   transition={{ duration: 1.2, repeat: Infinity, ease: EASE }}
                                 />
-                                <span className="rounded-xl bg-white/[0.08] px-3 py-2 text-sm font-bold">Chúng ta phải bảo vệ vùng đất này!</span>
+                                <span className="rounded-xl bg-white/[0.08] px-3 py-2 text-sm font-bold">{t('landing.appgame.ag_voice')}</span>
                               </div>
                             ) : null}
                           </div>
@@ -394,7 +397,7 @@ const AppGameSection: React.FC = () => {
                             <Icon size={27} className="text-brand-blue" />
                             <div>
                               <p className="text-sm font-bold">{item.title}</p>
-                              <p className="text-xs text-white/50">{item.desc}</p>
+                              <p className="text-xs text-white/50">{t(item.desc)}</p>
                             </div>
                           </motion.div>
                         );
@@ -408,14 +411,14 @@ const AppGameSection: React.FC = () => {
                     <div className="flex flex-col items-center justify-center px-4">
                       <Timer size={28} className="mb-3 text-brand-blue" />
                       <p className="text-5xl font-bold text-brand-blue">2-6</p>
-                      <p className="mt-2 text-base font-semibold">tuần</p>
-                      <p className="text-sm text-white/55">Ra mắt MVP</p>
+                      <p className="mt-2 text-base font-semibold">{t('landing.appgame.ag_stat1_unit')}</p>
+                      <p className="text-sm text-white/55">{t('landing.appgame.ag_stat1_label')}</p>
                     </div>
                     <div className="flex flex-col items-center justify-center px-4">
                       <Zap size={28} className="mb-3 text-brand-blue" />
                       <p className="text-5xl font-bold text-brand-blue">-40%</p>
-                      <p className="mt-2 text-base font-semibold">chi phí</p>
-                      <p className="text-sm text-white/55">phát triển</p>
+                      <p className="mt-2 text-base font-semibold">{t('landing.appgame.ag_stat2_unit')}</p>
+                      <p className="text-sm text-white/55">{t('landing.appgame.ag_stat2_label')}</p>
                     </div>
                   </div>
                 </HoverPanel>

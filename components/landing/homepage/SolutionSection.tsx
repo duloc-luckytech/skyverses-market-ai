@@ -51,8 +51,8 @@ type BenefitItem = {
 
 const processCards: ProcessCard[] = [
   {
-    title: 'Bán hàng',
-    desc: 'Quản lý khách hàng, cơ hội và đơn hàng.',
+    title: 'landing.solution.proc1_t',
+    desc: 'landing.solution.proc1_d',
     icon: ShoppingCart,
     tools: [
       { label: 'CRM', icon: BriefcaseBusiness, tone: 'bg-sky-50 text-sky-500' },
@@ -61,8 +61,8 @@ const processCards: ProcessCard[] = [
     ],
   },
   {
-    title: 'CSKH',
-    desc: 'Hỗ trợ khách hàng nhanh và chính xác.',
+    title: 'landing.solution.proc2_t',
+    desc: 'landing.solution.proc2_d',
     icon: Headphones,
     tools: [
       { label: 'Chat', icon: MessageCircle, tone: 'bg-blue-50 text-blue-500' },
@@ -71,8 +71,8 @@ const processCards: ProcessCard[] = [
     ],
   },
   {
-    title: 'Kế toán',
-    desc: 'Xử lý chứng từ, hóa đơn và thanh toán.',
+    title: 'landing.solution.proc3_t',
+    desc: 'landing.solution.proc3_d',
     icon: ClipboardList,
     tools: [
       { label: 'SAP', icon: Database, tone: 'bg-sky-50 text-sky-600' },
@@ -81,8 +81,8 @@ const processCards: ProcessCard[] = [
     ],
   },
   {
-    title: 'Vận hành',
-    desc: 'Quản lý công việc, nhân sự và tài sản.',
+    title: 'landing.solution.proc4_t',
+    desc: 'landing.solution.proc4_d',
     icon: Workflow,
     tools: [
       { label: 'Task', icon: Users, tone: 'bg-red-50 text-red-500' },
@@ -91,8 +91,8 @@ const processCards: ProcessCard[] = [
     ],
   },
   {
-    title: 'Báo cáo',
-    desc: 'Tổng hợp dữ liệu, phân tích và dự báo.',
+    title: 'landing.solution.proc5_t',
+    desc: 'landing.solution.proc5_d',
     icon: BarChart3,
     tools: [
       { label: 'BI', icon: BarChart3, tone: 'bg-amber-50 text-amber-500' },
@@ -103,33 +103,33 @@ const processCards: ProcessCard[] = [
 ];
 
 const inputItems: { label: string; icon: IconType }[] = [
-  { label: 'Dữ liệu doanh nghiệp', icon: Database },
-  { label: 'Quy tắc & bảo mật', icon: ShieldCheck },
-  { label: 'Vai trò & quyền hạn', icon: Users },
+  { label: 'landing.solution.in1', icon: Database },
+  { label: 'landing.solution.in2', icon: ShieldCheck },
+  { label: 'landing.solution.in3', icon: Users },
 ];
 
 const resultCards: ResultCard[] = [
   {
-    title: 'Trả lời tự động',
-    desc: 'Xử lý yêu cầu và phản hồi khách hàng 24/7.',
+    title: 'landing.solution.res1_t',
+    desc: 'landing.solution.res1_d',
     value: '-42',
-    suffix: '% thời gian',
+    suffix: 'landing.solution.res1_s',
     icon: MessageCircle,
     tone: 'from-blue-100 to-blue-50 text-blue-600',
   },
   {
-    title: 'Tóm tắt dữ liệu',
-    desc: 'Tự động tổng hợp và làm nổi bật thông tin quan trọng.',
+    title: 'landing.solution.res2_t',
+    desc: 'landing.solution.res2_d',
     value: '+28',
-    suffix: '% tốc độ xử lý',
+    suffix: 'landing.solution.res2_s',
     icon: ClipboardList,
     tone: 'from-emerald-100 to-emerald-50 text-emerald-600',
   },
   {
-    title: 'Đề xuất hành động',
-    desc: 'Đưa ra khuyến nghị chính xác để ra quyết định nhanh hơn.',
+    title: 'landing.solution.res3_t',
+    desc: 'landing.solution.res3_d',
     value: '24/7',
-    suffix: 'luôn sẵn sàng',
+    suffix: 'landing.solution.res3_s',
     icon: TrendingUp,
     tone: 'from-violet-100 to-violet-50 text-violet-600',
   },
@@ -137,23 +137,23 @@ const resultCards: ResultCard[] = [
 
 const benefitItems: BenefitItem[] = [
   {
-    title: 'Kết nối nhanh chóng',
-    desc: 'Tích hợp với công cụ bạn đang dùng.',
+    title: 'landing.solution.bnf1_t',
+    desc: 'landing.solution.bnf1_d',
     icon: PlugZap,
   },
   {
-    title: 'Linh hoạt & mở rộng',
-    desc: 'Dễ dàng tuỳ chỉnh và mở rộng theo nhu cầu.',
+    title: 'landing.solution.bnf2_t',
+    desc: 'landing.solution.bnf2_d',
     icon: Puzzle,
   },
   {
-    title: 'Bảo mật cấp doanh nghiệp',
-    desc: 'Mã hóa, phân quyền và giám sát toàn diện.',
+    title: 'landing.solution.bnf3_t',
+    desc: 'landing.solution.bnf3_d',
     icon: ShieldCheck,
   },
   {
-    title: 'Giá trị thực tế',
-    desc: 'Giảm chi phí, tăng năng suất, tối ưu hiệu quả.',
+    title: 'landing.solution.bnf4_t',
+    desc: 'landing.solution.bnf4_d',
     icon: LayersIcon,
   },
 ];
@@ -343,9 +343,9 @@ const SolutionSection: React.FC = () => {
                         >
                           <Icon size={23} />
                         </motion.span>
-                        <h3 className="text-lg font-bold tracking-tight text-[#071225]">{card.title}</h3>
+                        <h3 className="text-lg font-bold tracking-tight text-[#071225]">{t(card.title)}</h3>
                       </div>
-                      <p className="min-h-[54px] text-sm font-medium leading-relaxed text-[#344054]">{card.desc}</p>
+                      <p className="min-h-[54px] text-sm font-medium leading-relaxed text-[#344054]">{t(card.desc)}</p>
                       <div className="mt-4 grid grid-cols-3 gap-2">
                         {card.tools.map((tool) => {
                           const ToolIcon = tool.icon;
@@ -465,7 +465,7 @@ const SolutionSection: React.FC = () => {
                         className="flex h-12 w-[250px] items-center gap-3 rounded-xl border border-black/[0.06] bg-white px-5 text-sm font-semibold text-[#344054] shadow-[0_12px_28px_rgba(16,24,40,0.06)]"
                       >
                         <Icon size={19} className="text-[#344054]" />
-                        {item.label}
+                        {t(item.label)}
                       </motion.div>
                     );
                   })}
@@ -512,7 +512,7 @@ const SolutionSection: React.FC = () => {
                   <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-[#E6C663] to-[#C7982F] text-3xl font-bold text-white shadow-[0_12px_28px_rgba(201,168,76,0.34)]">
                     AI
                   </span>
-                  <span className="mt-2 text-sm font-bold text-[#101828]">Layer</span>
+                  <span className="mt-2 text-sm font-bold text-[#101828]">{t('landing.solution.ai_layer')}</span>
                 </motion.div>
 
                 <motion.div
@@ -523,7 +523,7 @@ const SolutionSection: React.FC = () => {
                   className="absolute left-[47%] top-[214px] z-20 inline-flex -translate-x-1/2 items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-1.5 text-xs font-bold text-blue-600 shadow-[0_10px_24px_rgba(59,130,246,0.12)]"
                 >
                   <LockKeyhole size={14} />
-                  An toàn · Bảo mật · Tuân thủ
+                  {t('landing.solution.compliance')}
                 </motion.div>
               </div>
 
@@ -531,9 +531,9 @@ const SolutionSection: React.FC = () => {
                 <div className="rounded-xl border border-brand-blue/20 bg-white p-5 text-center shadow-[0_18px_44px_rgba(16,24,40,0.07)]">
                   <div className="mx-auto flex h-20 w-20 flex-col items-center justify-center rounded-full border border-brand-blue/30 bg-brand-blue/[0.08] text-brand-blue">
                     <Sparkles size={24} />
-                    <span className="mt-1 text-sm font-bold">AI Layer</span>
+                    <span className="mt-1 text-sm font-bold">{t('landing.solution.ai_layer_m')}</span>
                   </div>
-                  <p className="mt-4 text-sm font-semibold text-[#344054]">Kết nối dữ liệu, quy tắc và quyền hạn để AI hỗ trợ từng quy trình.</p>
+                  <p className="mt-4 text-sm font-semibold text-[#344054]">{t('landing.solution.ai_layer_desc')}</p>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-3">
                   {inputItems.map((item) => {
@@ -541,7 +541,7 @@ const SolutionSection: React.FC = () => {
                     return (
                       <div key={item.label} className="flex items-center gap-3 rounded-xl border border-black/[0.06] bg-white p-4 text-sm font-semibold text-[#344054]">
                         <Icon size={18} className="text-brand-blue" />
-                        {item.label}
+                        {t(item.label)}
                       </div>
                     );
                   })}
@@ -556,7 +556,7 @@ const SolutionSection: React.FC = () => {
               transition={{ duration: 0.7, delay: 0.16, ease: EASE }}
               className="relative z-10 rounded-2xl border border-black/[0.08] bg-white p-6 shadow-[0_26px_70px_rgba(16,24,40,0.10)]"
             >
-              <h3 className="mb-5 text-2xl font-bold tracking-tight text-[#071225]">AI mang lại kết quả ngay lập tức</h3>
+              <h3 className="mb-5 text-2xl font-bold tracking-tight text-[#071225]">{t('landing.solution.results_head')}</h3>
               <div className="space-y-3">
                 {resultCards.map((item, index) => {
                   const Icon = item.icon;
@@ -574,14 +574,14 @@ const SolutionSection: React.FC = () => {
                         <Icon size={26} />
                       </span>
                       <div className="min-w-0">
-                        <p className="text-base font-bold text-[#101828]">{item.title}</p>
-                        <p className="mt-1 text-sm font-medium leading-snug text-[#667085]">{item.desc}</p>
+                        <p className="text-base font-bold text-[#101828]">{t(item.title)}</p>
+                        <p className="mt-1 text-sm font-medium leading-snug text-[#667085]">{t(item.desc)}</p>
                       </div>
                       <div className="text-right">
                         <p className={`text-3xl font-bold tabular-nums ${item.tone.includes('emerald') ? 'text-emerald-600' : item.tone.includes('violet') ? 'text-violet-600' : 'text-blue-600'}`}>
                           <CountText value={item.value} reduceMotion={reduceMotion} />
                         </p>
-                        <p className="mt-1 max-w-[96px] text-sm font-semibold leading-tight text-[#475467]">{item.suffix}</p>
+                        <p className="mt-1 max-w-[96px] text-sm font-semibold leading-tight text-[#475467]">{t(item.suffix)}</p>
                       </div>
                     </motion.div>
                   );
@@ -612,8 +612,8 @@ const SolutionSection: React.FC = () => {
                     <Icon size={22} />
                   </span>
                   <div className="min-w-0">
-                    <p className="break-words text-sm font-bold leading-snug text-[#101828]">{item.title}</p>
-                    <p className="mt-1 text-pretty text-sm leading-snug text-[#667085]">{item.desc}</p>
+                    <p className="break-words text-sm font-bold leading-snug text-[#101828]">{t(item.title)}</p>
+                    <p className="mt-1 text-pretty text-sm leading-snug text-[#667085]">{t(item.desc)}</p>
                   </div>
                 </motion.div>
               );

@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, CalendarDays, Clock3, Sparkles } from 'lucide-react';
 import LazyImage from '../LazyImage';
 import LazySection from '../LazySection';
+import { useLanguage } from '../../../context/LanguageContext';
 import { EASE } from './shared';
 
 type BlogCard = {
@@ -15,43 +16,44 @@ type BlogCard = {
 
 const blogCards: BlogCard[] = [
   {
-    title: 'AI workflow cho doanh nghiệp',
+    title: 'landing.updates.b1_t',
     category: 'Business',
     date: '18 Jun 2026',
-    readTime: '5 phút đọc',
+    readTime: 'landing.updates.b1_rt',
     image: '/assets/homepage/ent-api-integration.webp',
   },
   {
-    title: 'Tạo video sản phẩm bằng AI',
+    title: 'landing.updates.b2_t',
     category: 'Creator',
     date: '16 Jun 2026',
-    readTime: '4 phút đọc',
+    readTime: 'landing.updates.b2_rt',
     image: '/assets/homepage/gold-build-video-gen.webp',
   },
   {
-    title: 'App & game MVP trong vài tuần',
+    title: 'landing.updates.b3_t',
     category: 'App & Game',
     date: '14 Jun 2026',
-    readTime: '6 phút đọc',
+    readTime: 'landing.updates.b3_rt',
     image: '/assets/showcase/bp-malachar-arena.webp',
   },
   {
-    title: 'Prompt workflow cho creator',
+    title: 'landing.updates.b4_t',
     category: 'Guide',
     date: '12 Jun 2026',
-    readTime: '3 phút đọc',
+    readTime: 'landing.updates.b4_rt',
     image: '/assets/homepage/gold-create-creators.webp',
   },
   {
-    title: 'Tối ưu chi phí model AI',
+    title: 'landing.updates.b5_t',
     category: 'Models',
     date: '10 Jun 2026',
-    readTime: '7 phút đọc',
+    readTime: 'landing.updates.b5_rt',
     image: '/assets/homepage/gold-feature-latest-models.webp',
   },
 ];
 
 const LatestUpdatesSection: React.FC = () => {
+  const { t } = useLanguage();
   const reduceMotion = useReducedMotion();
 
   return (
@@ -75,9 +77,9 @@ const LatestUpdatesSection: React.FC = () => {
                   Latest updates
                 </span>
               </div>
-              <h2 className="text-3xl font-bold leading-tight tracking-tight md:text-5xl">Bài viết mới nhất</h2>
+              <h2 className="text-3xl font-bold leading-tight tracking-tight md:text-5xl">{t('landing.updates.title')}</h2>
               <p className="mt-3 text-base leading-relaxed text-white/62">
-                Cập nhật nhanh về AI tools, workflow và sản phẩm mới.
+                {t('landing.updates.subtitle')}
               </p>
             </motion.div>
 
@@ -89,7 +91,7 @@ const LatestUpdatesSection: React.FC = () => {
               transition={{ duration: 0.45, delay: 0.12, ease: EASE }}
               className="group inline-flex w-fit items-center gap-3 rounded-xl border border-[#3a2f17] bg-white/[0.035] px-5 py-3 text-sm font-bold text-white transition duration-300 hover:-translate-y-0.5 hover:border-brand-blue/60 hover:bg-brand-blue/[0.08]"
             >
-              Xem tất cả
+              {t('landing.updates.view_all')}
               <ArrowRight size={17} className="transition duration-300 group-hover:translate-x-1" />
             </motion.a>
           </div>
@@ -107,14 +109,14 @@ const LatestUpdatesSection: React.FC = () => {
                 >
                   <div className="h-full overflow-hidden rounded-xl border border-[#302816] bg-[#071018]/82 shadow-[0_20px_60px_rgba(0,0,0,0.26)] transition duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateX(3deg)_rotateY(-4deg)_translateY(-8px)] group-hover:border-brand-blue/55 group-hover:shadow-[0_24px_72px_rgba(201,168,76,0.16)]">
                     <div className="relative overflow-hidden">
-                      <LazyImage src={card.image} alt={card.title} className="aspect-[16/10] transition duration-700 group-hover:scale-110" />
+                      <LazyImage src={card.image} alt={t(card.title)} className="aspect-[16/10] transition duration-700 group-hover:scale-110" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/68 via-transparent to-black/8" />
                       <span className="absolute left-4 top-4 rounded-full border border-brand-blue/30 bg-black/45 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-brand-blue backdrop-blur-md">
                         {card.category}
                       </span>
                     </div>
                     <div className="p-5">
-                      <h3 className="min-h-[56px] text-xl font-bold leading-tight tracking-tight text-white">{card.title}</h3>
+                      <h3 className="min-h-[56px] text-xl font-bold leading-tight tracking-tight text-white">{t(card.title)}</h3>
                       <div className="mt-5 flex items-center justify-between gap-3 text-xs font-semibold text-white/48">
                         <span className="flex items-center gap-1.5">
                           <CalendarDays size={14} className="text-brand-blue" />
@@ -122,11 +124,11 @@ const LatestUpdatesSection: React.FC = () => {
                         </span>
                         <span className="flex items-center gap-1.5">
                           <Clock3 size={14} className="text-brand-blue" />
-                          {card.readTime}
+                          {t(card.readTime)}
                         </span>
                       </div>
                       <div className="mt-5 flex items-center justify-between border-t border-[#302816] pt-4">
-                        <span className="text-sm font-bold text-white/74">Đọc bài viết</span>
+                        <span className="text-sm font-bold text-white/74">{t('landing.updates.read')}</span>
                         <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-blue/[0.10] text-brand-blue transition duration-300 group-hover:translate-x-1 group-hover:bg-brand-blue group-hover:text-[#05070a]">
                           <ArrowRight size={17} />
                         </span>

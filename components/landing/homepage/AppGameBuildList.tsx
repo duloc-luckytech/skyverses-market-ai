@@ -17,12 +17,12 @@ interface BuiltApp {
 }
 
 const BUILT_APPS: BuiltApp[] = [
-  { id: 'erp', name: 'ERP · Quản lý doanh nghiệp', category: 'business', desc: 'Tài chính, kho, đơn hàng, nhân sự trong một hệ thống — báo cáo realtime, phân quyền theo phòng ban.', platforms: ['web'], buildTime: '~3-4 tuần' },
-  { id: 'ecom', name: 'E-commerce · Thương mại điện tử', category: 'commerce', desc: 'Web bán hàng + app mobile, giỏ hàng, thanh toán, quản lý sản phẩm & vận đơn, tích hợp cổng nội địa.', platforms: ['web', 'mobile'], buildTime: '~2-3 tuần' },
-  { id: 'crm', name: 'CRM · Quản lý khách hàng', category: 'business', desc: 'Pipeline bán hàng, chăm sóc khách, lịch sử tương tác, tự động hóa email/SMS bằng AI agent.', platforms: ['web', 'mobile'], buildTime: '~2 tuần' },
-  { id: 'game-casual', name: 'Game Mobile · Casual & Hyper-casual', category: 'game', desc: 'Game giải trí với vòng lặp gameplay cuốn hút, bảng xếp hạng & monetization — phát hành lên App Store & Google Play.', platforms: ['mobile'], buildTime: '~3-4 tuần' },
-  { id: 'booking', name: 'Booking · Đặt lịch & đặt chỗ', category: 'service', desc: 'Đặt lịch hẹn, phòng, bàn — nhắc lịch tự động, lịch nhân viên, thanh toán đặt cọc.', platforms: ['web', 'mobile'], buildTime: '~2 tuần' },
-  { id: 'game-ai', name: 'Game tích hợp AI', category: 'game', desc: 'NPC thông minh, sinh nội dung & màn chơi bằng AI, trợ lý trong game — tùy biến theo ý tưởng của bạn.', platforms: ['mobile', 'web'], buildTime: '~4-6 tuần' },
+  { id: 'erp', name: 'landing.appgame.app_erp_name', category: 'business', desc: 'landing.appgame.app_erp_desc', platforms: ['web'], buildTime: 'landing.appgame.app_erp_build' },
+  { id: 'ecom', name: 'landing.appgame.app_ecom_name', category: 'commerce', desc: 'landing.appgame.app_ecom_desc', platforms: ['web', 'mobile'], buildTime: 'landing.appgame.app_ecom_build' },
+  { id: 'crm', name: 'landing.appgame.app_crm_name', category: 'business', desc: 'landing.appgame.app_crm_desc', platforms: ['web', 'mobile'], buildTime: 'landing.appgame.app_crm_build' },
+  { id: 'game-casual', name: 'landing.appgame.app_game-casual_name', category: 'game', desc: 'landing.appgame.app_game-casual_desc', platforms: ['mobile'], buildTime: 'landing.appgame.app_game-casual_build' },
+  { id: 'booking', name: 'landing.appgame.app_booking_name', category: 'service', desc: 'landing.appgame.app_booking_desc', platforms: ['web', 'mobile'], buildTime: 'landing.appgame.app_booking_build' },
+  { id: 'game-ai', name: 'landing.appgame.app_game-ai_name', category: 'game', desc: 'landing.appgame.app_game-ai_desc', platforms: ['mobile', 'web'], buildTime: 'landing.appgame.app_game-ai_build' },
 ];
 
 const PLATFORM_META: Record<Platform, { icon: React.ComponentType<{ size?: number }>; label: string }> = {
@@ -107,8 +107,8 @@ const AppGameBuildList: React.FC = () => {
               <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-blue/12 text-brand-blue">
                 <CatIcon size={20} />
               </span>
-              <h4 className="mt-5 text-lg font-bold leading-snug tracking-tight text-white">{app.name}</h4>
-              <p className="mt-2 flex-1 text-sm leading-relaxed text-white/55">{app.desc}</p>
+              <h4 className="mt-5 text-lg font-bold leading-snug tracking-tight text-white">{t(app.name)}</h4>
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-white/55">{t(app.desc)}</p>
 
               <div className="mt-5 flex flex-wrap gap-2">
                 {app.platforms.map((platform) => {
@@ -124,7 +124,7 @@ const AppGameBuildList: React.FC = () => {
 
               <div className="mt-4 flex items-center justify-between border-t border-white/[0.08] pt-4">
                 <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/40">{t('landing.appgame.timeline')}</span>
-                <span className="text-sm font-bold text-brand-blue">{app.buildTime}</span>
+                <span className="text-sm font-bold text-brand-blue">{t(app.buildTime)}</span>
               </div>
             </motion.article>
           );
