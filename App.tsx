@@ -33,6 +33,7 @@ const pageImports = {
   referral: () => import('./pages/ReferralPage'),
   policy: () => import('./pages/PolicyPage'),
   markets: () => import('./pages/MarketsPage'),
+  showcase: () => import('./pages/ShowcasePage'),
   // Images
   aiImageGenerator: () => import('./pages/images/AIImageGenerator'),
   eventStudio: () => import('./pages/images/EventStudioPage'),
@@ -103,6 +104,7 @@ const FavoritesPage = React.lazy(pageImports.favorites);
 const ReferralPage = React.lazy(pageImports.referral);
 const PolicyPage = React.lazy(pageImports.policy);
 const MarketsPage = React.lazy(pageImports.markets);
+const ShowcasePage = React.lazy(pageImports.showcase);
 
 // Product pages — images
 const AIImageGenerator = React.lazy(pageImports.aiImageGenerator);
@@ -232,6 +234,7 @@ const App: React.FC = () => {
                       <Route path="/category/:id" element={<CategoryPage />} />
                       <Route path="/explorer" element={<ExplorerPage />} />
                       <Route path="/markets" element={<MarketsPage />} />
+                      <Route path="/showcase" element={<ShowcasePage />} />
                       <Route path="/models" element={<ModelsPage />} />
                       <Route path="/apps" element={<AppsPage />} />
                       <Route path="/app/:id" element={<AppInterfacePage />} />

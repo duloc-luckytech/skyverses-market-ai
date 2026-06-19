@@ -12,6 +12,7 @@ Provider order: `ErrorBoundary > Theme > Language > Auth > Toast > Router > Sear
 | `/category/:id` | `pages/CategoryPage` | |
 | `/explorer` | `pages/ExplorerPage` | Gallery |
 | `/markets` | `pages/MarketsPage` | Browse all |
+| `/showcase` | `pages/ShowcasePage` | App & game demo gallery |
 | `/models` | `pages/ModelsPage` | AI model list |
 | `/apps` | `pages/AppsPage` | Workspace (auth) |
 | `/app/:id` | `pages/AppInterfacePage` | App runtime |

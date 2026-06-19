@@ -5,7 +5,7 @@ import {
   Menu, X, ChevronRight, Languages, LogOut,
   User, Settings,
   Zap, ArrowRight, BarChart3,
-  ChevronDown, Bookmark, Loader2, Sparkles,
+  Bookmark, Loader2, Sparkles,
   Database, HelpCircle, Users, Gift, Plus, Crown,
   Search, Coins, Sun, Moon
 } from 'lucide-react';
@@ -57,7 +57,6 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
   const [scrolled, setScrolled] = useState(false);
   const [showDesktopLang, setShowDesktopLang] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [showExploreMenu, setShowExploreMenu] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
   const [isClaimingDaily, setIsClaimingDaily] = useState(false);
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
@@ -73,7 +72,6 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
 
   const langRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
-  const exploreRef = useRef<HTMLDivElement>(null);
 
   const [pastHero, setPastHero] = useState(false);
   useEffect(() => {
@@ -98,7 +96,6 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
     const handleClickOutside = (e: MouseEvent) => {
       if (langRef.current && !langRef.current.contains(e.target as Node)) setShowDesktopLang(false);
       if (userRef.current && !userRef.current.contains(e.target as Node)) setShowUserMenu(false);
-      if (exploreRef.current && !exploreRef.current.contains(e.target as Node)) setShowExploreMenu(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -181,64 +178,29 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
 
           {/* Nav Links — Desktop (Atlas: uppercase, 14px, weight 400, spaced 40px) */}
           <div className="hidden md:flex items-center" style={{ marginLeft: 40, gap: 32 }}>
-            {/* APPS */}
+            {/* CREATOR TOOLS */}
             <Link to="/markets" className={navLinkCls(location.pathname.startsWith('/markets') || location.pathname === '/models')}>
-              Apps
+              Creator Tools
             </Link>
 
-            {/* EXPLORE — dropdown */}
-            <div className="relative" ref={exploreRef}>
-              <button
-                onClick={() => setShowExploreMenu(!showExploreMenu)}
-                onMouseEnter={() => setShowExploreMenu(true)}
-                aria-expanded={showExploreMenu}
-                aria-haspopup="true"
-                className={`${navLinkCls(location.pathname.startsWith('/explorer') || location.pathname.startsWith('/use-cases') || location.pathname.startsWith('/booking'))} flex items-center gap-1`}
-              >
-                Explore
-                <ChevronDown size={11} className={`transition-transform duration-200 ${showExploreMenu ? 'rotate-180' : ''}`} />
-              </button>
-              <AnimatePresence>
-                {showExploreMenu && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
-                    transition={{ duration: 0.15 }}
-                    onMouseLeave={() => setShowExploreMenu(false)}
-                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-[200]"
-                    style={{
-                      width: 520,
-                      background: '#0f141e',
-                      borderRadius: 12,
-                      padding: '20px 24px',
-                      boxShadow: '0 20px 40px rgba(0,0,0,.4)',
-                      border: '1px solid rgba(201,168,76,0.15)',
-                    }}
-                    role="menu"
-                  >
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-1">
-                      <DropdownNavLink to="/markets" label="Creator Tools" desc="AI video, image, music & voice" onClick={() => setShowExploreMenu(false)} />
-                      <DropdownNavLink to="/booking" label="AI for Business" desc="AI solutions for teams & enterprises" onClick={() => setShowExploreMenu(false)} />
-                      <DropdownNavLink to="/product/nocode-export" label="App Development" desc="Build mobile & desktop apps faster" onClick={() => setShowExploreMenu(false)} />
-                      <DropdownNavLink to="/models" label="AI Models" desc="Explore all available models" onClick={() => setShowExploreMenu(false)} />
-                      <DropdownNavLink to="/use-cases" label="Use Cases" desc="Real-world AI applications" onClick={() => setShowExploreMenu(false)} />
-                      <DropdownNavLink to="/explorer" label="Explorer Gallery" desc="Browse AI-generated artworks" onClick={() => setShowExploreMenu(false)} />
-                      {isAuthenticated && (
-                        <DropdownNavLink to="/apps" label="My Workspace" desc="Your creative dashboard" onClick={() => setShowExploreMenu(false)} />
-                      )}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+            {/* GIẢI PHÁP */}
+            <Link to="/booking" className={navLinkCls(location.pathname.startsWith('/booking'))}>
+              Giải pháp
+            </Link>
+
+            {/* SHOWCASE */}
+            <Link to="/showcase" className={navLinkCls(location.pathname.startsWith('/showcase'))}>
+              Showcase
+            </Link>
 
             {/* PROMPTS */}
             <Link to="/prompt-market" className={navLinkCls(location.pathname.startsWith('/prompt-market'))}>
               Prompts
             </Link>
 
-            {/* PRICING */}
-            <Link to="/credits" className={navLinkCls(isActive('/credits') || isActive('/pricing'))}>
-              Pricing
+            {/* EXPLORER */}
+            <Link to="/explorer" className={navLinkCls(location.pathname.startsWith('/explorer'))}>
+              Explorer
             </Link>
           </div>
 
@@ -584,11 +546,11 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                   { label: 'Home', to: '/' },
                   { label: 'Creator Tools', to: '/markets' },
                   { label: 'AI for Business', to: '/booking' },
+                  { label: 'Showcase', to: '/showcase' },
                   { label: 'App Development', to: '/product/nocode-export' },
                   { label: 'Use Cases', to: '/use-cases' },
                   { label: 'Explorer', to: '/explorer' },
                   { label: 'Prompts', to: '/prompt-market' },
-                  { label: 'Pricing', to: '/credits' },
                 ].map(link => (
                   <Link key={link.to} to={link.to} onClick={() => setIsOpen(false)}
                     className="flex items-center justify-between px-3 py-3 rounded-lg transition-all"
@@ -688,25 +650,5 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
     </>
   );
 };
-
-/* ═══ Atlas-style dropdown nav link (purple bg) ═══ */
-const DropdownNavLink: React.FC<{
-  to: string;
-  label: string;
-  desc: string;
-  onClick: () => void;
-}> = ({ to, label, desc, onClick }) => (
-  <Link
-    to={to}
-    onClick={onClick}
-    className="block px-3 py-2.5 rounded-lg transition-all"
-    style={{ color: '#faf7f8' }}
-    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(201,168,76,0.1)'}
-    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-  >
-    <span className="block text-[14px] font-medium" style={{ color: '#faf7f8' }}>{label}</span>
-    <span className="block text-[11px] mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>{desc}</span>
-  </Link>
-);
 
 export default Header;
