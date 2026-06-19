@@ -7,7 +7,7 @@ import {
   Zap, ArrowRight, BarChart3,
   Bookmark, Loader2, Sparkles,
   Database, HelpCircle, Users, Gift, Plus, Crown,
-  Search, Coins, Sun, Moon
+  Search, Coins
 } from 'lucide-react';
 
 import { AnimatePresence, motion } from 'framer-motion';
@@ -66,7 +66,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { lang, setLang, t } = useLanguage();
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const { user, logout, isAuthenticated, credits, claimWelcomeCredits, refreshUserInfo, isPro } = useAuth();
   const search = useSearch();
 
@@ -338,16 +338,6 @@ const Header: React.FC<HeaderProps> = ({ onOpenLibrary, resetSearch }) => {
                 )}
               </AnimatePresence>
             </div>
-
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              aria-label="Toggle theme"
-              className="hidden md:flex w-8 h-8 items-center justify-center rounded transition-all"
-              style={{ color: 'rgba(250,247,248,0.85)' }}
-            >
-              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-            </button>
 
             {/* User Menu / Contact + Login */}
             {isAuthenticated ? (

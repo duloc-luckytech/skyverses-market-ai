@@ -202,12 +202,12 @@ const ShowcasePage: React.FC = () => {
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-blue/40 to-transparent" />
 
         <div className="relative mx-auto max-w-[1560px]">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
+          <div className="flex flex-col gap-8 xl:flex-row xl:items-start xl:justify-between">
             <motion.div
               initial={reduceMotion ? false : { opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, ease: EASE }}
-              className="max-w-[760px]"
+              className="max-w-[960px] xl:min-w-[760px]"
             >
               <div className="mb-5 flex items-center gap-3">
                 <Sparkles size={18} className="text-brand-blue" />
@@ -215,10 +215,12 @@ const ShowcasePage: React.FC = () => {
                   App &amp; Game Showcase
                 </span>
               </div>
-              <h1 className="text-[42px] font-bold leading-[0.98] tracking-tight text-white md:text-[68px] lg:text-[76px]">
-                Sản phẩm app &amp; game
+              <h1 className="text-[40px] font-bold leading-[0.98] tracking-tight text-white md:text-[64px] lg:text-[72px]">
+                <span className="md:whitespace-nowrap">Sản phẩm app &amp; game</span>
                 <br />
-                đã build <span className="text-brand-blue">bằng AI</span>
+                <span className="md:whitespace-nowrap">
+                  đã build <span className="text-brand-blue">bằng AI</span>
+                </span>
               </h1>
               <p className="mt-5 max-w-3xl text-base leading-relaxed text-white/64 md:text-lg">
                 Xem các mẫu app, game, AI feature có thể triển khai nhanh trong vài tuần.
@@ -229,7 +231,7 @@ const ShowcasePage: React.FC = () => {
               initial={reduceMotion ? false : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, delay: 0.08, ease: EASE }}
-              className="flex flex-wrap gap-4 lg:justify-end"
+              className="flex shrink-0 flex-wrap gap-4 xl:justify-end"
             >
               <Link
                 to="/booking"
@@ -270,10 +272,10 @@ const ShowcasePage: React.FC = () => {
             initial={reduceMotion ? false : { opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.18, ease: EASE }}
-            className="mt-4 rounded-2xl border border-brand-blue/35 bg-[#070b10]/86 p-2 shadow-[0_24px_90px_rgba(0,0,0,0.28)] backdrop-blur-xl"
+            className="mt-4 rounded-2xl border border-brand-blue/35 bg-[#070b10]/86 p-2 shadow-[0_24px_90px_rgba(0,0,0,0.28)] backdrop-blur-xl lg:p-3"
           >
-            <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_280px_300px_180px]">
-              <div className="flex min-w-0 gap-1 overflow-x-auto">
+            <div className="flex flex-col gap-3 2xl:flex-row 2xl:items-center">
+              <div className="flex min-w-0 flex-1 gap-2 overflow-x-auto 2xl:min-w-[600px]">
                 {CATEGORIES.map((category) => (
                   <button
                     key={category.key}
@@ -296,10 +298,10 @@ const ShowcasePage: React.FC = () => {
                 ))}
               </div>
 
-              <label className="flex items-center gap-3 rounded-xl border border-white/[0.08] bg-black/24 px-4 py-3 text-white/58 transition focus-within:border-brand-blue/50">
+              <label className="flex min-h-12 w-full items-center gap-3 rounded-xl border border-white/[0.08] bg-black/24 px-4 py-3 text-white/58 transition focus-within:border-brand-blue/50 md:w-[300px]">
                 <Search size={19} />
                 <input
-                  value={query}
+                  value={query ?? ''}
                   onChange={(event) => setQuery(event.target.value)}
                   placeholder="Tìm kiếm sản phẩm..."
                   className="min-w-0 flex-1 bg-transparent text-sm font-medium text-white outline-none placeholder:text-white/38"
@@ -307,13 +309,13 @@ const ShowcasePage: React.FC = () => {
                 />
               </label>
 
-              <div className="flex items-center gap-2 border-white/[0.08] xl:border-l xl:pl-5">
-                <span className="hidden text-xs font-medium text-white/54 md:inline">Nền tảng</span>
+              <div className="flex min-h-12 flex-wrap items-center gap-2 border-white/[0.08] 2xl:border-l 2xl:pl-5">
+                <span className="mr-1 text-xs font-medium leading-tight text-white/54">Nền tảng</span>
                 {platformOptions.map(({ key, label, icon: Icon }) => (
                   <button
                     key={key}
                     onClick={() => togglePlatform(key)}
-                    className={`inline-flex h-11 items-center gap-2 rounded-lg border px-3 text-sm font-semibold transition duration-300 ${
+                    className={`inline-flex h-11 min-w-[84px] items-center justify-center gap-2 rounded-lg border px-3 text-sm font-semibold transition duration-300 ${
                       activePlatforms.includes(key)
                         ? 'border-brand-blue/55 bg-brand-blue/[0.12] text-brand-blue'
                         : 'border-white/[0.08] bg-white/[0.035] text-white/72 hover:border-brand-blue/35 hover:text-white'
@@ -326,12 +328,12 @@ const ShowcasePage: React.FC = () => {
                 ))}
               </div>
 
-              <label className="flex items-center gap-2 border-white/[0.08] xl:border-l xl:pl-5">
-                <span className="hidden text-xs font-medium text-white/54 md:inline">Ngành</span>
+              <label className="flex min-h-12 items-center gap-3 border-white/[0.08] 2xl:border-l 2xl:pl-5">
+                <span className="shrink-0 text-xs font-medium text-white/54">Ngành</span>
                 <select
                   value={activeIndustry}
                   onChange={(event) => setActiveIndustry(event.target.value as Industry)}
-                  className="h-11 w-full rounded-lg border border-white/[0.08] bg-[#0a0d12] px-4 text-sm font-semibold text-white/72 outline-none transition focus:border-brand-blue/50"
+                  className="h-11 min-w-[150px] rounded-lg border border-white/[0.08] bg-[#0a0d12] px-4 text-sm font-semibold text-white/72 outline-none transition focus:border-brand-blue/50"
                 >
                   {INDUSTRIES.map((industry) => (
                     <option key={industry.key} value={industry.key}>
@@ -397,7 +399,7 @@ const ShowcasePage: React.FC = () => {
 
                     <div className="mt-3 flex justify-end">
                       <Link
-                        to="/booking"
+                        to={`/showcase/${item.id}`}
                         className="group/cta inline-flex min-w-[132px] items-center justify-center gap-3 rounded-lg border border-brand-blue/40 bg-brand-blue/[0.08] px-4 py-2.5 text-sm font-bold text-brand-blue transition duration-300 hover:bg-brand-blue hover:text-[#070707]"
                       >
                         Xem nhanh

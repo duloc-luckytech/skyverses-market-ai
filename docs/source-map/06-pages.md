@@ -7,6 +7,7 @@
 | `HomePage.tsx` | Homepage route `/` (đổi tên từ `MarketPage`), dynamic block layout via `BLOCK_ICONS` map |
 | `MarketsPage.tsx` | Browse all tools `/markets`, `STATIC_CATEGORIES` |
 | `ShowcasePage.tsx` | App & game demo gallery `/showcase`, static items + App/Game filter, CTA → `/booking` |
+| `ShowcaseDetailPage.tsx` | App/game showcase detail `/showcase/:id`, static product data + sticky summary/tabs/related cards |
 | `CategoryPage.tsx` | Category detail, `CATEGORY_UI_MAP` |
 | `ExplorerPage.tsx` | Gallery, `ASPECT_CLASSES` |
 | `ModelsPage.tsx` | Model list, `CATEGORIES` |
