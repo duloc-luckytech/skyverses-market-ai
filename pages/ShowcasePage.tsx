@@ -17,27 +17,19 @@ import {
   Zap,
 } from 'lucide-react';
 import { usePageMeta } from '../hooks/usePageMeta';
+import {
+  APP_GAME_SHOWCASE_LIST,
+  type AppGameShowcaseCategoryKey,
+  type AppGameShowcaseIndustryKey,
+  type AppGameShowcaseMetricIcon,
+  type AppGameShowcasePlatform,
+  type AppGameShowcaseType,
+} from '../src/constants/app-game-showcase';
 
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
-type ShowcaseType = 'app' | 'game' | 'ai';
-type ShowcaseCategory = 'all' | 'mobile' | 'game' | 'ai' | 'ecommerce' | 'dashboard';
-type Platform = 'ios' | 'android' | 'web';
-type Industry = 'all' | 'game' | 'health' | 'commerce' | 'travel' | 'analytics';
-
-type ShowcaseItem = {
-  id: string;
-  title: string;
-  type: ShowcaseType;
-  category: Exclude<ShowcaseCategory, 'all'>;
-  industry: Exclude<Industry, 'all'>;
-  image: string;
-  badge: string;
-  metric: string;
-  metricIcon: 'clock' | 'zap';
-  tags: string[];
-  platforms: Platform[];
-};
+type ShowcaseCategory = 'all' | AppGameShowcaseCategoryKey;
+type Industry = 'all' | AppGameShowcaseIndustryKey;
 
 const CATEGORIES: { key: ShowcaseCategory; label: string }[] = [
   { key: 'all', label: 'Tất cả' },
@@ -50,106 +42,37 @@ const CATEGORIES: { key: ShowcaseCategory; label: string }[] = [
 
 const INDUSTRIES: { key: Industry; label: string }[] = [
   { key: 'all', label: 'Chọn ngành' },
+  { key: 'analytics', label: 'Analytics' },
+  { key: 'commerce', label: 'Commerce' },
+  { key: 'education', label: 'Education' },
+  { key: 'food', label: 'Food' },
   { key: 'game', label: 'Game' },
   { key: 'health', label: 'Health' },
-  { key: 'commerce', label: 'Commerce' },
+  { key: 'property', label: 'Property' },
   { key: 'travel', label: 'Travel' },
-  { key: 'analytics', label: 'Analytics' },
 ];
 
-const SHOWCASE_ITEMS: ShowcaseItem[] = [
-  {
-    id: 'dragon-realms',
-    title: 'Dragon Realms RPG',
-    type: 'game',
-    category: 'game',
-    industry: 'game',
-    image: '/assets/showcase/bp-malachar-arena.webp',
-    badge: 'Game',
-    metric: '2-6 tuần',
-    metricIcon: 'clock',
-    tags: ['RPG', 'iOS, Android', 'AI NPC'],
-    platforms: ['ios', 'android'],
-  },
-  {
-    id: 'fitpulse',
-    title: 'FitPulse Tracker',
-    type: 'app',
-    category: 'mobile',
-    industry: 'health',
-    image: '/assets/showcase/album-voss-run.webp',
-    badge: 'App',
-    metric: '2-6 tuần',
-    metricIcon: 'clock',
-    tags: ['Health', 'iOS, Android', 'AI Coach'],
-    platforms: ['ios', 'android'],
-  },
-  {
-    id: 'shopverse',
-    title: 'ShopVerse Commerce',
-    type: 'app',
-    category: 'ecommerce',
-    industry: 'commerce',
-    image: '/assets/showcase/album-voss-campaign.webp',
-    badge: 'App',
-    metric: '-40% chi phí',
-    metricIcon: 'zap',
-    tags: ['E-commerce', 'Web, Mobile', 'AI Recommend'],
-    platforms: ['web', 'ios', 'android'],
-  },
-  {
-    id: 'travel-booking',
-    title: 'Travel Booking App',
-    type: 'app',
-    category: 'mobile',
-    industry: 'travel',
-    image: '/assets/showcase/album-verano-villa.webp',
-    badge: 'App',
-    metric: '2-6 tuần',
-    metricIcon: 'clock',
-    tags: ['Travel', 'iOS, Android', 'AI Search'],
-    platforms: ['ios', 'android'],
-  },
-  {
-    id: 'ai-npc-companion',
-    title: 'AI NPC Companion',
-    type: 'ai',
-    category: 'ai',
-    industry: 'game',
-    image: '/assets/showcase/bp-kora-3d.webp',
-    badge: 'AI',
-    metric: '2-6 tuần',
-    metricIcon: 'clock',
-    tags: ['AI Feature', 'NLP', 'Voice · TTS'],
-    platforms: ['web', 'ios', 'android'],
-  },
-  {
-    id: 'admin-analytics',
-    title: 'Admin Analytics',
-    type: 'app',
-    category: 'dashboard',
-    industry: 'analytics',
-    image: '/assets/showcase/album-terra-packaging.webp',
-    badge: 'App',
-    metric: '-40% chi phí',
-    metricIcon: 'zap',
-    tags: ['Dashboard', 'Web', 'AI Insight'],
-    platforms: ['web'],
-  },
-];
-
-const platformOptions: { key: Platform; label: string; icon: React.ElementType }[] = [
-  { key: 'ios', label: 'iOS', icon: Smartphone },
-  { key: 'android', label: 'Android', icon: MonitorSmartphone },
-  { key: 'web', label: 'Web', icon: Globe2 },
+const platformOptions: { key: AppGameShowcasePlatform; label: string; icon: React.ElementType }[] = [
+  { key: 'iOS', label: 'iOS', icon: Smartphone },
+  { key: 'Android', label: 'Android', icon: MonitorSmartphone },
+  { key: 'Web', label: 'Web', icon: Globe2 },
 ];
 
 const tagIcons: React.ElementType[] = [Swords, Smartphone, Sparkles];
 
-const getBadgeIcon = (type: ShowcaseType) => {
+const getBadgeIcon = (type: AppGameShowcaseType) => {
   if (type === 'game') return Gamepad2;
   if (type === 'ai') return Sparkles;
   return Smartphone;
+};
+
+const metricIcons: Record<AppGameShowcaseMetricIcon, React.ElementType> = {
+  chart: LayoutDashboard,
+  clock: CalendarDays,
+  gamepad: Gamepad2,
+  map: Globe2,
+  sparkles: Sparkles,
+  zap: Zap,
 };
 
 const getTagIcon = (label: string, index: number) => {
@@ -168,28 +91,29 @@ const ShowcasePage: React.FC = () => {
 
   const reduceMotion = useReducedMotion();
   const [activeCategory, setActiveCategory] = useState<ShowcaseCategory>('all');
-  const [activePlatforms, setActivePlatforms] = useState<Platform[]>([]);
+  const [activePlatforms, setActivePlatforms] = useState<AppGameShowcasePlatform[]>([]);
   const [activeIndustry, setActiveIndustry] = useState<Industry>('all');
   const [query, setQuery] = useState('');
 
   const filteredItems = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
-    return SHOWCASE_ITEMS.filter((item) => {
-      const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
-      const matchesIndustry = activeIndustry === 'all' || item.industry === activeIndustry;
+    return APP_GAME_SHOWCASE_LIST.filter((item) => {
+      const matchesCategory = activeCategory === 'all' || item.categoryKey === activeCategory;
+      const matchesIndustry = activeIndustry === 'all' || item.industryKey === activeIndustry;
       const matchesPlatform =
         activePlatforms.length === 0 || activePlatforms.some((platform) => item.platforms.includes(platform));
       const matchesQuery =
         normalizedQuery.length === 0 ||
         item.title.toLowerCase().includes(normalizedQuery) ||
+        item.subtitle.toLowerCase().includes(normalizedQuery) ||
         item.tags.some((tag) => tag.toLowerCase().includes(normalizedQuery));
 
       return matchesCategory && matchesIndustry && matchesPlatform && matchesQuery;
     });
   }, [activeCategory, activeIndustry, activePlatforms, query]);
 
-  const togglePlatform = (platform: Platform) => {
+  const togglePlatform = (platform: AppGameShowcasePlatform) => {
     setActivePlatforms((current) =>
       current.includes(platform) ? current.filter((item) => item !== platform) : [...current, platform],
     );
@@ -348,7 +272,7 @@ const ShowcasePage: React.FC = () => {
           <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-3">
             {filteredItems.map((item, index) => {
               const BadgeIcon = getBadgeIcon(item.type);
-              const MetricIcon = item.metricIcon === 'clock' ? CalendarDays : Zap;
+              const MetricIcon = metricIcons[item.metricIcon];
 
               return (
                 <motion.article
@@ -361,7 +285,7 @@ const ShowcasePage: React.FC = () => {
                 >
                   <div className="relative overflow-hidden">
                     <img
-                      src={item.image}
+                      src={item.heroImage}
                       alt={item.title}
                       loading="lazy"
                       className="aspect-[16/7] w-full object-cover transition duration-700 group-hover:scale-105 group-hover:brightness-110"

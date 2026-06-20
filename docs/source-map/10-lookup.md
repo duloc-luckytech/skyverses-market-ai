@@ -30,7 +30,7 @@
 | Gate UI by tier | `useFeatureAccess(featureKey)` từ `hooks/useFeatureAccess.ts` |
 | Generate landing images | `scripts/gen_<product>_*.sh` |
 | Sync CDN URLs | `scripts/<product>_cdn*.sh` + result vào `src/constants/<product>-cdn.ts` |
-| App & Game Showcase seed data | `src/constants/app-game-showcase.ts` (typed list/detail data + planned `/assets/showcase/app-game/` image paths) |
+| App & Game Showcase seed data | `src/constants/app-game-showcase.ts` (typed list/detail data + DB seed export) + `scripts/seed-app-game-showcase.ts` |
 | Seed DB | root `seed-products.mjs` hoặc backend `src/scripts/seed*.ts` |
 | Add/auto-random Prompt Market blueprint pack | `skyverses-backend/src/scripts/prompt-market-blueprint.ts` (`PROMPT_MARKET_BLUEPRINT_STANDARD`, `validatePromptMarketBlueprintStandard`, `pickRandomPromptMarketBlueprintId`) + `generate-prompt-market-assets.ts` (video must use same-pack image references before upload) |
 | Deploy | `deploy.sh` (pm2 via `ecosystem.config.cjs`) |

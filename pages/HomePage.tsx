@@ -550,9 +550,6 @@ const HomePage = () => {
                   <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-[#E5C767] to-[#C9A84C] text-white text-[11px] font-bold rounded-full uppercase tracking-wide">
                     <Zap size={11} /> {t('landing.badge')}
                   </span>
-                  <span className="text-[#ebf4fb]/50 text-xs font-medium">
-                    {t('landing.badge_sub')}
-                  </span>
                 </motion.div>
 
                 {/* Hero Text — Cinematic entrance with rotating keyword */}
@@ -563,15 +560,15 @@ const HomePage = () => {
                     </span>
                     <BlurTextReveal text={t('landing.hero.line2')} as="span" delay={0.7} charDelay={0.035} style={{ justifyContent: 'center', display: 'inline-flex', fontSize: 'inherit', fontWeight: 'inherit', lineHeight: 'inherit' }} />
                     {' '}
-                    <span className="inline-flex items-baseline overflow-hidden" style={{ height: '1.3em', verticalAlign: 'baseline' }}>
+                    <span className="relative inline-flex items-baseline" style={{ verticalAlign: 'baseline' }}>
                       <AnimatePresence mode="wait">
                         <motion.span
                           key={heroRotatingWords[heroWordIdx]}
-                          initial={{ y: '100%', opacity: 0 }}
-                          animate={{ y: '0%', opacity: 1 }}
-                          exit={{ y: '-100%', opacity: 0 }}
-                          transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-                          className="inline-block bg-gradient-to-r from-[#E5C767] via-[#C9A84C] to-[#E5C767] bg-clip-text text-transparent"
+                          initial={{ y: 14, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          exit={{ y: -14, opacity: 0 }}
+                          transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+                          className="inline-block bg-gradient-to-r from-[#F8E08A] via-[#E5C767] to-[#B8862F] bg-clip-text text-transparent leading-[1.3] pb-[0.05em]"
                         >
                           {heroRotatingWords[heroWordIdx]}
                         </motion.span>
@@ -594,7 +591,7 @@ const HomePage = () => {
                   >
                     <button
                       onClick={() => navigate(isAuthenticated ? '/apps' : '/login')}
-                      className="inline-flex items-center gap-2.5 bg-[#C9A84C] text-white px-8 py-3.5 rounded-lg text-sm font-semibold hover:bg-[#B8963F] shadow-lg shadow-[#C9A84C]/25 transition-all duration-200 hover:shadow-xl hover:shadow-[#C9A84C]/30 hover:-translate-y-0.5"
+                      className="inline-flex items-center gap-2.5 bg-gradient-to-r from-[#E5C767] to-[#C9A84C] text-[#1a1404] px-8 py-3.5 rounded-lg text-sm font-bold hover:from-[#F0D173] hover:to-[#D4B355] shadow-lg shadow-[#C9A84C]/25 transition-all duration-200 hover:shadow-xl hover:shadow-[#C9A84C]/30 hover:-translate-y-0.5"
                     >
                       {t('landing.hero.cta1')} <ArrowRight size={15} />
                     </button>

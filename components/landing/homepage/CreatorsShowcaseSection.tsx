@@ -214,7 +214,7 @@ const WorkflowCard: React.FC<{
         )}
       </motion.div>
 
-      <p className="relative z-10 mt-5 min-h-[50px] text-sm leading-relaxed text-white/62">{step.body}</p>
+      <p className="relative z-10 mt-5 min-h-[50px] text-sm leading-relaxed text-white/80">{step.body}</p>
 
       <div className="relative z-10 mt-auto flex items-center justify-between gap-4 border-t border-white/10 pt-4">
         <span className={`flex h-12 w-12 items-center justify-center rounded-xl border bg-brand-blue/[0.08] text-brand-blue transition-colors duration-300 ${live ? 'border-brand-blue/60' : 'border-brand-blue/25'}`}>
@@ -380,9 +380,9 @@ const CreatorsShowcaseSection: React.FC<{
               <span className="h-px w-14 bg-gradient-to-l from-transparent to-brand-blue/75" />
             </div>
             <h2 className="text-3xl font-bold leading-[1.12] tracking-tight text-white md:text-[44px] lg:text-[48px] xl:text-[52px]">
-              {t('landing.showcase.title')} <span className="text-brand-blue">{t('landing.showcase.title_accent')}</span>
+              {t('landing.showcase.title')} <span className="bg-gradient-to-r from-[#F8E08A] via-[#E5C767] to-[#B8862F] bg-clip-text text-transparent">{t('landing.showcase.title_accent')}</span>
             </h2>
-            <p className="mx-auto mt-5 max-w-3xl text-sm leading-relaxed text-white/62 md:text-base">
+            <p className="mx-auto mt-5 max-w-3xl text-sm leading-relaxed text-white/80 md:text-base">
               {t('landing.showcase.desc')}
             </p>
           </motion.div>

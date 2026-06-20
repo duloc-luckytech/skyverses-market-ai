@@ -14,7 +14,7 @@ const FinalCtaSection: React.FC = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-brand-blue/10 to-transparent motion-safe:animate-[sv-shimmer_5s_linear_infinite]" />
       <Reveal className="relative mx-auto max-w-3xl">
         <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">{t('landing.cta.heading')}</h2>
-        <p className="mt-4 text-sm text-white/55 md:text-base">{t('landing.cta.sub')}</p>
+        <p className="mt-4 text-sm text-white/68 md:text-base">{t('landing.cta.sub')}</p>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <GoldButton onClick={() => navigate('/markets')}>{t('landing.cta.button')} <ArrowRight size={15} /></GoldButton>
           <OutlineButton dark onClick={() => navigate('/booking')}>{t('landing.cta.secondary')}</OutlineButton>

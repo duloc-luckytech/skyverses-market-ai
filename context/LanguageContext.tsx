@@ -565,8 +565,8 @@ const translations: Record<Language, Record<string, string>> = {
     'landing.solution.ai_layer_desc': 'Connect data, rules and permissions so AI supports every process.',
     'landing.solution.results_head': 'AI delivers measurable results',
     /* ── i18n standardization: AppGameSection ── */
-    'landing.appgame.ag_head': 'Turn app & game ideas into real, working products in ',
-    'landing.appgame.ag_head_accent': 'just weeks.',
+    'landing.appgame.ag_head': 'Launch apps & games ',
+    'landing.appgame.ag_head_accent': 'faster.',
     'landing.appgame.ag_sub': 'AI shortens every step — from design, gameplay and UI to launch.',
     'landing.appgame.ag_cta1': 'Start a project',
     'landing.appgame.ag_cta2': 'View case study',
@@ -1258,8 +1258,8 @@ const translations: Record<Language, Record<string, string>> = {
     'landing.solution.ai_layer_desc': 'Kết nối dữ liệu, quy tắc và quyền hạn để AI hỗ trợ từng quy trình.',
     'landing.solution.results_head': 'AI tạo ra kết quả đo lường được',
     /* ── i18n standardization: AppGameSection ── */
-    'landing.appgame.ag_head': 'Biến ý tưởng app & game thành sản phẩm chạy thật, ',
-    'landing.appgame.ag_head_accent': 'chỉ trong vài tuần.',
+    'landing.appgame.ag_head': 'App & game ra mắt ',
+    'landing.appgame.ag_head_accent': 'nhanh hơn.',
     'landing.appgame.ag_sub': 'AI rút ngắn từng khâu — từ thiết kế, gameplay, giao diện đến lúc lên store.',
     'landing.appgame.ag_cta1': 'Bắt đầu dự án',
     'landing.appgame.ag_cta2': 'Xem case study',
@@ -1933,8 +1933,8 @@ const translations: Record<Language, Record<string, string>> = {
     'landing.solution.ai_layer_desc': '데이터, 규칙 및 권한을 연결하여 AI가 모든 프로세스를 지원합니다.',
     'landing.solution.results_head': 'AI가 측정 가능한 결과를 제공합니다',
     /* ── i18n standardization: AppGameSection ── */
-    'landing.appgame.ag_head': '앱과 게임 아이디어를 실제 제품으로, ',
-    'landing.appgame.ag_head_accent': '단 몇 주 만에.',
+    'landing.appgame.ag_head': '앱·게임을 ',
+    'landing.appgame.ag_head_accent': '더 빠르게 출시.',
     'landing.appgame.ag_sub': 'AI가 디자인, 게임플레이, UI부터 출시까지 모든 단계를 단축합니다.',
     'landing.appgame.ag_cta1': '프로젝트 시작하기',
     'landing.appgame.ag_cta2': '사례 연구 보기',
@@ -2608,8 +2608,8 @@ const translations: Record<Language, Record<string, string>> = {
     'landing.solution.ai_layer_desc': 'データ、ルール、権限を接続し、AIがあらゆるプロセスを支援します。',
     'landing.solution.results_head': 'AIが測定可能な成果を提供します',
     /* ── i18n standardization: AppGameSection ── */
-    'landing.appgame.ag_head': 'アプリ＆ゲームのアイデアを実際に動く製品へ、',
-    'landing.appgame.ag_head_accent': 'わずか数週間で。',
+    'landing.appgame.ag_head': 'アプリ・ゲームを',
+    'landing.appgame.ag_head_accent': 'もっと速くリリース。',
     'landing.appgame.ag_sub': 'AIがデザイン、ゲームプレイ、UIからローンチまで各工程を短縮します。',
     'landing.appgame.ag_cta1': 'プロジェクトを始める',
     'landing.appgame.ag_cta2': 'ケーススタディを見る',

@@ -190,23 +190,24 @@ const AppGameSection: React.FC = () => {
                 viewport={{ once: true, margin: '-80px' }}
                 transition={{ duration: 0.58, ease: EASE }}
               >
-                <div className="mb-7 flex items-center gap-3">
-                  <Sparkles size={18} className="text-brand-blue" />
+                <div className="mb-7 flex items-center gap-4">
+                  <span className="relative h-2 w-2 rounded-full bg-brand-blue shadow-[0_0_0_5px_rgba(201,168,76,0.12)]" />
+                  <span className="h-px w-10 bg-brand-blue/70" />
                   <span className="font-mono text-[12px] font-bold uppercase tracking-[0.32em] text-brand-blue">
                     AI Mobile & Game Builder
                   </span>
                 </div>
                 <h2 className="max-w-[620px] text-balance text-4xl font-bold leading-[1.08] tracking-tight md:text-6xl xl:text-[64px]">
-                  {t('landing.appgame.ag_head')} <span className="text-brand-blue">{t('landing.appgame.ag_head_accent')}</span>
+                  {t('landing.appgame.ag_head')} <span className="bg-gradient-to-r from-[#F8E08A] via-[#E5C767] to-[#B8862F] bg-clip-text text-transparent">{t('landing.appgame.ag_head_accent')}</span>
                 </h2>
-                <p className="mt-5 max-w-md text-base leading-relaxed text-white/68 md:text-lg">
+                <p className="mt-5 max-w-md text-base leading-relaxed text-white/80 md:text-lg">
                   {t('landing.appgame.ag_sub')}
                 </p>
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                   <button
                     type="button"
                     onClick={() => navigate('/booking')}
-                    className="group inline-flex items-center justify-center gap-3 rounded-xl bg-brand-blue px-7 py-4 text-base font-bold text-[#05080d] shadow-[0_18px_44px_rgba(201,168,76,0.38)] transition duration-300 hover:-translate-y-1 hover:bg-[#e4c160] hover:shadow-[0_24px_58px_rgba(201,168,76,0.48)]"
+                    className="group inline-flex items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-[#E5C767] to-[#C9A84C] px-7 py-4 text-base font-bold text-[#1a1404] shadow-[0_18px_44px_rgba(201,168,76,0.38)] transition duration-300 hover:-translate-y-1 hover:from-[#F0D173] hover:to-[#D4B355] hover:shadow-[0_24px_58px_rgba(201,168,76,0.48)]"
                   >
                     <Rocket size={20} />
                     {t('landing.appgame.ag_cta1')}
@@ -254,7 +255,7 @@ const AppGameSection: React.FC = () => {
                           <span className="font-mono text-2xl font-bold text-brand-blue">{step.number}</span>
                           <div>
                             <p className="text-lg font-bold">{step.title}</p>
-                            <p className="mt-2 text-sm leading-relaxed text-white/60">{t(step.desc)}</p>
+                            <p className="mt-2 text-sm leading-relaxed text-white/72">{t(step.desc)}</p>
                           </div>
                         </div>
                       </motion.div>
@@ -356,7 +357,7 @@ const AppGameSection: React.FC = () => {
                           <div className="relative z-10 min-h-[108px]">
                             <Icon size={22} className="mb-3 text-brand-blue" />
                             <p className="text-base font-bold">{t(item.title)}</p>
-                            <p className="mt-1 text-sm text-white/58">{t(item.desc)}</p>
+                            <p className="mt-1 text-sm text-white/72">{t(item.desc)}</p>
                             {item.wide ? (
                               <div className="mt-4 flex items-center gap-3">
                                 <motion.span
@@ -397,7 +398,7 @@ const AppGameSection: React.FC = () => {
                             <Icon size={27} className="text-brand-blue" />
                             <div>
                               <p className="text-sm font-bold">{item.title}</p>
-                              <p className="text-xs text-white/50">{t(item.desc)}</p>
+                              <p className="text-xs text-white/65">{t(item.desc)}</p>
                             </div>
                           </motion.div>
                         );
@@ -412,13 +413,13 @@ const AppGameSection: React.FC = () => {
                       <Timer size={28} className="mb-3 text-brand-blue" />
                       <p className="text-5xl font-bold text-brand-blue">2-6</p>
                       <p className="mt-2 text-base font-semibold">{t('landing.appgame.ag_stat1_unit')}</p>
-                      <p className="text-sm text-white/55">{t('landing.appgame.ag_stat1_label')}</p>
+                      <p className="text-sm text-white/68">{t('landing.appgame.ag_stat1_label')}</p>
                     </div>
                     <div className="flex flex-col items-center justify-center px-4">
                       <Zap size={28} className="mb-3 text-brand-blue" />
                       <p className="text-5xl font-bold text-brand-blue">-40%</p>
                       <p className="mt-2 text-base font-semibold">{t('landing.appgame.ag_stat2_unit')}</p>
-                      <p className="text-sm text-white/55">{t('landing.appgame.ag_stat2_label')}</p>
+                      <p className="text-sm text-white/68">{t('landing.appgame.ag_stat2_label')}</p>
                     </div>
                   </div>
                 </HoverPanel>

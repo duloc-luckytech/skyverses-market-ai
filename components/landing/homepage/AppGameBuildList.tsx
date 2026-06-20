@@ -78,7 +78,7 @@ const AppGameBuildList: React.FC = () => {
               className={`rounded-full px-4 py-2 text-xs font-bold transition ${
                 active === filter.key
                   ? 'bg-brand-blue text-[#07090d] shadow-[0_0_22px_rgba(201,168,76,0.28)]'
-                  : 'border border-white/15 text-white/55 hover:border-brand-blue/40 hover:text-white'
+                  : 'border border-white/15 text-white/68 hover:border-brand-blue/40 hover:text-white'
               }`}
             >
               {filter.label}
@@ -108,7 +108,7 @@ const AppGameBuildList: React.FC = () => {
                 <CatIcon size={20} />
               </span>
               <h4 className="mt-5 text-lg font-bold leading-snug tracking-tight text-white">{t(app.name)}</h4>
-              <p className="mt-2 flex-1 text-sm leading-relaxed text-white/55">{t(app.desc)}</p>
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-white/80">{t(app.desc)}</p>
 
               <div className="mt-5 flex flex-wrap gap-2">
                 {app.platforms.map((platform) => {

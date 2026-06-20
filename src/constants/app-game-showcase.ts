@@ -1,25 +1,16 @@
 export type AppGameShowcaseType = 'app' | 'game' | 'ai';
-
-export type AppGameShowcaseMetricIcon =
-  | 'Activity'
-  | 'BrainCircuit'
-  | 'Clock3'
-  | 'Gamepad2'
-  | 'LineChart'
-  | 'Map'
-  | 'MessageSquareText'
-  | 'Rocket'
-  | 'ShieldCheck'
-  | 'Sparkles';
-
-export type AppGameShowcasePlatform =
-  | 'iOS'
-  | 'Android'
-  | 'Web'
-  | 'PWA'
-  | 'Desktop'
-  | 'Tablet'
-  | 'Console';
+export type AppGameShowcaseCategoryKey = 'mobile' | 'game' | 'ai' | 'ecommerce' | 'dashboard';
+export type AppGameShowcaseIndustryKey =
+  | 'analytics'
+  | 'commerce'
+  | 'education'
+  | 'food'
+  | 'game'
+  | 'health'
+  | 'property'
+  | 'travel';
+export type AppGameShowcaseMetricIcon = 'clock' | 'gamepad' | 'zap' | 'chart' | 'map' | 'sparkles';
+export type AppGameShowcasePlatform = 'iOS' | 'Android' | 'Web' | 'PWA' | 'Tablet' | 'Desktop';
 
 export interface AppGameShowcaseFeature {
   title: string;
@@ -40,6 +31,8 @@ export interface AppGameShowcaseItem {
   id: string;
   title: string;
   type: AppGameShowcaseType;
+  categoryKey: AppGameShowcaseCategoryKey;
+  industryKey: AppGameShowcaseIndustryKey;
   category: string;
   industry: string;
   badge: string;
@@ -59,11 +52,71 @@ export interface AppGameShowcaseItem {
   checklist: readonly AppGameShowcaseChecklistItem[];
 }
 
+export interface AppGameShowcaseMarketSeed {
+  id: string;
+  slug: string;
+  name: {
+    en: string;
+    vi: string;
+    ko: string;
+    ja: string;
+  };
+  category: {
+    en: string;
+    vi: string;
+    ko: string;
+    ja: string;
+  };
+  description: {
+    en: string;
+    vi: string;
+    ko: string;
+    ja: string;
+  };
+  imageUrl: string;
+  bannerUrl: string;
+  thumbnailUrl: string;
+  gallery: string[];
+  demoType: 'interactive';
+  homeBlocks: string[];
+  tags: string[];
+  models: string[];
+  industries: string[];
+  problems: string[];
+  features: {
+    en: string;
+    vi: string;
+    ko: string;
+    ja: string;
+  }[];
+  neuralStack: {
+    name: string;
+    version?: string;
+    capability: {
+      en: string;
+      vi: string;
+      ko: string;
+      ja: string;
+    };
+  }[];
+  complexity: 'Standard' | 'Advanced' | 'Enterprise';
+  priceReference: string;
+  priceCredits: number;
+  isFree: boolean;
+  isActive: boolean;
+  status: 'active';
+  featured: boolean;
+  order: number;
+  platforms: AppGameShowcasePlatform[];
+}
+
 export type AppGameShowcaseListItem = Pick<
   AppGameShowcaseItem,
   | 'id'
   | 'title'
   | 'type'
+  | 'categoryKey'
+  | 'industryKey'
   | 'category'
   | 'industry'
   | 'badge'
@@ -77,9 +130,7 @@ export type AppGameShowcaseListItem = Pick<
   | 'heroImage'
 >;
 
-export type AppGameShowcaseDetail = AppGameShowcaseItem;
-
-const getShowcaseImages = (id: string): Pick<AppGameShowcaseItem, 'heroImage' | 'galleryImages'> => ({
+const images = (id: string): Pick<AppGameShowcaseItem, 'heroImage' | 'galleryImages'> => ({
   heroImage: `/assets/showcase/app-game/${id}-cover.png`,
   galleryImages: [
     `/assets/showcase/app-game/${id}-showcase.png`,
@@ -87,440 +138,512 @@ const getShowcaseImages = (id: string): Pick<AppGameShowcaseItem, 'heroImage' | 
   ],
 });
 
-export const APP_GAME_SHOWCASE_ITEMS = [
+export const APP_GAME_SHOWCASE_ITEMS: readonly AppGameShowcaseItem[] = [
   {
-    id: 'chefmate-kitchen',
-    title: 'ChefMate Kitchen OS',
-    type: 'app',
-    category: 'Mobile operations app',
-    industry: 'Food service',
-    badge: 'Kitchen-ready MVP',
-    metric: '32% faster prep handoff',
-    metricIcon: 'Clock3',
-    buildTime: '5-7 weeks',
-    costSaving: 'Save 2 coordinator shifts per week',
-    platforms: ['iOS', 'Android', 'Tablet'],
-    tags: ['Kitchen display', 'Inventory', 'Shift notes', 'QR ordering'],
-    subtitle: 'A pocket command center for small restaurants that need cleaner handoffs.',
-    description:
-      'ChefMate combines prep boards, low-stock alerts, supplier notes, and table QR requests in one mobile workflow so owners can run lunch rush without a wall of spreadsheets.',
-    audience: 'Independent restaurants, cloud kitchens, cafe chains, and franchise operators.',
-    ...getShowcaseImages('chefmate-kitchen'),
-    features: [
-      {
-        title: 'Live prep board',
-        description: 'Stations see order batches, modifiers, timers, and allergy flags without switching tools.',
-      },
-      {
-        title: 'Smart stock warnings',
-        description: 'Ingredient usage rolls up from orders and warns managers before critical items run out.',
-      },
-      {
-        title: 'Shift memory',
-        description: 'Closing notes, waste logs, and supplier issues are summarized for the next team.',
-      },
-    ],
-    deliverables: [
-      { title: 'Mobile app prototype', detail: 'Owner, cashier, and kitchen station flows.' },
-      { title: 'Admin dashboard', detail: 'Menu, stock, staff roles, and supplier settings.' },
-      { title: 'Launch kit', detail: 'QR templates, seed menu, and store onboarding checklist.' },
-    ],
-    checklist: [
-      { label: 'Role-based station views', completed: true },
-      { label: 'Inventory threshold rules', completed: true },
-      { label: 'POS integration discovery', completed: false },
-    ],
-  },
-  {
-    id: 'aurora-run',
-    title: 'Aurora Run',
+    id: 'dragon-realms-rpg',
+    title: 'Dragon Realms RPG',
     type: 'game',
-    category: 'Mobile endless runner',
-    industry: 'Casual games',
-    badge: 'Playable vertical slice',
-    metric: '90-second core loop',
-    metricIcon: 'Gamepad2',
-    buildTime: '4-6 weeks',
-    costSaving: 'Prototype before full art spend',
+    categoryKey: 'game',
+    industryKey: 'game',
+    category: 'Fantasy RPG Game',
+    industry: 'Game studio',
+    badge: 'Playable RPG MVP',
+    metric: '2-6 tuần',
+    metricIcon: 'gamepad',
+    buildTime: '2-6 tuần',
+    costSaving: '-40% chi phí MVP',
     platforms: ['iOS', 'Android', 'Web'],
-    tags: ['Runner', 'Cosmetics', 'Daily quests', 'One-thumb'],
-    subtitle: 'A northern-lights runner built around rhythm, dodges, and collectible sky trails.',
+    tags: ['RPG', 'AI NPC', 'Inventory', 'Quest loop'],
+    subtitle: 'Game fantasy RPG với gameplay loop, inventory, quest và AI companion.',
     description:
-      'Aurora Run turns a simple lane runner into a collectible live-ops concept with short sessions, cosmetic trails, obstacle patterns, and daily challenge boards for retention testing.',
-    audience: 'Casual game studios, brand campaigns, and publishers testing lightweight mobile IP.',
-    ...getShowcaseImages('aurora-run'),
+      'Dragon Realms RPG là bản MVP cho studio muốn kiểm chứng gameplay fantasy trước khi đầu tư production lớn: có combat loop, inventory, quest map, progression và AI NPC hướng dẫn người chơi.',
+    audience: 'Indie studio, publisher, IP fantasy, creator muốn thử game MVP.',
+    ...images('dragon-realms-rpg'),
     features: [
-      {
-        title: 'Rhythm lane system',
-        description: 'Obstacle waves land on a music grid so movement feels readable and satisfying.',
-      },
-      {
-        title: 'Trail cosmetics',
-        description: 'Players unlock aurora ribbons, comet dust, and seasonal sky effects.',
-      },
-      {
-        title: 'Daily challenge seed',
-        description: 'A deterministic run seed supports leaderboards without heavy backend logic.',
-      },
+      { title: 'Core combat loop', description: 'Thiết kế vòng lặp chiến đấu, nhiệm vụ, phần thưởng và tiến trình nhân vật.' },
+      { title: 'AI NPC companion', description: 'Nhân vật đồng hành hội thoại, gợi ý nhiệm vụ và giải thích hệ thống.' },
+      { title: 'Inventory & upgrade', description: 'Kho vật phẩm, trang bị, chỉ số và flow nâng cấp dễ mở rộng.' },
     ],
     deliverables: [
-      { title: 'Game design slice', detail: 'Core loop, controls, scoring, and progression draft.' },
-      { title: 'Playable web build plan', detail: 'Mobile-first mechanics ready for Unity or Phaser.' },
-      { title: 'Asset brief', detail: 'Character, obstacle, and environment prompts for production.' },
+      { title: 'Playable MVP', detail: 'Build gameplay cốt lõi có thể demo trên mobile/web.' },
+      { title: 'Game design spec', detail: 'Combat, quest, item, economy và progression draft.' },
+      { title: 'Art direction pack', detail: 'Moodboard, UI direction và prompt asset cho production.' },
     ],
     checklist: [
-      { label: 'Core loop documented', completed: true },
-      { label: 'Monetization test points', completed: true },
-      { label: 'Multiplayer race mode', completed: false },
+      { label: 'Gameplay loop MVP', completed: true },
+      { label: 'AI NPC dialogue flow', completed: true },
+      { label: 'Multiplayer/co-op mode', completed: false },
     ],
   },
   {
-    id: 'carebridge-home',
-    title: 'CareBridge Home',
+    id: 'shopverse-commerce',
+    title: 'ShopVerse Commerce',
     type: 'app',
-    category: 'Care coordination app',
-    industry: 'Healthcare services',
-    badge: 'Family-care workflow',
-    metric: '18 fewer missed tasks monthly',
-    metricIcon: 'ShieldCheck',
-    buildTime: '6-8 weeks',
-    costSaving: 'Reduce manual check-in calls',
-    platforms: ['iOS', 'Android', 'Web'],
-    tags: ['Care plan', 'Medication', 'Family updates', 'Appointments'],
-    subtitle: 'A shared care timeline for families, nurses, and home-care coordinators.',
-    description:
-      'CareBridge Home gives non-clinical teams a secure way to coordinate visits, medications, incident notes, and family updates without sending sensitive care details through chat threads.',
-    audience: 'Home-care agencies, elder-care teams, family offices, and private nurse networks.',
-    ...getShowcaseImages('carebridge-home'),
-    features: [
-      {
-        title: 'Care timeline',
-        description: 'Visits, notes, medication reminders, and appointment prep stay in one chronological view.',
-      },
-      {
-        title: 'Family digest',
-        description: 'Approved relatives receive clear summaries instead of raw operational chatter.',
-      },
-      {
-        title: 'Incident capture',
-        description: 'Staff can log vitals, photos, severity, and follow-up tasks from the field.',
-      },
-    ],
-    deliverables: [
-      { title: 'Secure app flows', detail: 'Caregiver, coordinator, and family member experiences.' },
-      { title: 'Data model map', detail: 'Residents, visits, tasks, notes, and consent boundaries.' },
-      { title: 'Compliance notes', detail: 'Privacy assumptions and audit-log requirements for review.' },
-    ],
-    checklist: [
-      { label: 'Permission matrix drafted', completed: true },
-      { label: 'Care task templates', completed: true },
-      { label: 'Clinical system integration', completed: false },
-    ],
-  },
-  {
-    id: 'forgequest-tactics',
-    title: 'ForgeQuest Tactics',
-    type: 'game',
-    category: 'Turn-based strategy RPG',
-    industry: 'Midcore games',
-    badge: 'Systems-first concept',
-    metric: '12 hero archetypes',
-    metricIcon: 'Map',
-    buildTime: '8-10 weeks',
-    costSaving: 'Validate combat depth pre-production',
-    platforms: ['Web', 'Desktop', 'Tablet'],
-    tags: ['Tactics', 'Crafting', 'Guilds', 'PvE seasons'],
-    subtitle: 'A grid tactics prototype where every weapon recipe changes team strategy.',
-    description:
-      'ForgeQuest Tactics explores a midcore combat loop with craftable weapons, terrain combos, hero synergies, and seasonal PvE maps before committing to expensive content production.',
-    audience: 'Indie studios, publishers, and Web3-adjacent teams that need a real game loop first.',
-    ...getShowcaseImages('forgequest-tactics'),
-    features: [
-      {
-        title: 'Recipe-driven builds',
-        description: 'Weapon recipes modify attack shapes, cooldowns, and elemental reactions.',
-      },
-      {
-        title: 'Readable grid combat',
-        description: 'Threat previews, terrain bonuses, and turn order keep battles tactical without clutter.',
-      },
-      {
-        title: 'Guild season model',
-        description: 'Async map clears and crafting goals create progression without forcing real-time play.',
-      },
-    ],
-    deliverables: [
-      { title: 'Combat spec', detail: 'Units, stats, terrain, equipment, and encounter rules.' },
-      { title: 'Prototype backlog', detail: 'Milestones for battle, inventory, map, and season systems.' },
-      { title: 'Content matrix', detail: 'Hero archetypes, enemy roles, and starter recipes.' },
-    ],
-    checklist: [
-      { label: 'Combat math baseline', completed: true },
-      { label: 'Starter hero roster', completed: true },
-      { label: 'Economy balance simulation', completed: false },
-    ],
-  },
-  {
-    id: 'legal-lens-ai',
-    title: 'Legal Lens AI',
-    type: 'ai',
-    category: 'Document intelligence',
-    industry: 'Legal operations',
-    badge: 'Clause review assistant',
-    metric: '64% faster first pass',
-    metricIcon: 'BrainCircuit',
-    buildTime: '4-5 weeks',
-    costSaving: 'Cut routine review hours',
-    platforms: ['Web', 'Desktop'],
-    tags: ['Contract review', 'Risk flags', 'Summaries', 'Knowledge base'],
-    subtitle: 'An AI workspace for turning long agreements into risk-aware review briefs.',
-    description:
-      'Legal Lens AI ingests contracts, extracts key clauses, compares them against playbooks, and creates reviewer-ready summaries with traceable citations for legal and procurement teams.',
-    audience: 'In-house legal teams, procurement departments, contract managers, and startup counsel.',
-    ...getShowcaseImages('legal-lens-ai'),
-    features: [
-      {
-        title: 'Clause radar',
-        description: 'Finds unusual terms, missing protections, renewal traps, and negotiation hotspots.',
-      },
-      {
-        title: 'Playbook comparison',
-        description: 'Maps extracted language against company policy so reviewers see why a risk matters.',
-      },
-      {
-        title: 'Citation-first answers',
-        description: 'Every summary point links back to the source section for human verification.',
-      },
-    ],
-    deliverables: [
-      { title: 'AI review flow', detail: 'Upload, extraction, risk scoring, and reviewer notes.' },
-      { title: 'Prompt policy pack', detail: 'Clause taxonomy, risk language, and escalation templates.' },
-      { title: 'Admin controls', detail: 'Playbook settings, document types, and retention rules.' },
-    ],
-    checklist: [
-      { label: 'Clause taxonomy defined', completed: true },
-      { label: 'Human review gates', completed: true },
-      { label: 'Jurisdiction-specific advice', completed: false },
-    ],
-  },
-  {
-    id: 'fieldpulse-crm',
-    title: 'FieldPulse CRM',
-    type: 'app',
-    category: 'Field sales app',
-    industry: 'B2B sales',
-    badge: 'Sales route accelerator',
-    metric: '21% more visits per week',
-    metricIcon: 'LineChart',
-    buildTime: '5-6 weeks',
-    costSaving: 'Replace spreadsheet route planning',
-    platforms: ['iOS', 'Android', 'PWA'],
-    tags: ['CRM', 'Routes', 'Visit notes', 'Offline mode'],
-    subtitle: 'A mobile CRM for reps who sell from streets, showrooms, and trade counters.',
-    description:
-      'FieldPulse CRM focuses on the daily reality of field sales: route planning, offline account notes, follow-up tasks, voice summaries, and fast reporting after every customer visit.',
-    audience: 'Distribution teams, B2B wholesalers, medical reps, and regional sales managers.',
-    ...getShowcaseImages('fieldpulse-crm'),
-    features: [
-      {
-        title: 'Route-first accounts',
-        description: 'Customers are grouped by territory, priority, distance, and visit cadence.',
-      },
-      {
-        title: 'Voice-to-note recap',
-        description: 'Reps dictate after meetings and receive structured notes plus next actions.',
-      },
-      {
-        title: 'Offline visit kit',
-        description: 'Account history, product sheets, and forms remain usable when reception is weak.',
-      },
-    ],
-    deliverables: [
-      { title: 'Mobile CRM flows', detail: 'Territory map, account detail, visit recap, and task queue.' },
-      { title: 'Manager dashboard', detail: 'Coverage, pipeline hygiene, and overdue visit reporting.' },
-      { title: 'Integration brief', detail: 'CRM import/export assumptions and sync conflict rules.' },
-    ],
-    checklist: [
-      { label: 'Offline data scope', completed: true },
-      { label: 'Voice recap structure', completed: true },
-      { label: 'ERP pricing sync', completed: false },
-    ],
-  },
-  {
-    id: 'pixel-pet-academy',
-    title: 'Pixel Pet Academy',
-    type: 'game',
-    category: 'Cozy learning game',
-    industry: 'Edutainment',
-    badge: 'Kid-safe game loop',
-    metric: '7-day habit journey',
-    metricIcon: 'Sparkles',
-    buildTime: '6-8 weeks',
-    costSaving: 'Test learning loop before curriculum build',
-    platforms: ['iOS', 'Android', 'Tablet', 'Web'],
-    tags: ['Pets', 'Learning', 'Rewards', 'Parent view'],
-    subtitle: 'A cozy pet-care game that turns short lessons into visible creature growth.',
-    description:
-      'Pixel Pet Academy pairs bite-size math, language, or science challenges with pet care, room decoration, and parent-visible progress so learning feels like tending a tiny world.',
-    audience: 'Edtech founders, children-focused publishers, after-school centers, and family brands.',
-    ...getShowcaseImages('pixel-pet-academy'),
-    features: [
-      {
-        title: 'Lesson-to-care loop',
-        description: 'Correct answers feed, groom, train, or decorate the pet environment.',
-      },
-      {
-        title: 'Parent progress view',
-        description: 'Adults see streaks, skill areas, and suggested practice without exposing social features.',
-      },
-      {
-        title: 'Safe customization',
-        description: 'Cosmetics and room items are earned through play with no open chat dependency.',
-      },
-    ],
-    deliverables: [
-      { title: 'Game economy draft', detail: 'Rewards, pet moods, lessons, and room progression.' },
-      { title: 'Learning UX map', detail: 'Question flow, hints, feedback, and parent summary screens.' },
-      { title: 'Safety checklist', detail: 'Privacy, ads, social limits, and content moderation boundaries.' },
-    ],
-    checklist: [
-      { label: 'Core learning loop', completed: true },
-      { label: 'Parent controls', completed: true },
-      { label: 'Licensed curriculum content', completed: false },
-    ],
-  },
-  {
-    id: 'studio-pitch-ai',
-    title: 'Studio Pitch AI',
-    type: 'ai',
-    category: 'Creative sales assistant',
-    industry: 'Agencies and studios',
-    badge: 'Pitch deck generator',
-    metric: '3-hour pitch draft',
-    metricIcon: 'Rocket',
-    buildTime: '3-5 weeks',
-    costSaving: 'Reduce unpaid pitch prep',
-    platforms: ['Web', 'Desktop'],
-    tags: ['Brief parser', 'Deck outline', 'Moodboards', 'Proposal copy'],
-    subtitle: 'An AI brief room that turns messy client notes into pitch-ready structure.',
-    description:
-      'Studio Pitch AI helps creative teams convert meeting notes, RFPs, and reference links into strategic angles, deck outlines, moodboard prompts, scopes, and proposal copy.',
-    audience: 'Brand studios, video agencies, creative freelancers, and internal marketing teams.',
-    ...getShowcaseImages('studio-pitch-ai'),
-    features: [
-      {
-        title: 'Brief distillation',
-        description: 'Extracts goals, constraints, audience signals, deliverables, and hidden risks.',
-      },
-      {
-        title: 'Concept routes',
-        description: 'Generates distinct strategic directions with tone, visual language, and proof points.',
-      },
-      {
-        title: 'Scope builder',
-        description: 'Turns a selected route into phases, deliverables, assumptions, and budget notes.',
-      },
-    ],
-    deliverables: [
-      { title: 'AI workflow prototype', detail: 'Brief input, concept route, and proposal generation.' },
-      { title: 'Prompt library', detail: 'Strategy, moodboard, treatment, and scope prompt templates.' },
-      { title: 'Export model', detail: 'Deck outline, markdown proposal, and asset-generation briefs.' },
-    ],
-    checklist: [
-      { label: 'Brief parser fields', completed: true },
-      { label: 'Proposal export format', completed: true },
-      { label: 'Brand voice training set', completed: false },
-    ],
-  },
-  {
-    id: 'metro-tycoon-mini',
-    title: 'Metro Tycoon Mini',
-    type: 'game',
-    category: 'Management sim',
-    industry: 'Simulation games',
-    badge: 'Economy prototype',
-    metric: '15-minute city loop',
-    metricIcon: 'Activity',
-    buildTime: '7-9 weeks',
-    costSaving: 'Balance economy before art scale-up',
-    platforms: ['Web', 'Desktop', 'Tablet'],
-    tags: ['Tycoon', 'Transit', 'Economy', 'City growth'],
-    subtitle: 'A compact transit sim about routes, crowds, upgrades, and daily city pressure.',
-    description:
-      'Metro Tycoon Mini compresses city transit management into readable decisions: add routes, tune schedules, upgrade stations, respond to events, and keep riders moving during peak hours.',
-    audience: 'Simulation publishers, civic education teams, and studios testing management mechanics.',
-    ...getShowcaseImages('metro-tycoon-mini'),
-    features: [
-      {
-        title: 'Demand heatmap',
-        description: 'Neighborhoods generate rider pressure by time of day, event, and station capacity.',
-      },
-      {
-        title: 'Route economics',
-        description: 'Players balance ticket revenue, train frequency, delays, and maintenance costs.',
-      },
-      {
-        title: 'City event cards',
-        description: 'Rain, concerts, breakdowns, and holidays create tactical disruptions.',
-      },
-    ],
-    deliverables: [
-      { title: 'Economy model', detail: 'Demand, revenue, capacity, delays, and upgrade pacing.' },
-      { title: 'Prototype UX', detail: 'Map controls, station panels, route editor, and event feed.' },
-      { title: 'Balancing sheet', detail: 'Starting values and tuning ranges for playtests.' },
-    ],
-    checklist: [
-      { label: 'Demand model drafted', completed: true },
-      { label: 'Station upgrade ladder', completed: true },
-      { label: 'Scenario editor', completed: false },
-    ],
-  },
-  {
-    id: 'travelnest-planner',
-    title: 'TravelNest Planner',
-    type: 'app',
-    category: 'Group travel app',
-    industry: 'Travel and hospitality',
-    badge: 'Trip collaboration MVP',
-    metric: '40% fewer planning chats',
-    metricIcon: 'MessageSquareText',
-    buildTime: '5-7 weeks',
-    costSaving: 'Automate itinerary coordination',
+    categoryKey: 'ecommerce',
+    industryKey: 'commerce',
+    category: 'E-commerce App',
+    industry: 'Retail',
+    badge: 'Storefront ready',
+    metric: '-40% chi phí',
+    metricIcon: 'zap',
+    buildTime: '2-6 tuần',
+    costSaving: '-40% so với build truyền thống',
     platforms: ['iOS', 'Android', 'Web', 'PWA'],
-    tags: ['Itinerary', 'Group voting', 'Budget split', 'AI planning'],
-    subtitle: 'A shared trip board for friends, families, and boutique travel advisors.',
+    tags: ['Catalog', 'Checkout', 'AI recommend', 'Admin'],
+    subtitle: 'App commerce hiện đại cho bán lẻ, có AI gợi ý sản phẩm và dashboard quản trị.',
     description:
-      'TravelNest Planner keeps group trips organized with collaborative itineraries, preference voting, budget splits, booking notes, and AI-generated day plans that adapt to real constraints.',
-    audience: 'Travel startups, boutique agencies, community hosts, and group-trip organizers.',
-    ...getShowcaseImages('travelnest-planner'),
+      'ShopVerse Commerce gom catalog, giỏ hàng, checkout, inventory và AI recommendation vào một hệ thống gọn để brand bán hàng nhanh hơn trên mobile và web.',
+    audience: 'Fashion, sneaker, mỹ phẩm, phụ kiện, D2C brand và marketplace nhỏ.',
+    ...images('shopverse-commerce'),
     features: [
-      {
-        title: 'Collaborative itinerary',
-        description: 'Travelers vote on activities, lock decisions, and see timing conflicts before booking.',
-      },
-      {
-        title: 'Budget clarity',
-        description: 'Shared costs, deposits, and personal expenses are separated by traveler.',
-      },
-      {
-        title: 'Adaptive day plans',
-        description: 'AI suggests realistic routes based on pace, distance, weather, and group interests.',
-      },
+      { title: 'Catalog thông minh', description: 'Danh mục, biến thể, bộ lọc, tìm kiếm và bộ sưu tập sản phẩm.' },
+      { title: 'Checkout nhanh', description: 'Giỏ hàng, mã giảm giá, phí vận chuyển, thanh toán và trạng thái đơn.' },
+      { title: 'AI recommendation', description: 'Gợi ý sản phẩm tương tự, upsell và cá nhân hóa theo hành vi.' },
     ],
     deliverables: [
-      { title: 'Trip workspace design', detail: 'Planner, voting, budget, and traveler preference flows.' },
-      { title: 'AI itinerary brief', detail: 'Prompt inputs, constraints, output structure, and edit rules.' },
-      { title: 'Partner-ready model', detail: 'Hotel, tour, and booking-link integration assumptions.' },
+      { title: 'Mobile storefront', detail: 'iOS/Android UI flow và PWA responsive.' },
+      { title: 'Admin commerce', detail: 'Quản lý sản phẩm, đơn hàng, khách hàng, khuyến mãi.' },
+      { title: 'Analytics setup', detail: 'Dashboard doanh thu, conversion và best sellers.' },
     ],
     checklist: [
-      { label: 'Group voting logic', completed: true },
-      { label: 'Budget split rules', completed: true },
-      { label: 'Live booking inventory', completed: false },
+      { label: 'Product catalog + checkout', completed: true },
+      { label: 'Admin dashboard', completed: true },
+      { label: 'ERP/POS integration', completed: false },
     ],
   },
-] satisfies readonly AppGameShowcaseItem[];
+  {
+    id: 'fitpulse-tracker',
+    title: 'FitPulse Tracker',
+    type: 'app',
+    categoryKey: 'mobile',
+    industryKey: 'health',
+    category: 'Health App',
+    industry: 'Fitness',
+    badge: 'AI coach MVP',
+    metric: '2-4 tuần',
+    metricIcon: 'clock',
+    buildTime: '2-4 tuần',
+    costSaving: '-35% chi phí thiết kế',
+    platforms: ['iOS', 'Android'],
+    tags: ['Workout', 'Habit', 'AI coach', 'Charts'],
+    subtitle: 'Ứng dụng tracking luyện tập, thói quen và AI coach cá nhân.',
+    description:
+      'FitPulse giúp người dùng theo dõi bước chân, bài tập, calories, tiến độ tuần và nhận gợi ý cá nhân từ AI coach theo mục tiêu sức khỏe.',
+    audience: 'Fitness brand, PT coach, wellness community, corporate wellbeing.',
+    ...images('fitpulse-tracker'),
+    features: [
+      { title: 'Progress dashboard', description: 'Bước chân, calories, workout streak và biểu đồ tiến bộ.' },
+      { title: 'AI coach card', description: 'Gợi ý lịch tập, nhắc thói quen và điều chỉnh mục tiêu.' },
+      { title: 'Workout library', description: 'Bài tập theo mục tiêu, thời lượng, thiết bị và cấp độ.' },
+    ],
+    deliverables: [
+      { title: 'Mobile app MVP', detail: 'Onboarding, dashboard, workout, profile và notification.' },
+      { title: 'Coach prompt set', detail: 'Logic gợi ý AI theo mục tiêu người dùng.' },
+      { title: 'Analytics events', detail: 'Tracking retention, completion và engagement.' },
+    ],
+    checklist: [
+      { label: 'Health dashboard', completed: true },
+      { label: 'AI coach prompts', completed: true },
+      { label: 'Wearable integration', completed: false },
+    ],
+  },
+  {
+    id: 'travelgo-booking',
+    title: 'TravelGo Booking',
+    type: 'app',
+    categoryKey: 'mobile',
+    industryKey: 'travel',
+    category: 'Travel Booking App',
+    industry: 'Travel',
+    badge: 'Booking flow MVP',
+    metric: '2-5 tuần',
+    metricIcon: 'map',
+    buildTime: '2-5 tuần',
+    costSaving: '-40% chi phí MVP',
+    platforms: ['iOS', 'Android', 'Web'],
+    tags: ['Booking', 'Itinerary', 'Map', 'AI search'],
+    subtitle: 'App booking tour, khách sạn và trải nghiệm địa phương.',
+    description:
+      'TravelGo cho phép tìm kiếm điểm đến, xem lịch trình, đặt dịch vụ, nhận xác nhận booking và quản lý đơn từ dashboard vận hành.',
+    audience: 'Travel agency, resort, tour operator, local experience marketplace.',
+    ...images('travelgo-booking'),
+    features: [
+      { title: 'Search & discovery', description: 'Tìm tour, phòng, điểm đến và filter theo ngân sách/thời gian.' },
+      { title: 'Itinerary builder', description: 'Lịch trình ngày, điểm đến, voucher và nhắc lịch.' },
+      { title: 'Booking admin', description: 'Quản lý khách, đơn, thanh toán và trạng thái dịch vụ.' },
+    ],
+    deliverables: [
+      { title: 'Booking app', detail: 'Discovery, detail, checkout, itinerary và user profile.' },
+      { title: 'Operator dashboard', detail: 'Quản lý inventory dịch vụ, booking và báo cáo.' },
+      { title: 'AI search concept', detail: 'Gợi ý điểm đến theo sở thích và ngân sách.' },
+    ],
+    checklist: [
+      { label: 'Booking flow', completed: true },
+      { label: 'Admin inventory', completed: true },
+      { label: 'OTA integration', completed: false },
+    ],
+  },
+  {
+    id: 'ai-companion',
+    title: 'AI Companion',
+    type: 'ai',
+    categoryKey: 'ai',
+    industryKey: 'game',
+    category: 'AI Feature',
+    industry: 'Game & app',
+    badge: 'Voice + chat ready',
+    metric: '1-2 tuần',
+    metricIcon: 'sparkles',
+    buildTime: '1-2 tuần',
+    costSaving: '-30% thời gian tích hợp',
+    platforms: ['Web', 'iOS', 'Android'],
+    tags: ['NPC', 'NLP', 'Voice', 'TTS'],
+    subtitle: 'AI companion có hội thoại tự nhiên, voice/TTS và ngữ cảnh sản phẩm.',
+    description:
+      'AI Companion là module nhúng vào game/app để hướng dẫn người dùng, nhập vai NPC, trả lời theo knowledge base và cá nhân hóa trải nghiệm.',
+    audience: 'Game RPG, education app, onboarding assistant, support companion.',
+    ...images('ai-companion'),
+    features: [
+      { title: 'Context memory', description: 'Nhớ trạng thái nhiệm vụ, hồ sơ người dùng và nội dung sản phẩm.' },
+      { title: 'Voice & TTS', description: 'Luồng nói/nghe tự nhiên cho companion hoặc NPC.' },
+      { title: 'Safety guardrails', description: 'Policy, fallback, tone và kiểm soát nội dung.' },
+    ],
+    deliverables: [
+      { title: 'AI module spec', detail: 'Prompt, tools, memory, fallback và event hooks.' },
+      { title: 'Chat/voice UI', detail: 'Widget, in-game panel hoặc mobile assistant flow.' },
+      { title: 'Integration guide', detail: 'API contract và cách nhúng vào app/game hiện có.' },
+    ],
+    checklist: [
+      { label: 'Prompt + memory design', completed: true },
+      { label: 'Voice/TTS flow', completed: true },
+      { label: 'Realtime avatar', completed: false },
+    ],
+  },
+  {
+    id: 'admin-analytics',
+    title: 'Admin Analytics',
+    type: 'app',
+    categoryKey: 'dashboard',
+    industryKey: 'analytics',
+    category: 'Analytics Dashboard',
+    industry: 'Business ops',
+    badge: 'Insight dashboard',
+    metric: '1-3 tuần',
+    metricIcon: 'chart',
+    buildTime: '1-3 tuần',
+    costSaving: '-40% chi phí BI',
+    platforms: ['Web', 'PWA'],
+    tags: ['Dashboard', 'Revenue', 'AI insight', 'Reports'],
+    subtitle: 'Dashboard quản trị doanh thu, user, funnel và AI insight.',
+    description:
+      'Admin Analytics giúp đội ngũ nhìn nhanh hiệu suất kinh doanh, tăng trưởng người dùng, funnel, cohort và cảnh báo bất thường bằng AI insight.',
+    audience: 'SME, SaaS, e-commerce, sales ops, marketing ops.',
+    ...images('admin-analytics'),
+    features: [
+      { title: 'Executive dashboard', description: 'KPI, doanh thu, user, conversion và growth theo thời gian.' },
+      { title: 'AI insight panel', description: 'Tự động tóm tắt biến động và đề xuất hành động.' },
+      { title: 'Role reports', description: 'Báo cáo riêng cho sales, marketing, finance và operation.' },
+    ],
+    deliverables: [
+      { title: 'Web dashboard', detail: 'Responsive dashboard, chart, table và filter.' },
+      { title: 'Data model map', detail: 'KPI definition, event schema và quyền truy cập.' },
+      { title: 'Report templates', detail: 'Mẫu báo cáo tuần/tháng và alert.' },
+    ],
+    checklist: [
+      { label: 'KPI dashboard', completed: true },
+      { label: 'AI summary', completed: true },
+      { label: 'Warehouse integration', completed: false },
+    ],
+  },
+  {
+    id: 'puzzle-grove',
+    title: 'Puzzle Grove',
+    type: 'game',
+    categoryKey: 'game',
+    industryKey: 'game',
+    category: 'Casual Puzzle Game',
+    industry: 'Casual games',
+    badge: 'Family-friendly MVP',
+    metric: '3-5 tuần',
+    metricIcon: 'gamepad',
+    buildTime: '3-5 tuần',
+    costSaving: 'Prototype trước khi mua art pack',
+    platforms: ['iOS', 'Android', 'Web'],
+    tags: ['Match-3', 'Level map', 'Rewards', 'Live ops'],
+    subtitle: 'Game puzzle dễ chơi với level map, reward chest và daily challenge.',
+    description:
+      'Puzzle Grove là casual game MVP để test retention: match-3 board, level progression, booster, reward chest và event map tươi sáng.',
+    audience: 'Casual game team, brand activation, education/game hybrid.',
+    ...images('puzzle-grove'),
+    features: [
+      { title: 'Match-3 board', description: 'Luật chơi quen thuộc, booster và level objective rõ ràng.' },
+      { title: 'Progression map', description: 'Bản đồ level, chest, stars và daily rewards.' },
+      { title: 'Live ops hooks', description: 'Event theo mùa, challenge ngày và gói reward.' },
+    ],
+    deliverables: [
+      { title: 'Playable prototype', detail: 'Board gameplay, level map và reward flow.' },
+      { title: 'Economy draft', detail: 'Stars, booster, chest và progression tuning.' },
+      { title: 'Art prompt pack', detail: 'Prompt cho character, tile, background và UI.' },
+    ],
+    checklist: [
+      { label: 'First 20 level plan', completed: true },
+      { label: 'Booster system', completed: true },
+      { label: 'A/B economy test', completed: false },
+    ],
+  },
+  {
+    id: 'quickbite-delivery',
+    title: 'QuickBite Delivery',
+    type: 'app',
+    categoryKey: 'mobile',
+    industryKey: 'food',
+    category: 'Food Delivery App',
+    industry: 'Food delivery',
+    badge: 'Marketplace MVP',
+    metric: '3-6 tuần',
+    metricIcon: 'clock',
+    buildTime: '3-6 tuần',
+    costSaving: '-35% chi phí launch',
+    platforms: ['iOS', 'Android', 'Web'],
+    tags: ['Restaurant', 'Courier', 'Tracking', 'Checkout'],
+    subtitle: 'Ứng dụng đặt món, tracking tài xế và quản lý nhà hàng.',
+    description:
+      'QuickBite Delivery bao gồm customer app, restaurant panel, courier tracking và admin dashboard để test mô hình giao đồ ăn theo khu vực.',
+    audience: 'Local delivery startup, restaurant chain, campus food service.',
+    ...images('quickbite-delivery'),
+    features: [
+      { title: 'Order tracking', description: 'Theo dõi trạng thái đơn, tài xế, ETA và thông báo realtime.' },
+      { title: 'Restaurant panel', description: 'Nhận đơn, cập nhật menu, giờ mở cửa và món hết hàng.' },
+      { title: 'Courier workflow', description: 'Nhận chuyến, route, bằng chứng giao hàng và lịch sử thu nhập.' },
+    ],
+    deliverables: [
+      { title: 'Customer app', detail: 'Discovery, cart, checkout, order tracking.' },
+      { title: 'Vendor dashboard', detail: 'Menu, order queue, promotion và availability.' },
+      { title: 'Courier flow', detail: 'Trip assignment, map route và delivery proof.' },
+    ],
+    checklist: [
+      { label: 'Three-sided MVP flow', completed: true },
+      { label: 'Order status logic', completed: true },
+      { label: 'Payment gateway production', completed: false },
+    ],
+  },
+  {
+    id: 'learnspark-kids',
+    title: 'LearnSpark Kids',
+    type: 'app',
+    categoryKey: 'mobile',
+    industryKey: 'education',
+    category: 'Education App',
+    industry: 'Education',
+    badge: 'AI tutor MVP',
+    metric: '3-5 tuần',
+    metricIcon: 'sparkles',
+    buildTime: '3-5 tuần',
+    costSaving: '-30% content ops',
+    platforms: ['Tablet', 'iOS', 'Android', 'Web'],
+    tags: ['Quiz', 'AI tutor', 'Progress', 'Kids safe'],
+    subtitle: 'Ứng dụng học tập trẻ em với quiz, lộ trình và AI tutor thân thiện.',
+    description:
+      'LearnSpark Kids giúp tạo trải nghiệm học vui: lesson cards, mini quiz, reward, progress dashboard và AI tutor trả lời trong giới hạn an toàn.',
+    audience: 'EdTech startup, tutoring center, school, kids content brand.',
+    ...images('learnspark-kids'),
+    features: [
+      { title: 'Lesson path', description: 'Lộ trình học theo chủ đề, cấp độ và điểm thưởng.' },
+      { title: 'Quiz game', description: 'Bài kiểm tra ngắn, animation reward và replay nhanh.' },
+      { title: 'Safe AI tutor', description: 'AI hỗ trợ giải thích trong phạm vi nội dung được duyệt.' },
+    ],
+    deliverables: [
+      { title: 'Learning app MVP', detail: 'Lessons, quiz, profile, progress và reward.' },
+      { title: 'Tutor prompt policy', detail: 'Prompt, safety rule và fallback.' },
+      { title: 'Content template', detail: 'Mẫu nhập lesson/quiz để mở rộng nhanh.' },
+    ],
+    checklist: [
+      { label: 'Quiz and reward loop', completed: true },
+      { label: 'Parent-safe tutor flow', completed: true },
+      { label: 'School LMS sync', completed: false },
+    ],
+  },
+  {
+    id: 'neon-drift-racing',
+    title: 'Neon Drift Racing',
+    type: 'game',
+    categoryKey: 'game',
+    industryKey: 'game',
+    category: 'Racing Game',
+    industry: 'Arcade games',
+    badge: 'High-energy prototype',
+    metric: '4-7 tuần',
+    metricIcon: 'gamepad',
+    buildTime: '4-7 tuần',
+    costSaving: 'Validate art + loop early',
+    platforms: ['iOS', 'Android', 'Web'],
+    tags: ['Racing', 'Garage', 'Leaderboard', 'Cyberpunk'],
+    subtitle: 'Game đua xe neon với garage upgrade, leaderboard và race HUD.',
+    description:
+      'Neon Drift Racing là prototype arcade racing tập trung vào cảm giác tốc độ, nâng cấp xe, challenge thời gian và hình ảnh cyberpunk bắt mắt.',
+    audience: 'Arcade game studio, brand racing campaign, mobile publisher.',
+    ...images('neon-drift-racing'),
+    features: [
+      { title: 'Speed loop', description: 'Race, drift, boost, checkpoint và reward theo thời gian.' },
+      { title: 'Garage upgrade', description: 'Nâng cấp xe, cosmetic, performance và unlock tier.' },
+      { title: 'Leaderboard mode', description: 'Daily track, ghost score và rank replay.' },
+    ],
+    deliverables: [
+      { title: 'Racing MVP plan', detail: 'Controls, camera, boost, drift và scoring.' },
+      { title: 'Garage UI kit', detail: 'Upgrade, inventory, shop và vehicle cards.' },
+      { title: 'Track content brief', detail: '3 map đầu, obstacle, lighting và visual prompts.' },
+    ],
+    checklist: [
+      { label: 'Racing loop spec', completed: true },
+      { label: 'Garage upgrade flow', completed: true },
+      { label: 'Realtime multiplayer', completed: false },
+    ],
+  },
+  {
+    id: 'estateflow-property',
+    title: 'EstateFlow Property',
+    type: 'app',
+    categoryKey: 'mobile',
+    industryKey: 'property',
+    category: 'Real Estate App',
+    industry: 'Real estate',
+    badge: 'Property CRM MVP',
+    metric: '3-6 tuần',
+    metricIcon: 'map',
+    buildTime: '3-6 tuần',
+    costSaving: '-35% sales ops',
+    platforms: ['iOS', 'Android', 'Web'],
+    tags: ['Listings', 'Map', 'Agent CRM', 'AI match'],
+    subtitle: 'App listing bất động sản, map search, agent chat và CRM.',
+    description:
+      'EstateFlow Property giúp đội sales gom listing, khách hàng, lịch hẹn, map search và gợi ý căn phù hợp vào một trải nghiệm mobile/web.',
+    audience: 'Real estate agency, broker team, property marketplace, developer sales.',
+    ...images('estateflow-property'),
+    features: [
+      { title: 'Map discovery', description: 'Tìm listing theo vị trí, giá, tiện ích và lịch xem nhà.' },
+      { title: 'Agent CRM', description: 'Lead, nhu cầu, lịch hẹn, ghi chú và pipeline bán hàng.' },
+      { title: 'AI property match', description: 'Gợi ý căn phù hợp theo ngân sách, vị trí và thói quen tìm kiếm.' },
+    ],
+    deliverables: [
+      { title: 'Listing app', detail: 'Search, detail, favorite, inquiry và schedule.' },
+      { title: 'Agent dashboard', detail: 'Lead CRM, listing management và reporting.' },
+      { title: 'Data import plan', detail: 'Template nhập listing, media và pricing.' },
+    ],
+    checklist: [
+      { label: 'Listing + map flow', completed: true },
+      { label: 'Agent CRM flow', completed: true },
+      { label: 'MLS/data feed integration', completed: false },
+    ],
+  },
+] as const;
 
-export const APP_GAME_SHOWCASE_LIST: readonly AppGameShowcaseListItem[] = APP_GAME_SHOWCASE_ITEMS;
+export const APP_GAME_SHOWCASE_LIST: readonly AppGameShowcaseListItem[] = APP_GAME_SHOWCASE_ITEMS.map(
+  ({
+    id,
+    title,
+    type,
+    categoryKey,
+    industryKey,
+    category,
+    industry,
+    badge,
+    metric,
+    metricIcon,
+    buildTime,
+    costSaving,
+    platforms,
+    tags,
+    subtitle,
+    heroImage,
+  }) => ({
+    id,
+    title,
+    type,
+    categoryKey,
+    industryKey,
+    category,
+    industry,
+    badge,
+    metric,
+    metricIcon,
+    buildTime,
+    costSaving,
+    platforms,
+    tags,
+    subtitle,
+    heroImage,
+  }),
+);
 
-export const getAppGameShowcaseById = (id: string): AppGameShowcaseDetail | undefined =>
-  APP_GAME_SHOWCASE_ITEMS.find((item) => item.id === id);
+export const getAppGameShowcaseById = (id?: string): AppGameShowcaseItem =>
+  APP_GAME_SHOWCASE_ITEMS.find((item) => item.id === id) ?? APP_GAME_SHOWCASE_ITEMS[0];
+
+const localize = (value: string) => ({
+  en: value,
+  vi: value,
+  ko: value,
+  ja: value,
+});
+
+const getComplexity = (item: AppGameShowcaseItem): AppGameShowcaseMarketSeed['complexity'] => {
+  if (item.type === 'ai' || item.categoryKey === 'dashboard') return 'Advanced';
+  if (item.type === 'game') return 'Advanced';
+  return 'Standard';
+};
+
+const getPriceCredits = (item: AppGameShowcaseItem) => {
+  if (item.type === 'game') return 320;
+  if (item.type === 'ai') return 180;
+  if (item.categoryKey === 'dashboard') return 220;
+  return 240;
+};
+
+export const APP_GAME_SHOWCASE_MARKET_SEED: readonly AppGameShowcaseMarketSeed[] =
+  APP_GAME_SHOWCASE_ITEMS.map((item, index) => ({
+    id: `APP-GAME-${item.id.toUpperCase()}`,
+    slug: `showcase-${item.id}`,
+    name: localize(item.title),
+    category: localize(item.category),
+    description: localize(`${item.subtitle} ${item.description}`),
+    imageUrl: item.heroImage,
+    bannerUrl: item.galleryImages[0],
+    thumbnailUrl: item.heroImage,
+    gallery: [item.heroImage, ...item.galleryImages],
+    demoType: 'interactive',
+    homeBlocks: ['app-other'],
+    tags: [...item.tags, item.type, item.categoryKey, item.industryKey],
+    models: ['GPT-5', 'GPT Image', 'Skyverses App Factory'],
+    industries: [item.industry, item.industryKey],
+    problems: [
+      'Mất nhiều thời gian để biến ý tưởng thành MVP có thể demo.',
+      'Chi phí thiết kế UI, asset và prototype thường vượt ngân sách ban đầu.',
+      'Thiếu một quy trình thống nhất từ concept, build, testing đến launch.',
+    ],
+    features: item.features.map((feature) =>
+      localize(`${feature.title}: ${feature.description}`),
+    ),
+    neuralStack: [
+      {
+        name: 'Skyverses App Factory',
+        version: '1.0',
+        capability: localize('Product planning, UX flow, implementation backlog, and launch packaging.'),
+      },
+      {
+        name: 'GPT Image',
+        capability: localize('Product visuals, UI concepts, game art, and showcase assets.'),
+      },
+      {
+        name: 'GPT-5',
+        capability: localize('Feature specification, app logic, AI workflow design, and technical documentation.'),
+      },
+    ],
+    complexity: getComplexity(item),
+    priceReference: `${item.buildTime} · ${item.costSaving}`,
+    priceCredits: getPriceCredits(item),
+    isFree: false,
+    isActive: true,
+    status: 'active',
+    featured: index < 6,
+    order: 600 + index,
+    platforms: [...item.platforms],
+  }));

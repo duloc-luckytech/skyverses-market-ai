@@ -60,7 +60,7 @@ export const SectionHeader: React.FC<{
         {title}
       </h2>
       {desc && (
-        <p className={`text-sm leading-relaxed md:text-base ${dark ? 'text-white/55' : 'text-[#1a2330]/60'}`}>
+        <p className={`text-sm leading-relaxed md:text-base ${dark ? 'text-white/68' : 'text-[#1a2330]/60'}`}>
           {desc}
         </p>
       )}
@@ -86,7 +86,7 @@ export const Reveal: React.FC<{ children: React.ReactNode; delay?: number; class
 export const GoldButton: React.FC<{ children: React.ReactNode; onClick: () => void; className?: string }> = ({ children, onClick, className = '' }) => (
   <button
     onClick={onClick}
-    className={`group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-brand-blue px-6 py-3 text-sm font-bold text-white shadow-lg shadow-brand-blue/25 transition duration-200 hover:-translate-y-0.5 hover:bg-brand-blueHover hover:shadow-xl hover:shadow-brand-blue/30 ${className}`}
+    className={`group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-[#E5C767] to-[#C9A84C] px-6 py-3 text-sm font-bold text-[#1a1404] shadow-lg shadow-brand-blue/25 transition duration-200 hover:-translate-y-0.5 hover:from-[#F0D173] hover:to-[#D4B355] hover:shadow-xl hover:shadow-brand-blue/30 ${className}`}
   >
     <span className="absolute inset-y-0 -left-1/2 w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/25 to-transparent motion-safe:animate-[sv-shimmer_2.8s_linear_infinite]" />
     <span className="relative inline-flex items-center gap-2">

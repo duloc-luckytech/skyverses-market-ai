@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowRight, CalendarDays, Clock3, Sparkles } from 'lucide-react';
+import { ArrowRight, CalendarDays, Clock3 } from 'lucide-react';
 import LazyImage from '../LazyImage';
 import LazySection from '../LazySection';
 import { useLanguage } from '../../../context/LanguageContext';
@@ -71,14 +71,15 @@ const LatestUpdatesSection: React.FC = () => {
               transition={{ duration: 0.55, ease: EASE }}
               className="max-w-2xl"
             >
-              <div className="mb-4 flex items-center gap-3">
-                <Sparkles size={17} className="text-brand-blue" />
-                <span className="font-mono text-[11px] font-bold uppercase tracking-[0.32em] text-brand-blue">
+              <div className="mb-4 flex items-center gap-4">
+                <span className="relative h-2 w-2 rounded-full bg-brand-blue shadow-[0_0_0_5px_rgba(201,168,76,0.12)]" />
+                <span className="h-px w-10 bg-brand-blue/70" />
+                <span className="font-mono text-[12px] font-bold uppercase tracking-[0.32em] text-brand-blue">
                   Latest updates
                 </span>
               </div>
               <h2 className="text-3xl font-bold leading-tight tracking-tight md:text-5xl">{t('landing.updates.title')}</h2>
-              <p className="mt-3 text-base leading-relaxed text-white/62">
+              <p className="mt-3 text-base leading-relaxed text-white/80">
                 {t('landing.updates.subtitle')}
               </p>
             </motion.div>
